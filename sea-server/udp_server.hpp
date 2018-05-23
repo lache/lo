@@ -71,12 +71,6 @@ namespace ss {
         template<typename T> udp::endpoint extract_endpoint(T v) {
             return v->first;
         }
-        template<> udp::endpoint extract_endpoint(std::vector<udp::endpoint>::const_iterator v) {
-            return *v;
-        }
-        template<> udp::endpoint extract_endpoint(std::vector<endpoint_aoi_object::value>::const_iterator v) {
-            return aoi_int_keys_[v->second];
-        }
         std::vector<endpoint_aoi_object::value> query_aoi_endpoints(int xc, int yc) const;
         udp::socket socket_;
         udp::endpoint remote_endpoint_;
@@ -95,4 +89,6 @@ namespace ss {
         endpoint_aoi_object::rtree client_endpoint_aoi_rtree_;
         unsigned long long client_endpoint_aoi_int_key_;
     };
+    template<> udp::endpoint udp_server::extract_endpoint(std::vector<udp::endpoint>::const_iterator v);
+    template<> udp::endpoint udp_server::extract_endpoint(std::vector<endpoint_aoi_object::value>::const_iterator v);
 }

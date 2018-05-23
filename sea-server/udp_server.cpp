@@ -758,3 +758,12 @@ std::vector<endpoint_aoi_object::value> udp_server::query_aoi_endpoints(int xc, 
     client_endpoint_aoi_rtree_.query(bgi::intersects(p), std::back_inserter(endpoints));
     return endpoints;
 }
+
+template<> udp::endpoint udp_server::extract_endpoint(std::vector<udp::endpoint>::const_iterator v) {
+    return *v;
+}
+
+template<> udp::endpoint udp_server::extract_endpoint(std::vector<endpoint_aoi_object::value>::const_iterator v) {
+    return aoi_int_keys_[v->second];
+}
+
