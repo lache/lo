@@ -8,6 +8,7 @@
 #include "packet.h"
 #include "region.hpp"
 #include "city.hpp"
+#include "endpoint_aoi_object.hpp"
 using namespace ss;
 
 const auto update_interval = boost::posix_time::milliseconds(75);
@@ -26,7 +27,8 @@ udp_server::udp_server(boost::asio::io_service& io_service,
     , seaport_(seaport)
     , region_(region)
     , city_(city)
-    , tick_seq_(0) {
+    , tick_seq_(0)
+    , client_endpoint_aoi_int_key_(0) {
     start_receive();
     timer_.async_wait(boost::bind(&udp_server::update, this));
 }
@@ -516,7 +518,13 @@ void udp_server::handle_receive(const boost::system::error_code& error, std::siz
                 // tracking info
                 send_track_object_coords(p->track_object_id, p->track_object_ship_id);
             }
-            register_client_endpoint();
+            auto xc = static_cast<int>(sea_->lng_to_xc(p->lng));
+            auto yc = static_cast<int>(sea_->lat_to_yc(p->lat));
+            auto ex_lng_scaled = static_cast<int>(p->ex_lng * p->view_scale);
+            auto ex_lat_scaled = static_cast<int>(p->ex_lat * p->view_scale);
+            endpoint_aoi_object::box aoi_box(endpoint_aoi_object::point(xc - ex_lng_scaled / 2, yc - ex_lat_scaled / 2),
+                                             endpoint_aoi_object::point(xc + ex_lng_scaled / 2, yc + ex_lat_scaled / 2));
+            register_client_endpoint(remote_endpoint_, aoi_box);
         } else if (type == 116) {
             // LPGP_LWPTTLREQUESTWAYPOINTS
             LOGIx("REQUESTWAYPOINTS received.");
@@ -699,11 +707,19 @@ void udp_server::send_single_cell(int xc0, int yc0) {
     }
 }
 
-void udp_server::register_client_endpoint() {
-    if (client_endpoints_.find(remote_endpoint_) == client_endpoints_.end()) {
-        LOGI("Registering new client endpoint %1%...", remote_endpoint_);
+void udp_server::register_client_endpoint(const udp::endpoint& endpoint, const endpoint_aoi_object::box& aoi_box) {
+    if (client_endpoints_.find(endpoint) == client_endpoints_.end()) {
+        LOGI("Registering new client endpoint %1%...", endpoint);
     }
-    client_endpoints_[remote_endpoint_] = get_monotonic_uptime_duration();
+    client_endpoints_[endpoint] = get_monotonic_uptime_duration();
+    auto aoi_value_it = client_endpoint_aoi_values_.find(endpoint);
+    if (aoi_value_it != client_endpoint_aoi_values_.end()) {
+        client_endpoint_aoi_rtree_.remove(aoi_value_it->second);
+    }
+    client_endpoint_aoi_int_key_++;
+    client_endpoint_aoi_rtree_.insert(std::make_pair(aoi_box, client_endpoint_aoi_int_key_));
+    client_endpoint_aoi_values_[endpoint] = std::make_pair(aoi_box, client_endpoint_aoi_int_key_);
+    aoi_int_keys_[client_endpoint_aoi_int_key_] = endpoint;
 }
 
 void udp_server::remove_expired_endpoints() {
@@ -718,6 +734,10 @@ void udp_server::remove_expired_endpoints() {
     for (const auto& tbr : to_be_removed) {
         LOGI("Removing client endpoint %1%... (timeout)", tbr);
         client_endpoints_.erase(tbr);
+        auto int_key = client_endpoint_aoi_values_[tbr].second;
+        client_endpoint_aoi_rtree_.remove(client_endpoint_aoi_values_[tbr]);
+        client_endpoint_aoi_values_.erase(tbr);
+        aoi_int_keys_.erase(int_key);
     }
 }
 
@@ -728,5 +748,13 @@ void udp_server::notify_to_client_gold_earned(int xc, int yc, int amount) {
     reply->xc0 = xc;
     reply->yc0 = yc;
     reply->amount = amount;
-    notify_to_client(reply);
+    //notify_to_all_clients(reply);
+    notify_to_aoi_clients(reply, xc, yc);
+}
+
+std::vector<endpoint_aoi_object::value> udp_server::query_aoi_endpoints(int xc, int yc) const {
+    std::vector<endpoint_aoi_object::value> endpoints;
+    auto p = endpoint_aoi_object::point(xc, yc);
+    client_endpoint_aoi_rtree_.query(bgi::intersects(p), std::back_inserter(endpoints));
+    return endpoints;
 }

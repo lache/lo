@@ -36,9 +36,9 @@ namespace ss {
         sea_object* get_object(int id);
         sea_object* get_object_by_type(int type);
         void set_udp_admin_server(const std::shared_ptr<udp_admin_server>& uas) { this->uas = uas; }
-    private:
         float lng_to_xc(float lng) const;
         float lat_to_yc(float lat) const;
+    private:
         std::vector<int> query_tree(float xc, float yc, float ex_lng, float ex_lat) const;
 
         boost::asio::io_service& io_service;

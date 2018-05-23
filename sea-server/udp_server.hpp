@@ -1,5 +1,6 @@
 #pragma once
 #include "lz4.h"
+#include "endpoint_aoi_object.hpp"
 
 namespace ss {
     namespace bg = boost::geometry;
@@ -41,15 +42,21 @@ namespace ss {
         void handle_receive(const boost::system::error_code& error, std::size_t bytes_transferred);
         void handle_send(const boost::system::error_code& error, std::size_t bytes_transferred);
         std::shared_ptr<route> create_route_id(const std::vector<int>& seaport_id_list) const;
-        void register_client_endpoint();
+        void register_client_endpoint(const udp::endpoint& endpoint, const endpoint_aoi_object::box& aoi_box);
         void remove_expired_endpoints();
-        template<typename T> void notify_to_client(std::shared_ptr<T> packet) {
+        template<typename T> void notify_to_aoi_clients(std::shared_ptr<T> packet, int xc, int yc) {
+            notify_to_clients(packet, query_aoi_endpoints(xc, yc));
+        }
+        template<typename T> void notify_to_all_clients(std::shared_ptr<T> packet) {
+            notify_to_clients(packet, client_endpoints_);
+        }
+        template<typename T, typename T2> void notify_to_clients(std::shared_ptr<T> packet, const T2& endpoints) {
             char compressed[1500];
             int compressed_size = LZ4_compress_default((char*)packet.get(), compressed, sizeof(T), static_cast<int>(boost::size(compressed)));
             if (compressed_size > 0) {
-                for (auto it : client_endpoints_) {
+                for (auto it = endpoints.cbegin(); it != endpoints.cend(); it++) {
                     socket_.async_send_to(boost::asio::buffer(compressed, compressed_size),
-                                          it.first,
+                                          extract_endpoint(it),
                                           boost::bind(&udp_server::handle_send,
                                                       this,
                                                       boost::asio::placeholders::error,
@@ -61,6 +68,16 @@ namespace ss {
                      compressed_size);
             }
         }
+        template<typename T> udp::endpoint extract_endpoint(T v) {
+            return v->first;
+        }
+        template<> udp::endpoint extract_endpoint(std::vector<udp::endpoint>::const_iterator v) {
+            return *v;
+        }
+        template<> udp::endpoint extract_endpoint(std::vector<endpoint_aoi_object::value>::const_iterator v) {
+            return aoi_int_keys_[v->second];
+        }
+        std::vector<endpoint_aoi_object::value> query_aoi_endpoints(int xc, int yc) const;
         udp::socket socket_;
         udp::endpoint remote_endpoint_;
         std::array<char, 1024> recv_buffer_;
@@ -73,5 +90,9 @@ namespace ss {
         std::unordered_map<int, std::shared_ptr<route> > route_map_; // id -> route
         int tick_seq_;
         std::map<udp::endpoint, std::chrono::steady_clock::duration> client_endpoints_;
+        std::map<udp::endpoint, endpoint_aoi_object::value> client_endpoint_aoi_values_;
+        std::unordered_map<unsigned long long, udp::endpoint> aoi_int_keys_;
+        endpoint_aoi_object::rtree client_endpoint_aoi_rtree_;
+        unsigned long long client_endpoint_aoi_int_key_;
     };
 }
