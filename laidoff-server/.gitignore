@@ -3,3 +3,4 @@ node_modules/
 
 ttl.db
 *.log
+yarn.lock

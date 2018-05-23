@@ -7,6 +7,7 @@ node_modules/
 .dockerignore
 .eslintrc
 .prettierignore
+yarn.lock
 
 README.md
 Dockerfile
