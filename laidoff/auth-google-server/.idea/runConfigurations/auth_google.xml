@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="auth-google" type="GoApplicationRunConfiguration" factoryName="Go Application" singleton="true">
+    <module name="auth-google-server" />
+    <working_directory value="$PROJECT_DIR$/" />
+    <go_parameters value="-i" />
+    <kind value="FILE" />
+    <filePath value="$PROJECT_DIR$/auth-google.go" />
+    <package value="github.com/gasbank/laidoff/auth-google-server" />
+    <directory value="$PROJECT_DIR$/" />
+    <method />
+  </configuration>
+</component>

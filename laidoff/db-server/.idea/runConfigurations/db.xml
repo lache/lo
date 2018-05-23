@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="db" type="GoApplicationRunConfiguration" factoryName="Go Application" singleton="true">
+    <module name="db-server" />
+    <working_directory value="$PROJECT_DIR$/" />
+    <go_parameters value="-i" />
+    <kind value="PACKAGE" />
+    <filePath value="$PROJECT_DIR$/" />
+    <package value="github.com/gasbank/laidoff/db-server" />
+    <directory value="$PROJECT_DIR$/" />
+    <method />
+  </configuration>
+</component>

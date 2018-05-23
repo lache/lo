@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="br" type="GoApplicationRunConfiguration" factoryName="Go Application" singleton="true">
+    <module name="br-server" />
+    <working_directory value="$PROJECT_DIR$/" />
+    <go_parameters value="-i" />
+    <kind value="PACKAGE" />
+    <filePath value="$PROJECT_DIR$/|C:\w\src\github.com\gasbank\laidoff\br-server\br.go|C:\w\src\github.com\gasbank\laidoff\br-server\br.go" />
+    <package value="github.com/gasbank/laidoff/br-server" />
+    <directory value="$PROJECT_DIR$/" />
+    <method />
+  </configuration>
+</component>

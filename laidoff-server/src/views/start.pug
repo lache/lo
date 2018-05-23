@@ -1,0 +1,17 @@
+html
+  include ./includes/head.pug
+  body.mar00.fwht.bsea.f1
+    include ./includes/stat.pug
+
+    a.dpinblk.red.pad5(href='/idle?u=' + user.guid) 취소
+    a.dpinblk.red.pad5(href='/mission?u=' + user.guid) 다른 미션
+
+    div.red.w70
+      div.flft.dpblc.w80.red
+        div.wspre.pad3
+          | #{mission.dept_name} - #{mission.arvl_name} (#{numeral(mission.dist).format('0,0')} km)
+          | 보수: #{numeral(mission.reward).format('0,0')}원
+          | 화물: 300 t
+      div.frgt.dpblc.w20.blk
+        a.pad3.tc.dpblc.blk(href='/success?u=' + user.guid + '&mission=' + mission.mission_id) 선택
+        

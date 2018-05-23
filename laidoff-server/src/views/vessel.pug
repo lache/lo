@@ -1,0 +1,27 @@
+html
+  include ./includes/head.pug
+  body.mar00.fwht.bsea.f1
+    include ./includes/stat.pug
+    include ./includes/topmenu.pug
+    div.floatright
+      div.alignright
+        a.dpinblk.red.pad3(href='/purchase_new_ship?u=' + user.guid + '&currentFirstKey=' + firstKey)
+          | 새 선박
+        //a.dpinblk.red.pad3(href='script:set_track_object_ship_id(0)')
+          | 추적 해제
+        a.dpinblk.red.pad3(href='/vessel?u=' + user.guid + '&lastKey=' + firstKey + '&currentFirstKey=' + firstKey)
+          | 이전
+        a.dpinblk.red.pad3(href='/vessel?u=' + user.guid + '&firstKey=' + lastKey + '&currentFirstKey=' + firstKey)
+          | 다음
+
+      table.solidborder.nowrap
+        each row in rows
+          tr
+            td
+              span.yellow #{row.ship_id}
+              span #{row.name}
+              br
+              a.dpinblk.red.pad3(href='/sell_vessel?u=' + user.guid + '&s=' + row.ship_id + '&currentFirstKey=' + firstKey) 매각
+              a.dpinblk.red.pad3(href='script:track(' + row.ship_id + ')') 추적
+              a.pad3.tc.dpinblk.wblue(href='script:select(\'ship\',' + row.ship_id + ')') 선택
+

@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <link rel="stylesheet" href=""/>
+  <script>
+	  function getParameterByName(name, url) {
+		if (!url) url = window.location.href;
+		name = name.replace(/[\[\]]/g, "\\$&");
+		var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+			results = regex.exec(url);
+		if (!results) return null;
+		if (!results[2]) return '';
+		return decodeURIComponent(results[2].replace(/\+/g, " "));
+	}
+	window.onload = function () {
+		document.getElementById("currentVersion").innerHTML = getParameterByName("currentVersion");
+		document.getElementById("latestVersion").innerHTML = getParameterByName("latestVersion");
+	}
+  </script>
+</head>
+
+<body>
+<h1>현재버전: <div id="currentVersion" style="display:inline-block">---</div></h1>
+<h1>최신버전: <div id="latestVersion" style="display:inline-block">---</div></h1>
+<h1><a href="itms-services://?action=download-manifest&url=https://s3.ap-northeast-2.amazonaws.com/sky.popsongremix.com/laidoff/ipa/manifest.plist">앱 다운받기</a></h1>
+</body>
+</html>

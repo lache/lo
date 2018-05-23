@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Push Token</title>
+</head>
+<body>
+<h1>Edit push token</h1>
+<div>{{.PushToken}}</div>
+<form action="/savePushToken/{{.PushToken}}" method="POST">
+    Memo:<input type="text" name="memo" value="{{.Memo}}">
+    <div><input type="submit" value="Save"></div>
+</form>
+</body>
+</html>

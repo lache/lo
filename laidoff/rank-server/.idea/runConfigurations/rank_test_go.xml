@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="rank_test.go" type="GoTestRunConfiguration" factoryName="Go Test" singleton="true">
+    <module name="rank-server" />
+    <working_directory value="$PROJECT_DIR$" />
+    <go_parameters value="-i" />
+    <framework value="gotest" />
+    <kind value="FILE" />
+    <package value="github.com/gasbank/laidoff/rank-server" />
+    <directory value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$/rank_test.go" />
+    <method />
+  </configuration>
+</component>

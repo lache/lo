@@ -1,0 +1,13 @@
+{
+    "ConnHost": "0.0.0.0",
+    "ConnPort": "19856",
+    "ConnType": "tcp",
+
+    "BattleServiceHost": "127.0.0.1",
+    "BattleServicePort": "29856",
+    "BattleServiceConnType": "tcp",
+
+    "BattlePublicServiceHost": "127.0.0.1",
+    "BattlePublicServicePort": "10288",
+    "BattlePublicServiceConnType": "tcp"
+}

@@ -1,0 +1,10 @@
+version: "3.5"
+services:
+  persisty:
+    image: lacti/ttl-server
+    build:
+      context: .
+    ports:
+      - 3000:3000/tcp
+      - 3003:3003/udp
+

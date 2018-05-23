@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="remote_assets_base_path">http://sky.popsongremix.com/laidoff/assets</string>
+    <string name="remote_apk_base_path">http://sky.popsongremix.com/laidoff/apk</string>
+    <string name="list_file_name">list.txt</string>
+    <string name="app_name">Ball Rumble</string>
+    <string name="no_conn">ERROR: Check your internet connection</string>
+    <string name="error">ERROR</string>
+    <string name="exit">QUIT</string>
+    <string name="title_activity_text">Text</string>
+
+    <string name="hello_world_main">Hello World, main</string>
+    <string name="change_nickname">Change nickname</string>
+    <string name="enter_new_nickname">Enter new nickname</string>
+</resources>

@@ -1,0 +1,169 @@
+apply plugin: 'com.android.application'
+
+// Create a variable called keystorePropertiesFile, and initialize it to your
+// keystore.properties file, in the rootProject folder.
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+
+// Initialize a new Properties() object called keystoreProperties.
+def keystoreProperties = new Properties()
+
+// Load your keystore.properties file into the keystoreProperties object.
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
+def versionProperties = new Properties()
+
+versionProperties['versionCode'] = "1134"
+versionProperties['versionName'] = "0.1.0"
+
+if (keystoreProperties.containsKey('versionCode')) {
+    versionProperties['versionCode'] = keystoreProperties['versionCode']
+}
+
+if (project.hasProperty('versionName')) {
+    versionProperties['versionName'] = project.versionName
+}
+
+if (project.hasProperty('versionCode')) {
+    versionProperties['versionCode'] = project.versionCode
+}
+
+android {
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
+    publishNonDefault true
+
+    signingConfigs {
+        config {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+        }
+        debugSign {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+        }
+    }
+
+    defaultConfig {
+        applicationId "com.popsongremix.laidoff"
+        minSdkVersion 15
+        targetSdkVersion 27
+
+        versionCode versionProperties['versionCode'] as int
+        versionName versionProperties['versionName']
+
+        ndk {
+            abiFilters 'armeabi-v7a'
+        }
+
+        externalNativeBuild {
+            cmake {
+                //arguments '-DANDROID_PLATFORM=android-19','-DANDROID_TOOLCHAIN=clang'
+                arguments "-DANDROID_STL=c++_shared"
+            }
+        }
+
+        signingConfig signingConfigs.config
+    }
+
+    buildTypes {
+        debug {
+            debuggable true
+            jniDebuggable true
+            signingConfig signingConfigs.debugSign
+            ndk {
+                abiFilters 'x86'
+            }
+            buildConfigField "boolean", "DOWNLOAD_ASSETS", "false"
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'),
+                    'proguard-rules.pro'
+            ndk {
+                abiFilters 'x86'
+            }
+            buildConfigField "boolean", "DOWNLOAD_ASSETS", "true"
+        }
+        releaseSingapore {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'),
+                    'proguard-rules.pro'
+            buildConfigField "boolean", "DOWNLOAD_ASSETS", "false"
+        }
+        releaseEmulator {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'),
+                    'proguard-rules.pro'
+            ndk {
+                abiFilters 'x86'
+            }
+            buildConfigField "boolean", "DOWNLOAD_ASSETS", "true"
+        }
+        releaseBallRumbleGooglePlay {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'),
+                    'proguard-rules.pro'
+            buildConfigField "boolean", "DOWNLOAD_ASSETS", "false"
+        }
+    }
+
+    sourceSets {
+        debug.assets.srcDirs += '../../assets'
+        releaseSingapore.assets.srcDirs += '../../selected-assets/assets'
+        releaseBallRumbleGooglePlay.assets.srcDirs += '../../selected-assets-br/assets'
+    }
+
+    externalNativeBuild {
+        cmake {
+            path 'src/main/cpp/CMakeLists.txt'
+        }
+    }
+
+    aaptOptions {
+        noCompress 'act',
+                'arm',
+                'json',
+                'txt',
+                'fanim',
+                'field',
+                'fnt',
+                'tga',
+                'fvbo',
+                'glsl',
+                'ktx',
+                'lua',
+                'nav',
+                'ogg',
+                'pkm',
+                'svbo',
+                'png',
+                'vbo',
+                'css',
+                'html',
+                'mvbo'
+    }
+}
+
+configurations {
+    // Expose the debug version of the library to other modules
+    debug
+    release
+}
+
+repositories {
+    mavenCentral()
+    flatDir {
+        dirs 'libs'
+    }
+    google()
+}
+
+dependencies {
+    implementation 'com.google.firebase:firebase-messaging:12.0.1'
+}
+
+apply plugin: 'com.google.gms.google-services'

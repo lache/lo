@@ -1,0 +1,15 @@
+TEAM NAME	PLAYER NAME		PLAYER ARRAY INDEX (player no)
+-----------------------------------------------------
+online 1 vs 1:
+player
+			player			0
+target
+			target			1
+
+online 2 vs 2:
+player
+			player0			0
+			player1			1
+target
+			target0			2
+			target1			3

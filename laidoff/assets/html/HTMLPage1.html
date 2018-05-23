@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html xmlns:lw="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <title>Min Browser</title>
+    <style>
+        .bottom {
+            position: absolute;
+            bottom: 0;
+            width: 70%;
+            left: 15%;
+        }
+
+        .centertop {
+            position: absolute;
+            top: 0;
+            width: 50%;
+            left: 25%;
+            text-align: center;
+            background-color: rgba(255, 0, 0, 0.7);
+        }
+
+        .righttop {
+            position: absolute;
+            top: 0;
+            right: 0;
+            text-align: right;
+        }
+
+        #parent {
+            /*margin: 0 auto;*/
+            width: 70%;
+            background-color: rgba(255, 0, 0, 0.7);
+        }
+
+        #child-left {
+            float: left;
+            display: block;
+            width: 80%;
+            background-color: rgba(255, 0, 0, 0.7);
+        }
+
+        #child-right {
+            float: right;
+            display: block;
+            width: 20%;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .select-button {
+            padding: 5pt;
+            text-align: center;
+            display: block;
+            background-color: rgba(0, 200, 200, 0.8);
+        }
+
+        #red {
+            width: 200px;
+            height: 200px;
+            background: url(slice-test.png) 0 0;
+            background-size: 800px 800px;
+        }
+
+        #green {
+            height: 200px;
+            width: 200px;
+            background: url(slice-test.png) -200px 0;
+            background-size: 800px 800px;
+        }
+
+        #blue {
+            height: 200px;
+            width: 200px;
+            background: url(slice-test.png) 0 -200px;
+            background-size: 800px 800px;
+        }
+
+        #black {
+            height: 200px;
+            width: 200px;
+            background: url(slice-test.png) -200px -200px;
+            background-size: 800px 800px;
+        }
+
+        #cyan {
+            height: 200px;
+            width: 200px;
+            background: url(slice-test.png) -400px 0;
+            background-size: 800px 800px;
+        }
+
+        #yellow {
+            height: 200px;
+            width: 200px;
+            background: url(slice-test.png) 0 -400px;
+            background-size: 800px 800px;
+        }
+
+        .ship-button-header {
+            text-align: center;
+            font-size: 1.25em;
+            color: white;
+            background: cornflowerblue;
+            border: 1px solid #e1deff;
+            border-right-color: #2e46a8;
+            border-bottom-color: #2e46a8;
+            padding: 1pt;
+        }
+
+        .ship-button-group {
+            text-align: center;
+        }
+
+        .ship-button {
+            width: 20%;
+            display: inline-block;
+            vertical-align: top;
+            color: white;
+            text-align: center;
+            background: cornflowerblue;
+            border: 1px solid #e1deff;
+            border-right-color: #2e46a8;
+            border-bottom-color: #2e46a8;
+            padding: 1pt;
+            margin: 10px;
+        }
+
+        .ship-button-hr {
+            border-color: #ffe03f;
+        }
+
+        .touch-button {
+            display: block;
+            background-color: rgba(255, 0, 0, 0.5);
+            padding-top: 3pt;
+            padding-bottom: 3pt;
+        }
+
+        .desc {
+            text-align: left;
+            line-height: 0.5em;
+        }
+
+        .price {
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body style="margin:0px;font-size:1em">
+<a style="position:absolute;right:0px;bottom:0px;display:inline-block;background-color:rgba(255, 0, 0, 0.5);padding:5pt"
+   href="script:go_online()">온라인으로</a>
+<div class="ship-button-header">
+    메인 메뉴
+</div>
+
+<div class="ship-button-group">
+    <div class="ship-button">
+        <h3>회사</h3>
+        <img src="atlas/flags-mini/au.png"/>
+        <hr class="ship-button-hr"/>
+        <a class="touch-button" href="purchase-vessel.html">이동하기</a>
+    </div>
+
+    <div class="ship-button">
+        <h3>선박</h3>
+        <img src="atlas/flags-mini/pa.png"/>
+        <hr class="ship-button-hr"/>
+        <a class="touch-button" href="vessels.html">이동하기</a>
+    </div>
+
+    <div class="ship-button">
+        <h3>항구</h3>
+        <img src="atlas/flags-mini/pt.png"/>
+        <hr class="ship-button-hr"/>
+        <a class="touch-button" href="nearest-seaports.html">이동하기</a>
+    </div>
+
+</div>
+
+
+<div class="ship-button-group">
+    <div class="ship-button">
+        <h3>항로</h3>
+        <img src="atlas/flags-mini/us.png"/>
+        <hr class="ship-button-hr"/>
+        <a class="touch-button" href="script:hehehe()">이동하기</a>
+    </div>
+
+    <div class="ship-button">
+        <h3>계약</h3>
+        <img src="atlas/flags-mini/kr.png"/>
+        <hr class="ship-button-hr"/>
+        <a class="touch-button" href="script:hehehe()">이동하기</a>
+    </div>
+
+    <div class="ship-button">
+        <h3>재무</h3>
+        <img src="atlas/flags-mini/ad.png"/>
+        <hr class="ship-button-hr"/>
+        <a class="touch-button" href="countries.html">이동하기</a>
+    </div>
+
+</div>
+
+<!--
+<img
+        src="remtex/test-remtex-3.png" width="20pt" height="20pt"/><img
+        src="remtex/test-remtex-2.png" width="20pt" height="20pt"/><img
+        src="remtex/test-remtex.png" width="20pt" height="20pt"/><img
+        src="remtex/hpstar0-a.png" width="20pt" height="20pt"/><img
+        src="remtex/hpstar1-a.png" width="20pt" height="20pt"/><img
+        src="remtex/hpstar2-a.png" width="20pt" height="20pt"/><img
+        src="remtex/profile-icon.png" width="20pt" height="20pt"/>
+-->
+
+<!--
+이전 글씨는? <img id="red" src="img_trans.gif"/> 그 다음 글씨는...? <img id="black" src="img_trans.gif"/>
+<br/>
+이전 글씨는? <img id="green" src="img_trans.gif"/> 그 다음 글씨는...? <img id="cyan" src="img_trans.gif"/>
+<br/>
+이전 글씨는? <img id="blue" src="img_trans.gif"/> 그 다음 글씨는...? <img id="yellow" src="img_trans.gif"/>
+-->
+
+<!--
+<div style="text-align: center;">
+    <a style="display:inline-block;background-color:rgba(255, 0, 0, 0.5);padding:5pt"
+       href="script:worldmap_scroll(-10,  0, 0)">왼쪽</a>
+    <a style="display:inline-block;background-color:rgba(255, 0, 0, 0.5);padding:5pt"
+       href="script:worldmap_scroll( 10,  0, 0)">오른쪽</a>
+    <a style="display:inline-block;background-color:rgba(255, 0, 0, 0.5);padding:5pt"
+       href="script:worldmap_scroll(  0, 10, 0)">위</a>
+    <a style="display:inline-block;background-color:rgba(255, 0, 0, 0.5);padding:5pt"
+       href="script:worldmap_scroll(  0,-10, 0)">아래</a>
+    <a style="display:inline-block;background-color:rgba(255, 0, 0, 0.5);padding:5pt"
+       href="script:worldmap_scroll(  0,  0, 1)">줌인</a>
+    <a style="display:inline-block;background-color:rgba(255, 0, 0, 0.5);padding:5pt"
+       href="script:worldmap_scroll(  0,  0,-1)">줌아웃</a>
+</div>
+-->
+
+
+<script type="text/x-lua">
+		local c = lo.script_context()
+		lo.htmlui_set_online(c.htmlui, 0)
+		lo.lwc_render_ttl_enable_render('world', 1)
+		lo.lwc_render_ttl_enable_render('landcell', 1)
+		lo.lwc_render_ttl_enable_render('landcell_nameplate', 1)
+		function worldmap_scroll(dlng, dlat, dscale)
+			lo.lwttl_worldmap_scroll(c.ttl, dlng/100, dlat/100, dscale)
+		end
+		function worldmap_scroll_to_cell_center(xc, yc)
+			lo.lwttl_worldmap_scroll_to_cell_center(c.ttl, xc, yc, lo.lwttl_sea_udp(c.ttl))
+		end
+		function go_online()
+			if c.tcp_ttl == nil then
+				lo.lw_new_tcp_ttl(c)
+			end
+			lo.htmlui_set_online(c.htmlui, 1)
+			lo.tcp_request_landing_page(c.tcp_ttl, c.user_data_path, c.ttl);
+		end
+		function set_track_object_id(id)
+			lo.lwttl_set_track_object_id(c.ttl, id)
+		end
+		function set_track_object_ship_id(ship_id)
+		    lo.lwttl_set_track_object_ship_id(c.ttl, ship_id)
+		end
+		function request_waypoints(ship_id)
+			lo.lwttl_request_waypoints(c.ttl, ship_id)
+		end
+		local MIN_VIEW_SCALE = 1
+		local MAX_VIEW_SCALE = 2048
+		function map_zoom_in()
+		    local vs = lo.lwttl_view_scale(c.ttl)
+		    vs = vs / 2
+		    if vs < MIN_VIEW_SCALE then vs = MIN_VIEW_SCALE end
+		    lo.lwttl_set_view_scale(c.ttl, vs)
+		    lo.lwttl_udp_send_ttlping(c.ttl, c.udp_sea, 0)
+		end
+		function map_zoom_out()
+		    local vs = lo.lwttl_view_scale(c.ttl)
+		    vs = vs * 2
+		    if vs > MAX_VIEW_SCALE then vs = MAX_VIEW_SCALE end
+		    lo.lwttl_set_view_scale(c.ttl, vs)
+		    lo.lwttl_udp_send_ttlping(c.ttl, c.udp_sea, 0)
+		end
+		local select_context = {}
+		function select(type, id)
+		    print('[ui-select] type:'..type..',id:'..id)
+		    if select_context[type] == nil then
+		        select_context[type] = {}
+		    end
+		    table.insert(select_context[type], id)
+		    print('=== select_context ===')
+		    print(http_header())
+		end
+		function http_header()
+		    local r = ''
+		    for key, value in pairs(select_context) do
+                r = r .. 'X-Select-' .. key:sub(1,1):upper()..key:sub(2) .. ': ' .. table.concat(value, ',') .. '\r\n'
+            end
+            return r
+		end
+		function track(ship_id)
+		    set_track_object_ship_id(ship_id)
+		    request_waypoints(ship_id)
+		end
+		return 1234
+</script>
+</body>
+</html>

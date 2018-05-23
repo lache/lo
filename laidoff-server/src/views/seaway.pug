@@ -1,0 +1,23 @@
+html
+  include ./includes/head.pug
+  body.mar00.fwht.bsea.f1
+    include ./includes/stat.pug
+    include ./includes/topmenu.pug
+    div.floatright.blk
+      h1 새 항로 및 새 선박 생성
+      br
+      if p1
+        h3 항구 1
+        h2 #{p1.name}
+        br
+      if p2
+        h3 항구 2
+        h2 #{p2.name}
+        br
+      if p1 && p2
+        h3 비용
+        h2 10,000원
+        a.dpinblk.red.pad3(href='/purchase_new_ship_with_ports?u=' + user.guid + '&p1=' + p1.region_id + '&p2=' + p2.region_id)
+          | 생성하기
+      else
+        div 항구 두 개를 선택한 후 다시 눌러주세요.

@@ -1,0 +1,2 @@
+/bg bg-room-ceiling.ktx
+페이드 아웃

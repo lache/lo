@@ -1,0 +1,28 @@
+title Ball Rumble Match Sequence
+
+Client1->+Match: requestQueue(id1)
+Match->+Db: getUser(id1)
+Db->-Match: u1 User
+Match->+Rank: getRank(u1)
+Rank->-Match: r1 Rank
+Match-->-Client1: t1 Ticket
+note left of Client1: Waiting...
+Client2->+Match: requestQueue(id2)
+Match-->-Client2: t2 Ticket
+note left of Client2: Waiting...
+note left of Match: Matched!
+Match->+Battle: createBattle(u1, u2)
+Battle-->-Match: b Battle
+Match->Client1: b
+Match->Client2: b
+Client1->+Battle: startBattle(t1, b)
+Client2->Battle: startBattle(t2, b)
+loop
+    Client1->Battle: i1 Input
+    Client2->Battle: i2 Input
+    Battle->Client1: fs FullState
+    Battle->-Client2: fs FullState
+end
+Battle->+Reward: br BattleResult
+Reward->Db: updateScore(br)
+Reward->-Rank: updateRank(br)

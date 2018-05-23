@@ -1,0 +1,10 @@
+/build/
+/build-x64/
+cmake-build-debug
+/rtree/worldmap_static.dat
+/rtree/seaport.dat
+/rtree/*.dat
+/rtree/*.bin
+cmake-build-release
+workspace.xml
+build-xcode

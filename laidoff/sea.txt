@@ -1,0 +1,39 @@
+waterway 수로
+
+rivers 강
+canals 운하
+
+seas 바다
+bays 만
+gulf 만
+delta 삼각주
+
+straights 해협
+sounds, inlets 좁은 물줄기, 작은 만
+channels 물길, 해협
+
+port, harbor 항구
+
+
+------------
+
+pier 부두
+
+
+Vessel Type
+
+Cargo
+Passenger
+Tanker
+Tug
+
+Itineraries 여행일정표
+
+
+https://www.searoutes.com
+
+https://www.marinetraffic.com
+
+http://www.shadedrelief.com/natural3/pages/textures.html
+
+http://www.convertcsv.com/json-to-csv.htm

@@ -1,0 +1,20 @@
+html
+  include ./includes/head.pug
+  body.mar00.fwht.bsea.f1
+    include ./includes/stat.pug
+
+    a.dpinblk.red.pad5(href='/idle?u=' + user.guid) 취소
+
+    div.mar0a.blk8.w70
+      div.pad2.tc.f1p5 계약 선택
+
+    table.mar0a.blk.w70
+      each row in rows
+        tr
+          each col in row
+            td.wspre
+              | #{col.dept_name} - #{col.arvl_name} (#{numeral(col.dist).format('0,0')} km)
+              | 보수: #{numeral(col.reward).format('0,0')}원
+              | 화물: 300 t
+            td
+              a.pad5.tc.dpblc.wblue(href='/start?u=' + user.guid + '&mission=' + col.mission_id) 선택

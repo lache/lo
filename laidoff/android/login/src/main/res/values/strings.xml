@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_id">933754889415</string>
+    <string name="web_client_id">933754889415-fr8buam0m8dh9hv71r2fb4au548lij0f.apps.googleusercontent.com</string>
+    <string name="admob_id">ca-app-pub-5072035175916776~3533761034</string>
+    <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="reward_video_ad_test">ca-app-pub-3940256099942544/5224354917</string>
+    <string name="reward_video_ad_prod">ca-app-pub-5072035175916776/9587253247</string>
+    <string name="google_auth_service_addr">https://office.popsongremix.com:10622/auth-google</string>
+    <string name="keystore_password">debugPassword</string>
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password (optional)</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Input Text</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+    <string name="title_activity_test">TestActivity</string>
+    <string name="title_activity_login">Input Text</string>
+    <string name="text_input_button">확인</string>
+    <string name="text_input_header">텍스트 입력</string>
+
+</resources>

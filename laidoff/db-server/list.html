@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Db Service Admin</title>
+    <style>
+        .wrap {
+            white-space: pre-wrap;      /* CSS3 */
+            white-space: -moz-pre-wrap; /* Firefox */
+            white-space: -pre-wrap;     /* Opera <7 */
+            white-space: -o-pre-wrap;   /* Opera 7 */
+            word-wrap: break-word;      /* IE */
+            width: 60ch;
+        }
+    </style>
+</head>
+<body>
+<table>
+    <tr>
+        <th>ModTime</th>
+        <th>Nickname</th>
+        <th>Score</th>
+        <th>Battle</th>
+        <th>Victory</th>
+        <th>Defeat</th>
+    </tr>
+{{range $i, $value := .ListItem}}
+    <tr>
+        <td>{{$value.ModTime.Format "2006-01-02T15:04:05Z07:00"}}</td>
+        <td><a href="/edit/{{$value.UuidStr}}">{{$value.Db.Nickname}}</a></td>
+        <td>{{$value.Db.Rating}}</td>
+        <td>{{$value.Db.BattleStat.Battle}}</td>
+        <td>{{$value.Db.BattleStat.Victory}}</td>
+        <td>{{$value.Db.BattleStat.Defeat}}</td>
+    </tr>
+{{end}}
+</table>
+</body>
+</html>

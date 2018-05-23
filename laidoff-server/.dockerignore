@@ -1,0 +1,14 @@
+.git/
+.idea/
+.vscode/
+node_modules/
+
+.gitignore
+.dockerignore
+.eslintrc
+.prettierignore
+
+README.md
+Dockerfile
+docker-compose.yml
+

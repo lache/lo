@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="data" type="GoApplicationRunConfiguration" factoryName="Go Application" singleton="true">
+    <module name="data-server" />
+    <working_directory value="$PROJECT_DIR$/" />
+    <go_parameters value="-i" />
+    <parameters value="c:/laidoff/assets/ktx/*.ktx" />
+    <kind value="PACKAGE" />
+    <filePath value="$PROJECT_DIR$/" />
+    <package value="github.com/gasbank/laidoff/data-server" />
+    <directory value="$PROJECT_DIR$/" />
+    <method />
+  </configuration>
+</component>

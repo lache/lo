@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Push Service Admin</title>
+    <style>
+        .wrap {
+            white-space: pre-wrap;      /* CSS3 */
+            white-space: -moz-pre-wrap; /* Firefox */
+            white-space: -o-pre-wrap;   /* Opera 7 */
+            word-wrap: break-word;      /* IE */
+            width: 60ch;
+        }
+    </style>
+</head>
+<body>
+<h1>Push Admin</h1>
+<ul>
+{{range $key, $value := .PushTokenMap}}
+    <li>메모:[{{$value.Memo}}]
+        <pre class="wrap">{{$key}}</pre>
+        [<a href="/writePush/{{$key}}">Write push</a>]
+        [<a href="/sendTestPush/{{$key}}">Send test push</a>]
+        [<a href="/deletePushToken/{{$key}}">Delete push token</a>]
+        [<a href="/editPushToken/{{$key}}">Edit push token</a>]
+    </li>
+{{end}}
+</ul>
+{{if not .PushTokenMap}} No push tokens registered for now. {{end}}
+</body>
+</html>

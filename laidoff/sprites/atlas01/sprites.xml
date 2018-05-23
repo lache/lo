@@ -1,0 +1,10 @@
+<TextureAtlas imagePath="sprites.png">
+	<SubTexture name="command_selected_bg.png" x="0" y="1954" width="64" height="92"/>
+	<SubTexture name="hannibal-fat.png" x="0" y="982" width="400" height="618"/>
+	<SubTexture name="hannibal.png" x="0" y="362" width="400" height="618"/>
+	<SubTexture name="icecream-fat.png" x="252" y="1602" width="250" height="350"/>
+	<SubTexture name="icecream.png" x="0" y="1602" width="250" height="350"/>
+	<SubTexture name="pslot1.png" x="402" y="474" width="152" height="124"/>
+	<SubTexture name="shadow.png" x="402" y="362" width="220" height="110"/>
+	<SubTexture name="ui_all.png" x="0" y="0" width="640" height="360"/>
+</TextureAtlas>

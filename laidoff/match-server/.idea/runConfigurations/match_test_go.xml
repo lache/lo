@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="match_test.go" type="GoTestRunConfiguration" factoryName="Go Test" singleton="true">
+    <module name="match-server" />
+    <working_directory value="$PROJECT_DIR$" />
+    <go_parameters value="-i" />
+    <framework value="gotest" />
+    <kind value="FILE" />
+    <package value="github.com/gasbank/laidoff/match-server" />
+    <directory value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$/match_test.go" />
+    <method />
+  </configuration>
+</component>

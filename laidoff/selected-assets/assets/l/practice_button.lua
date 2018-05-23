@@ -1,0 +1,12 @@
+local c = lo.script_context()
+return function ()
+	print('[script]practice_button')
+	lo.puck_game_set_static_default_values(c.puck_game)
+	lo.puck_game_set_static_default_values_client(c.puck_game)
+	lo.puck_game_reset_tutorial_state(c.puck_game)
+	lo.puck_game_reset_battle_state(c.puck_game)
+	lo.puck_game_clear_match_data(c, c.puck_game)
+	lo.puck_game_reset_view_proj(c, c.puck_game)
+	lo.puck_game_roll_to_practice(c.puck_game)
+	lo.lwcontext_set_custom_puck_game_stage(c, lo.LVT_DONTCARE, lo.LAE_DONTCARE)
+end
