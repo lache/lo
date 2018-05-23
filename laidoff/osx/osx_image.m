@@ -11,7 +11,7 @@ void test_main_bundle_path(const char* filename) {
 char* get_assets_path(const char* filename) {
     // DEV PATH: @"/Users/kimgeoyeob/laidoff/assets/"
     NSString *path = [NSString stringWithFormat:@"%@/%s",
-                      @"/Users/kimgeoyeob/laidoff",//[[NSBundle mainBundle] resourcePath],
+                      @"/Users/kimgeoyeob/w/src/github.com/lache/lo/laidoff",//[[NSBundle mainBundle] resourcePath],
                       filename];
     return strdup([path UTF8String]);
 }
