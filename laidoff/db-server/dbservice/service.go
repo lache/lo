@@ -1,8 +1,8 @@
 package dbservice
 
 import (
-	"github.com/gasbank/laidoff/db-server/user"
-	"github.com/gasbank/laidoff/match-server/rpchelper"
+	"github.com/lache/lo/laidoff/db-server/user"
+	"github.com/lache/lo/laidoff/match-server/rpchelper"
 )
 
 type Db interface {

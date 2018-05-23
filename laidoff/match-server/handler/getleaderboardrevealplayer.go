@@ -3,9 +3,9 @@ package handler
 import (
 	"net"
 	"log"
-	"github.com/gasbank/laidoff/match-server/service"
-	"github.com/gasbank/laidoff/match-server/convert"
-	"github.com/gasbank/laidoff/shared-server"
+	"github.com/lache/lo/laidoff/match-server/service"
+	"github.com/lache/lo/laidoff/match-server/convert"
+	"github.com/lache/lo/laidoff/shared-server"
 )
 
 func HandleGetLeaderboardRevealPlayer(buf []byte, conn net.Conn, serviceList *service.List) {

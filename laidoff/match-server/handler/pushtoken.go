@@ -5,9 +5,9 @@ import (
 	"log"
 	"fmt"
 	"net"
-	"github.com/gasbank/laidoff/match-server/service"
-	"github.com/gasbank/laidoff/match-server/convert"
-	"github.com/gasbank/laidoff/shared-server"
+	"github.com/lache/lo/laidoff/match-server/service"
+	"github.com/lache/lo/laidoff/match-server/convert"
+	"github.com/lache/lo/laidoff/shared-server"
 )
 
 func HandlePushToken(buf []byte, conn net.Conn, serviceList *service.List) {

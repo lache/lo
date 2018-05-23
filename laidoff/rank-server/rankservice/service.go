@@ -1,9 +1,9 @@
 package rankservice
 
 import (
-	"github.com/gasbank/laidoff/match-server/rpchelper"
-	"github.com/gasbank/laidoff/shared-server"
-	"github.com/gasbank/laidoff/db-server/user"
+	"github.com/lache/lo/laidoff/match-server/rpchelper"
+	"github.com/lache/lo/laidoff/shared-server"
+	"github.com/lache/lo/laidoff/db-server/user"
 	"time"
 	"log"
 )

@@ -1,10 +1,10 @@
 {
-  "ClientTcpHost": "p.popsongremix.com",
+  "ClientTcpHost": "localhost",
   "ConnPort": "19856",
-  "ClientTcpTtlHost": "p.popsongremix.com",
+  "ClientTcpTtlHost": "localhost",
   "TtlConnPort": "3000",
-  "SeaUdpHost": "p.popsongremix.com",
+  "SeaUdpHost": "localhost",
   "SeaUdpPort": "3100",
-  "SeaTcpHost": "p.popsongremix.com",
+  "SeaTcpHost": "localhost",
   "SeaTcpPort": "3200"
 }

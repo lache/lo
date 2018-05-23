@@ -1,6 +1,6 @@
 package main
 
-import "github.com/gasbank/laidoff/push-server/entry"
+import "github.com/lache/lo/laidoff/push-server/entry"
 
 func main() {
 	entry.Entry()

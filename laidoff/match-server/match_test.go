@@ -2,9 +2,9 @@ package main
 
 import (
 	"testing"
-	"github.com/gasbank/laidoff/match-server/service"
-	"github.com/gasbank/laidoff/rank-server/rankservice"
-	"github.com/gasbank/laidoff/db-server/user"
+	"github.com/lache/lo/laidoff/match-server/service"
+	"github.com/lache/lo/laidoff/rank-server/rankservice"
+	"github.com/lache/lo/laidoff/db-server/user"
 	"time"
 	"github.com/stretchr/testify/assert"
 	"log"

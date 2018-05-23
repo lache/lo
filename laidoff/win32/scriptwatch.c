@@ -16,7 +16,7 @@ static void s_scriptwatch_worker(zsock_t *pipe, void *args) {
 	// Send 'worker ready' signal to parent thread
 	zsock_signal(pipe, 0);
 	// Start watching...
-	WatchDirectory(pLwc, TEXT("C:\\laidoff\\assets\\l"));
+	WatchDirectory(pLwc, TEXT("C:\\w\\src\\github.com\\lache\\lo\\laidoff\\assets\\l"));
 	// Reactor loop finished.
 	// Send 'worker finished' signal to parent thread
 	zsock_signal(pipe, 0);

@@ -2,10 +2,10 @@ package handler
 
 import (
 	"log"
-	"github.com/gasbank/laidoff/db-server/user"
-	"github.com/gasbank/laidoff/match-server/convert"
+	"github.com/lache/lo/laidoff/db-server/user"
+	"github.com/lache/lo/laidoff/match-server/convert"
 	"net"
-	"github.com/gasbank/laidoff/db-server/dbservice"
+	"github.com/lache/lo/laidoff/db-server/dbservice"
 	"regexp"
 )
 

@@ -6,7 +6,7 @@ import (
 	"log"
 	"errors"
 	"math"
-	"github.com/gasbank/laidoff/db-server/user"
+	"github.com/lache/lo/laidoff/db-server/user"
 	"sort"
 )
 

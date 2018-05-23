@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lache/laidoff-server.git"
+    "url": "git+https://github.com/lache/lo.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/lache/laidoff-server/issues"
+    "url": "https://github.com/lache/lo/issues"
   },
-  "homepage": "https://github.com/lache/laidoff-server#readme",
+  "homepage": "https://github.com/lache/lo#readme",
   "dependencies": {
     "better-sqlite3": "^4.1.0",
     "dgram": "^1.0.1",

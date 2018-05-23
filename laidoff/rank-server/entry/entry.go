@@ -4,9 +4,9 @@ import (
 	"log"
 	"net/rpc"
 	"net"
-	"github.com/gasbank/laidoff/rank-server/rankservice"
+	"github.com/lache/lo/laidoff/rank-server/rankservice"
 	"os"
-	"github.com/gasbank/laidoff/db-server/dbservice"
+	"github.com/lache/lo/laidoff/db-server/dbservice"
 )
 
 func registerRankService(rpcServer *rpc.Server, rankInterface rankservice.Rank) {

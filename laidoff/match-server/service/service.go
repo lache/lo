@@ -4,12 +4,12 @@ import (
 	"net/rpc"
 	"time"
 	"log"
-	"github.com/gasbank/laidoff/db-server/user"
-	"github.com/gasbank/laidoff/shared-server"
+	"github.com/lache/lo/laidoff/db-server/user"
+	"github.com/lache/lo/laidoff/shared-server"
 	"net"
-	"github.com/gasbank/laidoff/db-server/dbservice"
-	"github.com/gasbank/laidoff/rank-server/rankservice"
-	"github.com/gasbank/laidoff/push-server/pushservice"
+	"github.com/lache/lo/laidoff/db-server/dbservice"
+	"github.com/lache/lo/laidoff/rank-server/rankservice"
+	"github.com/lache/lo/laidoff/push-server/pushservice"
 )
 
 const (

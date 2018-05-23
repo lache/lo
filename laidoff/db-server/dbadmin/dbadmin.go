@@ -7,7 +7,7 @@ import (
 	"log"
 	"net/http"
 	"html/template"
-	"github.com/gasbank/laidoff/db-server/user"
+	"github.com/lache/lo/laidoff/db-server/user"
 	"strconv"
 	"time"
 	"sort"

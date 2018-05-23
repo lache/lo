@@ -3,9 +3,9 @@ package handler
 import (
 	"net"
 	"log"
-	"github.com/gasbank/laidoff/db-server/user"
-	"github.com/gasbank/laidoff/match-server/convert"
-	"github.com/gasbank/laidoff/db-server/dbservice"
+	"github.com/lache/lo/laidoff/db-server/user"
+	"github.com/lache/lo/laidoff/match-server/convert"
+	"github.com/lache/lo/laidoff/db-server/dbservice"
 )
 
 func HandleNewUser(conn net.Conn, dbService dbservice.Db) {

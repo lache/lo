@@ -2,10 +2,10 @@ package rankservice
 
 import (
 	"time"
-	"github.com/gasbank/laidoff/shared-server"
+	"github.com/lache/lo/laidoff/shared-server"
 	"log"
 	"math"
-	"github.com/gasbank/laidoff/db-server/user"
+	"github.com/lache/lo/laidoff/db-server/user"
 )
 
 // Rank is a struct containing a whole data a Rank service need to run.

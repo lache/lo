@@ -1,6 +1,6 @@
 package shared_server
 
-import "github.com/gasbank/laidoff/db-server/user"
+import "github.com/lache/lo/laidoff/db-server/user"
 
 type Args struct {
 	A, B int

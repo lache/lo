@@ -5,7 +5,7 @@ import (
 	"net/rpc"
 	"github.com/sideshow/apns2"
 	"github.com/sideshow/apns2/certificate"
-	"github.com/gasbank/laidoff/shared-server"
+	"github.com/lache/lo/laidoff/shared-server"
 	"net"
 	"errors"
 	"encoding/gob"
@@ -16,7 +16,7 @@ import (
 	"html/template"
 	"regexp"
 	"fmt"
-	"github.com/gasbank/laidoff/db-server/user"
+	"github.com/lache/lo/laidoff/db-server/user"
 	"io"
 )
 

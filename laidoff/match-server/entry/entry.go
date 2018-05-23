@@ -11,14 +11,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gasbank/laidoff/shared-server"
-	"github.com/gasbank/laidoff/db-server/user"
-	"github.com/gasbank/laidoff/match-server/battle"
-	"github.com/gasbank/laidoff/match-server/config"
-	"github.com/gasbank/laidoff/match-server/convert"
-	"github.com/gasbank/laidoff/match-server/handler"
-	"github.com/gasbank/laidoff/match-server/service"
-	"github.com/gasbank/laidoff/rank-server/rankservice"
+	"github.com/lache/lo/laidoff/shared-server"
+	"github.com/lache/lo/laidoff/db-server/user"
+	"github.com/lache/lo/laidoff/match-server/battle"
+	"github.com/lache/lo/laidoff/match-server/config"
+	"github.com/lache/lo/laidoff/match-server/convert"
+	"github.com/lache/lo/laidoff/match-server/handler"
+	"github.com/lache/lo/laidoff/match-server/service"
+	"github.com/lache/lo/laidoff/rank-server/rankservice"
 )
 
 const (

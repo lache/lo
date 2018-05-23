@@ -5,9 +5,9 @@ import (
 	"runtime/debug"
 	"errors"
 	"time"
-	"github.com/gasbank/laidoff/db-server/user"
-	"github.com/gasbank/laidoff/rank-server/rankservice"
-	"github.com/gasbank/laidoff/shared-server"
+	"github.com/lache/lo/laidoff/db-server/user"
+	"github.com/lache/lo/laidoff/rank-server/rankservice"
+	"github.com/lache/lo/laidoff/shared-server"
 	assert2 "github.com/stretchr/testify/assert"
 )
 

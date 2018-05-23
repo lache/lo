@@ -2,13 +2,13 @@ package convert
 
 import (
 	"encoding/binary"
-	"github.com/gasbank/laidoff/db-server/user"
+	"github.com/lache/lo/laidoff/db-server/user"
 	"unsafe"
 	"bytes"
 	"net"
-	"github.com/gasbank/laidoff/shared-server"
+	"github.com/lache/lo/laidoff/shared-server"
 	"log"
-	"github.com/gasbank/laidoff/reward-server/rating"
+	"github.com/lache/lo/laidoff/reward-server/rating"
 	"math/rand"
 )
 // #include "../../src/puckgamepacket.h"

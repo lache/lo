@@ -3,10 +3,10 @@
     <module name="data-server" />
     <working_directory value="$PROJECT_DIR$/" />
     <go_parameters value="-i" />
-    <parameters value="c:/laidoff/assets/ktx/*.ktx" />
+    <parameters value="$PROJECT_DIR$/../assets/ktx/*.ktx" />
     <kind value="PACKAGE" />
     <filePath value="$PROJECT_DIR$/" />
-    <package value="github.com/gasbank/laidoff/data-server" />
+    <package value="github.com/lache/lo/laidoff/data-server" />
     <directory value="$PROJECT_DIR$/" />
     <method />
   </configuration>

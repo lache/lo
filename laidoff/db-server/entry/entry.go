@@ -1,17 +1,17 @@
 package entry
 
 import (
-	"github.com/gasbank/laidoff/db-server/user"
+	"github.com/lache/lo/laidoff/db-server/user"
 	"log"
 	"os"
 	"net/rpc"
 	"net"
-	"github.com/gasbank/laidoff/db-server/nickdb"
+	"github.com/lache/lo/laidoff/db-server/nickdb"
 	"errors"
 	"time"
 	"encoding/gob"
-	"github.com/gasbank/laidoff/db-server/dbadmin"
-	"github.com/gasbank/laidoff/db-server/dbservice"
+	"github.com/lache/lo/laidoff/db-server/dbadmin"
+	"github.com/lache/lo/laidoff/db-server/dbservice"
 	"io/ioutil"
 	"math/rand"
 	"strings"

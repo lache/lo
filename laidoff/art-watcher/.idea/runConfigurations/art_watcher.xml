@@ -3,7 +3,7 @@
     <module name="art-watcher" />
     <working_directory value="C:\laidoff-art" />
     <go_parameters value="-i" />
-    <parameters value="c:\laidoff-art\assets-png\* c:\laidoff\assets\ktx" />
+    <parameters value="c:\laidoff-art\assets-png\* c:\w\src\github.com\lache\lo\laidoff\assets\ktx" />
     <kind value="DIRECTORY" />
     <filePath value="$PROJECT_DIR$/" />
     <package value="github.com/gasbank/laidoff/art-watcher" />

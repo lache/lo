@@ -7,14 +7,14 @@ import (
 	"encoding/pem"
 	"crypto/x509"
 	"net/http"
-	"github.com/gasbank/laidoff/auth-google-server/jws"
+	"github.com/lache/lo/laidoff/auth-google-server/jws"
 	"os"
 	"fmt"
 	"io/ioutil"
 	"strings"
-	"github.com/gasbank/laidoff/match-server/convert"
-	"github.com/gasbank/laidoff/db-server/user"
-	"github.com/gasbank/laidoff/db-server/dbservice"
+	"github.com/lache/lo/laidoff/match-server/convert"
+	"github.com/lache/lo/laidoff/db-server/user"
+	"github.com/lache/lo/laidoff/db-server/dbservice"
 	"time"
 )
 

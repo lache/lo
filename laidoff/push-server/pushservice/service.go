@@ -1,8 +1,8 @@
 package pushservice
 
 import (
-	"github.com/gasbank/laidoff/match-server/rpchelper"
-	"github.com/gasbank/laidoff/shared-server"
+	"github.com/lache/lo/laidoff/match-server/rpchelper"
+	"github.com/lache/lo/laidoff/shared-server"
 )
 
 type Context struct {
