@@ -7,7 +7,6 @@ typedef enum _LW_PUCK_GAME_PACKET {
     LPGP_LWPMATCHED,
     LPGP_LWPPLAYERDAMAGED,
     LPGP_LWPTARGETDAMAGED,
-    // udp
     LPGP_LWPMOVE = 100,
     LPGP_LWPSTOP = 101,
     LPGP_LWPDASH = 102,
@@ -17,7 +16,7 @@ typedef enum _LW_PUCK_GAME_PACKET {
     LPGP_LWPJUMP = 106,
     LPGP_LWPFIRE = 107,
     LPGP_LWPSTATE2 = 108,
-    LPGP_LWPTTLDYNAMICSTATE = 109, // server -> client
+    LPGP_LWPTTLROUTESTATE = 109, // server -> client
     LPGP_LWPTTLPING = 110, // client -> server
     LPGP_LWPTTLSTATICSTATE = 111, // server -> client
     LPGP_LWPTTLSEAPORTSTATE = 112, // server -> client
@@ -33,7 +32,7 @@ typedef enum _LW_PUCK_GAME_PACKET {
     LPGP_LWPTTLSTATICSTATE3 = 122, // server -> client
     LPGP_LWPTTLCITYSTATE = 123, // server -> client
     LPGP_LWPTTLGOLDEARNED = 124, // server -> client (push)
-    // tcp
+    LPGP_LWPTTLSALVAGESTATE = 125, // server -> client
     LPGP_LWPQUEUE2 = 200,
     LPGP_LWPMAYBEMATCHED = 201,
     LPGP_LWPMATCHED2 = 202,
@@ -260,27 +259,27 @@ typedef struct _LWPSTATE2 {
 } LWPSTATE2;
 
 /*
- * BEGIN: should sync with packet.h in sea-server
- */
- // UDP
-typedef struct _LWPTTLDYNAMICSTATEOBJECT {
+* BEGIN: should sync with packet.h in sea-server
+*/
+// UDP
+typedef struct _LWPTTLROUTEOBJECT {
     int obj_id;
     int obj_db_id;
     float route_param;
     float route_speed;
     int route_reversed;
     char guid[64];
-} LWPTTLDYNAMICSTATEOBJECT;
+} LWPTTLROUTEOBJECT;
 
 // UDP
-typedef struct _LWPTTLDYNAMICSTATE {
+typedef struct _LWPTTLROUTESTATE {
     unsigned char type;
     unsigned char padding0;
     unsigned char padding1;
     unsigned char padding2;
     int count;
-    LWPTTLDYNAMICSTATEOBJECT obj[64];
-} LWPTTLDYNAMICSTATE;
+    LWPTTLROUTEOBJECT obj[64];
+} LWPTTLROUTESTATE;
 
 // UDP
 typedef struct _LWPTTLSTATICOBJECT {
@@ -422,10 +421,18 @@ typedef struct _LWPTTLPINGFLUSH {
     unsigned char padding2;
 } LWPTTLPINGFLUSH;
 
+typedef enum _LW_TTL_STATIC_OBJECT_TYPE {
+    LTSOT_NULL,
+    LTSOT_LAND_CELL,
+    LTSOT_SEAPORT,
+    LTSOT_CITY,
+    LTSOT_SALVAGE,
+} LW_TTL_STATIC_OBJECT_TYPE;
+
 // UDP
 typedef struct _LWPTTLPINGCHUNK {
     unsigned char type;
-    unsigned char static_object;
+    unsigned char static_object; // LW_TTL_STATIC_OBJECT_TYPE
     unsigned char padding1;
     unsigned char padding2;
     int chunk_key;
@@ -492,6 +499,28 @@ typedef struct _LWPTTLGOLDEARNED {
     int yc0;
     int amount;
 } LWPTTLGOLDEARNED;
+
+// UDP
+typedef struct _LWPTTLSALVAGEOBJECT {
+    signed char x_scaled_offset_0;
+    signed char y_scaled_offset_0;
+    unsigned char padding0;
+    unsigned char padding1;
+} LWPTTLSALVAGEOBJECT;
+
+// UDP
+typedef struct _LWPTTLSALVAGESTATE {
+    unsigned char type;
+    unsigned char padding0;
+    unsigned char padding1;
+    unsigned char padding2;
+    long long ts;
+    int xc0;
+    int yc0;
+    int view_scale;
+    int count;
+    LWPTTLSALVAGEOBJECT obj[32];
+} LWPTTLSALVAGESTATE;
 /*
 * END: should sync with packet.h in sea-server
 */

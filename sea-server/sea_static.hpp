@@ -2,7 +2,7 @@
 
 #include "sea_static_object.hpp"
 
-struct xy32;
+typedef struct _xy32 xy32;
 namespace ss {
     class sea_static {
     public:

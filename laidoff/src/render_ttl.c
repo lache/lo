@@ -838,7 +838,7 @@ static void render_sea_objects_nameplate(const LWCONTEXT* pLwc, const mat4x4 vie
     mat4x4_identity(proj_view);
     mat4x4_mul(proj_view, proj, view);
     const int view_scale = lwttl_view_scale(pLwc->ttl);
-    const LWPTTLDYNAMICSTATE* ttl_dynamic_state = lwttl_full_state(pLwc->ttl);
+    const LWPTTLROUTESTATE* ttl_dynamic_state = lwttl_full_state(pLwc->ttl);
 
     for (int i = 0; i < ttl_dynamic_state->count; i++) {
         const LWPTTLWAYPOINTS* wp = lwttl_get_waypoints_by_ship_id(pLwc->ttl,
@@ -893,7 +893,7 @@ static void render_sea_objects_nameplate(const LWCONTEXT* pLwc, const mat4x4 vie
 
 static void render_sea_objects(const LWCONTEXT* pLwc, const mat4x4 view, const mat4x4 proj, const LWTTLLNGLAT* center) {
     const int view_scale = lwttl_view_scale(pLwc->ttl);
-    const LWPTTLDYNAMICSTATE* ttl_dynamic_state = lwttl_full_state(pLwc->ttl);
+    const LWPTTLROUTESTATE* ttl_dynamic_state = lwttl_full_state(pLwc->ttl);
     for (int i = 0; i < ttl_dynamic_state->count; i++) {
         const LWPTTLWAYPOINTS* wp = lwttl_get_waypoints_by_ship_id(pLwc->ttl,
                                                                    ttl_dynamic_state->obj[i].obj_db_id);
@@ -1027,7 +1027,7 @@ static void render_waypoints_cache(const LWTTL* ttl,
                                    const mat4x4 view,
                                    const mat4x4 proj,
                                    const LWTTLLNGLAT* center) {
-    const LWPTTLDYNAMICSTATE* ttl_dynamic_state = lwttl_full_state(pLwc->ttl);
+    const LWPTTLROUTESTATE* ttl_dynamic_state = lwttl_full_state(pLwc->ttl);
     for (int i = 0; i < ttl_dynamic_state->count; i++) {
         const int ship_id = ttl_dynamic_state->obj[i].obj_db_id;
         render_waypoints_by_ship_id(pLwc->ttl,

@@ -69,7 +69,7 @@ int sea_object::remove_cargo(int amount, int cargo_destination_seaport_id, const
     return before - after;
 }
 
-void sea_object::fill_packet(LWPTTLDYNAMICSTATEOBJECT& p) const {
+void sea_object::fill_packet(LWPTTLROUTEOBJECT& p) const {
     p.obj_id = id;
     p.obj_db_id = type;
     strcpy(p.guid, guid.c_str());

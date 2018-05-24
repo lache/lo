@@ -9,7 +9,7 @@ typedef struct _LWCONTEXT LWCONTEXT;
 typedef struct _LWUDP LWUDP;
 typedef struct _LWTTL LWTTL;
 typedef struct _LWPTTLWAYPOINTS LWPTTLWAYPOINTS;
-typedef struct _LWPTTLDYNAMICSTATE LWPTTLDYNAMICSTATE;
+typedef struct _LWPTTLROUTESTATE LWPTTLROUTESTATE;
 typedef struct _LWPTTLSTATICSTATE2 LWPTTLSTATICSTATE2;
 typedef struct _LWPTTLSEAPORTSTATE LWPTTLSEAPORTSTATE;
 typedef struct _LWPTTLSTATICOBJECT2 LWPTTLSTATICOBJECT2;
@@ -50,7 +50,7 @@ const LWPTTLWAYPOINTS* lwttl_get_waypoints(const LWTTL* ttl);
 const LWPTTLWAYPOINTS* lwttl_get_waypoints_by_ship_id(const LWTTL* ttl, int ship_id);
 void lwttl_write_last_state(const LWTTL* ttl, const LWCONTEXT* pLwc);
 void lwttl_read_last_state(LWTTL* ttl, const LWCONTEXT* pLwc);
-const LWPTTLDYNAMICSTATE* lwttl_full_state(const LWTTL* ttl);
+const LWPTTLROUTESTATE* lwttl_full_state(const LWTTL* ttl);
 int lwttl_query_chunk_range_land(const LWTTL* ttl,
                                  const float lng_min,
                                  const float lat_min,

@@ -1,13 +1,8 @@
 #pragma once
-
+#include "packet.h"
 struct xy16 {
     short x;
     short y;
-};
-
-struct xy32 {
-    int x;
-    int y;
 };
 
 struct ifxy32 {

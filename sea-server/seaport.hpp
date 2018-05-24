@@ -2,7 +2,7 @@
 
 #include "seaport_object.hpp"
 
-struct xy32;
+typedef struct _xy32 xy32;
 namespace ss {
     class seaport {
     public:

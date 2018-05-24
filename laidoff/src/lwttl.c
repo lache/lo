@@ -52,6 +52,7 @@ typedef struct _LWTTLCHUNKBOUND {
 #define TTL_OBJECT_CACHE_LAND_COUNT (TTL_OBJECT_CACHE_CHUNK_COUNT*32)
 #define TTL_OBJECT_CACHE_SEAPORT_COUNT (TTL_OBJECT_CACHE_CHUNK_COUNT*32)
 #define TTL_OBJECT_CACHE_CITY_COUNT (TTL_OBJECT_CACHE_CHUNK_COUNT*16)
+#define TTL_OBJECT_CACHE_SALVAGE_COUNT (TTL_OBJECT_CACHE_CHUNK_COUNT*8)
 
 typedef struct _LWTTLOBJECTCACHE {
     int count;
@@ -75,6 +76,10 @@ typedef struct _LWTTLOBJECTCACHEGROUP {
     LWTTLOBJECTCACHE city_cache;
     LWPTTLCITYOBJECT city_array[TTL_OBJECT_CACHE_CITY_COUNT];
     int city_count;
+
+    LWTTLOBJECTCACHE salvage_cache;
+    LWPTTLSALVAGEOBJECT salvage_array[TTL_OBJECT_CACHE_SALVAGE_COUNT];
+    int salvage_count;
 } LWTTLOBJECTCACHEGROUP;
 
 typedef struct _LWTTLSAVEDATA {
@@ -134,7 +139,7 @@ typedef struct _LWTTL {
     LWUDP* sea_udp;
     LWPTTLWAYPOINTS waypoints;
     // packet cache
-    LWPTTLDYNAMICSTATE ttl_dynamic_state;
+    LWPTTLROUTESTATE ttl_dynamic_state;
     LWPTTLSINGLECELL ttl_single_cell;
     LWTTLOBJECTCACHEGROUP object_cache;
     float earth_globe_scale;
@@ -611,6 +616,24 @@ static int add_to_object_cache_city(LWTTLOBJECTCACHE* c,
                                s2->obj);
 }
 
+static int add_to_object_cache_salvage(LWTTLOBJECTCACHE* c,
+                                       LWPTTLSALVAGEOBJECT* salvage_array,
+                                       const size_t salvage_array_size,
+                                       int* salvage_count,
+                                       const LWPTTLSALVAGESTATE* s2) {
+    return add_to_object_cache(c,
+                               salvage_count,
+                               salvage_array,
+                               sizeof(LWPTTLSALVAGEOBJECT),
+                               salvage_array_size,
+                               s2->ts,
+                               s2->xc0,
+                               s2->yc0,
+                               s2->view_scale,
+                               s2->count,
+                               s2->obj);
+}
+
 static void cell_bound_to_chunk_bound(const LWTTLCELLBOUND* cell_bound, const int view_scale, LWTTLCHUNKBOUND* chunk_bound) {
     const int half_cell_pixel_extent = LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS / 2 * view_scale;
     chunk_bound->xcc0 = aligned_chunk_index(cell_bound->xc0, view_scale, LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS) >> msb_index(LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS * view_scale);
@@ -765,9 +788,10 @@ void lwttl_udp_send_ttlping(const LWTTL* ttl, LWUDP* udp, int ping_seq) {
                 const unsigned char static_object;
                 const int compare_ts;
             } cache_list[] = {
-                { &ttl->object_cache.land_cache, 1, 0 },
-                { &ttl->object_cache.seaport_cache, 2, 1 },
-                { &ttl->object_cache.city_cache, 3, 1 },
+                { &ttl->object_cache.land_cache, LTSOT_LAND_CELL, 0 },
+                { &ttl->object_cache.seaport_cache, LTSOT_SEAPORT, 1 },
+                { &ttl->object_cache.city_cache, LTSOT_CITY, 1 },
+                { &ttl->object_cache.salvage_cache, LTSOT_SALVAGE, 1 },
             };
             for (int k = 0; k < ARRAY_SIZE(cache_list); k++) {
                 send_ttlping_with_timestamp(ttl,
@@ -811,8 +835,8 @@ void lwttl_set_sea_udp(LWTTL* ttl, LWUDP* sea_udp) {
     ttl->sea_udp = sea_udp;
 }
 
-static void set_ttl_full_state(LWTTL* ttl, const LWPTTLDYNAMICSTATE* p) {
-    memcpy(&ttl->ttl_dynamic_state, p, sizeof(LWPTTLDYNAMICSTATE));
+static void set_ttl_full_state(LWTTL* ttl, const LWPTTLROUTESTATE* p) {
+    memcpy(&ttl->ttl_dynamic_state, p, sizeof(LWPTTLROUTESTATE));
     for (int i = 0; i < p->count; i++) {
         const int ship_id = p->obj[i].obj_db_id;
         int cache_hit = 0;
@@ -938,7 +962,7 @@ void lwttl_read_last_state(LWTTL* ttl, const LWCONTEXT* pLwc) {
     }
 }
 
-const LWPTTLDYNAMICSTATE* lwttl_full_state(const LWTTL* ttl) {
+const LWPTTLROUTESTATE* lwttl_full_state(const LWTTL* ttl) {
     return &ttl->ttl_dynamic_state;
 }
 
@@ -1689,16 +1713,16 @@ void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc) {
                 }
                 break;
             }
-            case LPGP_LWPTTLDYNAMICSTATE:
+            case LPGP_LWPTTLROUTESTATE:
             {
-                if (decompressed_bytes != sizeof(LWPTTLDYNAMICSTATE)) {
-                    LOGE("LWPTTLDYNAMICSTATE: Size error %d (%zu expected)",
+                if (decompressed_bytes != sizeof(LWPTTLROUTESTATE)) {
+                    LOGE("LWPTTLROUTESTATE: Size error %d (%zu expected)",
                          decompressed_bytes,
-                         sizeof(LWPTTLDYNAMICSTATE));
+                         sizeof(LWPTTLROUTESTATE));
                 }
 
-                LWPTTLDYNAMICSTATE* p = (LWPTTLDYNAMICSTATE*)decompressed;
-                LOGIx("LWPTTLDYNAMICSTATE: %d objects.", p->count);
+                LWPTTLROUTESTATE* p = (LWPTTLROUTESTATE*)decompressed;
+                LOGIx("LWPTTLROUTESTATE: %d objects.", p->count);
                 set_ttl_full_state(ttl, p);
                 break;
             }
@@ -1785,6 +1809,22 @@ void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc) {
                     //send_ttlpingflush(ttl);
                 }
 
+                break;
+            }
+            case LPGP_LWPTTLSALVAGESTATE:
+            {
+                if (decompressed_bytes != sizeof(LWPTTLSALVAGESTATE)) {
+                    LOGE("LWPTTLSALVAGESTATE: Size error %d (%zu expected)",
+                         decompressed_bytes,
+                         sizeof(LWPTTLSALVAGESTATE));
+                }
+                LWPTTLSALVAGESTATE* p = (LWPTTLSALVAGESTATE*)decompressed;
+                LOGIx("LWPTTLSALVAGESTATE: %d objects.", p->count);
+                const int add_ret = add_to_object_cache_salvage(&ttl->object_cache.salvage_cache,
+                                                                ttl->object_cache.salvage_array,
+                                                                ARRAY_SIZE(ttl->object_cache.salvage_array),
+                                                                &ttl->object_cache.salvage_count,
+                                                                p);
                 break;
             }
             case LPGP_LWPTTLWAYPOINTS:
