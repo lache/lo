@@ -23,6 +23,7 @@ namespace ss {
         long long query_ts(const int xc0, const int yc0, const int view_scale) const;
         long long query_ts(const LWTTLCHUNKKEY& chunk_key) const;
         const char* query_single_cell(int xc0, int yc0, int& id) const;
+        void update_single_chunk_key_ts(const LWTTLCHUNKKEY& chunk_key, long long monotonic_uptime);
         void update();
     private:
         std::vector<city_object::value> query_tree_ex(int xc, int yc, int half_lng_ex, int half_lat_ex) const;
@@ -42,5 +43,7 @@ namespace ss {
         std::unordered_map<int, long long> chunk_key_ts; // chunk key -> timestamp
         boost::asio::deadline_timer timer_;
         std::shared_ptr<seaport> seaport_;
+        long long time0_;
+        int city_id_seq_;
     };
 }

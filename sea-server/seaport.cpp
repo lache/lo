@@ -23,7 +23,9 @@ seaport::seaport(boost::asio::io_service& io_service)
     , res_width(WORLD_MAP_PIXEL_RESOLUTION_WIDTH)
     , res_height(WORLD_MAP_PIXEL_RESOLUTION_HEIGHT)
     , km_per_cell(WORLD_CIRCUMFERENCE_IN_KM / res_width)
-    , timer_(io_service, update_interval) {
+    , timer_(io_service, update_interval)
+    , seaport_id_seq_(0) {
+    time0_ = get_monotonic_uptime();
     boost::interprocess::file_mapping seaport_file("assets/ttldata/seaports.dat", boost::interprocess::read_only);
     boost::interprocess::mapped_region region(seaport_file, boost::interprocess::read_only);
     LWTTLDATA_SEAPORT* sp = reinterpret_cast<LWTTLDATA_SEAPORT*>(region.get_address());
@@ -101,7 +103,9 @@ std::vector<seaport_object> seaport::query_near_to_packet(int xc, int yc, float 
 }
 
 std::vector<seaport_object::value> seaport::query_tree_ex(int xc, int yc, int half_lng_ex, int half_lat_ex) const {
-    seaport_object::box query_box(seaport_object::point(xc - half_lng_ex, yc - half_lat_ex), seaport_object::point(xc + half_lng_ex, yc + half_lat_ex));
+    // min-max range should be inclusive-exclusive.
+    seaport_object::box query_box(seaport_object::point(xc - half_lng_ex, yc - half_lat_ex),
+                                  seaport_object::point(xc + half_lng_ex - 1, yc + half_lat_ex - 1));
     std::vector<seaport_object::value> result_s;
     rtree_ptr->query(bgi::intersects(query_box), std::back_inserter(result_s));
     return result_s;
@@ -160,12 +164,13 @@ void seaport::update_chunk_key_ts(int xc0, int yc0) {
 }
 
 void seaport::update_single_chunk_key_ts(const LWTTLCHUNKKEY& chunk_key, long long monotonic_uptime) {
-    auto it = chunk_key_ts.find(chunk_key.v);
+    chunk_key_ts[chunk_key.v] = monotonic_uptime;
+    /*auto it = chunk_key_ts.find(chunk_key.v);
     if (it != chunk_key_ts.end()) {
         it->second++;
     } else {
         chunk_key_ts[chunk_key.v] = monotonic_uptime;
-    }
+    }*/
 }
 
 int seaport::spawn(const char* name, int xc0, int yc0, int owner_id, bool& existing) {
@@ -178,7 +183,7 @@ int seaport::spawn(const char* name, int xc0, int yc0, int owner_id, bool& exist
         return existing_it->second;
     }
 
-    const auto id = static_cast<int>(rtree_ptr->size());
+    const auto id = static_cast<int>(rtree_ptr->size());// ++seaport_id_seq_;
     rtree_ptr->insert(std::make_pair(new_port_point, id));
     id_point[id] = new_port_point;
     if (name[0] != 0) {
@@ -239,7 +244,7 @@ long long seaport::query_ts(const LWTTLCHUNKKEY& chunk_key) const {
     if (cit != chunk_key_ts.cend()) {
         return cit->second;
     }
-    return 0;
+    return time0_;
 }
 
 const char* seaport::query_single_cell(int xc0, int yc0, int& id, int& cargo, int& cargo_loaded, int& cargo_unloaded) const {

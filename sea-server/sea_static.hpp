@@ -6,11 +6,11 @@ typedef struct _xy32 xy32;
 namespace ss {
     class sea_static {
     public:
+        sea_static();
         std::vector<sea_static_object> query_near_lng_lat_to_packet(float lng, float lat, float ex) const;
         std::vector<sea_static_object> query_near_to_packet(int xc, int yc, float ex_lng, float ex_lat) const;
         std::vector<sea_static_object> query_near_to_packet(int xc0, int yc0, int xc1, int yc1) const;
         std::vector<sea_static_object> query_near_to_packet_water(int xc0, int yc0, int xc1, int yc1) const;
-        sea_static();
         std::vector<xy32> calculate_waypoints(const xy32& from, const xy32& to) const;
         std::vector<xy32> calculate_waypoints(const sea_static_object::point& from, const sea_static_object::point& to) const;
         bool is_water(const xy32& cell) const;
@@ -43,5 +43,6 @@ namespace ss {
         //sea_water_set_t* sea_water_set;
         std::vector<int> sea_water_vector;
         std::unordered_map<int, long long> chunk_key_ts; // chunk key -> timestamp
+        long long time0_;
     };
 }

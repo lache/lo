@@ -15,6 +15,72 @@
 
 using namespace ss;
 
+static void load_from_dump_if_empty(sea_static_object::rtree* rtree_ptr, const char* dump_filename) {
+    if (rtree_ptr->size() == 0) {
+        LOGI("R-tree empty. Trying to create R-tree from dump file %s...",
+             dump_filename);
+        int rect_count = 0;
+        FILE* fin = fopen(dump_filename, "rb");
+        if (fin) {
+            size_t read_max_count = 100000; // elements
+            void* read_buf = malloc(sizeof(xy32xy32) * read_max_count);
+            fseek(fin, 0, SEEK_SET);
+            while (size_t read_count = fread(read_buf, sizeof(xy32xy32), read_max_count, fin)) {
+                for (size_t i = 0; i < read_count; i++) {
+                    rect_count++;
+                    xy32xy32* r = reinterpret_cast<xy32xy32*>(read_buf) + i;
+                    sea_static_object::box box(sea_static_object::point(r->xy0.x, r->xy0.y), sea_static_object::point(r->xy1.x, r->xy1.y));
+                    rtree_ptr->insert(std::make_pair(box, rect_count));
+                }
+            }
+            fclose(fin);
+            LOGI("Max rect R Tree size (after loaded from %1%): %2%", dump_filename, rtree_ptr->size());
+        } else {
+            LOGE("[Error] Dump file %s not exist!", dump_filename);
+        }
+    }
+}
+
+sea_static::sea_static()
+    : land_file(bi::open_or_create, DATA_ROOT WORLDMAP_LAND_MAX_RECT_RTREE_RTREE_FILENAME, WORLDMAP_LAND_MAX_RECT_RTREE_MMAP_MAX_SIZE)
+    , land_alloc(land_file.get_segment_manager())
+    , land_rtree_ptr(land_file.find_or_construct<sea_static_object::rtree>("rtree")(sea_static_object::params(), sea_static_object::indexable(), sea_static_object::equal_to(), land_alloc))
+    , water_file(bi::open_or_create, DATA_ROOT WORLDMAP_WATER_MAX_RECT_RTREE_RTREE_FILENAME, WORLDMAP_WATER_MAX_RECT_RTREE_MMAP_MAX_SIZE)
+    , water_alloc(water_file.get_segment_manager())
+    , water_rtree_ptr(water_file.find_or_construct<sea_static_object::rtree>("rtree")(sea_static_object::params(), sea_static_object::indexable(), sea_static_object::equal_to(), water_alloc))
+    , res_width(WORLD_MAP_PIXEL_RESOLUTION_WIDTH)
+    , res_height(WORLD_MAP_PIXEL_RESOLUTION_HEIGHT)
+    , km_per_cell(WORLD_CIRCUMFERENCE_IN_KM / res_width)
+    //, sea_water_set_file(bi::open_or_create, DATA_ROOT SEA_WATER_SET_FILENAME, SEA_WATER_SET_MMAP_MAX_SIZE)
+    //, sea_water_set_alloc(sea_water_set_file.get_segment_manager())
+    //, sea_water_set(sea_water_set_file.find_or_construct<sea_water_set_t>("set")(int(), std::hash<int>(), std::equal_to<int>(), sea_water_set_alloc))
+{
+    time0_ = get_monotonic_uptime();
+
+    load_from_dump_if_empty(land_rtree_ptr, "rtree/land_raw_xy32xy32.bin");
+    load_from_dump_if_empty(water_rtree_ptr, "rtree/water_raw_xy32xy32.bin");
+    mark_sea_water(water_rtree_ptr);
+
+    /*const auto land_bounds = land_rtree_ptr->bounds();
+    size_t c = 0;
+    for (auto it = land_rtree_ptr->begin(); it != land_rtree_ptr->end(); it++) {
+    c++;
+    }*/
+
+    // TESTING-----------------
+    //sea_static_object::box origin_land_cell{ {-32,-32},{32,32} };
+    sea_static_object::box origin_land_cell{ { 0,0 },{ 1,1 } };
+    sea_static_object::box test_land_cell{ { 0,0 },{ 15,15 } };
+    std::vector<sea_static_object::value> to_be_removed;
+    land_rtree_ptr->query(bgi::contains(origin_land_cell), std::back_inserter(to_be_removed));
+    land_rtree_ptr->query(bgi::contains(test_land_cell), std::back_inserter(to_be_removed));
+    for (auto it : to_be_removed) {
+        land_rtree_ptr->remove(it);
+    }
+    land_rtree_ptr->insert(std::make_pair(test_land_cell, -1));
+    // TESTING-----------------
+}
+
 int sea_static::lng_to_xc(float lng) const {
     //return static_cast<int>(roundf(res_width / 2 + lng / 180.0f * res_width / 2)) & (res_width - 1);
     return static_cast<int>(roundf(res_width / 2 + lng / 180.0f * res_width / 2));
@@ -59,11 +125,16 @@ std::vector<sea_static_object> sea_static::query_near_to_packet_water(int xc0, i
 }
 
 std::vector<sea_static_object::value> sea_static::query_tree_ex(int xc, int yc, int half_lng_ex, int half_lat_ex) const {
-    return query_tree(xc - half_lng_ex, yc - half_lat_ex, xc + half_lng_ex, yc + half_lat_ex);
+    // min-max range should be inclusive-exclusive.
+    return query_tree(xc - half_lng_ex,
+                      yc - half_lat_ex,
+                      xc + half_lng_ex - 1,
+                      yc + half_lat_ex - 1);
 }
 
 std::vector<sea_static_object::value> sea_static::query_tree(int xc0, int yc0, int xc1, int yc1) const {
-    sea_static_object::box query_box(sea_static_object::point(xc0, yc0), sea_static_object::point(xc1, yc1));
+    sea_static_object::box query_box(sea_static_object::point(xc0, yc0),
+                                     sea_static_object::point(xc1, yc1));
     std::vector<sea_static_object::value> result_s;
     land_rtree_ptr->query(bgi::intersects(query_box), std::back_inserter(result_s));
     return result_s;
@@ -74,32 +145,6 @@ std::vector<sea_static_object::value> sea_static::query_tree_water(int xc0, int 
     std::vector<sea_static_object::value> result_s;
     water_rtree_ptr->query(bgi::intersects(query_box), std::back_inserter(result_s));
     return result_s;
-}
-
-void load_from_dump_if_empty(sea_static_object::rtree* rtree_ptr, const char* dump_filename) {
-    if (rtree_ptr->size() == 0) {
-        LOGI("R-tree empty. Trying to create R-tree from dump file %s...",
-             dump_filename);
-        int rect_count = 0;
-        FILE* fin = fopen(dump_filename, "rb");
-        if (fin) {
-            size_t read_max_count = 100000; // elements
-            void* read_buf = malloc(sizeof(xy32xy32) * read_max_count);
-            fseek(fin, 0, SEEK_SET);
-            while (size_t read_count = fread(read_buf, sizeof(xy32xy32), read_max_count, fin)) {
-                for (size_t i = 0; i < read_count; i++) {
-                    rect_count++;
-                    xy32xy32* r = reinterpret_cast<xy32xy32*>(read_buf) + i;
-                    sea_static_object::box box(sea_static_object::point(r->xy0.x, r->xy0.y), sea_static_object::point(r->xy1.x, r->xy1.y));
-                    rtree_ptr->insert(std::make_pair(box, rect_count));
-                }
-            }
-            fclose(fin);
-            LOGI("Max rect R Tree size (after loaded from %1%): %2%", dump_filename, rtree_ptr->size());
-        } else {
-            LOGE("[Error] Dump file %s not exist!", dump_filename);
-        }
-    }
 }
 
 void sea_static::mark_sea_water(sea_static_object::rtree* rtree) {
@@ -152,45 +197,6 @@ void sea_static::mark_sea_water(sea_static_object::rtree* rtree) {
         }
         LOGI("Sea water vector count: %1%", sea_water_vector.size());
     }
-}
-
-sea_static::sea_static()
-    : land_file(bi::open_or_create, DATA_ROOT WORLDMAP_LAND_MAX_RECT_RTREE_RTREE_FILENAME, WORLDMAP_LAND_MAX_RECT_RTREE_MMAP_MAX_SIZE)
-    , land_alloc(land_file.get_segment_manager())
-    , land_rtree_ptr(land_file.find_or_construct<sea_static_object::rtree>("rtree")(sea_static_object::params(), sea_static_object::indexable(), sea_static_object::equal_to(), land_alloc))
-    , water_file(bi::open_or_create, DATA_ROOT WORLDMAP_WATER_MAX_RECT_RTREE_RTREE_FILENAME, WORLDMAP_WATER_MAX_RECT_RTREE_MMAP_MAX_SIZE)
-    , water_alloc(water_file.get_segment_manager())
-    , water_rtree_ptr(water_file.find_or_construct<sea_static_object::rtree>("rtree")(sea_static_object::params(), sea_static_object::indexable(), sea_static_object::equal_to(), water_alloc))
-    , res_width(WORLD_MAP_PIXEL_RESOLUTION_WIDTH)
-    , res_height(WORLD_MAP_PIXEL_RESOLUTION_HEIGHT)
-    , km_per_cell(WORLD_CIRCUMFERENCE_IN_KM / res_width)
-    //, sea_water_set_file(bi::open_or_create, DATA_ROOT SEA_WATER_SET_FILENAME, SEA_WATER_SET_MMAP_MAX_SIZE)
-    //, sea_water_set_alloc(sea_water_set_file.get_segment_manager())
-    //, sea_water_set(sea_water_set_file.find_or_construct<sea_water_set_t>("set")(int(), std::hash<int>(), std::equal_to<int>(), sea_water_set_alloc))
-{
-
-    load_from_dump_if_empty(land_rtree_ptr, "rtree/land_raw_xy32xy32.bin");
-    load_from_dump_if_empty(water_rtree_ptr, "rtree/water_raw_xy32xy32.bin");
-    mark_sea_water(water_rtree_ptr);
-
-    /*const auto land_bounds = land_rtree_ptr->bounds();
-    size_t c = 0;
-    for (auto it = land_rtree_ptr->begin(); it != land_rtree_ptr->end(); it++) {
-        c++;
-    }*/
-
-    // TESTING-----------------
-    //sea_static_object::box origin_land_cell{ {-32,-32},{32,32} };
-    sea_static_object::box origin_land_cell{ { 0,0 },{ 1,1 } };
-    sea_static_object::box test_land_cell{ { 0,0 },{ 15,15 } };
-    std::vector<sea_static_object::value> to_be_removed;
-    land_rtree_ptr->query(bgi::contains(origin_land_cell), std::back_inserter(to_be_removed));
-    land_rtree_ptr->query(bgi::contains(test_land_cell), std::back_inserter(to_be_removed));
-    for (auto it : to_be_removed) {
-        land_rtree_ptr->remove(it);
-    }
-    land_rtree_ptr->insert(std::make_pair(test_land_cell, -1));
-    // TESTING-----------------
 }
 
 std::vector<xy32> sea_static::calculate_waypoints(const xy32 & from, const xy32 & to) const {
@@ -273,7 +279,7 @@ long long sea_static::query_ts(const LWTTLCHUNKKEY& chunk_key) const {
     if (cit != chunk_key_ts.cend()) {
         return cit->second;
     }
-    return 0;
+    return time0_;
 }
 
 void sea_static::update_chunk_key_ts(int xc0, int yc0) {

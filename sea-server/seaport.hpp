@@ -42,5 +42,7 @@ namespace ss {
         std::unordered_map<int, int> id_cargo_unloaded; // seaport ID -> cargo count
         std::unordered_map<int, int> id_owner_id; // seaport ID -> owner ID
         boost::asio::deadline_timer timer_;
+        long long time0_;
+        int seaport_id_seq_;
     };
 }

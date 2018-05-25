@@ -37,7 +37,7 @@ namespace ss {
         boost::asio::deadline_timer timer_;
         std::shared_ptr<sea_static> sea_static_;
         boost::random::mt19937 rng_;
-        long long time0;
+        long long time0_;
         int salvage_id_seq_;
     };
 }

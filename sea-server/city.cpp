@@ -27,7 +27,9 @@ city::city(boost::asio::io_service& io_service,
     , res_height(WORLD_MAP_PIXEL_RESOLUTION_HEIGHT)
     , km_per_cell(WORLD_CIRCUMFERENCE_IN_KM / res_width)
     , timer_(io_service, update_interval)
-    , seaport_(seaport) {
+    , seaport_(seaport)
+    , city_id_seq_(0) {
+    time0_ = get_monotonic_uptime();
     boost::interprocess::file_mapping city_file("assets/ttldata/cities.dat", boost::interprocess::read_only);
     boost::interprocess::mapped_region region(city_file, boost::interprocess::read_only);
     LWTTLDATA_CITY* sp = reinterpret_cast<LWTTLDATA_CITY*>(region.get_address());
@@ -111,7 +113,9 @@ std::vector<city_object> city::query_near_to_packet(int xc, int yc, float ex_lng
 }
 
 std::vector<city_object::value> city::query_tree_ex(int xc, int yc, int half_lng_ex, int half_lat_ex) const {
-    city_object::box query_box(city_object::point(xc - half_lng_ex, yc - half_lat_ex), city_object::point(xc + half_lng_ex, yc + half_lat_ex));
+    // min-max range should be inclusive-exclusive.
+    city_object::box query_box(city_object::point(xc - half_lng_ex, yc - half_lat_ex),
+                               city_object::point(xc + half_lng_ex - 1, yc + half_lat_ex - 1));
     std::vector<city_object::value> result_s;
     rtree_ptr->query(bgi::intersects(query_box), std::back_inserter(result_s));
     return result_s;
@@ -177,14 +181,19 @@ void city::update_chunk_key_ts(int xc0, int yc0) {
         const auto xc0_aligned = aligned_chunk_index(xc0, view_scale, LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS);
         const auto yc0_aligned = aligned_chunk_index(yc0, view_scale, LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS);
         const auto chunk_key = make_chunk_key(xc0_aligned, yc0_aligned, view_scale);
-        auto it = chunk_key_ts.find(chunk_key.v);
-        if (it != chunk_key_ts.end()) {
-            it->second++;
-        } else {
-            chunk_key_ts[chunk_key.v] = monotonic_uptime;
-        }
+        update_single_chunk_key_ts(chunk_key, monotonic_uptime);
         view_scale >>= 1;
     }
+}
+
+void city::update_single_chunk_key_ts(const LWTTLCHUNKKEY& chunk_key, long long monotonic_uptime) {
+    chunk_key_ts[chunk_key.v] = monotonic_uptime;
+    /*auto it = chunk_key_ts.find(chunk_key.v);
+    if (it != chunk_key_ts.end()) {
+    it->second++;
+    } else {
+    chunk_key_ts[chunk_key.v] = monotonic_uptime;
+    }*/
 }
 
 int city::spawn(const char* name, int xc0, int yc0) {
@@ -194,7 +203,7 @@ int city::spawn(const char* name, int xc0, int yc0) {
         return -1;
     }
 
-    const auto id = static_cast<int>(rtree_ptr->size());
+    const auto id = ++city_id_seq_;
     rtree_ptr->insert(std::make_pair(new_port_point, id));
     id_point[id] = new_port_point;
     if (name[0] != 0) {
@@ -249,7 +258,7 @@ long long city::query_ts(const LWTTLCHUNKKEY& chunk_key) const {
     if (cit != chunk_key_ts.cend()) {
         return cit->second;
     }
-    return 0;
+    return time0_;
 }
 
 const char* city::query_single_cell(int xc0, int yc0, int& id) const {

@@ -14,7 +14,7 @@ salvage::salvage(boost::asio::io_service& io_service, std::shared_ptr<sea_static
     , timer_(io_service, update_interval)
     , sea_static_(sea_static)
     , salvage_id_seq_(0) {
-    time0 = get_monotonic_uptime();
+    time0_ = get_monotonic_uptime();
     timer_.async_wait(boost::bind(&salvage::update, this));
 }
 
@@ -47,7 +47,9 @@ std::vector<salvage_object> salvage::query_near_to_packet(int xc, int yc, float 
 }
 
 std::vector<salvage_object::value> salvage::query_tree_ex(int xc, int yc, int half_lng_ex, int half_lat_ex) const {
-    salvage_object::box query_box(salvage_object::point(xc - half_lng_ex, yc - half_lat_ex), salvage_object::point(xc + half_lng_ex, yc + half_lat_ex));
+    // min-max range should be inclusive-exclusive.
+    salvage_object::box query_box(salvage_object::point(xc - half_lng_ex, yc - half_lat_ex),
+                                  salvage_object::point(xc + half_lng_ex - 1, yc + half_lat_ex - 1));
     std::vector<salvage_object::value> result_s;
     rtree.query(bgi::intersects(query_box), std::back_inserter(result_s));
     return result_s;
@@ -181,7 +183,7 @@ long long salvage::query_ts(const LWTTLCHUNKKEY& chunk_key) const {
     if (cit != chunk_key_ts.cend()) {
         return cit->second;
     }
-    return time0;
+    return time0_;
 }
 
 const char* salvage::query_single_cell(int xc0, int yc0, int& id, int& gold_amount) const {
