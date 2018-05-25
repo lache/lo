@@ -9,6 +9,7 @@ namespace ss {
         std::vector<sea_static_object> query_near_lng_lat_to_packet(float lng, float lat, float ex) const;
         std::vector<sea_static_object> query_near_to_packet(int xc, int yc, float ex_lng, float ex_lat) const;
         std::vector<sea_static_object> query_near_to_packet(int xc0, int yc0, int xc1, int yc1) const;
+        std::vector<sea_static_object> query_near_to_packet_water(int xc0, int yc0, int xc1, int yc1) const;
         sea_static();
         std::vector<xy32> calculate_waypoints(const xy32& from, const xy32& to) const;
         std::vector<xy32> calculate_waypoints(const sea_static_object::point& from, const sea_static_object::point& to) const;
@@ -22,6 +23,7 @@ namespace ss {
     private:
         std::vector<sea_static_object::value> query_tree_ex(int xc, int yc, int half_lng_ex, int half_lat_ex) const;
         std::vector<sea_static_object::value> query_tree(int xc0, int yc0, int xc1, int yc1) const;
+        std::vector<sea_static_object::value> query_tree_water(int xc0, int yc0, int xc1, int yc1) const;
         void mark_sea_water(sea_static_object::rtree* rtree);
         void update_chunk_key_ts(int xc0, int yc0);
         bi::managed_mapped_file land_file;

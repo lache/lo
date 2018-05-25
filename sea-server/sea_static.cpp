@@ -49,6 +49,15 @@ std::vector<sea_static_object> sea_static::query_near_to_packet(int xc0, int yc0
     return sop_list;
 }
 
+std::vector<sea_static_object> sea_static::query_near_to_packet_water(int xc0, int yc0, int xc1, int yc1) const {
+    auto values = query_tree_water(xc0, yc0, xc1, yc1);
+    std::vector<sea_static_object> sop_list;
+    for (std::size_t i = 0; i < values.size(); i++) {
+        sop_list.emplace_back(sea_static_object(values[i]));
+    }
+    return sop_list;
+}
+
 std::vector<sea_static_object::value> sea_static::query_tree_ex(int xc, int yc, int half_lng_ex, int half_lat_ex) const {
     return query_tree(xc - half_lng_ex, yc - half_lat_ex, xc + half_lng_ex, yc + half_lat_ex);
 }
@@ -57,6 +66,13 @@ std::vector<sea_static_object::value> sea_static::query_tree(int xc0, int yc0, i
     sea_static_object::box query_box(sea_static_object::point(xc0, yc0), sea_static_object::point(xc1, yc1));
     std::vector<sea_static_object::value> result_s;
     land_rtree_ptr->query(bgi::intersects(query_box), std::back_inserter(result_s));
+    return result_s;
+}
+
+std::vector<sea_static_object::value> sea_static::query_tree_water(int xc0, int yc0, int xc1, int yc1) const {
+    sea_static_object::box query_box(sea_static_object::point(xc0, yc0), sea_static_object::point(xc1, yc1));
+    std::vector<sea_static_object::value> result_s;
+    water_rtree_ptr->query(bgi::intersects(query_box), std::back_inserter(result_s));
     return result_s;
 }
 

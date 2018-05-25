@@ -250,6 +250,29 @@ static void render_city_icon(const LWCONTEXT* pLwc, const mat4x4 view, const mat
                                                  proj);
 }
 
+static void render_salvage_icon(const LWCONTEXT* pLwc, const mat4x4 view, const mat4x4 proj, float x, float y, float z, float w, float h) {
+    lazy_tex_atlas_glBindTexture(pLwc, LAE_TTL_CONTAINER_ORANGE);
+    lazy_tex_atlas_glBindTexture(pLwc, LAE_TTL_CONTAINER_ORANGE_ALPHA);
+    render_solid_vb_ui_alpha_uv_shader_view_proj(pLwc,
+                                                 x,
+                                                 y - h / 2,
+                                                 w,
+                                                 h,
+                                                 pLwc->tex_atlas[LAE_TTL_CONTAINER_ORANGE],
+                                                 pLwc->tex_atlas[LAE_TTL_CONTAINER_ORANGE_ALPHA],
+                                                 LVT_CENTER_BOTTOM_ANCHORED_SQUARE,
+                                                 1.0f,
+                                                 1.0f,
+                                                 1.0f,
+                                                 1.0f,
+                                                 0.0f,
+                                                 default_uv_offset,
+                                                 default_uv_scale,
+                                                 LWST_ETC1,
+                                                 view,
+                                                 proj);
+}
+
 static void render_seaport_icon_xxx(const LWCONTEXT* pLwc, const mat4x4 view, const mat4x4 proj, float x, float y, float z, float w, float h) {
     int shader_index = LWST_DEFAULT_NORMAL_COLOR;
     const LWSHADER* shader = &pLwc->shader[shader_index];
@@ -910,7 +933,7 @@ static void render_sea_objects(const LWCONTEXT* pLwc, const mat4x4 view, const m
                            &dy);
         const float rx = cell_fx_to_render_coords(px + 0.5f, center, view_scale);
         const float ry = cell_fy_to_render_coords(py + 0.5f, center, view_scale);
-        const float rot_z = atan2f(-dy, dx) + (ttl_dynamic_state->obj[i].route_reversed ? (-1) : (+1)) * (- (float)(M_PI / 2));
+        const float rot_z = atan2f(-dy, dx) + (ttl_dynamic_state->obj[i].route_reversed ? (-1) : (+1)) * (-(float)(M_PI / 2));
         render_ship(pLwc,
                     view,
                     proj,
@@ -1217,14 +1240,6 @@ static void render_cities(const LWCONTEXT* pLwc,
                 const float cell_x0 = lng_to_render_coords(lng0_not_clamped, center, clamped_view_scale * clamped_to_original_view_scale_ratio);
                 const float cell_y0 = lat_to_render_coords(lat0_not_clamped, center, clamped_view_scale * clamped_to_original_view_scale_ratio);
 
-                /*render_seaport_icon_xxx(pLwc,
-                 view,
-                 proj,
-                 cell_x0,
-                 cell_y0,
-                 0,
-                 cell_render_width * clamped_view_scale * size_ratio,
-                 cell_render_height * clamped_view_scale * size_ratio);*/
                 render_city_icon(pLwc,
                                  view,
                                  proj,
@@ -1234,6 +1249,98 @@ static void render_cities(const LWCONTEXT* pLwc,
                                  cell_render_width * clamped_view_scale * size_ratio,
                                  cell_render_height * clamped_view_scale * size_ratio,
                                  obj_begin[i].population_level);
+            }
+        }
+    }
+}
+
+static void render_salvages(const LWCONTEXT* pLwc,
+                            const mat4x4 view,
+                            const mat4x4 proj,
+                            const LWTTLLNGLAT* center) {
+    const int clamped_view_scale = lwttl_clamped_view_scale(pLwc->ttl);
+    const int clamped_to_original_view_scale_ratio = lwttl_view_scale(pLwc->ttl) / clamped_view_scale;
+    const float half_lng_extent_in_deg = lwttl_half_lng_extent_in_degrees(clamped_view_scale);
+    const float half_lat_extent_in_deg = lwttl_half_lat_extent_in_degrees(clamped_view_scale);
+    const float lng_min = center->lng - half_lng_extent_in_deg;
+    const float lng_max = center->lng + half_lng_extent_in_deg;
+    const float lat_min = center->lat - half_lat_extent_in_deg;
+    const float lat_max = center->lat + half_lat_extent_in_deg;
+    int cell_bound_xc0, cell_bound_yc0, cell_bound_xc1, cell_bound_yc1;
+    lwttl_get_cell_bound(lng_min,
+                         lat_min,
+                         lng_max,
+                         lat_max,
+                         &cell_bound_xc0,
+                         &cell_bound_yc0,
+                         &cell_bound_xc1,
+                         &cell_bound_yc1);
+
+    const float cell_render_width = cell_x_to_render_coords(1, center, clamped_view_scale) - cell_x_to_render_coords(0, center, clamped_view_scale);
+    const float cell_render_height = cell_y_to_render_coords(0, center, clamped_view_scale) - cell_y_to_render_coords(1, center, clamped_view_scale);
+    const int view_scale_msb = msb_index(clamped_view_scale);
+    //const float size_ratio = 1.0f / sqrtf((float)(view_scale_msb + 1));
+    const float size_ratio = 0.5f;
+
+    int chunk_index_array[LNGLAT_RENDER_EXTENT_MULTIPLIER_LNG_WITH_MARGIN*LNGLAT_RENDER_EXTENT_MULTIPLIER_LAT_WITH_MARGIN];
+    int bound_xcc0, bound_ycc0, bound_xcc1, bound_ycc1;
+    const int chunk_index_array_count = lwttl_query_chunk_range_salvage(pLwc->ttl,
+                                                                        lng_min,
+                                                                        lat_min,
+                                                                        lng_max,
+                                                                        lat_max,
+                                                                        clamped_view_scale,
+                                                                        chunk_index_array,
+                                                                        ARRAY_SIZE(chunk_index_array),
+                                                                        &bound_xcc0,
+                                                                        &bound_ycc0,
+                                                                        &bound_xcc1,
+                                                                        &bound_ycc1);
+    if (chunk_index_array_count > ARRAY_SIZE(chunk_index_array)) {
+        LOGEP("incorrect query result");
+        assert(0);
+    }
+    if (bound_xcc1 - bound_xcc0 > LNGLAT_RENDER_EXTENT_MULTIPLIER_LNG_WITH_MARGIN) {
+        LOGEP("incorrect query result");
+        assert(0);
+    }
+    if (bound_ycc1 - bound_ycc0 > LNGLAT_RENDER_EXTENT_MULTIPLIER_LAT_WITH_MARGIN) {
+        LOGEP("incorrect query result");
+        assert(0);
+    }
+    const int chunk_index_max = LWMIN(chunk_index_array_count, ARRAY_SIZE(chunk_index_array));
+    for (int ci = 0; ci < chunk_index_max; ci++) {
+        int obj_count = 0;
+        int xc0 = 0;
+        int yc0 = 0;
+        const LWPTTLSALVAGEOBJECT* obj_begin = lwttl_query_chunk_salvage(pLwc->ttl,
+                                                                         chunk_index_array[ci],
+                                                                         &xc0,
+                                                                         &yc0,
+                                                                         &obj_count);
+        if (obj_begin && obj_count > 0) {
+            for (int i = 0; i < obj_count; i++) {
+                const float x0 = (float)(xc0 + clamped_view_scale * obj_begin[i].x_scaled_offset_0);
+                if (x0 < cell_bound_xc0 || x0 >= cell_bound_xc1) {
+                    continue;
+                }
+                const float y0 = (float)(yc0 + clamped_view_scale * obj_begin[i].y_scaled_offset_0);
+                if (y0 < cell_bound_yc0 || y0 >= cell_bound_yc1) {
+                    continue;
+                }
+                const float lng0_not_clamped = cell_fx_to_lng(x0 + 0.5f);
+                const float lat0_not_clamped = cell_fy_to_lat(y0 + 0.5f);
+                const float cell_x0 = lng_to_render_coords(lng0_not_clamped, center, clamped_view_scale * clamped_to_original_view_scale_ratio);
+                const float cell_y0 = lat_to_render_coords(lat0_not_clamped, center, clamped_view_scale * clamped_to_original_view_scale_ratio);
+
+                render_salvage_icon(pLwc,
+                                    view,
+                                    proj,
+                                    cell_x0,
+                                    cell_y0,
+                                    0,
+                                    cell_render_width * clamped_view_scale * size_ratio,
+                                    cell_render_height * clamped_view_scale * size_ratio);
             }
         }
     }
@@ -1746,6 +1853,7 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
     render_waypoints_cache(pLwc->ttl, pLwc, view, proj, &view_center);
     render_seaports(pLwc, view, proj, &view_center);
     render_cities(pLwc, view, proj, &view_center);
+    render_salvages(pLwc, view, proj, &view_center);
     glEnable(GL_DEPTH_TEST);
     // render sea objects(ships)
     if (lwc_render_ttl_render("world")) {

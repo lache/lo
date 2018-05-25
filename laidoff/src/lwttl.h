@@ -15,6 +15,7 @@ typedef struct _LWPTTLSEAPORTSTATE LWPTTLSEAPORTSTATE;
 typedef struct _LWPTTLSTATICOBJECT2 LWPTTLSTATICOBJECT2;
 typedef struct _LWPTTLSEAPORTOBJECT LWPTTLSEAPORTOBJECT;
 typedef struct _LWPTTLCITYOBJECT LWPTTLCITYOBJECT;
+typedef struct _LWPTTLSALVAGEOBJECT LWPTTLSALVAGEOBJECT;
 typedef struct _LWTTLLNGLAT LWTTLLNGLAT;
 typedef struct _LWHTMLUI LWHTMLUI;
 typedef struct _LWPTTLSINGLECELL LWPTTLSINGLECELL;
@@ -87,6 +88,18 @@ int lwttl_query_chunk_range_city(const LWTTL* ttl,
                                  int* ycc0,
                                  int* xcc1,
                                  int* ycc1);
+int lwttl_query_chunk_range_salvage(const LWTTL* ttl,
+                                    const float lng_min,
+                                    const float lat_min,
+                                    const float lng_max,
+                                    const float lat_max,
+                                    const int view_scale,
+                                    int* chunk_index_array,
+                                    const int chunk_index_array_len,
+                                    int* xcc0,
+                                    int* ycc0,
+                                    int* xcc1,
+                                    int* ycc1);
 const LWPTTLSTATICOBJECT2* lwttl_query_chunk_land(const LWTTL* ttl,
                                                   const int chunk_index,
                                                   int* xc0,
@@ -102,6 +115,11 @@ const LWPTTLCITYOBJECT* lwttl_query_chunk_city(const LWTTL* ttl,
                                                int* xc0,
                                                int* yc0,
                                                int* count);
+const LWPTTLSALVAGEOBJECT* lwttl_query_chunk_salvage(const LWTTL* ttl,
+                                                     const int chunk_index,
+                                                     int* xc0,
+                                                     int* yc0,
+                                                     int* count);
 float lwttl_half_lng_extent_in_degrees(const int view_scale);
 float lwttl_half_lat_extent_in_degrees(const int view_scale);
 int lwttl_lng_to_floor_int(float lng);

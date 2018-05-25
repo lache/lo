@@ -40,7 +40,8 @@ int main() {
         std::shared_ptr<region> region_instance(new region());
         std::shared_ptr<city> city_instance(new city(io_service,
                                                      seaport_instance));
-        std::shared_ptr<salvage> salvage_instance(new salvage(io_service));
+        std::shared_ptr<salvage> salvage_instance(new salvage(io_service,
+                                                              sea_static_instance));
         std::shared_ptr<udp_server> udp_server_instance(new udp_server(io_service,
                                                                        sea_instance,
                                                                        sea_static_instance,

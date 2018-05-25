@@ -1098,6 +1098,33 @@ int lwttl_query_chunk_range_city(const LWTTL* ttl,
                                    ycc1);
 }
 
+int lwttl_query_chunk_range_salvage(const LWTTL* ttl,
+                                    const float lng_min,
+                                    const float lat_min,
+                                    const float lng_max,
+                                    const float lat_max,
+                                    const int view_scale,
+                                    int* chunk_index_array,
+                                    const int chunk_index_array_len,
+                                    int* xcc0,
+                                    int* ycc0,
+                                    int* xcc1,
+                                    int* ycc1) {
+    return lwttl_query_chunk_range(ttl,
+                                   lng_min,
+                                   lat_min,
+                                   lng_max,
+                                   lat_max,
+                                   view_scale,
+                                   &ttl->object_cache.salvage_cache,
+                                   chunk_index_array,
+                                   chunk_index_array_len,
+                                   xcc0,
+                                   ycc0,
+                                   xcc1,
+                                   ycc1);
+}
+
 static const void* lwttl_query_chunk(const LWTTL* ttl,
                                      const LWTTLOBJECTCACHE* c,
                                      const int chunk_index,
@@ -1158,6 +1185,21 @@ const LWPTTLCITYOBJECT* lwttl_query_chunk_city(const LWTTL* ttl,
                              chunk_index,
                              ttl->object_cache.city_array,
                              sizeof(LWPTTLCITYOBJECT),
+                             xc0,
+                             yc0,
+                             count);
+}
+
+const LWPTTLSALVAGEOBJECT* lwttl_query_chunk_salvage(const LWTTL* ttl,
+                                                     const int chunk_index,
+                                                     int* xc0,
+                                                     int* yc0,
+                                                     int* count) {
+    return lwttl_query_chunk(ttl,
+                             &ttl->object_cache.salvage_cache,
+                             chunk_index,
+                             ttl->object_cache.salvage_array,
+                             sizeof(LWPTTLSALVAGEOBJECT),
                              xc0,
                              yc0,
                              count);

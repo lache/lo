@@ -494,7 +494,7 @@ void udp_server::send_salvage_cell_aligned(int xc0_aligned, int yc0_aligned, flo
     std::shared_ptr<LWPTTLSALVAGESTATE> reply(new LWPTTLSALVAGESTATE);
     memset(reply.get(), 0, sizeof(LWPTTLSALVAGESTATE));
     reply->type = LPGP_LWPTTLSALVAGESTATE;
-    reply->ts = city_->query_ts(xc0_aligned, yc0_aligned, view_scale);
+    reply->ts = salvage_->query_ts(xc0_aligned, yc0_aligned, view_scale);
     reply->xc0 = xc0_aligned;
     reply->yc0 = yc0_aligned;
     reply->view_scale = view_scale;
@@ -569,6 +569,9 @@ void udp_server::handle_receive(const boost::system::error_code& error, std::siz
             endpoint_aoi_object::box aoi_box(endpoint_aoi_object::point(xc - ex_lng_scaled / 2, yc - ex_lat_scaled / 2),
                                              endpoint_aoi_object::point(xc + ex_lng_scaled / 2, yc + ex_lat_scaled / 2));
             register_client_endpoint(remote_endpoint_, aoi_box);
+            auto salvage_existing = false;
+            auto salvage_id = salvage_->spawn_random("Random", aoi_box, salvage_existing);
+            LOGI("Salvage spawned: ID=%1% (existing=%2%)", salvage_id, salvage_existing);
         } else if (type == LPGP_LWPTTLREQUESTWAYPOINTS) {
             // LPGP_LWPTTLREQUESTWAYPOINTS
             LOGIx("REQUESTWAYPOINTS received.");
@@ -751,6 +754,18 @@ void udp_server::send_single_cell(int xc0, int yc0) {
     if (city_id >= 0 && city_name) {
         strncpy(reply->city_name, city_name, boost::size(reply->city_name));
         reply->city_name[boost::size(reply->city_name) - 1] = 0;
+    }
+    // take salvage
+    int salvage_id = -1;
+    int salvage_gold_amount = 0;
+    salvage_->query_single_cell(xc0, yc0, salvage_id, salvage_gold_amount);
+    if (salvage_id >= 0) {
+        salvage_->despawn(salvage_id);
+        if (salvage_gold_amount > 0) {
+            notify_to_client_gold_earned(xc0, yc0, salvage_gold_amount);
+        } else {
+            LOGE("%1%: salvage_gold_amount is %2% at salvage ID %3%", __func__, salvage_gold_amount, salvage_id);
+        }
     }
     char compressed[1500];
     int compressed_size = LZ4_compress_default((char*)reply.get(), compressed, sizeof(LWPTTLSINGLECELL), static_cast<int>(boost::size(compressed)));

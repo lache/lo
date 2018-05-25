@@ -1,16 +1,20 @@
 #include "precompiled.hpp"
 #include "salvage.hpp"
 #include "xy.hpp"
+#include "sea_static.hpp"
 
 using namespace ss;
 
 const auto update_interval = boost::posix_time::milliseconds(1000);
 
-salvage::salvage(boost::asio::io_service& io_service)
+salvage::salvage(boost::asio::io_service& io_service, std::shared_ptr<sea_static> sea_static)
     : res_width(WORLD_MAP_PIXEL_RESOLUTION_WIDTH)
     , res_height(WORLD_MAP_PIXEL_RESOLUTION_HEIGHT)
     , km_per_cell(WORLD_CIRCUMFERENCE_IN_KM / res_width)
-    , timer_(io_service, update_interval) {
+    , timer_(io_service, update_interval)
+    , sea_static_(sea_static)
+    , salvage_id_seq_(0) {
+    time0 = get_monotonic_uptime();
     timer_.async_wait(boost::bind(&salvage::update, this));
 }
 
@@ -112,17 +116,17 @@ void salvage::update_single_chunk_key_ts(const LWTTLCHUNKKEY& chunk_key, long lo
 
 int salvage::spawn(const char* name, int xc0, int yc0, int gold_amount, bool& existing) {
     existing = false;
-    salvage_object::point new_port_point{ xc0, yc0 };
-    const auto existing_it = rtree.qbegin(bgi::intersects(new_port_point));
+    salvage_object::point new_salvage_point{ xc0, yc0 };
+    const auto existing_it = rtree.qbegin(bgi::intersects(new_salvage_point));
     if (existing_it != rtree.qend()) {
         // already exists; return the existing one
         existing = true;
         return existing_it->second;
     }
 
-    const auto id = static_cast<int>(rtree.size());
-    rtree.insert(std::make_pair(new_port_point, id));
-    id_point[id] = new_port_point;
+    const auto id = ++salvage_id_seq_;
+    rtree.insert(std::make_pair(new_salvage_point, id));
+    id_point[id] = new_salvage_point;
     if (name[0] != 0) {
         set_name(id, name, gold_amount);
     } else {
@@ -143,20 +147,22 @@ void salvage::despawn(int id) {
              id);
         return;
     }
-    
+
     const auto xc0 = it->second.get<0>();
     const auto yc0 = it->second.get<1>();
-    update_chunk_key_ts(xc0, yc0);
-
+    
     rtree.remove(std::make_pair(it->second, id));
     id_name.erase(id);
     id_point.erase(it);
     id_gold_amount.erase(id);
+
+    update_chunk_key_ts(xc0, yc0);
 }
 
 void salvage::set_name(int id, const char* name, int gold_amount) {
     if (id_point.find(id) != id_point.end()) {
         id_name[id] = name;
+        id_gold_amount[id] = gold_amount;
     } else {
         LOGE("%1%: cannot find salvage id %2%. salvage set name to '%3%' failed.",
              __func__,
@@ -174,7 +180,7 @@ long long salvage::query_ts(const LWTTLCHUNKKEY& chunk_key) const {
     if (cit != chunk_key_ts.cend()) {
         return cit->second;
     }
-    return 0;
+    return time0;
 }
 
 const char* salvage::query_single_cell(int xc0, int yc0, int& id, int& gold_amount) const {
@@ -199,4 +205,21 @@ void salvage::update() {
 
     timer_.expires_at(timer_.expires_at() + update_interval);
     timer_.async_wait(boost::bind(&salvage::update, this));
+}
+
+int salvage::spawn_random(const char* name, salvage_object::box box, bool& existing) {
+    const auto& sop_list = sea_static_->query_near_to_packet_water(box.min_corner().get<0>(),
+                                                                   box.min_corner().get<1>(),
+                                                                   box.max_corner().get<0>(),
+                                                                   box.max_corner().get<1>());
+    if (sop_list.size() == 0) {
+        existing = false;
+        return 0;
+    }
+    boost::random::uniform_int_distribution<> choose(0, static_cast<int>(sop_list.size()) - 1);
+    auto chosen_index = choose(rng_);
+    const auto& s = sop_list[chosen_index];
+    boost::random::uniform_int_distribution<> xrnd(s.x0, s.x1 - 1);
+    boost::random::uniform_int_distribution<> yrnd(s.y0, s.y1 - 1);
+    return spawn(name, xrnd(rng_), yrnd(rng_), 100, existing);
 }
