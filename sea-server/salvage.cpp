@@ -106,12 +106,13 @@ void salvage::update_chunk_key_ts(int xc0, int yc0) {
 }
 
 void salvage::update_single_chunk_key_ts(const LWTTLCHUNKKEY& chunk_key, long long monotonic_uptime) {
-    auto it = chunk_key_ts.find(chunk_key.v);
+    chunk_key_ts[chunk_key.v] = monotonic_uptime;
+    /*auto it = chunk_key_ts.find(chunk_key.v);
     if (it != chunk_key_ts.end()) {
         it->second++;
     } else {
         chunk_key_ts[chunk_key.v] = monotonic_uptime;
-    }
+    }*/
 }
 
 int salvage::spawn(const char* name, int xc0, int yc0, int gold_amount, bool& existing) {

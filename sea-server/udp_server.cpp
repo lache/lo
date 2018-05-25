@@ -509,6 +509,12 @@ void udp_server::send_salvage_cell_aligned(int xc0_aligned, int yc0_aligned, flo
         }
     }
     reply->count = static_cast<int>(reply_obj_index);
+    if (reply->count < sop_list.size()) {
+        LOGE("%1%: packet truncated; capacity %2%, actual %3%",
+             __func__,
+             reply->count,
+             sop_list.size());
+    }
     char compressed[1500];
     int compressed_size = LZ4_compress_default((char*)reply.get(), compressed, sizeof(LWPTTLSALVAGESTATE), static_cast<int>(boost::size(compressed)));
     if (compressed_size > 0) {
@@ -569,9 +575,15 @@ void udp_server::handle_receive(const boost::system::error_code& error, std::siz
             endpoint_aoi_object::box aoi_box(endpoint_aoi_object::point(xc - ex_lng_scaled / 2, yc - ex_lat_scaled / 2),
                                              endpoint_aoi_object::point(xc + ex_lng_scaled / 2, yc + ex_lat_scaled / 2));
             register_client_endpoint(remote_endpoint_, aoi_box);
-            auto salvage_existing = false;
-            auto salvage_id = salvage_->spawn_random("Random", aoi_box, salvage_existing);
-            LOGI("Salvage spawned: ID=%1% (existing=%2%)", salvage_id, salvage_existing);
+            /*static bool once = false;
+            if (once == false) {
+                once = true;
+                for (int i = 0; i < 100; i++) {
+                    auto salvage_existing = false;
+                    auto salvage_id = salvage_->spawn_random("Random", aoi_box, salvage_existing);
+                    LOGI("Salvage spawned: ID=%1% (existing=%2%)", salvage_id, salvage_existing);
+                }
+            }*/
         } else if (type == LPGP_LWPTTLREQUESTWAYPOINTS) {
             // LPGP_LWPTTLREQUESTWAYPOINTS
             LOGIx("REQUESTWAYPOINTS received.");
@@ -647,17 +659,19 @@ void udp_server::handle_receive(const boost::system::error_code& error, std::siz
                 const auto ts = salvage_->query_ts(chunk_key);
                 if (ts > p->ts) {
                     send_salvage_cell_aligned(xc0_aligned, yc0_aligned, ex_lng, ex_lat, clamped_view_scale);
-                    LOGIx("Salvages chunk key (%1%,%2%,%3%) Sent! (latest ts %4%)",
-                          static_cast<int>(chunk_key.bf.xcc0),
-                          static_cast<int>(chunk_key.bf.ycc0),
-                          static_cast<int>(chunk_key.bf.view_scale_msb),
-                          ts);
+                    LOGI("Salvages chunk key (%1%,%2%,%3%) Sent! (server ts %4%, client ts %5%)",
+                         static_cast<int>(chunk_key.bf.xcc0),
+                         static_cast<int>(chunk_key.bf.ycc0),
+                         static_cast<int>(chunk_key.bf.view_scale_msb),
+                         ts,
+                         p->ts);
                 } else {
-                    LOGIx("Salvages chunk key (%1%,%2%,%3%) Not Sent! (latest ts %4%)",
-                          static_cast<int>(chunk_key.bf.xcc0),
-                          static_cast<int>(chunk_key.bf.ycc0),
-                          static_cast<int>(chunk_key.bf.view_scale_msb),
-                          ts);
+                    LOGI("Salvages chunk key (%1%,%2%,%3%) Not Sent! (server ts %4%, client ts %5%)",
+                         static_cast<int>(chunk_key.bf.xcc0),
+                         static_cast<int>(chunk_key.bf.ycc0),
+                         static_cast<int>(chunk_key.bf.view_scale_msb),
+                         ts,
+                         p->ts);
                 }
             } else {
                 LOGE("Unknown static_object value: %1%", p->static_object);

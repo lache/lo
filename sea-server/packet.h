@@ -519,7 +519,7 @@ typedef struct _LWPTTLSALVAGESTATE {
     int yc0;
     int view_scale;
     int count;
-    LWPTTLSALVAGEOBJECT obj[32];
+    LWPTTLSALVAGEOBJECT obj[256];
 } LWPTTLSALVAGESTATE;
 /*
 * END: should sync with packet.h in sea-server
