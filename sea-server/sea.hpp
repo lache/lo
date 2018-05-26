@@ -16,8 +16,8 @@ namespace ss {
     public:
         sea(boost::asio::io_service& io_service);
         void populate_test();
-        int spawn(int type, float x, float y, float w, float h);
-        int spawn(const char* guid, int type, float x, float y, float w, float h);
+        int spawn(int type, float x, float y, float w, float h, int expect_land);
+        int spawn(const char* guid, int type, float x, float y, float w, float h, int expect_land);
         void despawn(int type);
         void travel_to(const char* guid, float x, float y, float v = 1.0f);
         void teleport_to(int id, float x, float y, float vx = 0, float vy = 0);

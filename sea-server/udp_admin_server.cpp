@@ -145,16 +145,16 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
         {
             assert(bytes_transferred == sizeof(spawn_command));
             LOGIx("Spawn type: %1%", static_cast<int>(cp->type));
-            spawn_command* spawn = reinterpret_cast<spawn_command*>(recv_buffer_.data());;
+            spawn_command* spawn = reinterpret_cast<spawn_command*>(recv_buffer_.data());
             int type = 1;
-            sea_->spawn(spawn->guid, type, spawn->x, spawn->y, 1.0f, 1.0f);
+            sea_->spawn(spawn->guid, type, spawn->x, spawn->y, 1.0f, 1.0f, 0);
             break;
         }
         case 2: // Travel To
         {
             assert(bytes_transferred == sizeof(travel_to_command));
             LOGIx("Travel To type: %1%", static_cast<int>(cp->type));
-            travel_to_command* spawn = reinterpret_cast<travel_to_command*>(recv_buffer_.data());;
+            travel_to_command* spawn = reinterpret_cast<travel_to_command*>(recv_buffer_.data());
             sea_->travel_to(spawn->guid, spawn->x, spawn->y);
             break;
         }
@@ -162,7 +162,7 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
         {
             assert(bytes_transferred == sizeof(teleport_to_command));
             LOGIx("Teleport To type: %1%", static_cast<int>(cp->type));
-            teleport_to_command* spawn = reinterpret_cast<teleport_to_command*>(recv_buffer_.data());;
+            teleport_to_command* spawn = reinterpret_cast<teleport_to_command*>(recv_buffer_.data());
             sea_->teleport_to(spawn->guid, spawn->x, spawn->y);
             break;
         }
@@ -170,7 +170,7 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
         {
             assert(bytes_transferred == sizeof(spawn_ship_command));
             LOGIx("Spawn Ship type: %1%", static_cast<int>(cp->type));
-            const spawn_ship_command* spawn = reinterpret_cast<spawn_ship_command*>(recv_buffer_.data());;
+            const spawn_ship_command* spawn = reinterpret_cast<spawn_ship_command*>(recv_buffer_.data());
             xy32 spawn_pos = { static_cast<int>(spawn->x), static_cast<int>(spawn->y) };
             spawn_ship_command_reply reply;
             memset(&reply, 0, sizeof(spawn_ship_command_reply));
@@ -181,7 +181,7 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
             reply.reply_id = spawn->reply_id;
             if (spawn->expect_land == 0) {
                 if (sea_static_->is_sea_water(spawn_pos)) {
-                    int id = sea_->spawn(spawn->id, spawn->x, spawn->y, 1, 1);
+                    int id = sea_->spawn(spawn->id, spawn->x, spawn->y, 1, 1, spawn->expect_land);
                     int id1 = spawn->port1_id;
                     int id2 = spawn->port2_id;
                     reply.port1_id = id1;
@@ -212,7 +212,7 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
                 }
             } else if (spawn->expect_land == 1) {
                 if (sea_static_->is_land(spawn_pos)) {
-                    int id = sea_->spawn(spawn->id, spawn->x, spawn->y, 1, 1);
+                    int id = sea_->spawn(spawn->id, spawn->x, spawn->y, 1, 1, spawn->expect_land);
                     int id1 = spawn->port1_id;
                     int id2 = spawn->port2_id;
                     reply.port1_id = id1;
@@ -247,7 +247,7 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
         {
             assert(bytes_transferred == sizeof(delete_ship_command));
             LOGIx("Delete Ship type: %1%", static_cast<int>(cp->type));
-            const delete_ship_command* spawn = reinterpret_cast<delete_ship_command*>(recv_buffer_.data());;
+            const delete_ship_command* spawn = reinterpret_cast<delete_ship_command*>(recv_buffer_.data());
             sea_->despawn(spawn->ship_id);
             break;
         }
@@ -255,7 +255,7 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
         {
             assert(bytes_transferred == sizeof(spawn_port_command));
             LOGI("Spawn Port type: %1%", static_cast<int>(cp->type));
-            const spawn_port_command* spawn = reinterpret_cast<spawn_port_command*>(recv_buffer_.data());;
+            const spawn_port_command* spawn = reinterpret_cast<spawn_port_command*>(recv_buffer_.data());
             xy32 spawn_pos = { spawn->xc, spawn->yc };
             spawn_port_command_reply reply;
             memset(&reply, 0, sizeof(spawn_port_command_reply));
@@ -324,7 +324,7 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
         {
             assert(bytes_transferred == sizeof(name_port_command));
             LOGIx("Name Port type: %1%", static_cast<int>(cp->type));
-            const name_port_command* name_port = reinterpret_cast<name_port_command*>(recv_buffer_.data());;
+            const name_port_command* name_port = reinterpret_cast<name_port_command*>(recv_buffer_.data());
             seaport_->set_name(name_port->port_id, name_port->name, name_port->owner_id);
             break;
         }
@@ -332,7 +332,7 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
         {
             assert(bytes_transferred == sizeof(delete_port_command));
             LOGIx("Delete Port type: %1%", static_cast<int>(cp->type));
-            const delete_port_command* spawn = reinterpret_cast<delete_port_command*>(recv_buffer_.data());;
+            const delete_port_command* spawn = reinterpret_cast<delete_port_command*>(recv_buffer_.data());
             seaport_->despawn(spawn->port_id);
             break;
         }

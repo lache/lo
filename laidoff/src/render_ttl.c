@@ -162,17 +162,26 @@ static void render_sea_city(const LWCONTEXT* pLwc, const mat4x4 view, const mat4
     glDrawArrays(GL_TRIANGLES, 0, pLwc->vertex_buffer[lvt].vertex_count);
 }
 
-static void render_ship(const LWCONTEXT* pLwc, const mat4x4 view, const mat4x4 proj, float x, float y, float z, float rot_z) {
-    int shader_index = LWST_DEFAULT_NORMAL_COLOR;
+static void render_vehicle(const LWCONTEXT* pLwc,
+                           const mat4x4 view,
+                           const mat4x4 proj,
+                           float x,
+                           float y,
+                           float z,
+                           float rot_z,
+                           int shader_index,
+                           LW_VBO_TYPE lvt,
+                           LW_ATLAS_ENUM lae,
+                           float scale) {
     const LWSHADER* shader = &pLwc->shader[shader_index];
     lazy_glUseProgram(pLwc, shader_index);
     mat4x4 rot;
     mat4x4_identity(rot);
     mat4x4_rotate_Z(rot, rot, rot_z);
     const int view_scale = lwttl_view_scale(pLwc->ttl);
-    const float sx = 0.175f / view_scale;
-    const float sy = 0.175f / view_scale;
-    const float sz = 0.175f / view_scale;
+    const float sx = scale / view_scale;
+    const float sy = scale / view_scale;
+    const float sz = scale / view_scale;
     mat4x4 model;
     mat4x4_identity(model);
     mat4x4_mul(model, model, rot);
@@ -193,15 +202,39 @@ static void render_ship(const LWCONTEXT* pLwc, const mat4x4 view, const mat4x4 p
     mat4x4 model_normal_transform;
     mat4x4_identity(model_normal_transform);
 
-    const LW_VBO_TYPE lvt = LVT_SHIP;
+    
+    if (shader_index == LWST_DEFAULT) {
+        bind_all_vertex_attrib(pLwc, lvt);
+    } else if (shader_index == LWST_DEFAULT_NORMAL_COLOR) {
+        bind_all_color_vertex_attrib(pLwc, lvt);
+    } else {
+        LOGEP("Not supported shader index: %d", shader_index);
+    }
+    if (lae != LAE_DONTCARE) {
+        glActiveTexture(GL_TEXTURE0);
+        lazy_tex_atlas_glBindTexture(pLwc, lae);
+        set_tex_filter(GL_LINEAR, GL_LINEAR);
+    }
     lazy_glBindBuffer(pLwc, lvt);
-    bind_all_color_vertex_attrib(pLwc, lvt);
     glUniformMatrix4fv(shader->mvp_location, 1, GL_FALSE, (const GLfloat*)proj_view_model);
     glUniformMatrix4fv(shader->m_location, 1, GL_FALSE, (const GLfloat*)model_normal_transform);
     glUniform1f(shader->vertex_color_ratio, 0);
     glUniform3f(shader->vertex_color, 0, 0, 0);
+    glUniform1i(shader->diffuse_location, 0); // 0 means GL_TEXTURE0
+    glUniform1i(shader->alpha_only_location, 1); // 1 means GL_TEXTURE1
+    glUniform1f(shader->overlay_color_ratio_location, 0);
     //glShadeModel(GL_FLAT);
     glDrawArrays(GL_TRIANGLES, 0, pLwc->vertex_buffer[lvt].vertex_count);
+}
+
+static void render_ship(const LWCONTEXT* pLwc, const mat4x4 view, const mat4x4 proj, float x, float y, float z, float rot_z) {
+    render_vehicle(pLwc, view, proj, x, y, z, rot_z, LWST_DEFAULT_NORMAL_COLOR, LVT_SHIP, LAE_DONTCARE, 0.175f);
+}
+
+static void render_trunk(const LWCONTEXT* pLwc, const mat4x4 view, const mat4x4 proj, float x, float y, float z, float rot_z) {
+    render_vehicle(pLwc, view, proj, x, y, z, rot_z + (float)LWDEG2RAD(90), LWST_DEFAULT, LVT_OIL_TRUCK, LAE_3D_OIL_TRUCK_TEX_KTX, 0.3f);
+    //lazy_tex_atlas_glBindTexture(pLwc, LAE_3D_OIL_TRUCK_TEX_KTX);
+    //render_solid_vb_ui_uv_shader_rot_view_proj(pLwc, x, y, 1, 1, pLwc->tex_atlas[LAE_3D_OIL_TRUCK_TEX_KTX], LVT_OIL_TRUCK, 1, 0, 0, 0, 0, default_uv_offset, default_uv_scale, LWST_DEFAULT, rot_z + (float)LWDEG2RAD(90), view, proj);
 }
 
 static void render_seaport_icon(const LWCONTEXT* pLwc, const mat4x4 view, const mat4x4 proj, float x, float y, float z, float w, float h) {
@@ -872,7 +905,7 @@ static void render_sea_objects_nameplate(const LWCONTEXT* pLwc, const mat4x4 vie
         float px, py, dx, dy;
         pos_from_waypoints(wp,
                            ttl_dynamic_state->obj[i].route_param,
-                           ttl_dynamic_state->obj[i].route_reversed,
+                           ttl_dynamic_state->obj[i].route_flags.reversed,
                            &px,
                            &py,
                            &dx,
@@ -918,29 +951,39 @@ static void render_sea_objects(const LWCONTEXT* pLwc, const mat4x4 view, const m
     const int view_scale = lwttl_view_scale(pLwc->ttl);
     const LWPTTLROUTESTATE* ttl_dynamic_state = lwttl_full_state(pLwc->ttl);
     for (int i = 0; i < ttl_dynamic_state->count; i++) {
-        const LWPTTLWAYPOINTS* wp = lwttl_get_waypoints_by_ship_id(pLwc->ttl,
-                                                                   ttl_dynamic_state->obj[i].obj_db_id);
+        const LWPTTLROUTEOBJECT* obj = &ttl_dynamic_state->obj[i];
+        const LWPTTLWAYPOINTS* wp = lwttl_get_waypoints_by_ship_id(pLwc->ttl, obj->obj_db_id);
         if (wp == 0) {
             continue;
         }
         float px, py, dx, dy;
         pos_from_waypoints(wp,
-                           ttl_dynamic_state->obj[i].route_param,
-                           ttl_dynamic_state->obj[i].route_reversed,
+                           obj->route_param,
+                           obj->route_flags.reversed,
                            &px,
                            &py,
                            &dx,
                            &dy);
         const float rx = cell_fx_to_render_coords(px + 0.5f, center, view_scale);
         const float ry = cell_fy_to_render_coords(py + 0.5f, center, view_scale);
-        const float rot_z = atan2f(-dy, dx) + (ttl_dynamic_state->obj[i].route_reversed ? (-1) : (+1)) * (-(float)(M_PI / 2));
-        render_ship(pLwc,
-                    view,
-                    proj,
-                    rx,
-                    ry,
-                    0,
-                    rot_z);
+        const float rot_z = atan2f(-dy, dx) + (obj->route_flags.reversed ? (-1) : (+1)) * (-(float)(M_PI / 2));
+        if (obj->route_flags.land == 0) {
+            render_ship(pLwc,
+                        view,
+                        proj,
+                        rx,
+                        ry,
+                        0,
+                        rot_z);
+        } else {
+            render_trunk(pLwc,
+                         view,
+                         proj,
+                         rx,
+                         ry,
+                         0,
+                         rot_z);
+        }
     }
 }
 

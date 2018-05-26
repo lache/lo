@@ -118,11 +118,11 @@ void udp_server::send_route_state(float lng, float lat, float ex_lng, float ex_l
         if (it != route_map_.end() && it->second) {
             o.route_param = it->second->get_param();
             o.route_speed = 1.0f;
-            o.route_reversed = it->second->get_reversed() ? 1 : 0;
+            o.route_flags.reversed = it->second->get_reversed() ? 1 : 0;
         } else {
             o.route_param = 0;
             o.route_speed = 0;
-            o.route_reversed = 0;
+            o.route_flags.reversed = 0;
         }
         reply_obj_index++;
         if (reply_obj_index >= boost::size(reply->obj)) {

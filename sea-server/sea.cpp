@@ -27,7 +27,7 @@ void sea::populate_test() {
     for (int i = 0; i < 0; i++) {
         float x = random_point(rng);
         float y = random_point(rng);
-        spawn(i + 1, x, y, 1, 1);
+        spawn(i + 1, x, y, 1, 1, 0);
         if ((i + 1) % 5000 == 0) {
             LOGI("Spawning %d...", i + 1);
         }
@@ -38,7 +38,7 @@ void sea::populate_test() {
     query_near_to_packet(0, 0, 10, 10, sop_list);
 }
 
-int sea::spawn(const char* guid, int type, float x, float y, float w, float h) {
+int sea::spawn(const char* guid, int type, float x, float y, float w, float h, int expect_land) {
     auto it = sea_guid_to_id.find(guid);
     if (it != sea_guid_to_id.end()) {
         int id = it->second;
@@ -48,21 +48,21 @@ int sea::spawn(const char* guid, int type, float x, float y, float w, float h) {
         } else {
             LOGE("Spawn: Orphan entry found in sea_guid_to_id. (guid=%1%) Removing and respawn...", guid);
             sea_guid_to_id.erase(it);
-            return spawn(guid, type, x, y, w, h);
+            return spawn(guid, type, x, y, w, h, expect_land);
         }
     } else {
-        int id = spawn(type, x, y, w, h);
+        int id = spawn(type, x, y, w, h, expect_land);
         sea_objects.find(id)->second.set_guid(guid);
         sea_guid_to_id[guid] = id;
         return id;
     }
 }
 
-int sea::spawn(int type, float x, float y, float w, float h) {
+int sea::spawn(int type, float x, float y, float w, float h, int expect_land) {
     int id = static_cast<int>(sea_objects.size()) + 1;
     box b(point(x, y), point(x + w, y + h));
     auto rtree_value = std::make_pair(b, id);
-    sea_objects.emplace(std::make_pair(id, sea_object(id, type, x, y, w, h, rtree_value)));
+    sea_objects.emplace(std::make_pair(id, sea_object(id, type, x, y, w, h, rtree_value, expect_land)));
     sea_object_id_by_type[type] = id;
     rtree.insert(rtree_value);
     return id;

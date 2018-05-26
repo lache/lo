@@ -1933,7 +1933,8 @@ void lwttl_update(LWTTL* ttl, LWCONTEXT* pLwc, float delta_time) {
     }
     const float app_time = (float)pLwc->app_time;
     for (int i = 0; i < ttl->ttl_dynamic_state.count; i++) {
-        ttl->ttl_dynamic_state.obj[i].route_param += (float)delta_time * ttl->ttl_dynamic_state.obj[i].route_speed * (ttl->ttl_dynamic_state.obj[i].route_reversed ? (-1) : (+1));
+        int route_dir = ttl->ttl_dynamic_state.obj[i].route_flags.reversed ? (-1) : (+1);
+        ttl->ttl_dynamic_state.obj[i].route_param += (float)delta_time * ttl->ttl_dynamic_state.obj[i].route_speed * route_dir;
         //ttl->ttl_dynamic_state.obj[i].fx0 += (float)delta_time * ttl->ttl_dynamic_state.obj[i].fvx;
         //ttl->ttl_dynamic_state.obj[i].fy0 += (float)delta_time * ttl->ttl_dynamic_state.obj[i].fvy;
         //ttl->ttl_dynamic_state.obj[i].fx1 += (float)delta_time * ttl->ttl_dynamic_state.obj[i].fvx;
