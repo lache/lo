@@ -133,7 +133,7 @@ int salvage::spawn(const char* name, int xc0, int yc0, int gold_amount, bool& ex
     if (name[0] != 0) {
         set_name(id, name, gold_amount);
     } else {
-        LOGE("%1%: salvage spawned, but name empty. (salvage id = %2%)",
+        LOGEP("%1%: salvage spawned, but name empty. (salvage id = %2%)",
              __func__,
              id);
     }
@@ -145,9 +145,7 @@ int salvage::spawn(const char* name, int xc0, int yc0, int gold_amount, bool& ex
 void salvage::despawn(int id) {
     auto it = id_point.find(id);
     if (it == id_point.end()) {
-        LOGE("%1%: id not found (%2%)",
-             __func__,
-             id);
+        LOGEP("id not found (%1%)", id);
         return;
     }
 
@@ -167,10 +165,7 @@ void salvage::set_name(int id, const char* name, int gold_amount) {
         id_name[id] = name;
         id_gold_amount[id] = gold_amount;
     } else {
-        LOGE("%1%: cannot find salvage id %2%. salvage set name to '%3%' failed.",
-             __func__,
-             id,
-             name);
+        LOGEP("cannot find salvage id %1%. salvage set name to '%2%' failed.", id, name);
     }
 }
 

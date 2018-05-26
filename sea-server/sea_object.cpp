@@ -25,7 +25,7 @@ void sea_object::update(float delta_time) {
 
 int sea_object::add_cargo(int amount, int cargo_origin_seaport_id, const xy32& cargo_origin_xy) {
     if (!(this->cargo_origin_seaport_id == 0 || this->cargo_origin_seaport_id == cargo_origin_seaport_id)) {
-        LOGE("%1%: cargo origin seaport inconsistent!", __func__);
+        LOGEP("cargo origin seaport inconsistent!");
         return 0;
     }
     if (amount < 0) {
@@ -47,7 +47,7 @@ int sea_object::add_cargo(int amount, int cargo_origin_seaport_id, const xy32& c
 
 int sea_object::remove_cargo(int amount, int cargo_destination_seaport_id, const xy32& cargo_destination_xy) {
     if (!(this->cargo_origin_seaport_id != cargo_destination_seaport_id)) {
-        LOGE("%1%: cargo destination seaport inconsistent!", __func__);
+        LOGEP("cargo destination seaport inconsistent!");
         return 0;
     }
     if (amount < 0) {

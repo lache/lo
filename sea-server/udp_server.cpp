@@ -14,6 +14,7 @@ using namespace ss;
 
 const auto update_interval = boost::posix_time::milliseconds(75);
 //const auto update_interval = boost::posix_time::milliseconds(250);
+const auto salvage_update_interval = boost::posix_time::milliseconds(30000);
 
 udp_server::udp_server(boost::asio::io_service& io_service,
                        std::shared_ptr<sea> sea,
@@ -24,6 +25,7 @@ udp_server::udp_server(boost::asio::io_service& io_service,
                        std::shared_ptr<salvage> salvage)
     : socket_(io_service, udp::endpoint(udp::v4(), 3100))
     , timer_(io_service, update_interval)
+    , salvage_timer_(io_service, salvage_update_interval)
     , sea_(sea)
     , sea_static_(sea_static)
     , seaport_(seaport)
@@ -34,6 +36,7 @@ udp_server::udp_server(boost::asio::io_service& io_service,
     , client_endpoint_aoi_int_key_(0) {
     start_receive();
     timer_.async_wait(boost::bind(&udp_server::update, this));
+    salvage_timer_.async_wait(boost::bind(&udp_server::salvage_update, this));
 }
 
 bool udp_server::set_route(int id, int seaport_id1, int seaport_id2) {
@@ -68,6 +71,20 @@ void udp_server::update() {
         route_map_.erase(v);
     }
     remove_expired_endpoints();
+}
+
+void udp_server::salvage_update() {
+    salvage_timer_.expires_at(salvage_timer_.expires_at() + salvage_update_interval);
+    salvage_timer_.async_wait(boost::bind(&udp_server::salvage_update, this));
+
+    float delta_time = salvage_update_interval.total_milliseconds() / 1000.0f;
+
+    for (const auto& e : client_endpoint_aoi_values_) {
+        const auto& aoi_box = e.second.first;
+        auto salvage_existing = false;
+        auto salvage_id = salvage_->spawn_random("Random", aoi_box, salvage_existing);
+        LOGI("Salvage spawned: ID=%1% (existing=%2%)", salvage_id, salvage_existing);
+    }
 }
 
 void udp_server::start_receive() {
@@ -124,9 +141,7 @@ void udp_server::send_route_state(float lng, float lat, float ex_lng, float ex_l
                                           boost::asio::placeholders::error,
                                           boost::asio::placeholders::bytes_transferred));
     } else {
-        LOGE("%1%: LZ4_compress_default() error! - %2%",
-             __func__,
-             compressed_size);
+        LOGEP("LZ4_compress_default() error! - %1%", compressed_size);
     }
 }
 
@@ -224,16 +239,13 @@ void udp_server::send_land_cell_aligned(int xc0_aligned, int yc0_aligned, float 
                                           boost::asio::placeholders::error,
                                           boost::asio::placeholders::bytes_transferred));
     } else {
-        LOGE("%1%: LZ4_compress_default() error! - %2%",
-             __func__,
-             compressed_size);
+        LOGEP("LZ4_compress_default() error! - %1%", compressed_size);
     }
     if (reply_obj_dropped_count) {
-        LOGE("%1%: %2% cells dropped. (max: %3%) Compressed size is %4% bytes.",
-             __func__,
-             reply_obj_dropped_count,
-             boost::size(reply->obj),
-             compressed_size);
+        LOGEP("%1% cells dropped. (max: %2%) Compressed size is %3% bytes.",
+              reply_obj_dropped_count,
+              boost::size(reply->obj),
+              compressed_size);
     }
 }
 
@@ -308,9 +320,7 @@ void udp_server::send_land_cell_aligned_bitmap(int xc0_aligned, int yc0_aligned,
                                           boost::asio::placeholders::error,
                                           boost::asio::placeholders::bytes_transferred));
     } else {
-        LOGE("%1%: LZ4_compress_default() error! - %2%",
-             __func__,
-             compressed_size);
+        LOGEP("LZ4_compress_default() error! - %1%", compressed_size);
     }
 }
 
@@ -346,9 +356,7 @@ void udp_server::send_track_object_coords(int track_object_id, int track_object_
                                           boost::asio::placeholders::error,
                                           boost::asio::placeholders::bytes_transferred));
     } else {
-        LOGE("%1%: LZ4_compress_default() error! - %2%",
-             __func__,
-             compressed_size);
+        LOGEP("LZ4_compress_default() error! - %1%", compressed_size);
     }
 }
 
@@ -380,9 +388,7 @@ void udp_server::send_waypoints(int ship_id) {
                                           boost::asio::placeholders::error,
                                           boost::asio::placeholders::bytes_transferred));
     } else {
-        LOGE("%1%: LZ4_compress_default() error! - %2%",
-             __func__,
-             compressed_size);
+        LOGEP("LZ4_compress_default() error! - %1%", compressed_size);
     }
 }
 
@@ -436,9 +442,7 @@ void udp_server::send_seaport_cell_aligned(int xc0_aligned, int yc0_aligned, flo
                                           boost::asio::placeholders::error,
                                           boost::asio::placeholders::bytes_transferred));
     } else {
-        LOGE("%1%: LZ4_compress_default() error! - %2%",
-             __func__,
-             compressed_size);
+        LOGEP("LZ4_compress_default() error! - %1%", compressed_size);
     }
 }
 
@@ -478,9 +482,7 @@ void udp_server::send_city_cell_aligned(int xc0_aligned, int yc0_aligned, float 
                                           boost::asio::placeholders::error,
                                           boost::asio::placeholders::bytes_transferred));
     } else {
-        LOGE("%1%: LZ4_compress_default() error! - %2%",
-             __func__,
-             compressed_size);
+        LOGEP("LZ4_compress_default() error! - %1%", compressed_size);
     }
 }
 
@@ -510,10 +512,7 @@ void udp_server::send_salvage_cell_aligned(int xc0_aligned, int yc0_aligned, flo
     }
     reply->count = static_cast<int>(reply_obj_index);
     if (reply->count < sop_list.size()) {
-        LOGE("%1%: packet truncated; capacity %2%, actual %3%",
-             __func__,
-             reply->count,
-             sop_list.size());
+        LOGEP("packet truncated; capacity %1%, actual %2%", reply->count, sop_list.size());
     }
     char compressed[1500];
     int compressed_size = LZ4_compress_default((char*)reply.get(), compressed, sizeof(LWPTTLSALVAGESTATE), static_cast<int>(boost::size(compressed)));
@@ -525,9 +524,7 @@ void udp_server::send_salvage_cell_aligned(int xc0_aligned, int yc0_aligned, flo
                                           boost::asio::placeholders::error,
                                           boost::asio::placeholders::bytes_transferred));
     } else {
-        LOGE("%1%: LZ4_compress_default() error! - %2%",
-             __func__,
-             compressed_size);
+        LOGEP("LZ4_compress_default() error! - %1%", compressed_size);
     }
 }
 
@@ -572,12 +569,16 @@ void udp_server::handle_receive(const boost::system::error_code& error, std::siz
             auto yc = static_cast<int>(sea_->lat_to_yc(p->lat));
             auto ex_lng_scaled = static_cast<int>(p->ex_lng * p->view_scale);
             auto ex_lat_scaled = static_cast<int>(p->ex_lat * p->view_scale);
-            endpoint_aoi_object::box aoi_box(endpoint_aoi_object::point(xc - ex_lng_scaled / 2, yc - ex_lat_scaled / 2),
-                                             endpoint_aoi_object::point(xc + ex_lng_scaled / 2, yc + ex_lat_scaled / 2));
+            endpoint_aoi_object::box aoi_box{
+                {
+                    xc - ex_lng_scaled / 2,
+                    yc - ex_lat_scaled / 2
+                }, {
+                    xc + ex_lng_scaled / 2 - 1,
+                    yc + ex_lat_scaled / 2 - 1
+                }
+            };
             register_client_endpoint(remote_endpoint_, aoi_box);
-            auto salvage_existing = false;
-            auto salvage_id = salvage_->spawn_random("Random", aoi_box, salvage_existing);
-            LOGI("Salvage spawned: ID=%1% (existing=%2%)", salvage_id, salvage_existing);
         } else if (type == LPGP_LWPTTLREQUESTWAYPOINTS) {
             // LPGP_LWPTTLREQUESTWAYPOINTS
             LOGIx("REQUESTWAYPOINTS received.");
@@ -676,12 +677,10 @@ void udp_server::handle_receive(const boost::system::error_code& error, std::siz
             auto p = reinterpret_cast<LWPTTLPINGSINGLECELL*>(recv_buffer_.data());
             send_single_cell(p->xc0, p->yc0);
         } else {
-            LOGI("%1%: Unknown UDP request of type %2%",
-                 __func__,
-                 static_cast<int>(type));
+            LOGIP("Unknown UDP request of type %1%", static_cast<int>(type));
         }
     } else {
-        LOGE("%1%: error %2%, bytes_transferred %3%", __func__, error, bytes_transferred);
+        LOGEP("error %1%, bytes_transferred %2%", error, bytes_transferred);
     }
     start_receive();
 }
@@ -713,17 +712,13 @@ std::shared_ptr<route> udp_server::create_route_id(const std::vector<int>& seapo
 std::shared_ptr<const route> udp_server::find_route_map_by_ship_id(int ship_id) const {
     auto obj = sea_->get_object_by_type(ship_id);
     if (!obj) {
-        LOGE("%1%: Sea object %2% not found.",
-             __func__,
-             ship_id);
+        LOGEP("Sea object %1% not found.", ship_id);
     } else {
         auto it = route_map_.find(obj->get_id());
         if (it != route_map_.end()) {
             return it->second;
         } else {
-            LOGE("%1%: Sea object %2% has no route info.",
-                 __func__,
-                 ship_id);
+            LOGEP("Sea object %2% has no route info.", ship_id);
         }
     }
     return std::shared_ptr<const route>();
@@ -772,7 +767,7 @@ void udp_server::send_single_cell(int xc0, int yc0) {
         if (salvage_gold_amount > 0) {
             notify_to_client_gold_earned(xc0, yc0, salvage_gold_amount);
         } else {
-            LOGE("%1%: salvage_gold_amount is %2% at salvage ID %3%", __func__, salvage_gold_amount, salvage_id);
+            LOGEP("salvage_gold_amount is %1% at salvage ID %2%", salvage_gold_amount, salvage_id);
         }
     }
     char compressed[1500];
@@ -785,9 +780,7 @@ void udp_server::send_single_cell(int xc0, int yc0) {
                                           boost::asio::placeholders::error,
                                           boost::asio::placeholders::bytes_transferred));
     } else {
-        LOGE("%1%: LZ4_compress_default() error! - %2%",
-             __func__,
-             compressed_size);
+        LOGEP("LZ4_compress_default() error! - %1%", compressed_size);
     }
 }
 

@@ -33,12 +33,6 @@ int main() {
 
         LOGI("Current path: %s", boost::filesystem::current_path());
 
-        for (int i = 0; i <= 16; i++) {
-            LOGI("C=%1% -> Aligned C=%2%",
-                 i,
-                 aligned_chunk_index(i, 1, 16));
-        }
-
         boost::asio::io_service io_service;
         std::shared_ptr<sea> sea_instance(new sea(io_service));
         sea_instance->populate_test();
@@ -49,14 +43,6 @@ int main() {
                                                      seaport_instance));
         std::shared_ptr<salvage> salvage_instance(new salvage(io_service,
                                                               sea_static_instance));
-
-        auto existing = false;
-        for (int i = 0; i < 20; i++) {
-            for (int j = 0; j < 20; j++) {
-                salvage_instance->spawn("TEST", i, j, 1, existing);
-            }
-        }
-
         std::shared_ptr<udp_server> udp_server_instance(new udp_server(io_service,
                                                                        sea_instance,
                                                                        sea_static_instance,

@@ -27,6 +27,7 @@ namespace ss {
         void notify_to_client_gold_earned(int xc, int yc, int amount);
     private:
         void update();
+        void salvage_update();
         void start_receive();
         void send_route_state(float lng, float lat, float ex_lng, float ex_lat, int view_scale);
         void send_land_cell(float lng, float lat, float ex_lng, float ex_lat, int view_scale);
@@ -65,9 +66,7 @@ namespace ss {
                                                       boost::asio::placeholders::bytes_transferred));
                 }
             } else {
-                LOGE("%1%: LZ4_compress_default() error! - %2%",
-                     __func__,
-                     compressed_size);
+                LOGEP("LZ4_compress_default() error! - %1%", compressed_size);
             }
         }
         template<typename T> udp::endpoint extract_endpoint(T v) {
@@ -78,6 +77,7 @@ namespace ss {
         udp::endpoint remote_endpoint_;
         std::array<char, 1024> recv_buffer_;
         boost::asio::deadline_timer timer_;
+        boost::asio::deadline_timer salvage_timer_;
         std::shared_ptr<sea> sea_;
         std::shared_ptr<sea_static> sea_static_;
         std::shared_ptr<seaport> seaport_;

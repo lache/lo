@@ -203,9 +203,9 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
                          id2);
                 }
             } else {
-                LOGE("Spawn position should be water. (x=%1%, y=%2%)",
-                     spawn_pos.x,
-                     spawn_pos.y);
+                LOGEP("Spawn position should be water. (x=%||, y=%||)",
+                      spawn_pos.x,
+                      spawn_pos.y);
             }
             socket_.async_send_to(boost::asio::buffer(&reply, sizeof(spawn_ship_command_reply)), remote_endpoint_,
                                   boost::bind(&udp_admin_server::handle_send, this,
@@ -250,9 +250,9 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
                          spawn_pos.y);
                 }
             } else {
-                LOGE("Spawn position should be water. (x=%1%, y=%2%)",
-                     spawn_pos.x,
-                     spawn_pos.y);
+                LOGEP("Spawn position should be water. (x=%||, y=%||)",
+                      spawn_pos.x,
+                      spawn_pos.y);
             }
             socket_.async_send_to(boost::asio::buffer(&reply,
                                                       sizeof(spawn_port_command_reply)),

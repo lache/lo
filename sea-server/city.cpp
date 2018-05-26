@@ -209,9 +209,7 @@ int city::spawn(const char* name, int xc0, int yc0) {
     if (name[0] != 0) {
         set_name(id, name);
     } else {
-        LOGE("%1%: city spawned, but name empty. (city id = %2%)",
-             __func__,
-             id);
+        LOGEP("city spawned, but name empty. (city id = %1%)", id);
     }
 
     update_chunk_key_ts(xc0, yc0);
@@ -221,9 +219,7 @@ int city::spawn(const char* name, int xc0, int yc0) {
 void city::despawn(int id) {
     auto it = id_point.find(id);
     if (it == id_point.end()) {
-        LOGE("%1%: id not found (%2%)",
-             __func__,
-             id);
+        LOGEP("id not found (%1%)", id);
         return;
     }
     
@@ -242,10 +238,7 @@ void city::set_name(int id, const char* name) {
         id_name[id] = name;
         name_id[name] = id;
     } else {
-        LOGE("%1%: cannot find city id %2%. city set name to '%3%' failed.",
-             __func__,
-             id,
-             name);
+        LOGEP("cannot find city id %1%. city set name to '%2%' failed.", id, name);
     }
 }
 

@@ -189,9 +189,7 @@ int seaport::spawn(const char* name, int xc0, int yc0, int owner_id, bool& exist
     if (name[0] != 0) {
         set_name(id, name, owner_id);
     } else {
-        LOGE("%1%: seaport spawned, but name empty. (seaport id = %2%)",
-             __func__,
-             id);
+        LOGEP("seaport spawned, but name empty. (seaport id = %1%)", id);
     }
     id_owner_id[id] = owner_id;
     id_cargo[id] = 0;
@@ -203,9 +201,7 @@ int seaport::spawn(const char* name, int xc0, int yc0, int owner_id, bool& exist
 void seaport::despawn(int id) {
     auto it = id_point.find(id);
     if (it == id_point.end()) {
-        LOGE("%1%: id not found (%2%)",
-             __func__,
-             id);
+        LOGEP("id not found (%1%)", id);
         return;
     }
     
@@ -228,10 +224,7 @@ void seaport::set_name(int id, const char* name, int owner_id) {
         id_owner_id[id] = owner_id;
         id_cargo[id] = 0;
     } else {
-        LOGE("%1%: cannot find seaport id %2%. seaport set name to '%3%' failed.",
-             __func__,
-             id,
-             name);
+        LOGEP("cannot find seaport id %1%. seaport set name to '%2%' failed.", id, name);
     }
 }
 
@@ -285,7 +278,7 @@ int seaport::add_cargo(int id, int amount, bool source) {
     }
     const auto before_it = id_cargo.find(id);
     if (before_it == id_cargo.end()) {
-        LOGE("%1%: SP %2% not exist", __func__, id);
+        LOGEP("SP %1% not exist", id);
         return 0;
     }
     const auto before = before_it->second;
@@ -311,7 +304,7 @@ int seaport::remove_cargo(int id, int amount, bool sink) {
     }
     const auto before_it = id_cargo.find(id);
     if (before_it == id_cargo.end()) {
-        LOGE("%1%: SP %2% not exist", __func__, id);
+        LOGEP("SP %1% not exist", id);
         return 0;
     }
     const auto before = before_it->second;

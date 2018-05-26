@@ -16,8 +16,9 @@ namespace ss {
     }
 
     template<typename... Arguments>
-    void LOG(std::ostream& stream, const std::string& fmt, Arguments&&... args) {
+    void LOG_WITH_PREFIX(std::ostream& stream, const std::string& prefix, const std::string& fmt, Arguments&&... args) {
         try {
+            stream << prefix;
             boost::format f(fmt);
             stream << awesome_printf_helper(f, std::forward<Arguments>(args)...) << std::endl;
         } catch (boost::io::bad_format_string& e) {
@@ -27,13 +28,28 @@ namespace ss {
     }
 
     template<typename... Arguments>
+    void LOG(std::ostream& stream, const std::string& fmt, Arguments&&... args) {
+        LOG_WITH_PREFIX(stream, "", fmt, std::forward<Arguments>(args)...);
+    }
+
+    template<typename... Arguments>
     void LOGI(const std::string& fmt, Arguments&&... args) {
         LOG(std::cout, fmt, std::forward<Arguments>(args)...);
     }
 
     template<typename... Arguments>
+    void LOGI_WITH_PREFIX(const std::string& prefix, const std::string& fmt, Arguments&&... args) {
+        LOG_WITH_PREFIX(std::cout, prefix, fmt, std::forward<Arguments>(args)...);
+    }
+
+    template<typename... Arguments>
     void LOGE(const std::string& fmt, Arguments&&... args) {
         LOG(std::cerr, fmt, std::forward<Arguments>(args)...);
+    }
+
+    template<typename... Arguments>
+    void LOGE_WITH_PREFIX(const std::string& prefix, const std::string& fmt, Arguments&&... args) {
+        LOG_WITH_PREFIX(std::cerr, prefix, fmt, std::forward<Arguments>(args)...);
     }
 
     template<typename... Arguments>
@@ -44,3 +60,12 @@ namespace ss {
     void LOGEx(const std::string& fmt, Arguments&&... args) {
     }
 }
+
+#if WIN32
+#define __FILENAME__ (strrchr("\\" __FILE__, '\\') + 1)
+#else
+#define __FILENAME__ (strrchr("/" __FILE__, '/') + 1)
+#endif
+
+#define LOGIP(fmt, ...) LOGI_WITH_PREFIX((boost::format("%||(%||): ") % __FILENAME__ % __LINE__).str(), fmt, __VA_ARGS__)
+#define LOGEP(fmt, ...) LOGE_WITH_PREFIX((boost::format("%||(%||): ") % __FILENAME__ % __LINE__).str(), fmt, __VA_ARGS__)

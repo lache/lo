@@ -5,8 +5,10 @@
 
 using namespace astarrtree;
 using ss::LOGI;
+using ss::LOGI_WITH_PREFIX;
 using ss::LOGIx;
 using ss::LOGE;
+using ss::LOGE_WITH_PREFIX;
 using ss::LOGEx;
 
 struct PathfindContext {
@@ -851,9 +853,7 @@ bool astarrtree::find_nearest_point_if_empty(rtree* rtree_ptr, xy32& from, box& 
 
 static int RTreePathNodeEarlyExit(size_t visitedCount, void *visitingNode, void *goalNode, void *context) {
     if (visitedCount >= 1000) {
-        LOGI("%1%: Too many visit! (%2% visits) Pathfinding aborted.",
-             __func__,
-             visitedCount);
+        LOGIP("Too many visit! (%1% visits) Pathfinding aborted.", visitedCount);
         return -1;
     }
     return 0;
