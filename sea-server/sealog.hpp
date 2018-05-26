@@ -67,5 +67,5 @@ namespace ss {
 #define __FILENAME__ (strrchr("/" __FILE__, '/') + 1)
 #endif
 
-#define LOGIP(fmt, ...) LOGI_WITH_PREFIX((boost::format("%||(%||): ") % __FILENAME__ % __LINE__).str(), fmt, __VA_ARGS__)
-#define LOGEP(fmt, ...) LOGE_WITH_PREFIX((boost::format("%||(%||): ") % __FILENAME__ % __LINE__).str(), fmt, __VA_ARGS__)
+#define LOGIP(...) LOGI_WITH_PREFIX((boost::format("%||(%||): ") % __FILENAME__ % __LINE__).str(), __VA_ARGS__)
+#define LOGEP(...) LOGE_WITH_PREFIX((boost::format("%||(%||): ") % __FILENAME__ % __LINE__).str(), __VA_ARGS__)
