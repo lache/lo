@@ -5,7 +5,7 @@ const insertUser = db.prepare(`INSERT INTO user (guid, name) VALUES (?, ?)`)
 const insertShip = db.prepare(`INSERT INTO ship (user_id, name, ship_type) VALUES (?, ?, ?)`)
 const deleteShip = db.prepare(`DELETE FROM ship WHERE ship_id = ?`)
 const insertPort = db.prepare(
-  `INSERT INTO region (name, x, y, owner_id) VALUES (?, ?, ?, ?)`
+  `INSERT INTO region (name, x, y, owner_id, region_type) VALUES (?, ?, ?, ?, ?)`
 )
 const insertShiproute = db.prepare(
   `INSERT INTO shiproute (port1_id, port2_id) VALUES (?, ?)`
@@ -76,7 +76,7 @@ const findPortsScrollUp = db.prepare(`SELECT
   FROM region
   WHERE region_id < ? ORDER BY region_id DESC LIMIT ?`)
 const listPortName = db.prepare(
-  `SELECT port_id, name, owner_id FROM region WHERE port_id IS NOT NULL`
+  `SELECT port_id, name, owner_id, region_type FROM region WHERE port_id IS NOT NULL`
 )
 const deletePort = db.prepare(`DELETE FROM region WHERE region_id = ?`)
 module.exports = {

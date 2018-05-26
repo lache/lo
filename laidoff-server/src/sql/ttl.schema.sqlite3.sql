@@ -40,7 +40,8 @@ CREATE TABLE IF NOT EXISTS `region` (
 	`x`	REAL NOT NULL,
 	`y`	REAL NOT NULL,
 	`port_id`	INTEGER,
-	`owner_id`	INTEGER
+	`owner_id`	INTEGER,
+	`region_type`	INTEGER
 );
 DROP TABLE IF EXISTS `mission`;
 CREATE TABLE IF NOT EXISTS `mission` (

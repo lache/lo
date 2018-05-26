@@ -35,9 +35,9 @@ const createUser = guid => {
   // query.insertShip.run(user.lastInsertROWID, shipName)
   return user.lastInsertROWID
 }
-const createPort = (guid, portName, x, y) => {
+const createPort = (guid, portName, x, y, expectLand) => {
   const user = findOrCreateUser(guid)
-  const port = query.insertPort.run(portName, x, y, user.user_id)
+  const port = query.insertPort.run(portName, x, y, user.user_id, expectLand)
   return port.lastInsertROWID
 }
 const createShip = (guid, shipName, shipType) => {
@@ -382,7 +382,7 @@ const sendSpawnShip = async (
   })
 }
 
-const sendNamePort = (portId, name, ownerId) => {
+const sendNamePort = (portId, name, ownerId, portType) => {
   const buf = message.NamePortStruct.buffer()
   for (let i = 0; i < buf.length; i++) {
     buf[i] = 0
@@ -391,6 +391,7 @@ const sendNamePort = (portId, name, ownerId) => {
   message.NamePortStruct.fields.portId = portId
   message.NamePortStruct.fields.name = name
   message.NamePortStruct.fields.ownerId = ownerId
+  message.NamePortStruct.fields.portType = portType
   seaUdpClient.send(Buffer.from(buf), 4000, 'localhost', err => {
     if (err) {
       console.error('sea udp sendNamePort client error:', err)
@@ -766,7 +767,7 @@ seaUdpClient.on('message', (buf, remote) => {
     console.log(`  ${shipShiprouteCount} ship(s) recovered...`)
     let portNameCount = 0
     listPortName(row => {
-      sendNamePort(row.port_id, row.name, row.owner_id)
+      sendNamePort(row.port_id, row.name, row.owner_id, row.region_type)
       portNameCount++
     })
     console.log(`  ${portNameCount} port(s) name recovered...`)

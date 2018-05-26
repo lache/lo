@@ -130,6 +130,7 @@ struct name_port_command {
     int port_id;
     char name[64];
     int owner_id;
+    int port_type;
 };
 
 struct delete_port_command {
@@ -325,7 +326,7 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
             assert(bytes_transferred == sizeof(name_port_command));
             LOGIx("Name Port type: %1%", static_cast<int>(cp->type));
             const name_port_command* name_port = reinterpret_cast<name_port_command*>(recv_buffer_.data());
-            seaport_->set_name(name_port->port_id, name_port->name, name_port->owner_id);
+            seaport_->set_name(name_port->port_id, name_port->name, name_port->owner_id, name_port->port_type);
             break;
         }
         case 8: // Delete Port

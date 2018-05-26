@@ -19,12 +19,14 @@ namespace ss {
         int x0, y0;
         int id;
         int owner_id;
+        int port_type;
 
-        seaport_object(const value& v, int owner_id)
+        seaport_object(const value& v, int owner_id, int port_type)
             : x0(v.first.get<0>())
             , y0(v.first.get<1>())
             , id(v.second)
-            , owner_id(owner_id) {
+            , owner_id(owner_id)
+            , port_type(port_type) {
         }
     };
 }

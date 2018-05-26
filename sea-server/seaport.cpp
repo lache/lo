@@ -97,7 +97,7 @@ std::vector<seaport_object> seaport::query_near_to_packet(int xc, int yc, float 
     auto values = query_tree_ex(xc, yc, half_lng_ex, half_lat_ex);
     std::vector<seaport_object> sop_list;
     for (std::size_t i = 0; i < values.size(); i++) {
-        sop_list.emplace_back(seaport_object(values[i], get_owner_id(values[i].second)));
+        sop_list.emplace_back(seaport_object(values[i], get_owner_id(values[i].second), get_type(values[i].second)));
     }
     return sop_list;
 }
@@ -187,7 +187,7 @@ int seaport::spawn(const char* name, int xc0, int yc0, int owner_id, bool& exist
     rtree_ptr->insert(std::make_pair(new_port_point, id));
     id_point[id] = new_port_point;
     if (name[0] != 0) {
-        set_name(id, name, owner_id);
+        set_name(id, name, owner_id, st);
     } else {
         LOGEP("seaport spawned, but name empty. (seaport id = %1%)", id);
     }
@@ -216,13 +216,15 @@ void seaport::despawn(int id) {
     id_cargo_loaded.erase(id);
     id_cargo_unloaded.erase(id);
     id_owner_id.erase(id);
+    id_type.erase(id);
 }
 
-void seaport::set_name(int id, const char* name, int owner_id) {
+void seaport::set_name(int id, const char* name, int owner_id, int port_type) {
     if (id_point.find(id) != id_point.end()) {
         id_name[id] = name;
         id_owner_id[id] = owner_id;
         id_cargo[id] = 0;
+        id_type[id] = port_type;
     } else {
         LOGEP("cannot find seaport id %1%. seaport set name to '%2%' failed.", id, name);
     }
@@ -323,6 +325,14 @@ int seaport::remove_cargo(int id, int amount, bool sink) {
 int seaport::get_owner_id(int id) const {
     const auto it = id_owner_id.find(id);
     if (it != id_owner_id.end()) {
+        return it->second;
+    }
+    return 0;
+}
+
+int seaport::get_type(int id) const {
+    const auto it = id_type.find(id);
+    if (it != id_type.end()) {
         return it->second;
     }
     return 0;

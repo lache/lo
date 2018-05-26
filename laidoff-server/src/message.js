@@ -131,6 +131,7 @@ const NamePortStruct = Struct()
   .word32Sle('portId')
   .chars('name', 64)
   .word32Sle('ownerId')
+  .word32Sle('portType')
 NamePortStruct.allocate()
 
 const DeletePortStruct = Struct()

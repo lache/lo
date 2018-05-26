@@ -19,7 +19,7 @@ namespace ss {
         int lat_to_yc(float lat) const;
         int spawn(const char* name, int xc0, int yc0, int owner_id, bool& existing, seaport_type st = SEA);
         void despawn(int id);
-        void set_name(int id, const char* name, int owner_id);
+        void set_name(int id, const char* name, int owner_id, int port_type);
         long long query_ts(const int xc0, const int yc0, const int view_scale) const;
         long long query_ts(const LWTTLCHUNKKEY& chunk_key) const;
         const char* query_single_cell(int xc0, int yc0, int& id, int& cargo, int& cargo_loaded, int& cargo_unloaded) const;
@@ -27,6 +27,7 @@ namespace ss {
         int add_cargo(int id, int amount, bool source);
         int remove_cargo(int id, int amount, bool sink);
         int get_owner_id(int id) const;
+        int get_type(int id) const;
         void update();
     private:
         std::vector<seaport_object::value> query_tree_ex(int xc, int yc, int half_lng_ex, int half_lat_ex) const;
@@ -45,6 +46,7 @@ namespace ss {
         std::unordered_map<int, int> id_cargo_loaded; // seaport ID -> cargo count
         std::unordered_map<int, int> id_cargo_unloaded; // seaport ID -> cargo count
         std::unordered_map<int, int> id_owner_id; // seaport ID -> owner ID
+        std::unordered_map<int, int> id_type; // seaport ID -> port type
         boost::asio::deadline_timer timer_;
         long long time0_;
         int seaport_id_seq_;

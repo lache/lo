@@ -262,17 +262,17 @@ typedef struct _LWPSTATE2 {
 * BEGIN: should sync with packet.h in sea-server
 */
 // UDP
-typedef struct _LWPROUTEOBJECTFLAGS {
+typedef struct _LWPTTLROUTEBITFIELD {
     int reversed : 1;
     int land : 1;
-} LWPROUTEOBJECTFLAGS;
+} LWPTTLROUTEBITFIELD;
 
 typedef struct _LWPTTLROUTEOBJECT {
     int obj_id;
     int obj_db_id;
     float route_param;
     float route_speed;
-    LWPROUTEOBJECTFLAGS route_flags;
+    LWPTTLROUTEBITFIELD route_flags;
     char guid[64];
 } LWPTTLROUTEOBJECT;
 
@@ -340,11 +340,16 @@ typedef struct _LWPTTLSTATICSTATE3 {
 } LWPTTLSTATICSTATE3;
 
 // UDP
+typedef struct _LWPTTLSEAPORTBITFIELD {
+    int land : 1;
+} LWPTTLSEAPORTBITFIELD;
+
 typedef struct _LWPTTLSEAPORTOBJECT {
     signed char x_scaled_offset_0;
     signed char y_scaled_offset_0;
     unsigned char padding0;
     unsigned char padding1;
+    LWPTTLSEAPORTBITFIELD flags;
 } LWPTTLSEAPORTOBJECT;
 
 // UDP

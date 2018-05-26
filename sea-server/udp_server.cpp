@@ -423,6 +423,7 @@ void udp_server::send_seaport_cell_aligned(int xc0_aligned, int yc0_aligned, flo
     for (seaport_object const& v : sop_list) {
         reply->obj[reply_obj_index].x_scaled_offset_0 = aligned_scaled_offset(v.x0, xc0_aligned, view_scale, view_scale_msb_index, false, 0, 0);
         reply->obj[reply_obj_index].y_scaled_offset_0 = aligned_scaled_offset(v.y0, yc0_aligned, view_scale, view_scale_msb_index, false, 0, 0);
+        reply->obj[reply_obj_index].flags.land = v.port_type;
         if (view_scale < 16) {
             //strcpy(reply->obj[reply_obj_index].name, seaport_->get_seaport_name(v.id));
         }
