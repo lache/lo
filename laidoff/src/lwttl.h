@@ -139,7 +139,7 @@ int lwttl_selected(const LWTTL* ttl, LWTTLLNGLAT* pos);
 int lwttl_selected_int(const LWTTL* ttl, int* xc0, int* yc0);
 void lwttl_on_press(LWTTL* ttl, const LWCONTEXT* pLwc, float nx, float ny);
 void lwttl_on_move(LWTTL* ttl, const LWCONTEXT* pLwc, float nx, float ny);
-void lwttl_on_release(LWTTL* ttl, const LWCONTEXT* pLwc, float nx, float ny);
+void lwttl_on_release(LWTTL* ttl, LWCONTEXT* pLwc, float nx, float ny);
 void lwttl_view_proj(const LWTTL* ttl, mat4x4 view, mat4x4 proj);
 void lwttl_update_view_proj(LWTTL* ttl, float aspect_ratio);
 void lwttl_screen_to_world_pos(const float touchx,

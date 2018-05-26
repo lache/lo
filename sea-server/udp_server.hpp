@@ -23,7 +23,7 @@ namespace ss {
                    std::shared_ptr<region> region,
                    std::shared_ptr<city> city,
                    std::shared_ptr<salvage> salvage);
-        bool set_route(int id, int seaport_id1, int seaport_id2);
+        bool set_route(int id, int seaport_id1, int seaport_id2, int expect_land);
         void notify_to_client_gold_earned(int xc, int yc, int amount);
     private:
         void update();
@@ -44,7 +44,7 @@ namespace ss {
         void send_single_cell(int xc0, int yc0);
         void handle_receive(const boost::system::error_code& error, std::size_t bytes_transferred);
         void handle_send(const boost::system::error_code& error, std::size_t bytes_transferred);
-        std::shared_ptr<route> create_route_id(const std::vector<int>& seaport_id_list) const;
+        std::shared_ptr<route> create_route_id(const std::vector<int>& seaport_id_list, int expect_land) const;
         void register_client_endpoint(const udp::endpoint& endpoint, const endpoint_aoi_object::box& aoi_box);
         void remove_expired_endpoints();
         template<typename T> void notify_to_aoi_clients(std::shared_ptr<T> packet, int xc, int yc) {

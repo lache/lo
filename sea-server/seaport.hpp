@@ -6,6 +6,10 @@ typedef struct _xy32 xy32;
 namespace ss {
     class seaport {
     public:
+        enum seaport_type {
+            SEA,
+            LAND,
+        };
         seaport(boost::asio::io_service& io_service);
         std::vector<seaport_object> query_near_to_packet(int xc, int yc, float ex_lng, float ex_lat) const;
         const char* get_seaport_name(int id) const;
@@ -13,7 +17,7 @@ namespace ss {
         int get_nearest_two(const xy32& pos, int& id1, std::string& name1, int& id2, std::string& name2) const;
         int lng_to_xc(float lng) const;
         int lat_to_yc(float lat) const;
-        int spawn(const char* name, int xc0, int yc0, int owner_id, bool& existing);
+        int spawn(const char* name, int xc0, int yc0, int owner_id, bool& existing, seaport_type st = SEA);
         void despawn(int id);
         void set_name(int id, const char* name, int owner_id);
         long long query_ts(const int xc0, const int yc0, const int view_scale) const;

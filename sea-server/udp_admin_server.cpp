@@ -89,6 +89,7 @@ struct spawn_ship_command {
     int port2_id;
     int new_spawn;
     int reply_id;
+    int expect_land;
 };
 
 struct spawn_ship_command_reply {
@@ -113,6 +114,7 @@ struct spawn_port_command {
     int yc;
     int owner_id;
     int reply_id;
+    int expect_land;
 };
 
 struct spawn_port_command_reply {
@@ -177,35 +179,63 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
             reply.port1_id = -1;
             reply.port2_id = -1;
             reply.reply_id = spawn->reply_id;
-            if (sea_static_->is_water(spawn_pos)) {
-                int id = sea_->spawn(spawn->id, spawn->x, spawn->y, 1, 1);
-                int id1 = spawn->port1_id;
-                int id2 = spawn->port2_id;
-                reply.port1_id = id1;
-                reply.port2_id = id2;
-                bool new_spawn = false;
-                if (spawn->port1_id == -1 || spawn->port2_id == -1) {
-                    std::string port1, port2;
-                    if (seaport_->get_nearest_two(spawn_pos, id1, port1, id2, port2) == 2) {
-                        LOGI("Nearest two ports: %1%(id=%2%), %3%(id=%4%)",
-                             port1,
-                             id1,
-                             port2,
-                             id2);
-                        new_spawn = true;
+            if (spawn->expect_land == 0) {
+                if (sea_static_->is_sea_water(spawn_pos)) {
+                    int id = sea_->spawn(spawn->id, spawn->x, spawn->y, 1, 1);
+                    int id1 = spawn->port1_id;
+                    int id2 = spawn->port2_id;
+                    reply.port1_id = id1;
+                    reply.port2_id = id2;
+                    bool new_spawn = false;
+                    if (spawn->port1_id == -1 || spawn->port2_id == -1) {
+                        std::string port1, port2;
+                        if (seaport_->get_nearest_two(spawn_pos, id1, port1, id2, port2) == 2) {
+                            LOGI("Nearest two ports: %1%(id=%2%), %3%(id=%4%)",
+                                 port1,
+                                 id1,
+                                 port2,
+                                 id2);
+                            new_spawn = true;
+                        }
                     }
-                }
-                if (id1 >= 0 && id2 >= 0 && udp_server_->set_route(id, id1, id2)) {
-                    reply.routed = 1;
+                    if (id1 >= 0 && id2 >= 0 && udp_server_->set_route(id, id1, id2, spawn->expect_land)) {
+                        reply.routed = 1;
+                    } else {
+                        LOGE("Cannot get nearest two ports! port1_id=%1%, port2_id=%2%",
+                             id1,
+                             id2);
+                    }
                 } else {
-                    LOGE("Cannot get nearest two ports! port1_id=%1%, port2_id=%2%",
-                         id1,
-                         id2);
+                    LOGEP("Port spawn position should be water. (x=%||, y=%||)",
+                          spawn_pos.x,
+                          spawn_pos.y);
+                }
+            } else if (spawn->expect_land == 1) {
+                if (sea_static_->is_land(spawn_pos)) {
+                    int id = sea_->spawn(spawn->id, spawn->x, spawn->y, 1, 1);
+                    int id1 = spawn->port1_id;
+                    int id2 = spawn->port2_id;
+                    reply.port1_id = id1;
+                    reply.port2_id = id2;
+                    bool new_spawn = false;
+                    if (spawn->port1_id == -1 || spawn->port2_id == -1) {
+                        LOGEP("Not supported!");
+                        abort();
+                    }
+                    if (id1 >= 0 && id2 >= 0 && udp_server_->set_route(id, id1, id2, spawn->expect_land)) {
+                        reply.routed = 1;
+                    } else {
+                        LOGE("Cannot get nearest two ports! port1_id=%1%, port2_id=%2%",
+                             id1,
+                             id2);
+                    }
+                } else {
+                    LOGEP("Port spawn position should be land. (x=%||, y=%||)",
+                          spawn_pos.x,
+                          spawn_pos.y);
                 }
             } else {
-                LOGEP("Spawn position should be water. (x=%||, y=%||)",
-                      spawn_pos.x,
-                      spawn_pos.y);
+                LOGEP("Unknown port spawn type: %||", spawn->expect_land);
             }
             socket_.async_send_to(boost::asio::buffer(&reply, sizeof(spawn_ship_command_reply)), remote_endpoint_,
                                   boost::bind(&udp_admin_server::handle_send, this,
@@ -224,7 +254,7 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
         case 6: // Spawn Port
         {
             assert(bytes_transferred == sizeof(spawn_port_command));
-            LOGIx("Spawn Port type: %1%", static_cast<int>(cp->type));
+            LOGI("Spawn Port type: %1%", static_cast<int>(cp->type));
             const spawn_port_command* spawn = reinterpret_cast<spawn_port_command*>(recv_buffer_.data());;
             xy32 spawn_pos = { spawn->xc, spawn->yc };
             spawn_port_command_reply reply;
@@ -233,26 +263,54 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
             reply.port_id = -1;
             reply.id = spawn->id;
             reply.reply_id = spawn->reply_id;
-            if (sea_static_->is_water(spawn_pos)) {
-                bool existing = false;
-                int id = seaport_->spawn(spawn->name, spawn->xc, spawn->yc, spawn->owner_id, existing);
-                if (id >= 0) {
-                    LOGI("New seaport SP %1% {%2%,%3%} spawned. owner_id=%4%",
-                         id,
-                         spawn_pos.x,
-                         spawn_pos.y,
-                         spawn->owner_id);
-                    reply.port_id = id;
-                    reply.existing = existing;
+            if (spawn->expect_land == 0) {
+                // Seaport
+                if (sea_static_->is_sea_water(spawn_pos)) {
+                    bool existing = false;
+                    int id = seaport_->spawn(spawn->name, spawn->xc, spawn->yc, spawn->owner_id, existing);
+                    if (id >= 0) {
+                        LOGI("New seaport SP %1% {%2%,%3%} spawned. owner_id=%4%",
+                             id,
+                             spawn_pos.x,
+                             spawn_pos.y,
+                             spawn->owner_id);
+                        reply.port_id = id;
+                        reply.existing = existing;
+                    } else {
+                        LOGE("New port cannot be spawned at (x=%1%, y=%2%)",
+                             spawn_pos.x,
+                             spawn_pos.y);
+                    }
                 } else {
-                    LOGE("New port cannot be spawned at (x=%1%, y=%2%)",
-                         spawn_pos.x,
-                         spawn_pos.y);
+                    LOGEP("Spawn position should be water. (x=%||, y=%||)",
+                          spawn_pos.x,
+                          spawn_pos.y);
+                }
+            } else if (spawn->expect_land == 1) {
+                // (Land?)port
+                if (sea_static_->is_land(spawn_pos)) {
+                    bool existing = false;
+                    int id = seaport_->spawn(spawn->name, spawn->xc, spawn->yc, spawn->owner_id, existing, seaport::seaport_type::LAND);
+                    if (id >= 0) {
+                        LOGI("New seaport SP %1% {%2%,%3%} spawned. owner_id=%4%",
+                             id,
+                             spawn_pos.x,
+                             spawn_pos.y,
+                             spawn->owner_id);
+                        reply.port_id = id;
+                        reply.existing = existing;
+                    } else {
+                        LOGE("New seaport cannot be spawned at (x=%1%, y=%2%)",
+                             spawn_pos.x,
+                             spawn_pos.y);
+                    }
+                } else {
+                    LOGEP("Seaport Spawn position should be water. (x=%||, y=%||)",
+                          spawn_pos.x,
+                          spawn_pos.y);
                 }
             } else {
-                LOGEP("Spawn position should be water. (x=%||, y=%||)",
-                      spawn_pos.x,
-                      spawn_pos.y);
+                LOGEP("Unknown spawn type: %||", spawn->expect_land);
             }
             socket_.async_send_to(boost::asio::buffer(&reply,
                                                       sizeof(spawn_port_command_reply)),

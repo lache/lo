@@ -304,6 +304,21 @@
 		    set_track_object_ship_id(ship_id)
 		    request_waypoints(ship_id)
 		end
+		local way_mode = 0
+		function enable_water_way()
+			way_mode = 0
+		end
+		function enable_land_way()
+			way_mode = 1
+		end
+		function link()
+			print('link')
+			if way_mode == 0 then
+				lo.htmlui_execute_anchor_click(c.htmlui, "/link");
+			else
+				lo.htmlui_execute_anchor_click(c.htmlui, "/linkland");
+			end
+		end
 		return 1234
 </script>
 </body>

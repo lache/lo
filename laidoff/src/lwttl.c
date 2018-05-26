@@ -1503,7 +1503,7 @@ void lwttl_on_move(LWTTL* ttl, const LWCONTEXT* pLwc, float nx, float ny) {
     }
 }
 
-void lwttl_on_release(LWTTL* ttl, const LWCONTEXT* pLwc, float nx, float ny) {
+void lwttl_on_release(LWTTL* ttl, LWCONTEXT* pLwc, float nx, float ny) {
     if (ttl->selected.pressing) {
         int xc, yc;
         LWTTLLNGLAT lnglat;
@@ -1516,7 +1516,8 @@ void lwttl_on_release(LWTTL* ttl, const LWCONTEXT* pLwc, float nx, float ny) {
     }
     if (ttl->selected.dragging) {
         if (ttl->selected.pos_xc != ttl->selected.dragging_pos_xc || ttl->selected.pos_yc != ttl->selected.dragging_pos_yc) {
-            htmlui_execute_anchor_click(pLwc->htmlui, "/link");
+            //htmlui_execute_anchor_click(pLwc->htmlui, "/link");
+            script_evaluate_async(pLwc, "link()", strlen("link()"));
         }
         ttl->selected.dragging = 0;
     }
@@ -1629,7 +1630,7 @@ const char* lwttl_get_or_create_user_id(LWTTL* ttl,
 
 int lwttl_ping_send_interval_multiplier(const LWTTL* ttl) {
     if (ttl->panning) {
-        return 10;
+        return 50;
     } else {
         return 200;
     }

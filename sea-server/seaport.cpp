@@ -173,7 +173,7 @@ void seaport::update_single_chunk_key_ts(const LWTTLCHUNKKEY& chunk_key, long lo
     }*/
 }
 
-int seaport::spawn(const char* name, int xc0, int yc0, int owner_id, bool& existing) {
+int seaport::spawn(const char* name, int xc0, int yc0, int owner_id, bool& existing, seaport::seaport_type st) {
     existing = false;
     seaport_object::point new_port_point{ xc0, yc0 };
     const auto existing_it = rtree_ptr->qbegin(bgi::intersects(new_port_point));

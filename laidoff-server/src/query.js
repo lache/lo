@@ -2,7 +2,7 @@ const Sqlite3 = require('better-sqlite3')
 const db = new Sqlite3('ttl.db')
 
 const insertUser = db.prepare(`INSERT INTO user (guid, name) VALUES (?, ?)`)
-const insertShip = db.prepare(`INSERT INTO ship (user_id, name) VALUES (?, ?)`)
+const insertShip = db.prepare(`INSERT INTO ship (user_id, name, ship_type) VALUES (?, ?, ?)`)
 const deleteShip = db.prepare(`DELETE FROM ship WHERE ship_id = ?`)
 const insertPort = db.prepare(
   `INSERT INTO region (name, x, y, owner_id) VALUES (?, ?, ?, ?)`
@@ -14,7 +14,7 @@ const setShipShiproute = db.prepare(
   `UPDATE ship SET shiproute_id = ? WHERE ship_id = ?`
 )
 const listShipShiproute = db.prepare(
-  `SELECT ship_id, port1_id, port2_id FROM ship s JOIN shiproute sr ON s.shiproute_id=sr.shiproute_id`
+  `SELECT ship_id, port1_id, port2_id, ship_type FROM ship s JOIN shiproute sr ON s.shiproute_id=sr.shiproute_id`
 )
 const findUserGuid = db.prepare(`SELECT guid FROM user WHERE user_id = ?`)
 const findUser = db.prepare(`SELECT

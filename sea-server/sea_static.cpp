@@ -199,20 +199,22 @@ void sea_static::mark_sea_water(sea_static_object::rtree* rtree) {
     }
 }
 
-std::vector<xy32> sea_static::calculate_waypoints(const xy32 & from, const xy32 & to) const {
+std::vector<xy32> sea_static::calculate_waypoints(const xy32 & from, const xy32 & to, int expect_land) const {
     auto from_box = astarrtree::box_t_from_xy(from);
     std::vector<astarrtree::value> from_result_s;
-    water_rtree_ptr->query(bgi::contains(from_box), std::back_inserter(from_result_s));
+    auto& rtree_ptr = expect_land == 0 ? water_rtree_ptr : land_rtree_ptr;
+    auto check_cell = expect_land == 0 ? &sea_static::is_sea_water : &sea_static::is_land;
+    rtree_ptr->query(bgi::contains(from_box), std::back_inserter(from_result_s));
     xy32 new_from = from;
     bool new_from_sea_water = false;
-    if (astarrtree::find_nearest_point_if_empty(water_rtree_ptr, new_from, from_box, from_result_s)) {
-        new_from_sea_water = is_sea_water(xy32{ new_from.x, new_from.y });
+    if (astarrtree::find_nearest_point_if_empty(rtree_ptr, new_from, from_box, from_result_s)) {
+        new_from_sea_water = (this->*check_cell)(xy32{ new_from.x, new_from.y });
         LOGI("  'From' point changed to (%1%,%2%) [sea water=%3%]",
              new_from.x,
              new_from.y,
              new_from_sea_water);
     } else {
-        new_from_sea_water = is_sea_water(xy32{ new_from.x, new_from.y });
+        new_from_sea_water = (this->*check_cell)(xy32{ new_from.x, new_from.y });
         LOGI("  'From' point (%1%,%2%) [sea water=%3%]",
              new_from.x,
              new_from.y,
@@ -221,17 +223,17 @@ std::vector<xy32> sea_static::calculate_waypoints(const xy32 & from, const xy32 
 
     auto to_box = astarrtree::box_t_from_xy(to);
     std::vector<astarrtree::value> to_result_s;
-    water_rtree_ptr->query(bgi::contains(to_box), std::back_inserter(to_result_s));
+    rtree_ptr->query(bgi::contains(to_box), std::back_inserter(to_result_s));
     xy32 new_to = to;
     bool new_to_sea_water = false;
-    if (astarrtree::find_nearest_point_if_empty(water_rtree_ptr, new_to, to_box, to_result_s)) {
-        new_to_sea_water = is_sea_water(xy32{ new_to.x, new_to.y });
+    if (astarrtree::find_nearest_point_if_empty(rtree_ptr, new_to, to_box, to_result_s)) {
+        new_to_sea_water = (this->*check_cell)(xy32{ new_to.x, new_to.y });
         LOGI("  'To' point changed to (%1%,%2%) [sea water=%3%]",
              new_to.x,
              new_to.y,
              new_to_sea_water);
     } else {
-        new_to_sea_water = is_sea_water(xy32{ new_to.x, new_to.y });
+        new_to_sea_water = (this->*check_cell)(xy32{ new_to.x, new_to.y });
         LOGI("  'To' point (%1%,%2%) [sea water=%3%]",
              new_to.x,
              new_to.y,
@@ -239,21 +241,21 @@ std::vector<xy32> sea_static::calculate_waypoints(const xy32 & from, const xy32 
     }
 
     if (new_from_sea_water && new_to_sea_water) {
-        return astarrtree::astar_rtree_memory(water_rtree_ptr, land_rtree_ptr, new_from, new_to);
+        return astarrtree::astar_rtree_memory(rtree_ptr, land_rtree_ptr, new_from, new_to);
     } else {
         LOGE("ERROR: Both 'From' and 'To' should be in sea water to generate waypoints!");
         return std::vector<xy32>();
     }
 }
 
-std::vector<xy32> sea_static::calculate_waypoints(const sea_static_object::point & from, const sea_static_object::point & to) const {
+std::vector<xy32> sea_static::calculate_waypoints(const sea_static_object::point & from, const sea_static_object::point & to, int expect_land) const {
     xy32 fromxy;
     xy32 toxy;
     fromxy.x = from.get<0>();
     fromxy.y = from.get<1>();
     toxy.x = to.get<0>();
     toxy.y = to.get<1>();
-    return calculate_waypoints(fromxy, toxy);
+    return calculate_waypoints(fromxy, toxy, expect_land);
 }
 
 bool sea_static::is_water(const xy32& cell) const {
@@ -268,6 +270,11 @@ bool sea_static::is_sea_water(const xy32& cell) const {
         return std::binary_search(sea_water_vector.begin(), sea_water_vector.end(), it->second);
     }
     return false;
+}
+
+bool sea_static::is_land(const xy32& cell) const {
+    auto cell_box = astarrtree::box_t_from_xy(cell);
+    return land_rtree_ptr->qbegin(bgi::contains(cell_box)) != land_rtree_ptr->qend();
 }
 
 long long sea_static::query_ts(const int xc0, const int yc0, const int view_scale) const {

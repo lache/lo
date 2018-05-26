@@ -11,10 +11,11 @@ namespace ss {
         std::vector<sea_static_object> query_near_to_packet(int xc, int yc, float ex_lng, float ex_lat) const;
         std::vector<sea_static_object> query_near_to_packet(int xc0, int yc0, int xc1, int yc1) const;
         std::vector<sea_static_object> query_near_to_packet_water(int xc0, int yc0, int xc1, int yc1) const;
-        std::vector<xy32> calculate_waypoints(const xy32& from, const xy32& to) const;
-        std::vector<xy32> calculate_waypoints(const sea_static_object::point& from, const sea_static_object::point& to) const;
+        std::vector<xy32> calculate_waypoints(const xy32& from, const xy32& to, int expect_land) const;
+        std::vector<xy32> calculate_waypoints(const sea_static_object::point& from, const sea_static_object::point& to, int expect_land) const;
         bool is_water(const xy32& cell) const;
         bool is_sea_water(const xy32& cell) const;
+        bool is_land(const xy32& cell) const;
         int lng_to_xc(float lng) const;
         int lat_to_yc(float lat) const;
         long long query_ts(const int xc0, const int yc0, const int view_scale) const;

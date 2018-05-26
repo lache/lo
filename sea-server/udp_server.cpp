@@ -39,8 +39,8 @@ udp_server::udp_server(boost::asio::io_service& io_service,
     salvage_timer_.async_wait(boost::bind(&udp_server::salvage_update, this));
 }
 
-bool udp_server::set_route(int id, int seaport_id1, int seaport_id2) {
-    auto route = create_route_id({ seaport_id1, seaport_id2 });
+bool udp_server::set_route(int id, int seaport_id1, int seaport_id2, int expect_land) {
+    auto route = create_route_id({ seaport_id1, seaport_id2 }, expect_land);
     if (route) {
         route_map_[id] = route;
         return true;
@@ -685,7 +685,7 @@ void udp_server::handle_receive(const boost::system::error_code& error, std::siz
     start_receive();
 }
 
-std::shared_ptr<route> udp_server::create_route_id(const std::vector<int>& seaport_id_list) const {
+std::shared_ptr<route> udp_server::create_route_id(const std::vector<int>& seaport_id_list, int expect_land) const {
     if (seaport_id_list.size() == 0) {
         return std::shared_ptr<route>();
     }
@@ -696,7 +696,7 @@ std::shared_ptr<route> udp_server::create_route_id(const std::vector<int>& seapo
     }
     std::vector<xy32> wp_total;
     for (size_t i = 0; i < point_list.size() - 1; i++) {
-        auto wp = sea_static_->calculate_waypoints(point_list[i], point_list[i + 1]);
+        auto wp = sea_static_->calculate_waypoints(point_list[i], point_list[i + 1], expect_land);
         if (wp.size() >= 2) {
             std::copy(wp.begin(), wp.end(), std::back_inserter(wp_total));
         } else {
@@ -718,7 +718,7 @@ std::shared_ptr<const route> udp_server::find_route_map_by_ship_id(int ship_id) 
         if (it != route_map_.end()) {
             return it->second;
         } else {
-            LOGEP("Sea object %2% has no route info.", ship_id);
+            LOGEP("Sea object %1% has no route info.", ship_id);
         }
     }
     return std::shared_ptr<const route>();

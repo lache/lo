@@ -40,9 +40,9 @@ const createPort = (guid, portName, x, y) => {
   const port = query.insertPort.run(portName, x, y, user.user_id)
   return port.lastInsertROWID
 }
-const createShip = (guid, shipName) => {
+const createShip = (guid, shipName, shipType) => {
   const user = findOrCreateUser(guid)
-  const ship = query.insertShip.run(user.user_id, shipName)
+  const ship = query.insertShip.run(user.user_id, shipName, shipType)
   return ship.lastInsertROWID
 }
 const deleteShip = shipId => {
@@ -350,7 +350,15 @@ app.get('/teleporttoport', (req, res) => {
   return res.render('idle', { user: u })
 })
 
-const sendSpawnShip = async (id, name, x, y, port1Id = -1, port2Id = -1) => {
+const sendSpawnShip = async (
+  id,
+  name,
+  x,
+  y,
+  port1Id = -1,
+  port2Id = -1,
+  expectLand = 0
+) => {
   const buf = message.SpawnShipStruct.buffer()
   for (let i = 0; i < buf.length; i++) {
     buf[i] = 0
@@ -366,6 +374,7 @@ const sendSpawnShip = async (id, name, x, y, port1Id = -1, port2Id = -1) => {
   message.SpawnShipStruct.fields.newSpawn =
     port1Id !== -1 && port2Id !== -1 ? 1 : 0
   message.SpawnShipStruct.fields.replyId = replyId
+  message.SpawnShipStruct.fields.expectLand = expectLand
   return sendAndReplyFromSea(buf, replyId, err => {
     if (err) {
       console.error('sea udp SpawnShipStruct client error:', err)
@@ -417,7 +426,7 @@ const notifyWaiter = packetStruct => {
   }
 }
 
-const sendSpawnPort = async (id, name, x, y, ownerId) => {
+const sendSpawnPort = async (id, name, x, y, ownerId, expectLand) => {
   const buf = message.SpawnPortStruct.buffer()
   for (let i = 0; i < buf.length; i++) {
     buf[i] = 0
@@ -430,6 +439,7 @@ const sendSpawnPort = async (id, name, x, y, ownerId) => {
   message.SpawnPortStruct.fields.y = y
   message.SpawnPortStruct.fields.ownerId = ownerId
   message.SpawnPortStruct.fields.replyId = replyId
+  message.SpawnPortStruct.fields.expectLand = expectLand
   const reply = await sendAndReplyFromSea(buf, replyId, err => {
     if (err) {
       console.error('sea udp SpawnShipStruct client error:', err)
@@ -442,7 +452,13 @@ app.get('/purchase_new_ship', async (req, res) => {
   const u = findOrCreateUser(req.query.u || uuidv1())
   const shipName = `${raname.middle()} ${raname.middle()}`
   const shipId = createShip(u.guid, shipName)
-  await sendSpawnShip(shipId, u.user_name, req.get('X-Lng'), req.get('X-Lat'))
+  await sendSpawnShip(
+    shipId,
+    u.user_name,
+    req.get('X-Lng'),
+    req.get('X-Lat'),
+    0
+  )
   spendGold(u.guid, 1000)
   delete userCache[u.guid]
   const uAfter = findOrCreateUser(req.query.u || uuidv1())
@@ -469,7 +485,8 @@ app.get('/purchase_new_ship_with_ports', async (req, res) => {
     req.get('X-Lng'),
     req.get('X-Lat'),
     p1.port_id,
-    p2.port_id
+    p2.port_id,
+    0
   )
   spendGold(u.guid, 10000)
   delete userCache[u.guid]
@@ -485,14 +502,15 @@ app.get('/purchase_new_ship_with_ports', async (req, res) => {
   )
 })
 
-const execCreatePort = async (u, selectedLng, selectedLat) => {
+const execCreatePort = async (u, selectedLng, selectedLat, expectLand) => {
   const portName = `Port ${raname.first()}`
   const reply = await sendSpawnPort(
     0,
     portName,
     selectedLng,
     selectedLat,
-    u.user_id
+    u.user_id,
+    expectLand
   )
   if (reply.portId >= 0) {
     if (reply.existing === 0) {
@@ -545,7 +563,7 @@ app.get('/purchase_new_port', async (req, res) => {
       })
     )
   } else {
-    await execCreatePort(u, selectedLng, selectedLat)
+    await execCreatePort(u, selectedLng, selectedLat, 0)
     delete userCache[u.guid]
     const uAfter = findOrCreateUser(req.query.u || uuidv1())
     res.redirect(
@@ -635,14 +653,60 @@ app.get('/link', async (req, res) => {
   const xc1 = req.get('X-D-XC1')
   const yc1 = req.get('X-D-YC1')
   console.log(`Link [${xc0}, ${yc0}]-[${xc1}, ${yc1}]`)
-  const r0 = await execCreatePort(u, xc0, yc0)
-  const r1 = await execCreatePort(u, xc1, yc1)
-  if (r0 >= 0 && r1 >= 0) {
-    const shipName = `${raname.middle()} ${raname.middle()}`
-    const shipId = createShip(u.guid, shipName)
-    const p1 = findPort(r0)
-    const p2 = findPort(r1)
-    await sendSpawnShip(shipId, u.user_name, xc0, yc0, p1.port_id, p2.port_id)
+  const r0 = await execCreatePort(u, xc0, yc0, 0)
+  if (r0 >= 0) {
+    const r1 = await execCreatePort(u, xc1, yc1, 0)
+    if (r1 >= 0) {
+      const shipName = `${raname.middle()} ${raname.middle()}`
+      const shipId = createShip(u.guid, shipName, 0)
+      const p1 = findPort(r0)
+      const p2 = findPort(r1)
+      await sendSpawnShip(
+        shipId,
+        u.user_name,
+        xc0,
+        yc0,
+        p1.port_id,
+        p2.port_id,
+        0
+      )
+    }
+  }
+  res.redirect(
+    url.format({
+      pathname: '/idle',
+      query: {
+        u: u.guid
+      }
+    })
+  )
+})
+
+app.get('/linkland', async (req, res) => {
+  const u = findOrCreateUser(req.get('X-U') || uuidv1())
+  const xc0 = req.get('X-D-XC0')
+  const yc0 = req.get('X-D-YC0')
+  const xc1 = req.get('X-D-XC1')
+  const yc1 = req.get('X-D-YC1')
+  console.log(`Link [${xc0}, ${yc0}]-[${xc1}, ${yc1}]`)
+  const r0 = await execCreatePort(u, xc0, yc0, 1)
+  if (r0 >= 0) {
+    const r1 = await execCreatePort(u, xc1, yc1, 1)
+    if (r1 >= 0) {
+      const shipName = `${raname.middle()} ${raname.middle()}`
+      const shipId = createShip(u.guid, shipName, 1)
+      const p1 = findPort(r0)
+      const p2 = findPort(r1)
+      await sendSpawnShip(
+        shipId,
+        u.user_name,
+        xc0,
+        yc0,
+        p1.port_id,
+        p2.port_id,
+        1
+      )
+    }
   }
   res.redirect(
     url.format({
@@ -667,10 +731,10 @@ seaUdpClient.on('message', (buf, remote) => {
     )
     message.SpawnShipReplyStruct._setBuff(buf)
     notifyWaiter(message.SpawnShipReplyStruct)
-    //console.log('UDP type: ' + message.SpawnShipReplyStruct.fields.type)
-    //console.log('UDP ship_id: ' + message.SpawnShipReplyStruct.fields.shipId)
-    //console.log('UDP port1_id: ' + message.SpawnShipReplyStruct.fields.port1Id)
-    //console.log('UDP port2_id: ' + message.SpawnShipReplyStruct.fields.port2Id)
+    // console.log('UDP type: ' + message.SpawnShipReplyStruct.fields.type)
+    // console.log('UDP ship_id: ' + message.SpawnShipReplyStruct.fields.shipId)
+    // console.log('UDP port1_id: ' + message.SpawnShipReplyStruct.fields.port1Id)
+    // console.log('UDP port2_id: ' + message.SpawnShipReplyStruct.fields.port2Id)
     const shiprouteId = createShiproute(
       message.SpawnShipReplyStruct.fields.port1Id,
       message.SpawnShipReplyStruct.fields.port2Id
@@ -688,7 +752,15 @@ seaUdpClient.on('message', (buf, remote) => {
     let shipShiprouteCount = 0
     listShipShiproute(async row => {
       // console.log(row)
-      await sendSpawnShip(row.ship_id, '', 0, 0, row.port1_id, row.port2_id)
+      await sendSpawnShip(
+        row.ship_id,
+        '',
+        0,
+        0,
+        row.port1_id,
+        row.port2_id,
+        row.ship_type
+      )
       shipShiprouteCount++
     })
     console.log(`  ${shipShiprouteCount} ship(s) recovered...`)
