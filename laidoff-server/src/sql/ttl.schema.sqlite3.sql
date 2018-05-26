@@ -30,7 +30,8 @@ CREATE TABLE IF NOT EXISTS `ship` (
 	`angle`	REAL NOT NULL DEFAULT '1',
 	`oil`	REAL NOT NULL DEFAULT '200000',
 	`updated`	DATETIME DEFAULT CURRENT_TIMESTAMP,
-	`shiproute_id`	INTEGER
+	`shiproute_id`	INTEGER,
+	`ship_type`	INTEGER
 );
 DROP TABLE IF EXISTS `region`;
 CREATE TABLE IF NOT EXISTS `region` (
