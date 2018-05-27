@@ -35,9 +35,8 @@ const createUser = guid => {
   // query.insertShip.run(user.lastInsertROWID, shipName)
   return user.lastInsertROWID
 }
-const createPort = (guid, portName, x, y, expectLand) => {
-  const user = findOrCreateUser(guid)
-  const port = query.insertPort.run(portName, x, y, user.user_id, expectLand)
+const createPort = (guid, portName, x, y, userId, expectLand) => {
+  const port = query.insertPort.run(portName, x, y, userId, expectLand)
   return port.lastInsertROWID
 }
 const createShip = (guid, shipName, shipType) => {
@@ -520,7 +519,8 @@ const execCreatePort = async (u, selectedLng, selectedLat, expectLand) => {
         portName,
         selectedLng,
         selectedLat,
-        u.user_id
+        u.user_id,
+        expectLand
       )
       const port = findPort(regionId)
       if (port) {
