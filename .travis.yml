@@ -1,7 +1,10 @@
 sudo: required
 language: bash
 env:
-  - DOCKER_COMPOSE_VERSION=1.21.0
+  DOCKER_COMPOSE_VERSION: 1.21.0
+  DOCKER_USERNAME: lacti
+  DOCKER_PASSWORD:
+    secure: jGMWEfxuMTCsPfwqVZgr8Zf31La90FfjFHPIdhT/RtbxB/33byvLAIWfDRfVl1kkBEl/O8i5laovbnH/1iJ80CJCCcRZ0EgQEaAQapZwgCq+9XBmSpeweqSkmv2R1T5asqfG97/0EgcNY+jmTPjyXsqq7Hsy4G7Ev1d14EjiQI11J+oelX0MMNcE5NWhm//xkWSqpzBewDNoUXW7SisWxRkWyfEFT1Q8aHCT/i4eMj/XOlEtgOxqkKVyLAqaLeOnlzsyX6+PAqtYOMeXo+nQLRFzTg5wP8DRAKf0JQFjvCkLkJa/sTVdpVO0p9JyUQ2Zzm++oHB5kacQxYloxay3lNE2WJIkGW4DJFNV15Fi6+uz7KAawBfBN+Wg9W1gJ4oILc8pHrYnuaoRetoL0Ls4y1TEF2PLdjnfKCq1HhHWrF1k55YJzpbWg/YfMx4jkpRiqlfu3grOdMLCbRqjpt51PfgVwxXEIHbe4RniOFRbk8EuvP9rHjpdK0EnLX/0NCWxLMEnPeoOfdWVSj5dOryVZcqYtWEnWcXMuILHOqyxu+ErFKqJNE7GZp4V4kf8w7OQZNT9yX9Ll1jWS7pykXtuGF2juxNvvl/M+Ugby8D+JWrZYd5r/UrNGtsSW6Wnain6bcE/OyLWzkj0mYCLtyUFPTvDsBKdPZQlw3eFMrrDkAs=
 before_install:
   - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
   - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
@@ -12,5 +15,7 @@ before_install:
   - sudo chmod +x /usr/local/bin/docker-compose
   - /usr/local/bin/docker-compose --version
 script:
+  - echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
   - /usr/local/bin/docker-compose build
+  - /usr/local/bin/docker-compose push
 
