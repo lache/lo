@@ -12,5 +12,5 @@ before_install:
   - chmod +x docker-compose
   - docker-compose --version
 script:
-  -	docker-compose build
+  - docker-compose build
 
