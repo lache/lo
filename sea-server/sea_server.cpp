@@ -10,7 +10,7 @@
 #include "salvage.hpp"
 using namespace ss;
 
-int main() {
+int main(int argc, char* argv[]) {
     try {
         const int major = 0;
         const int minor = 1;
@@ -43,6 +43,10 @@ int main() {
                                                      seaport_instance));
         std::shared_ptr<salvage> salvage_instance(new salvage(io_service,
                                                               sea_static_instance));
+        if (argc > 1 && strcmp(argv[1], "--prepare") == 0) {
+            LOGI("Preparation is completed.");
+            return 0;
+        }
         std::shared_ptr<udp_server> udp_server_instance(new udp_server(io_service,
                                                                        sea_instance,
                                                                        sea_static_instance,
@@ -58,6 +62,7 @@ int main() {
                                                                                          udp_server_instance));
         sea_instance->set_udp_admin_server(udp_admin_server_instance);
         udp_admin_server_instance->send_recover_all_ships();
+        LOGI("Start to server.");
         io_service.run();
     } catch (std::exception& e) {
         LOGE(e.what());
