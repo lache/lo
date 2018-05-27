@@ -32,7 +32,7 @@
 #   define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
 #elif LW_PLATFORM_LINUX
 #   define PATH_SEPARATOR "/"
-#   define ASSETS_BASE_PATH PATH_SEPARATOR "home" PATH_SEPARATOR "lacti" PATH_SEPARATOR "git" PATH_SEPARATOR "laidoff" PATH_SEPARATOR "assets" PATH_SEPARATOR
+#   define ASSETS_BASE_PATH BASE_PATH PATH_SEPARATOR "assets" PATH_SEPARATOR
 #   define LwStaticAssert(x,y) //_STATIC_ASSERT(x) // diabled...
 #   define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
 #elif LW_PLATFORM_ANDROID || LW_PLATFORM_IOS || LW_PLATFORM_IOS_SIMULATOR
