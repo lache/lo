@@ -1,0 +1,8 @@
+.idea/
+build-*/
+rtree/*.dat
+rtree/*.bin
+
+.dockerignore
+Dockerfile
+
