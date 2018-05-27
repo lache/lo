@@ -370,6 +370,7 @@ void udp_server::send_waypoints(int ship_id) {
     memset(reply.get(), 0, sizeof(LWPTTLWAYPOINTS));
     reply->type = LPGP_LWPTTLWAYPOINTS;
     reply->ship_id = ship_id;
+    reply->flags.land = r->get_land() ? 1 : 0;
     auto waypoints = r->clone_waypoints();
     auto copy_len = std::min(waypoints.size(), boost::size(reply->waypoints));
     reply->count = boost::numeric_cast<int>(copy_len);
@@ -705,7 +706,7 @@ std::shared_ptr<route> udp_server::create_route_id(const std::vector<int>& seapo
             return std::shared_ptr<route>();
         }
     }
-    std::shared_ptr<route> r(new route(wp_total, seaport_id_list[0], seaport_id_list[1]));
+    std::shared_ptr<route> r(new route(wp_total, seaport_id_list[0], seaport_id_list[1], expect_land));
     r->set_velocity(1);
     return r;
 }

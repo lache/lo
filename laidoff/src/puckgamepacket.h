@@ -412,6 +412,10 @@ typedef struct _xy32 {
     int y;
 } xy32;
 
+typedef struct _LWPTTLWAYPOINTSBITFIELD {
+    int land : 1;
+} LWPTTLWAYPOINTSBITFIELD;
+
 // UDP
 typedef struct _LWPTTLWAYPOINTS {
     unsigned char type;
@@ -420,6 +424,7 @@ typedef struct _LWPTTLWAYPOINTS {
     unsigned char padding2;
     int ship_id;
     int count;
+    LWPTTLWAYPOINTSBITFIELD flags;
     xy32 waypoints[1000];
 } LWPTTLWAYPOINTS;
 

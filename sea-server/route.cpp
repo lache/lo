@@ -8,13 +8,14 @@ float distance_xy(const xy32& a, const xy32& b) {
     return sqrtf(static_cast<float>((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y)));
 }
 
-route::route(const std::vector<xy32>& waypoints, int seaport1_id, int seaport2_id)
+route::route(const std::vector<xy32>& waypoints, int seaport1_id, int seaport2_id, int expectLand)
     : waypoints(waypoints)
     , velocity(0)
     , param(0)
     , seaport1_id(seaport1_id)
     , seaport2_id(seaport2_id)
-    , reversed(false) {
+    , reversed(false)
+    , land(expectLand == 1 ? true : false) {
     if (waypoints.size() < 2) {
         LOGE("route created with less than two waypoints...");
     } else {

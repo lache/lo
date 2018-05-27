@@ -26,12 +26,16 @@ static char visibility[MAX_VISIBILITY_ENTRY_COUNT][MAX_VISIBILITY_ENTRY_NAME_LEN
 #define WATER_COLOR_B (190 / 255.f)
 
 #define WAYPOINT_COLOR_R (0.2f)
-#define WAYPOINT_COLOR_G (0.7f)
-#define WAYPOINT_COLOR_B (0.2f)
+#define WAYPOINT_COLOR_G (0.2f)
+#define WAYPOINT_COLOR_B (0.7f)
 
-#define WAYPOINT2_COLOR_R (0.15f)
-#define WAYPOINT2_COLOR_G (0.55f)
-#define WAYPOINT2_COLOR_B (0.15f)
+#define LAND_WAYPOINT2_COLOR_R (147 / 255.0f)
+#define LAND_WAYPOINT2_COLOR_G (143 / 255.0f)
+#define LAND_WAYPOINT2_COLOR_B (134 / 255.0f)
+
+#define WATER_WAYPOINT2_COLOR_R (96 / 255.0f)
+#define WATER_WAYPOINT2_COLOR_G (180 / 255.0f)
+#define WATER_WAYPOINT2_COLOR_B (230 / 255.0f)
 
 #define CELL_DRAGGING_LINE_COLOR_R (0.7f)
 #define CELL_DRAGGING_LINE_COLOR_G (0.9f)
@@ -1130,9 +1134,9 @@ static void render_waypoints_by_ship_id(const LWTTL* ttl,
                                          waypoints->waypoints[i + 0].y,
                                          waypoints->waypoints[i + 1].x,
                                          waypoints->waypoints[i + 1].y,
-                                         WAYPOINT2_COLOR_R,
-                                         WAYPOINT2_COLOR_G,
-                                         WAYPOINT2_COLOR_B);
+                                         waypoints->flags.land ? LAND_WAYPOINT2_COLOR_R : WATER_WAYPOINT2_COLOR_R,
+                                         waypoints->flags.land ? LAND_WAYPOINT2_COLOR_G : WATER_WAYPOINT2_COLOR_G,
+                                         waypoints->flags.land ? LAND_WAYPOINT2_COLOR_B : WATER_WAYPOINT2_COLOR_B);
         }
     }
 }
