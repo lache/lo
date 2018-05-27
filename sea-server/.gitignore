@@ -8,3 +8,7 @@ cmake-build-debug
 cmake-build-release
 workspace.xml
 build-xcode
+
+/build-debug/
+/build-release/
+

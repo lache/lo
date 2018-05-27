@@ -1,0 +1,16 @@
+version: "3.5"
+services:
+  laidoff-server:
+    image: lache/lo:laidoff-server
+    build:
+      context: laidoff-server
+    ports:
+      - 3000:3000/tcp
+      - 3003:3003/udp
+  sea-server:
+    image: lache/lo:sea-server
+    build:
+      context: sea-server
+    ports:
+      - 3003:3003/udp
+ 
