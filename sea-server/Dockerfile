@@ -15,16 +15,13 @@ WORKDIR /opt/rtree
 RUN find . -name "*.tgz" -exec tar xf {} \;
 
 WORKDIR /opt/build-release
-RUN ls .
-RUN ls ../rtree
-RUN ls ../assets
 RUN ./sea-server --prepare
 
 FROM ubuntu:18.04
 
-COPY --from=builder /opt/build-release/sea-server /opt/bin/
-COPY --from=builder /opt/assets /opt/assets
 COPY --from=builder /opt/rtree/*.dat /opt/rtree/
+COPY --from=builder /opt/assets /opt/assets
+COPY --from=builder /opt/build-release/sea-server /opt/bin/
 
 WORKDIR /opt/bin
 
