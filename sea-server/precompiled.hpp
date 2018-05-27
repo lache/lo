@@ -31,11 +31,13 @@
 #define WORLD_MAP_PIXEL_RESOLUTION_HEIGHT (86412)
 #define WORLD_CIRCUMFERENCE_IN_KM (40075.0f)
 
-static std::chrono::steady_clock::duration get_monotonic_uptime_duration() {
+inline std::chrono::steady_clock::duration get_monotonic_uptime_duration() {
     return std::chrono::steady_clock::now().time_since_epoch();
 }
 
-static long long get_monotonic_uptime() {
+inline long long get_monotonic_uptime() {
     return get_monotonic_uptime_duration().count();
 }
-const static int MAX_CARGO = 1000000;
+
+extern const int MAX_CARGO;
+
