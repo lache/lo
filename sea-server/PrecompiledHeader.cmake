@@ -149,26 +149,29 @@ function(add_precompiled_header _target _input)
     set(_outdir "${CMAKE_CURRENT_BINARY_DIR}/${_target}_pch/${_name}.gch")
     file(MAKE_DIRECTORY "${_outdir}")
     set(_output_cxx "${_outdir}/.c++")
-    set(_output_c "${_outdir}/.c")
 
     set(_pch_flags_file "${_pch_binary_dir}/compile_flags.rsp")
     export_all_flags("${_pch_flags_file}")
     set(_compiler_FLAGS "@${_pch_flags_file}")
+
     add_custom_command(
       OUTPUT "${_pchfile}"
       COMMAND "${CMAKE_COMMAND}" -E copy "${_pch_header}" "${_pchfile}"
       DEPENDS "${_pch_header}"
       COMMENT "Updating ${_name}")
-    add_custom_command(
-      OUTPUT "${_output_cxx}"
-      COMMAND "${CMAKE_CXX_COMPILER}" ${_compiler_FLAGS} -std=c++11 -x c++-header -o "${_output_cxx}" "${_pchfile}"
-      DEPENDS "${_pchfile}" "${_pch_flags_file}"
-      COMMENT "Precompiling ${_name} for ${_target} (C++)")
-    add_custom_command(
-      OUTPUT "${_output_c}"
-      COMMAND "${CMAKE_C_COMPILER}" ${_compiler_FLAGS} -x c-header -o "${_output_c}" "${_pchfile}"
-      DEPENDS "${_pchfile}" "${_pch_flags_file}"
-      COMMENT "Precompiling ${_name} for ${_target} (C)")
+    if(NOT CMAKE_BUILD_TYPE MATCHES Release)
+      add_custom_command(
+        OUTPUT "${_output_cxx}"
+        COMMAND "${CMAKE_CXX_COMPILER}" ${_compiler_FLAGS} -std=c++11 -x c++-header -o "${_output_cxx}" "${_pchfile}"
+        DEPENDS "${_pchfile}" "${_pch_flags_file}"
+        COMMENT "Precompiling ${_name} for ${_target} (C++)")
+    else()
+      add_custom_command(
+        OUTPUT "${_output_cxx}"
+        COMMAND "${CMAKE_CXX_COMPILER}" ${_compiler_FLAGS} -std=c++11 -O3 -DNDEBUG -x c++-header -o "${_output_cxx}" "${_pchfile}"
+        DEPENDS "${_pchfile}" "${_pch_flags_file}"
+        COMMENT "Precompiling ${_name} for ${_target} (C++)")
+    endif()
 
     get_property(_sources TARGET ${_target} PROPERTY SOURCES)
     foreach(_source ${_sources})
