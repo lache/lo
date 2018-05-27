@@ -16,6 +16,6 @@ before_install:
   - /usr/local/bin/docker-compose --version
 script:
   - echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
-  - /usr/local/bin/docker-compose build
-  - /usr/local/bin/docker-compose push
+#  - /usr/local/bin/docker-compose build
+#  - /usr/local/bin/docker-compose push
 
