@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.5)
-  include(PrecompiledHeader.cmake)
-  project(sea-server)
-  set(Boost_USE_STATIC_LIBS ON)
-  find_package(Boost 1.58 COMPONENTS system date_time regex filesystem atomic REQUIRED)
+
+project(sea-server)
+set(Boost_USE_STATIC_LIBS ON)
+find_package(Boost 1.58 COMPONENTS system date_time regex filesystem atomic REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 if (MSVC)
   add_definitions(
@@ -101,8 +101,11 @@ add_executable(sea-server ${ServerSources} AStar.c AStar.h CohenSutherland.c Coh
 target_link_libraries(sea-server LINK_PUBLIC ${Boost_LIBRARIES} lz4_static ${CMAKE_THREAD_LIBS_INIT})
 
 if (UNIX)
+  include(PrecompiledHeader.cmake)
   include_directories(".")
   set(_PCH_SOURCE_CXX TRUE)
   add_precompiled_header(sea-server precompiled.hpp FORCEINCLUDE SOURCE_CXX precompiled.cpp)
+
+  set_target_properties(sea-server PROPERTIES LINK_FLAGS "-static" )
 endif (UNIX)
 
