@@ -152,6 +152,7 @@ typedef struct _LWTTL {
     LWPTTLWAYPOINTS waypoints_cache[512];
     int waypoints_cache_count;
     LWTTLWORLDTEXT world_text[64];
+    int cell_grid;
 } LWTTL;
 
 LWTTL* lwttl_new(float aspect_ratio) {
@@ -1990,4 +1991,12 @@ void lwttl_update(LWTTL* ttl, LWCONTEXT* pLwc, float delta_time) {
         }
     }
     update_world_text(ttl, delta_time);
+}
+
+void lwttl_toggle_cell_grid(LWTTL* ttl) {
+    ttl->cell_grid = !ttl->cell_grid;
+}
+
+int lwttl_cell_grid(const LWTTL* ttl) {
+    return ttl->cell_grid;
 }

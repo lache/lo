@@ -517,7 +517,8 @@ static const float tilemap_uv_scale[] = {
     (1.0f - 2 * TILEMAP_TILE_COUNT * TILEMAP_GAP) / TILEMAP_TILE_COUNT
 };
 
-static void render_land_cell_bitmap(const LWCONTEXT* pLwc,
+static void render_land_cell_bitmap(const LWTTL* ttl,
+                                    const LWCONTEXT* pLwc,
                                     const mat4x4 view,
                                     const mat4x4 proj,
                                     const int bound_xc0,
@@ -542,7 +543,8 @@ static void render_land_cell_bitmap(const LWCONTEXT* pLwc,
     const float tw = 1.0f / 2;
     const float th = 1.0f / 2;
 
-    lazy_tex_atlas_glBindTexture(pLwc, LAE_WATER_SAND_TILE);
+    LW_ATLAS_ENUM tile_lae = lwttl_cell_grid(ttl) ? LAE_WATER_SAND_TILE_GRID : LAE_WATER_SAND_TILE;
+    lazy_tex_atlas_glBindTexture(pLwc, tile_lae);
     for (int by = 0; by < LNGLAT_RENDER_EXTENT_MULTIPLIER_LAT_WITH_MARGIN*LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS; by++) {
         for (int bx = 0; bx < LNGLAT_RENDER_EXTENT_MULTIPLIER_LNG_WITH_MARGIN*LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS; bx++) {
             const int x_scaled_offset_0 = bx - LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS / 2;
@@ -588,7 +590,7 @@ static void render_land_cell_bitmap(const LWCONTEXT* pLwc,
                                                        cell_y0,
                                                        cell_w,
                                                        cell_h,
-                                                       pLwc->tex_atlas[LAE_WATER_SAND_TILE],
+                                                       pLwc->tex_atlas[tile_lae],
                                                        LVT_LEFT_TOP_ANCHORED_SQUARE,
                                                        0.65f,
                                                        0,
@@ -1602,7 +1604,8 @@ static void render_sea_static_objects(const LWCONTEXT* pLwc,
     // render water-land tilemap
     const int bound_xc0 = bound_xcc0 << msb_index(LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS * clamped_view_scale);
     const int bound_yc0 = bound_ycc0 << msb_index(LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS * clamped_view_scale);
-    render_land_cell_bitmap(pLwc,
+    render_land_cell_bitmap(pLwc->ttl,
+                            pLwc,
                             view,
                             proj,
                             bound_xc0,

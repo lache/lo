@@ -157,6 +157,7 @@ typedef enum _LW_ATLAS_ENUM {
     LAE_FLAGS_MINI2_ALPHA,
     LAE_WATER_2048_1024_AA,
     LAE_WATER_SAND_TILE,
+    LAE_WATER_SAND_TILE_GRID,
     
     LAE_TTL_CITY_ALPHA,
     LAE_TTL_CITY,
@@ -335,6 +336,7 @@ static const char *tex_atlas_filename[] = {
     ASSETS_BASE_PATH "ktx" PATH_SEPARATOR "flags-mini2-a_alpha.ktx",
     ASSETS_BASE_PATH "ktx" PATH_SEPARATOR "water_2048x1024_aa.ktx",
     ASSETS_BASE_PATH "ktx" PATH_SEPARATOR "water-sand-tile.ktx",
+    ASSETS_BASE_PATH "ktx" PATH_SEPARATOR "water-sand-tile-grid.ktx",
     
     ASSETS_BASE_PATH "ktx" PATH_SEPARATOR "ttl-city-a_alpha.ktx",
     ASSETS_BASE_PATH "ktx" PATH_SEPARATOR "ttl-city-a.ktx",
