@@ -48,7 +48,6 @@ include_directories("lz4/lib")
 find_package(Threads)
 
 set(ServerSources
-    precompiled.cpp
     sea_server.cpp
     udp_server.cpp
     udp_server.hpp
