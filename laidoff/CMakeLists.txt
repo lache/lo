@@ -110,6 +110,7 @@ endif ()
 
 add_definitions(-DdDOUBLE)
 add_definitions(-DLITEHTML_UTF8)
+add_definitions(-DBASE_PATH="${CMAKE_CURRENT_SOURCE_DIR}")
 
 if (WIN32)
     set(ICON win32/laidoff.rc)
