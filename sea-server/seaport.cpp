@@ -17,14 +17,16 @@ typedef struct _LWTTLDATA_SEAPORT {
 } LWTTLDATA_SEAPORT;
 
 seaport::seaport(boost::asio::io_service& io_service)
-    : file(bi::open_or_create, SEAPORT_RTREE_FILENAME, SEAPORT_RTREE_MMAP_MAX_SIZE)
+    : /*file(bi::open_or_create, SEAPORT_RTREE_FILENAME, SEAPORT_RTREE_MMAP_MAX_SIZE)
     , alloc(file.get_segment_manager())
     , rtree_ptr(file.find_or_construct<seaport_object::rtree>("rtree")(seaport_object::params(), seaport_object::indexable(), seaport_object::equal_to(), alloc))
-    , res_width(WORLD_MAP_PIXEL_RESOLUTION_WIDTH)
-    , res_height(WORLD_MAP_PIXEL_RESOLUTION_HEIGHT)
-    , km_per_cell(WORLD_CIRCUMFERENCE_IN_KM / res_width)
-    , timer_(io_service, update_interval)
-    , seaport_id_seq_(0) {
+    , */
+    rtree_ptr(new seaport_object::rtree_mem())
+              , res_width(WORLD_MAP_PIXEL_RESOLUTION_WIDTH)
+              , res_height(WORLD_MAP_PIXEL_RESOLUTION_HEIGHT)
+              , km_per_cell(WORLD_CIRCUMFERENCE_IN_KM / res_width)
+              , timer_(io_service, update_interval)
+              , seaport_id_seq_(0) {
     time0_ = get_monotonic_uptime();
     boost::interprocess::file_mapping seaport_file("assets/ttldata/seaports.dat", boost::interprocess::read_only);
     boost::interprocess::mapped_region region(seaport_file, boost::interprocess::read_only);
@@ -173,7 +175,7 @@ void seaport::update_single_chunk_key_ts(const LWTTLCHUNKKEY& chunk_key, long lo
     }*/
 }
 
-int seaport::spawn(const char* name, int xc0, int yc0, int owner_id, bool& existing, seaport::seaport_type st) {
+int seaport::spawn(int expected_db_id, const char* name, int xc0, int yc0, int owner_id, bool& existing, seaport::seaport_type st) {
     existing = false;
     seaport_object::point new_port_point{ xc0, yc0 };
     const auto existing_it = rtree_ptr->qbegin(bgi::intersects(new_port_point));
@@ -183,19 +185,18 @@ int seaport::spawn(const char* name, int xc0, int yc0, int owner_id, bool& exist
         return existing_it->second;
     }
 
-    const auto id = static_cast<int>(rtree_ptr->size());// ++seaport_id_seq_;
-    rtree_ptr->insert(std::make_pair(new_port_point, id));
-    id_point[id] = new_port_point;
+    rtree_ptr->insert(std::make_pair(new_port_point, expected_db_id));
+    id_point[expected_db_id] = new_port_point;
     if (name[0] != 0) {
-        set_name(id, name, owner_id, st);
+        set_name(expected_db_id, name, owner_id, st);
     } else {
-        LOGEP("seaport spawned, but name empty. (seaport id = %1%)", id);
+        LOGEP("seaport spawned, but name empty. (seaport id = %1%)", expected_db_id);
     }
-    id_owner_id[id] = owner_id;
-    id_cargo[id] = 0;
+    id_owner_id[expected_db_id] = owner_id;
+    id_cargo[expected_db_id] = 0;
 
     update_chunk_key_ts(xc0, yc0);
-    return id;
+    return expected_db_id;
 }
 
 void seaport::despawn(int id) {
@@ -204,7 +205,7 @@ void seaport::despawn(int id) {
         LOGEP("id not found (%1%)", id);
         return;
     }
-    
+
     const auto xc0 = it->second.get<0>();
     const auto yc0 = it->second.get<1>();
     update_chunk_key_ts(xc0, yc0);

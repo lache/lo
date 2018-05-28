@@ -839,7 +839,7 @@ void lwttl_set_sea_udp(LWTTL* ttl, LWUDP* sea_udp) {
 static void set_ttl_full_state(LWTTL* ttl, const LWPTTLROUTESTATE* p) {
     memcpy(&ttl->ttl_dynamic_state, p, sizeof(LWPTTLROUTESTATE));
     for (int i = 0; i < p->count; i++) {
-        const int ship_id = p->obj[i].obj_db_id;
+        const int ship_id = p->obj[i].db_id;
         int cache_hit = 0;
         for (int j = 0; j < ttl->waypoints_cache_count; j++) {
             if (ttl->waypoints_cache[j].ship_id == ship_id) {

@@ -2,7 +2,9 @@ const Sqlite3 = require('better-sqlite3')
 const db = new Sqlite3('ttl.db')
 
 const insertUser = db.prepare(`INSERT INTO user (guid, name) VALUES (?, ?)`)
-const insertShip = db.prepare(`INSERT INTO ship (user_id, name, ship_type) VALUES (?, ?, ?)`)
+const insertShip = db.prepare(
+  `INSERT INTO ship (user_id, name, ship_type) VALUES (?, ?, ?)`
+)
 const deleteShip = db.prepare(`DELETE FROM ship WHERE ship_id = ?`)
 const insertPort = db.prepare(
   `INSERT INTO region (name, x, y, owner_id, region_type) VALUES (?, ?, ?, ?, ?)`
@@ -54,16 +56,9 @@ FROM mission m
   JOIN region dept ON m.departure_id=dept.region_id
   JOIN region arvl ON m.arrival_id=arvl.region_id`)
 const findPort = db.prepare(`SELECT
-  region_id, name, x, y, port_id
+  region_id, name, x, y
 FROM region r
 WHERE r.region_id = ?`)
-const findPortByPortId = db.prepare(`SELECT
-  region_id, name, x, y, port_id
-FROM region r
-WHERE r.port_id = ?`)
-const updatePortSeaServerPortId = db.prepare(
-  `UPDATE region SET port_id = ? WHERE region_id = ?`
-)
 const findPorts = db.prepare(`SELECT
   region_id, name, x, y
 FROM region LIMIT 7`)
@@ -75,8 +70,8 @@ const findPortsScrollUp = db.prepare(`SELECT
   region_id, name, x, y
   FROM region
   WHERE region_id < ? ORDER BY region_id DESC LIMIT ?`)
-const listPortName = db.prepare(
-  `SELECT port_id, name, owner_id, region_type FROM region WHERE port_id IS NOT NULL`
+const listPort = db.prepare(
+  `SELECT region_id, name, x, y, owner_id, region_type FROM region`
 )
 const deletePort = db.prepare(`DELETE FROM region WHERE region_id = ?`)
 module.exports = {
@@ -89,13 +84,11 @@ module.exports = {
   findMission,
   findMissions,
   findPort,
-  findPortByPortId,
-  updatePortSeaServerPortId,
   insertPort,
   findPorts,
   findPortsScrollDown,
   findPortsScrollUp,
-  listPortName,
+  listPort,
   insertShiproute,
   setShipShiproute,
   listShipShiproute,

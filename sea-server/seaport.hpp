@@ -17,7 +17,7 @@ namespace ss {
         int get_nearest_two(const xy32& pos, int& id1, std::string& name1, int& id2, std::string& name2) const;
         int lng_to_xc(float lng) const;
         int lat_to_yc(float lat) const;
-        int spawn(const char* name, int xc0, int yc0, int owner_id, bool& existing, seaport_type st = SEA);
+        int spawn(int expected_db_id, const char* name, int xc0, int yc0, int owner_id, bool& existing, seaport_type st);
         void despawn(int id);
         void set_name(int id, const char* name, int owner_id, int port_type);
         long long query_ts(const int xc0, const int yc0, const int view_scale) const;
@@ -33,9 +33,10 @@ namespace ss {
         std::vector<seaport_object::value> query_tree_ex(int xc, int yc, int half_lng_ex, int half_lat_ex) const;
         void update_chunk_key_ts(int xc0, int yc0);
         void convert_cargo();
-        bi::managed_mapped_file file;
+        /*bi::managed_mapped_file file;
         seaport_object::allocator alloc;
-        seaport_object::rtree* rtree_ptr;
+        seaport_object::rtree* rtree_ptr;*/
+        std::shared_ptr<seaport_object::rtree_mem> rtree_ptr;
         const int res_width;
         const int res_height;
         const float km_per_cell;

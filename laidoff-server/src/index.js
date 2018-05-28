@@ -35,13 +35,12 @@ const createUser = guid => {
   // query.insertShip.run(user.lastInsertROWID, shipName)
   return user.lastInsertROWID
 }
-const createPort = (guid, portName, x, y, userId, expectLand) => {
+const createPort = (portName, x, y, userId, expectLand) => {
   const port = query.insertPort.run(portName, x, y, userId, expectLand)
   return port.lastInsertROWID
 }
-const createShip = (guid, shipName, shipType) => {
-  const user = findOrCreateUser(guid)
-  const ship = query.insertShip.run(user.user_id, shipName, shipType)
+const createShip = (userId, shipName, shipType) => {
+  const ship = query.insertShip.run(userId, shipName, shipType)
   return ship.lastInsertROWID
 }
 const deleteShip = shipId => {
@@ -59,10 +58,24 @@ const listShipShiproute = onRow => {
     onRow(row)
   }
 }
-const listPortName = onRow => {
-  for (const row of query.listPortName.iterate()) {
-    onRow(row)
+const listShipShiprouteToArray = () => {
+  const rows = []
+  listShipShiproute(row => {
+    rows.push(row)
+  })
+  return rows
+}
+const listPort = async onRow => {
+  for (const row of query.listPort.iterate()) {
+    await onRow(row)
   }
+}
+const listPortToArray = () => {
+  const rows = []
+  listPort(row => {
+    rows.push(row)
+  })
+  return rows
 }
 const findShip = shipId => query.findShip.get(shipId)
 const findUser = guid => query.findUser.get(guid)
@@ -110,9 +123,6 @@ const findMissions = () => {
 }
 
 const findPort = portId => query.findPort.get(portId)
-const findPortByPortId = portId => query.findPortByPortId.get(portId)
-const updatePortSeaServerPortId = (portId, seaServerPortId) =>
-  query.updatePortSeaServerPortId.run(seaServerPortId, portId)
 const findPortsScrollDown = (userId, lastRegionId, count) => {
   return query.findPortsScrollDown.all(lastRegionId, count)
 }
@@ -122,22 +132,6 @@ const findPortsScrollUp = (userId, lastRegionId, count) => {
 const deletePort = portId => {
   query.deletePort.run(portId)
 }
-const spawnSeaObject = (id, x, y) => {
-  const buf = message.SpawnStruct.buffer()
-  for (let i = 0; i < buf.length; i++) {
-    buf[i] = 0
-  }
-  message.SpawnStruct.fields.type = 1
-  message.SpawnStruct.fields.id = id
-  message.SpawnStruct.fields.x = x
-  message.SpawnStruct.fields.y = y
-  seaUdpClient.send(Buffer.from(buf), 4000, 'localhost', err => {
-    if (err) {
-      console.error('sea udp client error:', err)
-    }
-  })
-}
-
 const travelTo = (id, x, y) => {
   const buf = message.TeleportToStruct.buffer()
   for (let i = 0; i < buf.length; i++) {
@@ -169,12 +163,6 @@ const teleportTo = (id, x, y) => {
     }
   })
 }
-
-app.get('/', (req, res) => {
-  const u = findOrCreateUser(req.query.u || uuidv1())
-  spawnSeaObject(u.guid, 0, 0)
-  return res.render('intro', { user: u })
-})
 
 app.get('/idle', (req, res) => {
   const u = findOrCreateUser(req.query.u || uuidv1())
@@ -350,13 +338,12 @@ app.get('/teleporttoport', (req, res) => {
 })
 
 const sendSpawnShip = async (
-  id,
-  name,
+  expectedDbId,
   x,
   y,
-  port1Id = -1,
-  port2Id = -1,
-  expectLand = 0
+  port1Id,
+  port2Id,
+  expectLand
 ) => {
   const buf = message.SpawnShipStruct.buffer()
   for (let i = 0; i < buf.length; i++) {
@@ -364,36 +351,16 @@ const sendSpawnShip = async (
   }
   const replyId = issueNewReplyId()
   message.SpawnShipStruct.fields.type = 4
-  message.SpawnShipStruct.fields.id = id
-  message.SpawnShipStruct.fields.name = name
+  message.SpawnShipStruct.fields.expectedDbId = expectedDbId
   message.SpawnShipStruct.fields.x = x
   message.SpawnShipStruct.fields.y = y
   message.SpawnShipStruct.fields.port1Id = port1Id
   message.SpawnShipStruct.fields.port2Id = port2Id
-  message.SpawnShipStruct.fields.newSpawn =
-    port1Id !== -1 && port2Id !== -1 ? 1 : 0
   message.SpawnShipStruct.fields.replyId = replyId
   message.SpawnShipStruct.fields.expectLand = expectLand
   return sendAndReplyFromSea(buf, replyId, err => {
     if (err) {
       console.error('sea udp SpawnShipStruct client error:', err)
-    }
-  })
-}
-
-const sendNamePort = (portId, name, ownerId, portType) => {
-  const buf = message.NamePortStruct.buffer()
-  for (let i = 0; i < buf.length; i++) {
-    buf[i] = 0
-  }
-  message.NamePortStruct.fields.type = 7
-  message.NamePortStruct.fields.portId = portId
-  message.NamePortStruct.fields.name = name
-  message.NamePortStruct.fields.ownerId = ownerId
-  message.NamePortStruct.fields.portType = portType
-  seaUdpClient.send(Buffer.from(buf), 4000, 'localhost', err => {
-    if (err) {
-      console.error('sea udp sendNamePort client error:', err)
     }
   })
 }
@@ -426,196 +393,106 @@ const notifyWaiter = packetStruct => {
   }
 }
 
-const sendSpawnPort = async (id, name, x, y, ownerId, expectLand) => {
+const sendSpawnPort = async (expectedDbId, name, x, y, ownerId, expectLand) => {
   const buf = message.SpawnPortStruct.buffer()
   for (let i = 0; i < buf.length; i++) {
     buf[i] = 0
   }
   const replyId = issueNewReplyId()
   message.SpawnPortStruct.fields.type = 6
-  message.SpawnPortStruct.fields.id = id
+  message.SpawnPortStruct.fields.expectedDbId = expectedDbId
   message.SpawnPortStruct.fields.name = name
   message.SpawnPortStruct.fields.x = x
   message.SpawnPortStruct.fields.y = y
   message.SpawnPortStruct.fields.ownerId = ownerId
   message.SpawnPortStruct.fields.replyId = replyId
   message.SpawnPortStruct.fields.expectLand = expectLand
-  const reply = await sendAndReplyFromSea(buf, replyId, err => {
+  return sendAndReplyFromSea(buf, replyId, err => {
     if (err) {
       console.error('sea udp SpawnShipStruct client error:', err)
     }
   })
-  return reply
 }
-
-app.get('/purchase_new_ship', async (req, res) => {
-  const u = findOrCreateUser(req.query.u || uuidv1())
-  const shipName = `${raname.middle()} ${raname.middle()}`
-  const shipId = createShip(u.guid, shipName)
-  await sendSpawnShip(
-    shipId,
-    u.user_name,
-    req.get('X-Lng'),
-    req.get('X-Lat'),
-    0
-  )
-  spendGold(u.guid, 1000)
-  delete userCache[u.guid]
-  const uAfter = findOrCreateUser(req.query.u || uuidv1())
-  res.redirect(
-    url.format({
-      pathname: '/vessel',
-      query: {
-        u: uAfter.guid,
-        currentFirstKey: req.query.currentFirstKey
-      }
-    })
-  )
-})
-
-app.get('/purchase_new_ship_with_ports', async (req, res) => {
-  const u = findOrCreateUser(req.query.u || uuidv1())
-  const shipName = `${raname.middle()} ${raname.middle()}`
-  const shipId = createShip(u.guid, shipName)
-  const p1 = findPort(req.query.p1)
-  const p2 = findPort(req.query.p2)
-  await sendSpawnShip(
-    shipId,
-    u.user_name,
-    req.get('X-Lng'),
-    req.get('X-Lat'),
-    p1.port_id,
-    p2.port_id,
-    0
-  )
-  spendGold(u.guid, 10000)
-  delete userCache[u.guid]
-  const uAfter = findOrCreateUser(req.query.u || uuidv1())
-  res.redirect(
-    url.format({
-      pathname: '/vessel',
-      query: {
-        u: uAfter.guid,
-        currentFirstKey: req.query.currentFirstKey
-      }
-    })
-  )
-})
 
 const execCreatePort = async (u, selectedLng, selectedLat, expectLand) => {
   const portName = `Port ${raname.first()}`
-  const reply = await sendSpawnPort(
-    0,
+  // create db entry first
+  const regionId = createPort(
     portName,
     selectedLng,
     selectedLat,
     u.user_id,
     expectLand
   )
-  if (reply.portId >= 0) {
+  // send spawn command to sea-server
+  const reply = await sendSpawnPort(
+    regionId,
+    portName,
+    selectedLng,
+    selectedLat,
+    u.user_id,
+    expectLand
+  )
+  if (reply.dbId === regionId) {
     if (reply.existing === 0) {
-      const regionId = createPort(
-        u.guid,
-        portName,
-        selectedLng,
-        selectedLat,
-        u.user_id,
-        expectLand
-      )
-      const port = findPort(regionId)
-      if (port) {
-        updatePortSeaServerPortId(port.region_id, reply.portId)
-      } else {
-        console.error(
-          `Could not find port with id ${
-            message.SpawnPortReplyStruct.fields.id
-          }!`
-        )
-      }
+      // successfully created
       spendGold(u.guid, 10000)
       return regionId
     } else {
-      const port = findPortByPortId(reply.portId)
-      if (port) {
-        return port.region_id
-      } else {
-        console.error('findPortByPortId returned null')
-        return -1
-      }
+      console.error(
+        'Port with the same ID already exists on sea-server (is this possible?!)'
+      )
+      return regionId
     }
-  } else {
-    return -1
   }
+  // something went wrong; delete from db
+  deletePort(regionId)
+  // print useful information
+  if (reply.dbId > 0 && reply.dbId !== regionId) {
+    console.error(
+      `port cannot be created: different port ID ${
+        reply.dbId
+      } already exists on that location`
+    )
+    return reply.dbId
+  } else {
+    console.error('port cannot be created: unknown case')
+  }
+  return 0
 }
 
-app.get('/purchase_new_port', async (req, res) => {
-  const u = findOrCreateUser(req.query.u || uuidv1())
-  const selectedLng = req.get('X-S-Lng')
-  const selectedLat = req.get('X-S-Lat')
-  if (selectedLng < 0 || selectedLat < 0) {
-    res.redirect(
-      url.format({
-        pathname: '/port',
-        query: {
-          u: u.guid,
-          currentFirstKey: req.query.currentFirstKey,
-          errMsg: '지도 상에서 항구를 만들고 싶은 셀을 선택해야 합니다.'
-        }
-      })
+const execCreateShipWithRoute = async (
+  userId,
+  xc0,
+  yc0,
+  expectLand,
+  r0,
+  r1
+) => {
+  const shipName = `${raname.middle()} ${raname.middle()}`
+  const dbId = createShip(userId, shipName, expectLand)
+  const p0 = findPort(r0)
+  const p1 = findPort(r1)
+  if (p0 && p1) {
+    const reply = await sendSpawnShip(
+      dbId,
+      xc0,
+      yc0,
+      p0.region_id,
+      p1.region_id,
+      expectLand
     )
+    if (reply.dbId === dbId) {
+      return dbId
+    } else {
+      console.error(`Spawn ship request id and result id mismatch`)
+      deleteShip(dbId)
+    }
   } else {
-    await execCreatePort(u, selectedLng, selectedLat, 0)
-    delete userCache[u.guid]
-    const uAfter = findOrCreateUser(req.query.u || uuidv1())
-    res.redirect(
-      url.format({
-        pathname: '/port',
-        query: {
-          u: uAfter.guid,
-          currentFirstKey: req.query.currentFirstKey
-        }
-      })
-    )
+    console.error(`Ports cannot be found - ${p0}, ${p1}`)
+    deleteShip(dbId)
   }
-})
-
-app.get('/newPortRegistered', (req, res) => {
-  const u = findOrCreateUser(req.query.u || uuidv1())
-  const seaports = [
-    {
-      name: '부산항',
-      img: 'remtex/seaport-busan.png'
-    },
-    {
-      name: '울산항',
-      img: 'remtex/seaport-ulsan.png'
-    },
-    {
-      name: '싱가포르항',
-      img: 'remtex/seaport-singapore.png'
-    }
-  ]
-  const seaport = seaports[Math.floor(Math.random() * seaports.length)]
-  return res.render('testNewPort', { user: u, seaport: seaport })
-})
-
-app.get('/seaway', (req, res) => {
-  const u = findOrCreateUser(req.query.u || uuidv1())
-  // const ships = req.get('X-Select-Ship').split(',')
-  const ports = req.get('X-Select-Port')
-    ? req.get('X-Select-Port').split(',')
-    : null
-  let p1, p2
-  if (ports) {
-    if (ports.length >= 1) {
-      p1 = findPort(ports[ports.length - 1])
-    }
-    if (ports.length >= 2) {
-      p2 = findPort(ports[ports.length - 2])
-    }
-  }
-  return res.render('seaway', { user: u, p1: p1, p2: p2 })
-})
+}
 
 app.get('/sell_port', (req, res) => {
   const u = findOrCreateUser(req.query.u || uuidv1())
@@ -628,7 +505,7 @@ app.get('/sell_port', (req, res) => {
         buf[i] = 0
       }
       message.DeletePortStruct.fields.type = 8 // Delete Port
-      message.DeletePortStruct.fields.portId = port.port_id
+      message.DeletePortStruct.fields.portId = port.region_id
       seaUdpClient.send(Buffer.from(buf), 4000, 'localhost', err => {
         if (err) {
           console.error('sea udp client error:', err)
@@ -647,30 +524,18 @@ app.get('/sell_port', (req, res) => {
   )
 })
 
-app.get('/link', async (req, res) => {
+const link = async (req, res, expectLand) => {
   const u = findOrCreateUser(req.get('X-U') || uuidv1())
   const xc0 = req.get('X-D-XC0')
   const yc0 = req.get('X-D-YC0')
   const xc1 = req.get('X-D-XC1')
   const yc1 = req.get('X-D-YC1')
   console.log(`Link [${xc0}, ${yc0}]-[${xc1}, ${yc1}]`)
-  const r0 = await execCreatePort(u, xc0, yc0, 0)
-  if (r0 >= 0) {
-    const r1 = await execCreatePort(u, xc1, yc1, 0)
-    if (r1 >= 0) {
-      const shipName = `${raname.middle()} ${raname.middle()}`
-      const shipId = createShip(u.guid, shipName, 0)
-      const p1 = findPort(r0)
-      const p2 = findPort(r1)
-      await sendSpawnShip(
-        shipId,
-        u.user_name,
-        xc0,
-        yc0,
-        p1.port_id,
-        p2.port_id,
-        0
-      )
+  const r0 = await execCreatePort(u, xc0, yc0, expectLand)
+  if (r0 > 0) {
+    const r1 = await execCreatePort(u, xc1, yc1, expectLand)
+    if (r1 > 0) {
+      await execCreateShipWithRoute(u.user_id, xc0, yc0, expectLand, r0, r1)
     }
   }
   res.redirect(
@@ -681,50 +546,17 @@ app.get('/link', async (req, res) => {
       }
     })
   )
+}
+
+app.get('/link', async (req, res) => {
+  await link(req, res, 0)
 })
 
 app.get('/linkland', async (req, res) => {
-  const u = findOrCreateUser(req.get('X-U') || uuidv1())
-  const xc0 = req.get('X-D-XC0')
-  const yc0 = req.get('X-D-YC0')
-  const xc1 = req.get('X-D-XC1')
-  const yc1 = req.get('X-D-YC1')
-  console.log(`Link [${xc0}, ${yc0}]-[${xc1}, ${yc1}]`)
-  const r0 = await execCreatePort(u, xc0, yc0, 1)
-  if (r0 >= 0) {
-    const r1 = await execCreatePort(u, xc1, yc1, 1)
-    if (r1 >= 0) {
-      const shipName = `${raname.middle()} ${raname.middle()}`
-      const shipId = createShip(u.guid, shipName, 1)
-      const p1 = findPort(r0)
-      const p2 = findPort(r1)
-      await sendSpawnShip(
-        shipId,
-        u.user_name,
-        xc0,
-        yc0,
-        p1.port_id,
-        p2.port_id,
-        1
-      )
-    }
-  }
-  res.redirect(
-    url.format({
-      pathname: '/idle',
-      query: {
-        u: u.guid
-      }
-    })
-  )
+  await link(req, res, 1)
 })
 
-app.get('/test*', (req, res) => {
-  const u = findOrCreateUser(req.query.u || uuidv1())
-  return res.render(req.url.substring(1, req.url.length), { user: u })
-})
-
-seaUdpClient.on('message', (buf, remote) => {
+seaUdpClient.on('message', async (buf, remote) => {
   if (buf[0] === 1) {
     // SpawnShipReply
     console.log(
@@ -740,7 +572,7 @@ seaUdpClient.on('message', (buf, remote) => {
       message.SpawnShipReplyStruct.fields.port1Id,
       message.SpawnShipReplyStruct.fields.port2Id
     )
-    setShipShiproute(message.SpawnShipReplyStruct.fields.shipId, shiprouteId)
+    setShipShiproute(message.SpawnShipReplyStruct.fields.dbId, shiprouteId)
   } else if (buf[0] === 2) {
     // RecoverAllShips
     console.log(
@@ -750,12 +582,29 @@ seaUdpClient.on('message', (buf, remote) => {
     )
     console.log('A new sea-server instance requested recovering.')
     console.log('Recovering in progress...')
+    // recovering ports
+    let portCount = 0
+    const ports = listPortToArray()
+    for (let i = 0; i < ports.length; i++) {
+      const row = ports[i]
+      await sendSpawnPort(
+        row.region_id,
+        row.name,
+        row.x,
+        row.y,
+        row.owner_id,
+        row.region_type
+      )
+      portCount++
+    }
+    console.log(`  ${portCount} port(s) recovered...`)
+    // recovering ships
     let shipShiprouteCount = 0
-    listShipShiproute(async row => {
-      // console.log(row)
+    const ships = listShipShiprouteToArray()
+    for (let i = 0; i < ships.length; i++) {
+      const row = ships[i]
       await sendSpawnShip(
         row.ship_id,
-        '',
         0,
         0,
         row.port1_id,
@@ -763,14 +612,8 @@ seaUdpClient.on('message', (buf, remote) => {
         row.ship_type
       )
       shipShiprouteCount++
-    })
+    }
     console.log(`  ${shipShiprouteCount} ship(s) recovered...`)
-    let portNameCount = 0
-    listPortName(row => {
-      sendNamePort(row.port_id, row.name, row.owner_id, row.region_type)
-      portNameCount++
-    })
-    console.log(`  ${portNameCount} port(s) name recovered...`)
     console.log(`Recovering Done.`)
   } else if (buf[0] === 3) {
     // Arrival
@@ -792,6 +635,9 @@ seaUdpClient.on('message', (buf, remote) => {
     }
   } else if (buf[0] === 4) {
     // SpawnPortReply
+    console.log(
+      `SpawnPortReply from ${remote.address}:${remote.port} (len=${buf.length})`
+    )
     message.SpawnPortReplyStruct._setBuff(buf)
     notifyWaiter(message.SpawnPortReplyStruct)
   }

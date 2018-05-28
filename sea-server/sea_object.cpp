@@ -5,22 +5,6 @@
 using namespace ss;
 
 void sea_object::update(float delta_time) {
-    /*if (remain_unloading_time > 0) {
-        assert(state == SOS_UNLOADING);
-        remain_unloading_time -= delta_time;
-        if (remain_unloading_time <= 0) {
-            remain_unloading_time = 0;
-            state = SOS_LOADING;
-        }
-    }
-    if (remain_loading_time > 0) {
-        assert(state == SOS_LOADING);
-        remain_loading_time -= delta_time;
-        if (remain_loading_time <= 0) {
-            remain_loading_time = 0;
-            state = SOS_SAILING;
-        }
-    }*/
 }
 
 int sea_object::add_cargo(int amount, int cargo_origin_seaport_id, const xy32& cargo_origin_xy) {
@@ -70,13 +54,13 @@ int sea_object::remove_cargo(int amount, int cargo_destination_seaport_id, const
 }
 
 void sea_object::fill_packet(LWPTTLROUTEOBJECT& p) const {
-    p.obj_id = id;
-    p.obj_db_id = type;
+    p.db_id = db_id;
     p.route_flags.land = expect_land;
-    strcpy(p.guid, guid.c_str());
     if (state == SOS_LOADING) {
-        strcat(p.guid, "[LOADING]");
+        p.route_flags.loading = 1;
     } else if (state == SOS_UNLOADING) {
-        strcat(p.guid, "[UNLOADING]");
+        p.route_flags.unloading = 1;
+    } else if (state == SOS_SAILING) {
+        p.route_flags.sailing = 1;
     }
 }

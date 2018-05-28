@@ -60,7 +60,7 @@ struct command {
 
 struct spawn_command {
     command _;
-    char guid[64];
+    int expected_db_id;
     float x;
     float y;
 };
@@ -81,20 +81,18 @@ struct teleport_to_command {
 
 struct spawn_ship_command {
     command _;
-    int id;
-    char name[64];
+    int expected_db_id;
     float x;
     float y;
     int port1_id;
     int port2_id;
-    int new_spawn;
     int reply_id;
     int expect_land;
 };
 
 struct spawn_ship_command_reply {
     command _;
-    int ship_id;
+    int db_id;
     int port1_id;
     int port2_id;
     int routed;
@@ -108,7 +106,7 @@ struct delete_ship_command {
 
 struct spawn_port_command {
     command _;
-    int id; // DB key
+    int expected_db_id; // DB key
     char name[64];
     int xc;
     int yc;
@@ -119,18 +117,9 @@ struct spawn_port_command {
 
 struct spawn_port_command_reply {
     command _;
-    int id; // DB key
-    int port_id; // Sea-server key
+    int db_id; // DB key
     int reply_id;
     int existing;
-};
-
-struct name_port_command {
-    command _;
-    int port_id;
-    char name[64];
-    int owner_id;
-    int port_type;
 };
 
 struct delete_port_command {
@@ -144,28 +133,18 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
         switch (cp->type) {
         case 1: // Spawn
         {
-            assert(bytes_transferred == sizeof(spawn_command));
-            LOGIx("Spawn type: %1%", static_cast<int>(cp->type));
-            spawn_command* spawn = reinterpret_cast<spawn_command*>(recv_buffer_.data());
-            int type = 1;
-            sea_->spawn(spawn->guid, type, spawn->x, spawn->y, 1.0f, 1.0f, 0);
-            break;
+            LOGEP("Not supported admin command!");
+            abort();
         }
         case 2: // Travel To
         {
-            assert(bytes_transferred == sizeof(travel_to_command));
-            LOGIx("Travel To type: %1%", static_cast<int>(cp->type));
-            travel_to_command* spawn = reinterpret_cast<travel_to_command*>(recv_buffer_.data());
-            sea_->travel_to(spawn->guid, spawn->x, spawn->y);
-            break;
+            LOGEP("Not supported admin command!");
+            abort();
         }
         case 3: // Telport To
         {
-            assert(bytes_transferred == sizeof(teleport_to_command));
-            LOGIx("Teleport To type: %1%", static_cast<int>(cp->type));
-            teleport_to_command* spawn = reinterpret_cast<teleport_to_command*>(recv_buffer_.data());
-            sea_->teleport_to(spawn->guid, spawn->x, spawn->y);
-            break;
+            LOGEP("Not supported admin command!");
+            abort();
         }
         case 4: // Spawn Ship
         {
@@ -176,19 +155,19 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
             spawn_ship_command_reply reply;
             memset(&reply, 0, sizeof(spawn_ship_command_reply));
             reply._.type = 1;
-            reply.ship_id = spawn->id;
             reply.port1_id = -1;
             reply.port2_id = -1;
             reply.reply_id = spawn->reply_id;
             if (spawn->expect_land == 0) {
                 if (sea_static_->is_sea_water(spawn_pos)) {
-                    int id = sea_->spawn(spawn->id, spawn->x, spawn->y, 1, 1, spawn->expect_land);
+                    int id = sea_->spawn(spawn->expected_db_id, spawn->x, spawn->y, 1, 1, spawn->expect_land);
+                    reply.db_id = id;
                     int id1 = spawn->port1_id;
                     int id2 = spawn->port2_id;
                     reply.port1_id = id1;
                     reply.port2_id = id2;
                     bool new_spawn = false;
-                    if (spawn->port1_id == -1 || spawn->port2_id == -1) {
+                    if (spawn->port1_id == 0 || spawn->port2_id == 0) {
                         std::string port1, port2;
                         if (seaport_->get_nearest_two(spawn_pos, id1, port1, id2, port2) == 2) {
                             LOGI("Nearest two ports: %1%(id=%2%), %3%(id=%4%)",
@@ -199,7 +178,7 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
                             new_spawn = true;
                         }
                     }
-                    if (id1 >= 0 && id2 >= 0 && udp_server_->set_route(id, id1, id2, spawn->expect_land)) {
+                    if (id1 > 0 && id2 > 0 && udp_server_->set_route(id, id1, id2, spawn->expect_land)) {
                         reply.routed = 1;
                     } else {
                         LOGE("Cannot get nearest two ports! port1_id=%1%, port2_id=%2%",
@@ -213,17 +192,18 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
                 }
             } else if (spawn->expect_land == 1) {
                 if (sea_static_->is_land(spawn_pos)) {
-                    int id = sea_->spawn(spawn->id, spawn->x, spawn->y, 1, 1, spawn->expect_land);
+                    int id = sea_->spawn(spawn->expected_db_id, spawn->x, spawn->y, 1, 1, spawn->expect_land);
+                    reply.db_id = id;
                     int id1 = spawn->port1_id;
                     int id2 = spawn->port2_id;
                     reply.port1_id = id1;
                     reply.port2_id = id2;
                     bool new_spawn = false;
-                    if (spawn->port1_id == -1 || spawn->port2_id == -1) {
+                    if (spawn->port1_id == 0 || spawn->port2_id == 0) {
                         LOGEP("Not supported!");
                         abort();
                     }
-                    if (id1 >= 0 && id2 >= 0 && udp_server_->set_route(id, id1, id2, spawn->expect_land)) {
+                    if (id1 > 0 && id2 > 0 && udp_server_->set_route(id, id1, id2, spawn->expect_land)) {
                         reply.routed = 1;
                     } else {
                         LOGE("Cannot get nearest two ports! port1_id=%1%, port2_id=%2%",
@@ -261,26 +241,24 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
             spawn_port_command_reply reply;
             memset(&reply, 0, sizeof(spawn_port_command_reply));
             reply._.type = 4;
-            reply.port_id = -1;
-            reply.id = spawn->id;
             reply.reply_id = spawn->reply_id;
             if (spawn->expect_land == 0) {
                 // Seaport
                 if (sea_static_->is_sea_water(spawn_pos)) {
                     bool existing = false;
-                    int id = seaport_->spawn(spawn->name, spawn->xc, spawn->yc, spawn->owner_id, existing);
-                    if (id >= 0) {
+                    int id = seaport_->spawn(spawn->expected_db_id, spawn->name, spawn->xc, spawn->yc, spawn->owner_id, existing, spawn->expect_land ? seaport::seaport_type::LAND : seaport::seaport_type::SEA);
+                    reply.db_id = id;
+                    if (id > 0) {
                         LOGI("New seaport SP %1% {%2%,%3%} spawned. owner_id=%4%",
                              id,
                              spawn_pos.x,
                              spawn_pos.y,
                              spawn->owner_id);
-                        reply.port_id = id;
                         reply.existing = existing;
                     } else {
-                        LOGE("New port cannot be spawned at (x=%1%, y=%2%)",
-                             spawn_pos.x,
-                             spawn_pos.y);
+                        LOGEP("New port cannot be spawned at (x=%1%, y=%2%)",
+                              spawn_pos.x,
+                              spawn_pos.y);
                     }
                 } else {
                     LOGEP("Spawn position should be water. (x=%||, y=%||)",
@@ -291,14 +269,14 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
                 // (Land?)port
                 if (sea_static_->is_land(spawn_pos)) {
                     bool existing = false;
-                    int id = seaport_->spawn(spawn->name, spawn->xc, spawn->yc, spawn->owner_id, existing, seaport::seaport_type::LAND);
-                    if (id >= 0) {
+                    int id = seaport_->spawn(spawn->expected_db_id, spawn->name, spawn->xc, spawn->yc, spawn->owner_id, existing, seaport::seaport_type::LAND);
+                    reply.db_id = id;
+                    if (id > 0) {
                         LOGI("New seaport SP %1% {%2%,%3%} spawned. owner_id=%4%",
                              id,
                              spawn_pos.x,
                              spawn_pos.y,
                              spawn->owner_id);
-                        reply.port_id = id;
                         reply.existing = existing;
                     } else {
                         LOGE("New seaport cannot be spawned at (x=%1%, y=%2%)",
@@ -323,10 +301,7 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
         }
         case 7: // Name Port
         {
-            assert(bytes_transferred == sizeof(name_port_command));
-            LOGIx("Name Port type: %1%", static_cast<int>(cp->type));
-            const name_port_command* name_port = reinterpret_cast<name_port_command*>(recv_buffer_.data());
-            seaport_->set_name(name_port->port_id, name_port->name, name_port->owner_id, name_port->port_type);
+            LOGEP("Not supported admin command!");
             break;
         }
         case 8: // Delete Port

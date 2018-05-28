@@ -265,15 +265,16 @@ typedef struct _LWPSTATE2 {
 typedef struct _LWPTTLROUTEBITFIELD {
     int reversed : 1;
     int land : 1;
+    int loading : 1;
+    int unloading : 1;
+    int sailing : 1;
 } LWPTTLROUTEBITFIELD;
 
 typedef struct _LWPTTLROUTEOBJECT {
-    int obj_id;
-    int obj_db_id;
+    int db_id;
     float route_param;
     float route_speed;
     LWPTTLROUTEBITFIELD route_flags;
-    char guid[64];
 } LWPTTLROUTEOBJECT;
 
 // UDP

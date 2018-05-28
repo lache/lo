@@ -35,7 +35,6 @@ int main(int argc, char* argv[]) {
 
         boost::asio::io_service io_service;
         std::shared_ptr<sea> sea_instance(new sea(io_service));
-        sea_instance->populate_test();
         std::shared_ptr<sea_static> sea_static_instance(new sea_static());
         std::shared_ptr<seaport> seaport_instance(new seaport(io_service));
         std::shared_ptr<region> region_instance(new region());

@@ -39,7 +39,6 @@ CREATE TABLE IF NOT EXISTS `region` (
 	`name`	VARCHAR ( 80 ) NOT NULL,
 	`x`	REAL NOT NULL,
 	`y`	REAL NOT NULL,
-	`port_id`	INTEGER,
 	`owner_id`	INTEGER,
 	`region_type`	INTEGER
 );
@@ -55,9 +54,5 @@ CREATE TABLE IF NOT EXISTS `mission` (
 DROP INDEX IF EXISTS `ux_guid`;
 CREATE UNIQUE INDEX IF NOT EXISTS `ux_guid` ON `user` (
 	`guid`
-);
-DROP INDEX IF EXISTS `region_port`;
-CREATE UNIQUE INDEX IF NOT EXISTS `region_port` ON `region` (
-	`port_id`	ASC
 );
 COMMIT;

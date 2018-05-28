@@ -953,7 +953,7 @@ static void render_sea_objects_nameplate(const LWCONTEXT* pLwc, const mat4x4 vie
 
     for (int i = 0; i < ttl_dynamic_state->count; i++) {
         const LWPTTLWAYPOINTS* wp = lwttl_get_waypoints_by_ship_id(pLwc->ttl,
-                                                                   ttl_dynamic_state->obj[i].obj_db_id);
+                                                                   ttl_dynamic_state->obj[i].db_id);
         if (wp == 0) {
             continue;
         }
@@ -985,10 +985,9 @@ static void render_sea_objects_nameplate(const LWCONTEXT* pLwc, const mat4x4 vie
         SET_COLOR_RGBA_FLOAT(test_text_block.color_emp_outline, 0, 0, 0, 1);
         char obj_nameplate[256];
         sprintf(obj_nameplate,
-                "%d %s %.0f",
-                //ttl_dynamic_state->obj[i].id, // sea-server instance id
-                ttl_dynamic_state->obj[i].obj_db_id, // laidoff-server db id
-                ttl_dynamic_state->obj[i].guid,
+                "%d [%s] %.0f",
+                ttl_dynamic_state->obj[i].db_id,
+                ttl_dynamic_state->obj[i].route_flags.loading ? "LOADING" : ttl_dynamic_state->obj[i].route_flags.unloading ? "UNLOADING" : "",
                 ttl_dynamic_state->obj[i].route_param);
         test_text_block.text = obj_nameplate;
         test_text_block.text_bytelen = (int)strlen(test_text_block.text);
@@ -1007,7 +1006,7 @@ static void render_sea_objects(const LWCONTEXT* pLwc, const mat4x4 view, const m
     const LWPTTLROUTESTATE* ttl_dynamic_state = lwttl_full_state(pLwc->ttl);
     for (int i = 0; i < ttl_dynamic_state->count; i++) {
         const LWPTTLROUTEOBJECT* obj = &ttl_dynamic_state->obj[i];
-        const LWPTTLWAYPOINTS* wp = lwttl_get_waypoints_by_ship_id(pLwc->ttl, obj->obj_db_id);
+        const LWPTTLWAYPOINTS* wp = lwttl_get_waypoints_by_ship_id(pLwc->ttl, obj->db_id);
         if (wp == 0) {
             continue;
         }
@@ -1150,7 +1149,7 @@ static void render_waypoints_cache(const LWTTL* ttl,
                                    const LWTTLLNGLAT* center) {
     const LWPTTLROUTESTATE* ttl_dynamic_state = lwttl_full_state(pLwc->ttl);
     for (int i = 0; i < ttl_dynamic_state->count; i++) {
-        const int ship_id = ttl_dynamic_state->obj[i].obj_db_id;
+        const int ship_id = ttl_dynamic_state->obj[i].db_id;
         render_waypoints_by_ship_id(pLwc->ttl,
                                     pLwc,
                                     view,

@@ -24,8 +24,7 @@ namespace ss {
         typedef std::pair<box, int> value;
     public:
         explicit sea_object()
-            : id(0)
-            , type(0)
+            : db_id(0)
             , fx(0)
             , fy(0)
             , fw(0)
@@ -38,9 +37,8 @@ namespace ss {
             , cargo_origin_seaport_id(-1)
             , cargo_origin_xy({ 0,0 }) {
         }
-        sea_object(int id, int type, float fx, float fy, float fw, float fh, const value& rtree_value, int expect_land)
-            : id(id)
-            , type(type)
+        sea_object(int db_id, float fx, float fy, float fw, float fh, const value& rtree_value, int expect_land)
+            : db_id(db_id)
             , fx(fx)
             , fy(fy)
             , fw(fw)
@@ -57,9 +55,6 @@ namespace ss {
         }
         void fill_sop(sea_object& sop) const {
             sop = *this;
-        }
-        void set_guid(const std::string& v) {
-            guid = v;
         }
         void translate_xy(float dxv, float dyv) {
             set_xy(fx + dxv, fy + dyv);
@@ -80,10 +75,6 @@ namespace ss {
             this->fvx = fvx;
             this->fvy = fvy;
         }
-        void set_destination(float fvx, float fvy) {
-            this->dest_fx = fvx;
-            this->dest_fy = fvy;
-        }
         void get_velocity(float& fvx, float& fvy) const {
             fvx = this->fvx;
             fvy = this->fvy;
@@ -101,20 +92,17 @@ namespace ss {
             this->remain_loading_time = remain_loading_time;
         }
         void update(float delta_time);
-        int get_type() const { return type; }
-        int get_id() const { return id; }
+        int get_db_id() const { return db_id; }
         int add_cargo(int amount, int cargo_origin_seaport_id, const xy32& cargo_origin_xy);
         int remove_cargo(int amount, int cargo_destination_seaport_id, const xy32& cargo_destination_xy);
         int get_cargo() const { return cargo; }
         void fill_packet(LWPTTLROUTEOBJECT& p) const;
     private:
-        int id;
-        int type;
+        int db_id;
         float fx, fy;
         float fw, fh;
         float fvx, fvy;
         float dest_fx, dest_fy;
-        std::string guid;
         value rtree_value;
         SEA_OBJECT_STATE state;
         float remain_unloading_time;

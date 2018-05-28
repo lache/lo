@@ -15,6 +15,7 @@ namespace ss {
         typedef bgi::equal_to<value> equal_to;
         typedef bi::allocator<value, bi::managed_mapped_file::segment_manager> allocator;
         typedef bgi::rtree<value, params, indexable, equal_to, allocator> rtree;
+        typedef bgi::rtree<value, params> rtree_mem;
 
         int x0, y0;
         int id;

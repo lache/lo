@@ -114,7 +114,7 @@ void udp_server::send_route_state(float lng, float lat, float ex_lng, float ex_l
     for (sea_object const& v : sop_list) {
         auto& o = reply->obj[reply_obj_index];
         v.fill_packet(o);
-        auto it = route_map_.find(v.get_id());
+        auto it = route_map_.find(v.get_db_id());
         if (it != route_map_.end() && it->second) {
             o.route_param = it->second->get_param();
             o.route_speed = 1.0f;
@@ -325,19 +325,18 @@ void udp_server::send_land_cell_aligned_bitmap(int xc0_aligned, int yc0_aligned,
 }
 
 void udp_server::send_track_object_coords(int track_object_id, int track_object_ship_id) {
-    sea_object* obj = nullptr;
-    if (track_object_id && track_object_ship_id) {
-        LOGE("track_object_id and track_object_ship_id both set. tracking ignored");
+    std::shared_ptr<sea_object> obj;
+    if (track_object_id) {
+        LOGEP("track_object_id not supported");
         return;
-    } else if (track_object_id) {
-        obj = sea_->get_object(track_object_id);
-    } else if (track_object_ship_id) {
-        obj = sea_->get_object_by_type(track_object_ship_id);
+    }
+    if (track_object_ship_id) {
+        obj = sea_->get_by_db_id(track_object_ship_id);
     }
     if (!obj) {
-        LOGE("Tracking object cannot be found. (track_object_id=%1%, track_object_ship_id=%2%)",
-             track_object_id,
-             track_object_ship_id);
+        LOGEP("Tracking object cannot be found. (track_object_id=%1%, track_object_ship_id=%2%)",
+              track_object_id,
+              track_object_ship_id);
     }
     std::shared_ptr<LWPTTLTRACKCOORDS> reply(new LWPTTLTRACKCOORDS);
     memset(reply.get(), 0, sizeof(LWPTTLTRACKCOORDS));
@@ -712,12 +711,12 @@ std::shared_ptr<route> udp_server::create_route_id(const std::vector<int>& seapo
 }
 
 std::shared_ptr<const route> udp_server::find_route_map_by_ship_id(int ship_id) const {
-    auto obj = sea_->get_object_by_type(ship_id);
+    auto obj = sea_->get_by_db_id(ship_id);
     if (!obj) {
         LOGEP("Sea object %1% not found.", ship_id);
     } else {
-        auto it = route_map_.find(obj->get_id());
-        if (it != route_map_.end()) {
+        auto it = route_map_.find(obj->get_db_id());
+        if (it != route_map_.cend()) {
             return it->second;
         } else {
             LOGEP("Sea object %1% has no route info.", ship_id);

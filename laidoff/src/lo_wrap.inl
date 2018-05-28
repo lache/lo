@@ -77964,6 +77964,156 @@ fail:
 }
 
 
+static int _wrap_LWPTTLROUTEBITFIELD_loading_set(lua_State* L) {
+  int SWIG_arg = 0;
+  struct _LWPTTLROUTEBITFIELD *arg1 = (struct _LWPTTLROUTEBITFIELD *) 0 ;
+  int arg2 ;
+  
+  SWIG_check_num_args("_LWPTTLROUTEBITFIELD::loading",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWPTTLROUTEBITFIELD::loading",1,"struct _LWPTTLROUTEBITFIELD *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWPTTLROUTEBITFIELD::loading",2,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWPTTLROUTEBITFIELD,0))){
+    SWIG_fail_ptr("LWPTTLROUTEBITFIELD_loading_set",1,SWIGTYPE_p__LWPTTLROUTEBITFIELD);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  if (arg1) (arg1)->loading = arg2;
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_LWPTTLROUTEBITFIELD_loading_get(lua_State* L) {
+  int SWIG_arg = 0;
+  struct _LWPTTLROUTEBITFIELD *arg1 = (struct _LWPTTLROUTEBITFIELD *) 0 ;
+  int result;
+  
+  SWIG_check_num_args("_LWPTTLROUTEBITFIELD::loading",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWPTTLROUTEBITFIELD::loading",1,"struct _LWPTTLROUTEBITFIELD *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWPTTLROUTEBITFIELD,0))){
+    SWIG_fail_ptr("LWPTTLROUTEBITFIELD_loading_get",1,SWIGTYPE_p__LWPTTLROUTEBITFIELD);
+  }
+  
+  result = (int) ((arg1)->loading);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_LWPTTLROUTEBITFIELD_unloading_set(lua_State* L) {
+  int SWIG_arg = 0;
+  struct _LWPTTLROUTEBITFIELD *arg1 = (struct _LWPTTLROUTEBITFIELD *) 0 ;
+  int arg2 ;
+  
+  SWIG_check_num_args("_LWPTTLROUTEBITFIELD::unloading",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWPTTLROUTEBITFIELD::unloading",1,"struct _LWPTTLROUTEBITFIELD *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWPTTLROUTEBITFIELD::unloading",2,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWPTTLROUTEBITFIELD,0))){
+    SWIG_fail_ptr("LWPTTLROUTEBITFIELD_unloading_set",1,SWIGTYPE_p__LWPTTLROUTEBITFIELD);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  if (arg1) (arg1)->unloading = arg2;
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_LWPTTLROUTEBITFIELD_unloading_get(lua_State* L) {
+  int SWIG_arg = 0;
+  struct _LWPTTLROUTEBITFIELD *arg1 = (struct _LWPTTLROUTEBITFIELD *) 0 ;
+  int result;
+  
+  SWIG_check_num_args("_LWPTTLROUTEBITFIELD::unloading",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWPTTLROUTEBITFIELD::unloading",1,"struct _LWPTTLROUTEBITFIELD *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWPTTLROUTEBITFIELD,0))){
+    SWIG_fail_ptr("LWPTTLROUTEBITFIELD_unloading_get",1,SWIGTYPE_p__LWPTTLROUTEBITFIELD);
+  }
+  
+  result = (int) ((arg1)->unloading);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_LWPTTLROUTEBITFIELD_sailing_set(lua_State* L) {
+  int SWIG_arg = 0;
+  struct _LWPTTLROUTEBITFIELD *arg1 = (struct _LWPTTLROUTEBITFIELD *) 0 ;
+  int arg2 ;
+  
+  SWIG_check_num_args("_LWPTTLROUTEBITFIELD::sailing",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWPTTLROUTEBITFIELD::sailing",1,"struct _LWPTTLROUTEBITFIELD *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWPTTLROUTEBITFIELD::sailing",2,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWPTTLROUTEBITFIELD,0))){
+    SWIG_fail_ptr("LWPTTLROUTEBITFIELD_sailing_set",1,SWIGTYPE_p__LWPTTLROUTEBITFIELD);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  if (arg1) (arg1)->sailing = arg2;
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_LWPTTLROUTEBITFIELD_sailing_get(lua_State* L) {
+  int SWIG_arg = 0;
+  struct _LWPTTLROUTEBITFIELD *arg1 = (struct _LWPTTLROUTEBITFIELD *) 0 ;
+  int result;
+  
+  SWIG_check_num_args("_LWPTTLROUTEBITFIELD::sailing",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWPTTLROUTEBITFIELD::sailing",1,"struct _LWPTTLROUTEBITFIELD *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWPTTLROUTEBITFIELD,0))){
+    SWIG_fail_ptr("LWPTTLROUTEBITFIELD_sailing_get",1,SWIGTYPE_p__LWPTTLROUTEBITFIELD);
+  }
+  
+  result = (int) ((arg1)->sailing);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_new_LWPTTLROUTEBITFIELD(lua_State* L) {
   int SWIG_arg = 0;
   struct _LWPTTLROUTEBITFIELD *result = 0 ;
@@ -77996,6 +78146,9 @@ static int _proxy__wrap_new_LWPTTLROUTEBITFIELD(lua_State *L) {
 static swig_lua_attribute swig_LWPTTLROUTEBITFIELD_attributes[] = {
     { "reversed", _wrap_LWPTTLROUTEBITFIELD_reversed_get, _wrap_LWPTTLROUTEBITFIELD_reversed_set },
     { "land", _wrap_LWPTTLROUTEBITFIELD_land_get, _wrap_LWPTTLROUTEBITFIELD_land_set },
+    { "loading", _wrap_LWPTTLROUTEBITFIELD_loading_get, _wrap_LWPTTLROUTEBITFIELD_loading_set },
+    { "unloading", _wrap_LWPTTLROUTEBITFIELD_unloading_get, _wrap_LWPTTLROUTEBITFIELD_unloading_set },
+    { "sailing", _wrap_LWPTTLROUTEBITFIELD_sailing_get, _wrap_LWPTTLROUTEBITFIELD_sailing_set },
     {0,0,0}
 };
 static swig_lua_method swig_LWPTTLROUTEBITFIELD_methods[]= {
@@ -78030,21 +78183,21 @@ static swig_lua_class *swig_LWPTTLROUTEBITFIELD_bases[] = {0};
 static const char *swig_LWPTTLROUTEBITFIELD_base_names[] = {0};
 static swig_lua_class _wrap_class_LWPTTLROUTEBITFIELD = { "LWPTTLROUTEBITFIELD", "LWPTTLROUTEBITFIELD", &SWIGTYPE_p__LWPTTLROUTEBITFIELD,_proxy__wrap_new_LWPTTLROUTEBITFIELD, swig_delete_LWPTTLROUTEBITFIELD, swig_LWPTTLROUTEBITFIELD_methods, swig_LWPTTLROUTEBITFIELD_attributes, &swig_LWPTTLROUTEBITFIELD_Sf_SwigStatic, swig_LWPTTLROUTEBITFIELD_meta, swig_LWPTTLROUTEBITFIELD_bases, swig_LWPTTLROUTEBITFIELD_base_names };
 
-static int _wrap_LWPTTLROUTEOBJECT_obj_id_set(lua_State* L) {
+static int _wrap_LWPTTLROUTEOBJECT_db_id_set(lua_State* L) {
   int SWIG_arg = 0;
   struct _LWPTTLROUTEOBJECT *arg1 = (struct _LWPTTLROUTEOBJECT *) 0 ;
   int arg2 ;
   
-  SWIG_check_num_args("_LWPTTLROUTEOBJECT::obj_id",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWPTTLROUTEOBJECT::obj_id",1,"struct _LWPTTLROUTEOBJECT *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWPTTLROUTEOBJECT::obj_id",2,"int");
+  SWIG_check_num_args("_LWPTTLROUTEOBJECT::db_id",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWPTTLROUTEOBJECT::db_id",1,"struct _LWPTTLROUTEOBJECT *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWPTTLROUTEOBJECT::db_id",2,"int");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWPTTLROUTEOBJECT,0))){
-    SWIG_fail_ptr("LWPTTLROUTEOBJECT_obj_id_set",1,SWIGTYPE_p__LWPTTLROUTEOBJECT);
+    SWIG_fail_ptr("LWPTTLROUTEOBJECT_db_id_set",1,SWIGTYPE_p__LWPTTLROUTEOBJECT);
   }
   
   arg2 = (int)lua_tonumber(L, 2);
-  if (arg1) (arg1)->obj_id = arg2;
+  if (arg1) (arg1)->db_id = arg2;
   
   return SWIG_arg;
   
@@ -78056,69 +78209,19 @@ fail:
 }
 
 
-static int _wrap_LWPTTLROUTEOBJECT_obj_id_get(lua_State* L) {
+static int _wrap_LWPTTLROUTEOBJECT_db_id_get(lua_State* L) {
   int SWIG_arg = 0;
   struct _LWPTTLROUTEOBJECT *arg1 = (struct _LWPTTLROUTEOBJECT *) 0 ;
   int result;
   
-  SWIG_check_num_args("_LWPTTLROUTEOBJECT::obj_id",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWPTTLROUTEOBJECT::obj_id",1,"struct _LWPTTLROUTEOBJECT *");
+  SWIG_check_num_args("_LWPTTLROUTEOBJECT::db_id",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWPTTLROUTEOBJECT::db_id",1,"struct _LWPTTLROUTEOBJECT *");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWPTTLROUTEOBJECT,0))){
-    SWIG_fail_ptr("LWPTTLROUTEOBJECT_obj_id_get",1,SWIGTYPE_p__LWPTTLROUTEOBJECT);
+    SWIG_fail_ptr("LWPTTLROUTEOBJECT_db_id_get",1,SWIGTYPE_p__LWPTTLROUTEOBJECT);
   }
   
-  result = (int) ((arg1)->obj_id);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWPTTLROUTEOBJECT_obj_db_id_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWPTTLROUTEOBJECT *arg1 = (struct _LWPTTLROUTEOBJECT *) 0 ;
-  int arg2 ;
-  
-  SWIG_check_num_args("_LWPTTLROUTEOBJECT::obj_db_id",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWPTTLROUTEOBJECT::obj_db_id",1,"struct _LWPTTLROUTEOBJECT *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWPTTLROUTEOBJECT::obj_db_id",2,"int");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWPTTLROUTEOBJECT,0))){
-    SWIG_fail_ptr("LWPTTLROUTEOBJECT_obj_db_id_set",1,SWIGTYPE_p__LWPTTLROUTEOBJECT);
-  }
-  
-  arg2 = (int)lua_tonumber(L, 2);
-  if (arg1) (arg1)->obj_db_id = arg2;
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWPTTLROUTEOBJECT_obj_db_id_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWPTTLROUTEOBJECT *arg1 = (struct _LWPTTLROUTEOBJECT *) 0 ;
-  int result;
-  
-  SWIG_check_num_args("_LWPTTLROUTEOBJECT::obj_db_id",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWPTTLROUTEOBJECT::obj_db_id",1,"struct _LWPTTLROUTEOBJECT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWPTTLROUTEOBJECT,0))){
-    SWIG_fail_ptr("LWPTTLROUTEOBJECT_obj_db_id_get",1,SWIGTYPE_p__LWPTTLROUTEOBJECT);
-  }
-  
-  result = (int) ((arg1)->obj_db_id);
+  result = (int) ((arg1)->db_id);
   lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
   return SWIG_arg;
   
@@ -78284,63 +78387,6 @@ fail:
 }
 
 
-static int _wrap_LWPTTLROUTEOBJECT_guid_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWPTTLROUTEOBJECT *arg1 = (struct _LWPTTLROUTEOBJECT *) 0 ;
-  char *arg2 ;
-  
-  SWIG_check_num_args("_LWPTTLROUTEOBJECT::guid",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWPTTLROUTEOBJECT::guid",1,"struct _LWPTTLROUTEOBJECT *");
-  if(!SWIG_lua_isnilstring(L,2)) SWIG_fail_arg("_LWPTTLROUTEOBJECT::guid",2,"char [64]");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWPTTLROUTEOBJECT,0))){
-    SWIG_fail_ptr("LWPTTLROUTEOBJECT_guid_set",1,SWIGTYPE_p__LWPTTLROUTEOBJECT);
-  }
-  
-  arg2 = (char *)lua_tostring(L, 2);
-  {
-    if(arg2) {
-      strncpy((char*)arg1->guid, (const char *)arg2, 64-1);
-      arg1->guid[64-1] = 0;
-    } else {
-      arg1->guid[0] = 0;
-    }
-  }
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWPTTLROUTEOBJECT_guid_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWPTTLROUTEOBJECT *arg1 = (struct _LWPTTLROUTEOBJECT *) 0 ;
-  char *result = 0 ;
-  
-  SWIG_check_num_args("_LWPTTLROUTEOBJECT::guid",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWPTTLROUTEOBJECT::guid",1,"struct _LWPTTLROUTEOBJECT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWPTTLROUTEOBJECT,0))){
-    SWIG_fail_ptr("LWPTTLROUTEOBJECT_guid_get",1,SWIGTYPE_p__LWPTTLROUTEOBJECT);
-  }
-  
-  result = (char *)(char *) ((arg1)->guid);
-  lua_pushstring(L,(const char *)result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
 static int _wrap_new_LWPTTLROUTEOBJECT(lua_State* L) {
   int SWIG_arg = 0;
   struct _LWPTTLROUTEOBJECT *result = 0 ;
@@ -78371,12 +78417,10 @@ static int _proxy__wrap_new_LWPTTLROUTEOBJECT(lua_State *L) {
     return 1;
 }
 static swig_lua_attribute swig_LWPTTLROUTEOBJECT_attributes[] = {
-    { "obj_id", _wrap_LWPTTLROUTEOBJECT_obj_id_get, _wrap_LWPTTLROUTEOBJECT_obj_id_set },
-    { "obj_db_id", _wrap_LWPTTLROUTEOBJECT_obj_db_id_get, _wrap_LWPTTLROUTEOBJECT_obj_db_id_set },
+    { "db_id", _wrap_LWPTTLROUTEOBJECT_db_id_get, _wrap_LWPTTLROUTEOBJECT_db_id_set },
     { "route_param", _wrap_LWPTTLROUTEOBJECT_route_param_get, _wrap_LWPTTLROUTEOBJECT_route_param_set },
     { "route_speed", _wrap_LWPTTLROUTEOBJECT_route_speed_get, _wrap_LWPTTLROUTEOBJECT_route_speed_set },
     { "route_flags", _wrap_LWPTTLROUTEOBJECT_route_flags_get, _wrap_LWPTTLROUTEOBJECT_route_flags_set },
-    { "guid", _wrap_LWPTTLROUTEOBJECT_guid_get, _wrap_LWPTTLROUTEOBJECT_guid_set },
     {0,0,0}
 };
 static swig_lua_method swig_LWPTTLROUTEOBJECT_methods[]= {
