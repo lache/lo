@@ -1,4 +1,30 @@
 #pragma once
+
+#ifdef WIN32
+#include <stdio.h>
+#include <windows.h>
+struct error_log_context {
+    HANDLE hConsole;
+    WORD saved_attributes;
+};
+static error_log_context prepare_error_log() {
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
+    WORD saved_attributes;
+    GetConsoleScreenBufferInfo(hConsole, &consoleInfo);
+    saved_attributes = consoleInfo.wAttributes;
+    SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+    return error_log_context{ hConsole, saved_attributes };
+}
+static void finish_error_log(error_log_context& elc) {
+    SetConsoleTextAttribute(elc.hConsole, elc.saved_attributes);
+}
+#else
+struct error_log_context {};
+static error_log_context prepare_error_log() {}
+static void finish_error_log(error_log_context& elc) {}
+#endif
+
 namespace ss {
     static std::string awesome_printf_helper(boost::format& f) {
         return boost::str(f);
@@ -9,8 +35,10 @@ namespace ss {
         try {
             return awesome_printf_helper(f % std::forward<T>(t), std::forward<Args>(args)...);
         } catch (boost::io::bad_format_string& e) {
+            auto elc = prepare_error_log();
             std::cerr << e.what() << std::endl;
             std::cerr << "format: " << f << ", T: " << t << std::endl;
+            finish_error_log(elc);
             return "";
         }
     }
@@ -22,8 +50,10 @@ namespace ss {
             boost::format f(fmt);
             stream << awesome_printf_helper(f, std::forward<Arguments>(args)...) << std::endl;
         } catch (boost::io::bad_format_string& e) {
+            auto elc = prepare_error_log();
             std::cerr << e.what() << std::endl;
             std::cerr << "fmt: " << fmt << std::endl;
+            finish_error_log(elc);
         }
     }
 
@@ -44,12 +74,16 @@ namespace ss {
 
     template<typename... Arguments>
     void LOGE(const std::string& fmt, Arguments&&... args) {
+        auto elc = prepare_error_log();
         LOG(std::cerr, fmt, std::forward<Arguments>(args)...);
+        finish_error_log(elc);
     }
 
     template<typename... Arguments>
     void LOGE_WITH_PREFIX(const std::string& prefix, const std::string& fmt, Arguments&&... args) {
+        auto elc = prepare_error_log();
         LOG_WITH_PREFIX(std::cerr, prefix, fmt, std::forward<Arguments>(args)...);
+        finish_error_log(elc);
     }
 
     template<typename... Arguments>
