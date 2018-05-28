@@ -449,8 +449,8 @@ const execCreatePort = async (u, selectedLng, selectedLat, expectLand) => {
   deletePort(regionId)
   // print useful information
   if (reply.dbId > 0 && reply.dbId !== regionId) {
-    console.error(
-      `port cannot be created: different port ID ${
+    console.log(
+      `port cannot be created: port ID ${
         reply.dbId
       } already exists on that location`
     )
