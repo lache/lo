@@ -1,7 +1,7 @@
 #pragma once
 
-#define sea_render_scale (50.0f * 20)
-#define earth_globe_render_scale (45.0f * 20)
+#define sea_render_scale (50.0f * 30)
+#define earth_globe_render_scale (45.0f * 30)
 
 #define LNGLAT_RES_WIDTH (172824)
 #define LNGLAT_RES_HEIGHT (86412)

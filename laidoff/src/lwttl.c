@@ -1396,6 +1396,10 @@ int lwttl_selected_int(const LWTTL* ttl, int* xc0, int* yc0) {
     return ttl->selected.selected;
 }
 
+static float inner_product(const float a[3], const float b[3]) {
+    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+}
+
 void lwttl_screen_to_world_pos(const float touchx,
                                const float touchy,
                                const float screenw,
@@ -1429,17 +1433,27 @@ void lwttl_screen_to_world_pos(const float touchx,
     in clip space */
     mat4x4_mul_vec4(out_point, inverted_matrix, normalized_in_point);
 
-    if (out_point[3] == 0.0) {
-        // Avoid /0 error.
-        LOGE("World coords ERROR!");
-        world_pos[0] = 0;
-        world_pos[1] = 0;
-    } else {
-        // Divide by the 3rd component to find
-        // out the real position.
-        world_pos[0] = out_point[0] / out_point[3];
-        world_pos[1] = out_point[1] / out_point[3];
-    }
+    const float out_point_z = out_point[2];
+    const float p[3] = {
+        out_point[0] + out_point_z * (-1),
+        out_point[1] + out_point_z * (1),
+        out_point[2] + out_point_z * (-1),
+    };
+    
+    world_pos[0] = p[0];
+    world_pos[1] = p[1];
+
+    //if (out_point[3] == 0.0) {
+    //    // Avoid /0 error.
+    //    LOGE("World coords ERROR!");
+    //    world_pos[0] = 0;
+    //    world_pos[1] = 0;
+    //} else {
+    //    // Divide by the 3rd component to find
+    //    // out the real position.
+    //    world_pos[0] = out_point[0] / out_point[3];
+    //    world_pos[1] = out_point[1] / out_point[3];
+    //}
 }
 
 static void nx_ny_to_lng_lat(const LWTTL* ttl, float nx, float ny, int width, int height, int* xc, int* yc, LWTTLLNGLAT* lnglat) {
@@ -1534,13 +1548,13 @@ void lwttl_update_view_proj(LWTTL* ttl, float aspect_ratio) {
 
     float half_height = 10.0f;
     float near_z = 0.1f;
-    float far_z = 1000.0f;
+    float far_z = 100.0f;
     float cam_r = 0;// sinf((float)pLwc->app_time / 4) / 4.0f;
     float c_r = cosf(cam_r);
     float s_r = sinf(cam_r);
-    float eye_x = 0;//5.0f;
-    float eye_y = 0;//-25.0f;
-    float eye_z = 15.0f;
+    float eye_x = 15;
+    float eye_y = -15;
+    float eye_z = 15;
     vec3 eye = { c_r * eye_x - s_r * eye_y, s_r * eye_x + c_r * eye_y, eye_z }; // eye position
     eye[1] += ship_y;
     vec3 center = { 0, ship_y, 0 }; // look position
