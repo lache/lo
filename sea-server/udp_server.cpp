@@ -841,24 +841,7 @@ void udp_server::notify_to_client_cargo_notification(const cargo_notification& c
     reply->xc1 = cn.xc1;
     reply->yc1 = cn.yc1;
     reply->amount = cn.amount;
-    switch (cn.cnt) {
-    case cnt_consumed:
-        reply->cargo_flags.destroyed = 1;
-        break;
-    case cnt_converted:
-        reply->cargo_flags.converted = 1;
-        break;
-    case cnt_created:
-        reply->cargo_flags.created = 1;
-        reply->cargo_flags.moved = 1;
-        break;
-    case cnt_loaded:
-        reply->cargo_flags.moved = 1;
-        break;
-    case cnt_unloaded:
-        reply->cargo_flags.moved = 1;
-        break;
-    }
+    reply->cargo_notification_type = cn.cargo_notification_type;
     notify_to_aoi_clients(reply, cn.xc0, cn.yc0);
 }
 
@@ -878,8 +861,12 @@ template<> udp::endpoint udp_server::extract_endpoint(std::vector<endpoint_aoi_o
 }
 
 void udp_server::flush_cargo_notifications() {
-    auto cns = city_->flush_cargo_notifications();
-    for (const auto& cn : cns) {
+    auto city_cns = city_->flush_cargo_notifications();
+    for (const auto& cn : city_cns) {
+        notify_to_client_cargo_notification(cn);
+    }
+    auto sea_cns = sea_->flush_cargo_notifications();
+    for (const auto& cn : sea_cns) {
         notify_to_client_cargo_notification(cn);
     }
 }

@@ -540,11 +540,16 @@ typedef struct _LWPTTLSALVAGESTATE {
 } LWPTTLSALVAGESTATE;
 
 typedef struct _LWPTTLCARGONOTIFICATIONBITFIELD {
-    int created : 1;
-    int destroyed : 1;
-    int moved : 1;
-    int converted : 1;
+    int unused_for_now : 1;
 } LWPTTLCARGONOTIFICATIONBITFIELD;
+
+typedef enum _LW_TTL_CARGO_NOTIFICATION_TYPE {
+    LTCNT_CREATED,
+    LTCNT_LOADED,
+    LTCNT_UNLOADED,
+    LTCNT_CONSUMED,
+    LTCNT_CONVERTED,
+} LW_TTL_CARGO_NOTIFICATION_TYPE;
 
 typedef struct _LWPTTLCARGONOTIFICATION {
     unsigned char type;
@@ -557,6 +562,7 @@ typedef struct _LWPTTLCARGONOTIFICATION {
     int yc1;
     int amount;
     LWPTTLCARGONOTIFICATIONBITFIELD cargo_flags;
+    LW_TTL_CARGO_NOTIFICATION_TYPE cargo_notification_type;
 } LWPTTLCARGONOTIFICATION;
 /*
 * END: should sync with packet.h in sea-server

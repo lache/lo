@@ -288,7 +288,7 @@ void city::generate_cargo() {
             const auto cargo = std::max(1, boost::math::iround(total_cargo / seaports.size()));
             for (const auto sop : seaports) {
                 auto actual_added = seaport_->add_cargo(sop.id, cargo, true);
-                cargo_notifications.emplace_back(cargo_notification{ xc, yc, sop.x0, sop.y0, actual_added, cnt_created });
+                cargo_notifications.emplace_back(cargo_notification{ xc, yc, sop.x0, sop.y0, actual_added, LTCNT_CREATED });
             }
         }
     }

@@ -1,5 +1,6 @@
 #pragma once
 #include "sea_object.hpp"
+#include "cargo.h"
 
 namespace ss {
     namespace bg = boost::geometry;
@@ -32,6 +33,7 @@ namespace ss {
         void set_udp_admin_server(const std::shared_ptr<udp_admin_server>& uas) { this->uas = uas; }
         float lng_to_xc(float lng) const;
         float lat_to_yc(float lat) const;
+        std::vector<cargo_notification>&& flush_cargo_notifications();
     private:
         std::vector<int> query_tree(float xc, float yc, float ex_lng, float ex_lat) const;
         boost::asio::io_service& io_service;
@@ -42,5 +44,6 @@ namespace ss {
         const float km_per_cell;
         int tick_seq;
         std::shared_ptr<udp_admin_server> uas;
+        std::vector<cargo_notification> cargo_notifications;
     };
 }

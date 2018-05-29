@@ -114,8 +114,13 @@ typedef struct _LWTTLSELECTED {
 } LWTTLSELECTED;
 
 typedef enum _LW_TTL_WORLD_TEXT_ANIM_TYPE {
+    LTWTAT_STOP,
     LTWTAT_UP,
+    LTWTAT_DOWN,
     LTWTAT_MOVE,
+    LTWTAT_SCALE_0_TO_1_TO_0,
+    LTWTAT_SCALE_1_TO_0,
+    LTWTAT_SCALE_0_TO_1,
 } LW_TTL_WORLD_TEXT_ANIM_TYPE;
 
 typedef struct _LWTTLWORLDTEXT {
@@ -1699,7 +1704,8 @@ const char* lwttl_world_text(const LWTTL* ttl,
                              const mat4x4 proj_view,
                              const int view_scale,
                              float* ui_point_x,
-                             float* ui_point_y) {
+                             float* ui_point_y,
+                             float* scale) {
     const LWTTLWORLDTEXT* wt = (const LWTTLWORLDTEXT*)it;
     if (wt < ttl->world_text || wt >= &ttl->world_text[ARRAY_SIZE(ttl->world_text)]) {
         LOGEP("out of bound it");
@@ -1714,9 +1720,8 @@ const char* lwttl_world_text(const LWTTL* ttl,
     if (lifetime <= 0) {
         lifetime = 1;
     }
-    const float ratio = LWCLAMP(age / lifetime, 0.0f, 1.0f);
-    const float x = cell_fx_to_render_coords((float)wt->xc, center, view_scale);
-    const float y = cell_fy_to_render_coords((float)wt->yc, center, view_scale);
+    const float x = cell_fx_to_render_coords((float)wt->xc + 0.5f, center, view_scale);
+    const float y = cell_fy_to_render_coords((float)wt->yc + 0.5f, center, view_scale);
     vec4 obj_pos_vec4 = {
         x,
         y,
@@ -1725,12 +1730,17 @@ const char* lwttl_world_text(const LWTTL* ttl,
     };
     vec2 ui_point;
     calculate_ui_point_from_world_point(aspect_ratio, proj_view, obj_pos_vec4, ui_point);
+    *scale = 1.0f;
+    const float ratio = LWCLAMP(age / lifetime, 0.0f, 1.0f);
     if (wt->anim_type == LTWTAT_UP) {
         // move +Y direction animation
         ui_point[1] += ratio / 5.0f;
-    } else {
-        const float x1 = cell_fx_to_render_coords((float)wt->xc1, center, view_scale);
-        const float y1 = cell_fy_to_render_coords((float)wt->yc1, center, view_scale);
+    } else if (wt->anim_type == LTWTAT_DOWN) {
+        // move -Y direction animation
+        ui_point[1] += 1.0f / 5.0f - ratio / 5.0f;
+    } else if (wt->anim_type == LTWTAT_MOVE) {
+        const float x1 = cell_fx_to_render_coords((float)wt->xc1 + 0.5f, center, view_scale);
+        const float y1 = cell_fy_to_render_coords((float)wt->yc1 + 0.5f, center, view_scale);
         vec4 obj_pos1_vec4 = {
             x1,
             y1,
@@ -1741,6 +1751,18 @@ const char* lwttl_world_text(const LWTTL* ttl,
         calculate_ui_point_from_world_point(aspect_ratio, proj_view, obj_pos1_vec4, ui_point1);
         ui_point[0] = ui_point[0] * (1.0f - ratio) + ui_point1[0] * ratio;
         ui_point[1] = ui_point[1] * (1.0f - ratio) + ui_point1[1] * ratio;
+    } else if (wt->anim_type == LTWTAT_SCALE_0_TO_1_TO_0) {
+        if (ratio < 0.5f) {
+            *scale = 2.0f * ratio;
+        } else {
+            *scale = -2.0f * ratio + 2.0f;
+        }
+    } else if (wt->anim_type == LTWTAT_SCALE_1_TO_0) {
+        *scale = -ratio + 1.0f;
+    } else if (wt->anim_type == LTWTAT_SCALE_0_TO_1) {
+        *scale = ratio;
+    } else {
+        // no anim
     }
     
     *ui_point_x = ui_point[0];
@@ -2020,7 +2042,25 @@ void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc) {
                 char text[64];
                 snprintf(text, ARRAY_SIZE(text), "CARGO %d", p->amount);
                 text[ARRAY_SIZE(text) - 1] = 0;
-                spawn_world_text_move(ttl, text, p->xc0, p->yc0, p->xc1, p->yc1, LTWTAT_MOVE);
+                LW_TTL_WORLD_TEXT_ANIM_TYPE anim_type = LTWTAT_STOP;
+                switch (p->cargo_notification_type) {
+                case LTCNT_CREATED:
+                    anim_type = LTWTAT_MOVE;
+                    break;
+                case LTCNT_LOADED:
+                    anim_type = LTWTAT_SCALE_1_TO_0;
+                    break;
+                case LTCNT_UNLOADED:
+                    anim_type = LTWTAT_SCALE_0_TO_1;
+                    break;
+                case LTCNT_CONSUMED:
+                    anim_type = LTWTAT_SCALE_1_TO_0;
+                    break;
+                case LTCNT_CONVERTED:
+                    anim_type = LTWTAT_SCALE_0_TO_1_TO_0;
+                    break;
+                }
+                spawn_world_text_move(ttl, text, p->xc0, p->yc0, p->xc1, p->yc1, anim_type);
                 break;
             }
             default:

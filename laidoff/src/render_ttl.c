@@ -1812,7 +1812,7 @@ static void render_world_text(const LWCONTEXT* pLwc, const mat4x4 view, const ma
     const int view_scale = lwttl_view_scale(pLwc->ttl);
     const void* wt_it = lwttl_world_text_begin(pLwc->ttl);
     while (wt_it) {
-        float ui_point_x, ui_point_y;
+        float ui_point_x, ui_point_y, scale;
         const char* text = lwttl_world_text(pLwc->ttl,
                                             wt_it,
                                             center,
@@ -1820,11 +1820,12 @@ static void render_world_text(const LWCONTEXT* pLwc, const mat4x4 view, const ma
                                             proj_view,
                                             view_scale,
                                             &ui_point_x,
-                                            &ui_point_y);
+                                            &ui_point_y,
+                                            &scale);
         LWTEXTBLOCK test_text_block;
         test_text_block.text_block_width = 999.0f;// 2.00f * aspect_ratio;
         test_text_block.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_F;
-        test_text_block.size = DEFAULT_TEXT_BLOCK_SIZE_F;
+        test_text_block.size = DEFAULT_TEXT_BLOCK_SIZE_F * scale;
         SET_COLOR_RGBA_FLOAT(test_text_block.color_normal_glyph, 1, 1, 1, 1);
         SET_COLOR_RGBA_FLOAT(test_text_block.color_normal_outline, 0, 0, 0, 1);
         SET_COLOR_RGBA_FLOAT(test_text_block.color_emp_glyph, 1, 1, 0, 1);
@@ -1836,7 +1837,7 @@ static void render_world_text(const LWCONTEXT* pLwc, const mat4x4 view, const ma
         test_text_block.multiline = 1;
         test_text_block.text_block_x = ui_point_x;
         test_text_block.text_block_y = ui_point_y;
-        test_text_block.align = LTBA_LEFT_CENTER;
+        test_text_block.align = LTBA_CENTER_CENTER;
         render_text_block(pLwc, &test_text_block);
         wt_it = lwttl_world_text_next(pLwc->ttl, wt_it);
     }

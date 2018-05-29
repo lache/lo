@@ -186,7 +186,14 @@ bool sea::update_route(float delta_time,
                       x,
                       y,
                       unloaded_cargo);
-                sp->add_cargo(r->get_docked_seaport_id(), unloaded_cargo, false);
+                const auto actual_unloaded = sp->add_cargo(r->get_docked_seaport_id(), unloaded_cargo, false);
+                cargo_notifications.emplace_back(cargo_notification{
+                    static_cast<int>(x),
+                    static_cast<int>(y),
+                    static_cast<int>(x),
+                    static_cast<int>(y),
+                    actual_unloaded,
+                    LTCNT_UNLOADED});
                 const auto sp_point = sp->get_seaport_point(r->get_docked_seaport_id());
                 us->notify_to_client_gold_earned(sp_point.get<0>(), sp_point.get<1>(), 1);
                 obj->set_state(SOS_LOADING);
@@ -208,10 +215,16 @@ bool sea::update_route(float delta_time,
                         const auto loaded_cargo = sp->remove_cargo(r->get_docked_seaport_id(), 10, false);
                         float x, y;
                         obj->get_xy(x, y);
-                        obj->add_cargo(loaded_cargo,
-                                       r->get_docked_seaport_id(),
-                                       xy32{ static_cast<int>(x), static_cast<int>(y) });
-
+                        const auto actual_loaded = obj->add_cargo(loaded_cargo,
+                                                                  r->get_docked_seaport_id(),
+                                                                  xy32{ static_cast<int>(x), static_cast<int>(y) });
+                        cargo_notifications.emplace_back(cargo_notification{
+                            static_cast<int>(x),
+                            static_cast<int>(y),
+                            static_cast<int>(x),
+                            static_cast<int>(y),
+                            actual_loaded,
+                            LTCNT_LOADED });
                         LOGIx("S %1% {%2%,%3%}: loading finished. %4% cargo(s) loaded.",
                               db_id,
                               x,
@@ -236,4 +249,8 @@ bool sea::update_route(float delta_time,
         });
     }
     return true;
+}
+
+std::vector<cargo_notification>&& sea::flush_cargo_notifications() {
+    return std::move(cargo_notifications);
 }

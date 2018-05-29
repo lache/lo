@@ -186,7 +186,8 @@ const char* lwttl_world_text(const LWTTL* ttl,
                              const mat4x4 proj_view,
                              const int view_scale,
                              float* ui_point_x,
-                             float* ui_point_y);
+                             float* ui_point_y,
+                             float* scale);
 const void* lwttl_world_text_next(const LWTTL* ttl, const void* it);
 void lwttl_toggle_cell_grid(LWTTL* ttl);
 int lwttl_cell_grid(const LWTTL* ttl);
