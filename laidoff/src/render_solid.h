@@ -173,6 +173,26 @@ void render_solid_vb_ui_uv_shader_rot_view_proj(const LWCONTEXT* pLwc,
                                                 float rot_z,
                                                 const mat4x4 view,
                                                 const mat4x4 proj);
+void render_solid_vb_uv_shader_rot_view_proj(const LWCONTEXT* pLwc,
+                                             float x,
+                                             float y,
+                                             float z,
+                                             float sx,
+                                             float sy,
+                                             float sz,
+                                             GLuint tex_index,
+                                             enum _LW_VBO_TYPE lvt,
+                                             float alpha_multiplier,
+                                             float over_r,
+                                             float over_g,
+                                             float over_b,
+                                             float oratio,
+                                             const float* uv_offset,
+                                             const float* uv_scale,
+                                             int shader_index,
+                                             float rot_z,
+                                             const mat4x4 view,
+                                             const mat4x4 proj);
 void lwc_enable_additive_blending();
 void lwc_disable_additive_blending();
 #ifdef __cplusplus

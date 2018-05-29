@@ -201,24 +201,26 @@ void render_solid_vb_ui_uv_shader_rot(const LWCONTEXT* pLwc,
                                                pLwc->proj);
 }
 
-void render_solid_vb_ui_uv_shader_rot_view_proj(const LWCONTEXT* pLwc,
-                                                float x,
-                                                float y,
-                                                float w,
-                                                float h,
-                                                GLuint tex_index,
-                                                enum _LW_VBO_TYPE lvt,
-                                                float alpha_multiplier,
-                                                float over_r,
-                                                float over_g,
-                                                float over_b,
-                                                float oratio,
-                                                const float* uv_offset,
-                                                const float* uv_scale,
-                                                int shader_index,
-                                                float rot_z,
-                                                const mat4x4 view,
-                                                const mat4x4 proj) {
+void render_solid_vb_uv_shader_rot_view_proj(const LWCONTEXT* pLwc,
+                                             float x,
+                                             float y,
+                                             float z,
+                                             float sx,
+                                             float sy,
+                                             float sz,
+                                             GLuint tex_index,
+                                             enum _LW_VBO_TYPE lvt,
+                                             float alpha_multiplier,
+                                             float over_r,
+                                             float over_g,
+                                             float over_b,
+                                             float oratio,
+                                             const float* uv_offset,
+                                             const float* uv_scale,
+                                             int shader_index,
+                                             float rot_z,
+                                             const mat4x4 view,
+                                             const mat4x4 proj) {
     lazy_glUseProgram(pLwc, shader_index);
     glUniform2fv(pLwc->shader[shader_index].vuvoffset_location, 1, uv_offset);
     glUniform2fv(pLwc->shader[shader_index].vuvscale_location, 1, uv_scale);
@@ -228,9 +230,6 @@ void render_solid_vb_ui_uv_shader_rot_view_proj(const LWCONTEXT* pLwc,
     glUniform3f(pLwc->shader[shader_index].overlay_color_location, over_r, over_g, over_b);
     glUniform1f(pLwc->shader[shader_index].overlay_color_ratio_location, oratio);
     glUniformMatrix4fv(pLwc->shader[shader_index].mvp_location, 1, GL_FALSE, (const GLfloat*)proj);
-
-    float ui_scale_x = w / 2;
-    float ui_scale_y = h / 2;
 
     mat4x4 model_translate;
     mat4x4 model;
@@ -242,7 +241,7 @@ void render_solid_vb_ui_uv_shader_rot_view_proj(const LWCONTEXT* pLwc,
 
     mat4x4_identity(model_scale);
     mat4x4_identity(model_rotate);
-    mat4x4_scale_aniso(model_scale, model_scale, ui_scale_x, ui_scale_y, 1.0f);
+    mat4x4_scale_aniso(model_scale, model_scale, sx, sy, sz);
     mat4x4_rotate_Z(model_rotate, model_rotate, rot_z);
     mat4x4_mul(model_scale_rotate, model_rotate, model_scale);
     mat4x4_translate(model_translate, x, y, 0);
@@ -261,6 +260,49 @@ void render_solid_vb_ui_uv_shader_rot_view_proj(const LWCONTEXT* pLwc,
     //set_tex_filter(GL_NEAREST, GL_NEAREST);
     glUniformMatrix4fv(pLwc->shader[shader_index].mvp_location, 1, GL_FALSE, (const GLfloat*)proj_view_model);
     glDrawArrays(GL_TRIANGLES, 0, pLwc->vertex_buffer[lvt].vertex_count);
+}
+
+void render_solid_vb_ui_uv_shader_rot_view_proj(const LWCONTEXT* pLwc,
+                                                float x,
+                                                float y,
+                                                float w,
+                                                float h,
+                                                GLuint tex_index,
+                                                enum _LW_VBO_TYPE lvt,
+                                                float alpha_multiplier,
+                                                float over_r,
+                                                float over_g,
+                                                float over_b,
+                                                float oratio,
+                                                const float* uv_offset,
+                                                const float* uv_scale,
+                                                int shader_index,
+                                                float rot_z,
+                                                const mat4x4 view,
+                                                const mat4x4 proj) {
+    const float sx = w / 2;
+    const float sy = h / 2;
+    const float sz = 1.0f;
+    render_solid_vb_uv_shader_rot_view_proj(pLwc,
+                                            x,
+                                            y,
+                                            0,
+                                            sx,
+                                            sy,
+                                            sz,
+                                            tex_index,
+                                            lvt,
+                                            alpha_multiplier,
+                                            over_r,
+                                            over_g,
+                                            over_b,
+                                            oratio,
+                                            uv_offset,
+                                            uv_scale,
+                                            shader_index,
+                                            rot_z,
+                                            view,
+                                            proj);
 }
 
 void render_solid_vb_ui_alpha(const LWCONTEXT* pLwc,

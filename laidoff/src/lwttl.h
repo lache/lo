@@ -142,12 +142,11 @@ void lwttl_on_move(LWTTL* ttl, const LWCONTEXT* pLwc, float nx, float ny);
 void lwttl_on_release(LWTTL* ttl, LWCONTEXT* pLwc, float nx, float ny);
 void lwttl_view_proj(const LWTTL* ttl, mat4x4 view, mat4x4 proj);
 void lwttl_update_view_proj(LWTTL* ttl, float aspect_ratio);
-void lwttl_screen_to_world_pos(const float touchx,
+void lwttl_screen_to_world_pos(const LWTTL* ttl,
+                               const float touchx,
                                const float touchy,
                                const float screenw,
                                const float screenh,
-                               const mat4x4 proj,
-                               const mat4x4 view_model,
                                vec2 world_pos);
 void lwttl_clear_selected_pressed_pos(LWTTL* ttl);
 const LWPTTLSINGLECELL* lwttl_single_cell(const LWTTL* ttl);

@@ -236,9 +236,29 @@ static void render_ship(const LWCONTEXT* pLwc, const mat4x4 view, const mat4x4 p
 }
 
 static void render_trunk(const LWCONTEXT* pLwc, const mat4x4 view, const mat4x4 proj, float x, float y, float z, float rot_z) {
-    render_vehicle(pLwc, view, proj, x, y, z, rot_z + (float)LWDEG2RAD(90), LWST_DEFAULT, LVT_OIL_TRUCK, LAE_3D_OIL_TRUCK_TEX_KTX, 0.3f);
-    //lazy_tex_atlas_glBindTexture(pLwc, LAE_3D_OIL_TRUCK_TEX_KTX);
-    //render_solid_vb_ui_uv_shader_rot_view_proj(pLwc, x, y, 1, 1, pLwc->tex_atlas[LAE_3D_OIL_TRUCK_TEX_KTX], LVT_OIL_TRUCK, 1, 0, 0, 0, 0, default_uv_offset, default_uv_scale, LWST_DEFAULT, rot_z + (float)LWDEG2RAD(90), view, proj);
+    //render_vehicle(pLwc, view, proj, x, y, z, rot_z + (float)LWDEG2RAD(90), LWST_DEFAULT, LVT_OIL_TRUCK, LAE_3D_OIL_TRUCK_TEX_KTX, 0.3f);
+    const float s = 0.5f;
+    lazy_tex_atlas_glBindTexture(pLwc, LAE_3D_OIL_TRUCK_TEX_KTX);
+    render_solid_vb_uv_shader_rot_view_proj(pLwc,
+                                            x,
+                                            y,
+                                            0,
+                                            s,
+                                            s, 
+                                            s,
+                                            pLwc->tex_atlas[LAE_3D_OIL_TRUCK_TEX_KTX],
+                                            LVT_OIL_TRUCK,
+                                            1,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            default_uv_offset,
+                                            default_uv_scale,
+                                            LWST_DEFAULT,
+                                            rot_z + (float)LWDEG2RAD(90),
+                                            view,
+                                            proj);
 }
 
 static void render_terminal_icon(const LWCONTEXT* pLwc,
@@ -1800,7 +1820,7 @@ static void render_world_text(const LWCONTEXT* pLwc, const mat4x4 view, const ma
         }
         const float ratio = age / lifetime;
         const float x = cell_fx_to_render_coords((float)xc0, center, view_scale);
-        const float y = cell_fy_to_render_coords((float)yc0 - ratio, center, view_scale);
+        const float y = cell_fy_to_render_coords((float)yc0, center, view_scale);
         vec4 obj_pos_vec4 = {
             x,
             y,
@@ -1809,6 +1829,8 @@ static void render_world_text(const LWCONTEXT* pLwc, const mat4x4 view, const ma
         };
         vec2 ui_point;
         calculate_ui_point_from_world_point(pLwc->aspect_ratio, proj_view, obj_pos_vec4, ui_point);
+        // move +Y direction animation
+        ui_point[1] += ratio / 5.0f;
         LWTEXTBLOCK test_text_block;
         test_text_block.text_block_width = 999.0f;// 2.00f * aspect_ratio;
         test_text_block.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_F;

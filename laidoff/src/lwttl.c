@@ -153,6 +153,9 @@ typedef struct _LWTTL {
     int waypoints_cache_count;
     LWTTLWORLDTEXT world_text[64];
     int cell_grid;
+    vec3 cam_eye;
+    vec3 cam_look_at;
+    float cam_r;
 } LWTTL;
 
 LWTTL* lwttl_new(float aspect_ratio) {
@@ -168,6 +171,14 @@ LWTTL* lwttl_new(float aspect_ratio) {
     ttl->view_scale_max = 1 << 13; // should be no more than 2^15 (== 2 ^ MAX(LWTTLCHUNKKEY.view_scale_msb))
     ttl->view_scale_ping_max = LNGLAT_VIEW_SCALE_PING_MAX;
     ttl->view_scale = ttl->view_scale_ping_max;
+    ttl->cam_eye[0] = +10;
+    ttl->cam_eye[1] = -10;
+    ttl->cam_eye[2] = +10;
+    ttl->cam_look_at[0] = 0;
+    ttl->cam_look_at[1] = 0;
+    ttl->cam_look_at[2] = 0;
+    ttl->cam_r = 0;// (float)LWDEG2RAD(90);
+    ttl->cell_grid = 1;
     LWMUTEX_INIT(ttl->rendering_mutex);
     ttl->earth_globe_scale_0 = earth_globe_render_scale;
     lwttl_set_earth_globe_scale(ttl, ttl->earth_globe_scale_0);
@@ -1400,12 +1411,11 @@ static float inner_product(const float a[3], const float b[3]) {
     return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }
 
-void lwttl_screen_to_world_pos(const float touchx,
+void lwttl_screen_to_world_pos(const LWTTL* ttl,
+                               const float touchx,
                                const float touchy,
                                const float screenw,
                                const float screenh,
-                               const mat4x4 proj,
-                               const mat4x4 view_model,
                                vec2 world_pos) {
     // Auxiliary matrix and vectors
     // to deal with ogl.
@@ -1427,43 +1437,52 @@ void lwttl_screen_to_world_pos(const float touchx,
 
     /* Obtain the transform matrix and
     then the inverse. */
-    mat4x4_mul(transform_matrix, proj, view_model);
+    mat4x4_mul(transform_matrix, ttl->proj, ttl->view /* ttl->view_model */);
     mat4x4_invert(inverted_matrix, transform_matrix);
     /* Apply the inverse to the point
     in clip space */
     mat4x4_mul_vec4(out_point, inverted_matrix, normalized_in_point);
 
-    const float out_point_z = out_point[2];
-    const float p[3] = {
-        out_point[0] + out_point_z * (-1),
-        out_point[1] + out_point_z * (1),
-        out_point[2] + out_point_z * (-1),
-    };
-    
-    world_pos[0] = p[0];
-    world_pos[1] = p[1];
+    if (out_point[3] == 0.0) {
+        // Avoid /0 error.
+        LOGE("World coords ERROR!");
+        world_pos[0] = 0;
+        world_pos[1] = 0;
+    } else {
+        // Divide by the 3rd component to find
+        // out the real position.
+        out_point[0] /= out_point[3];
+        out_point[1] /= out_point[3];
+        out_point[2] /= out_point[3];
 
-    //if (out_point[3] == 0.0) {
-    //    // Avoid /0 error.
-    //    LOGE("World coords ERROR!");
-    //    world_pos[0] = 0;
-    //    world_pos[1] = 0;
-    //} else {
-    //    // Divide by the 3rd component to find
-    //    // out the real position.
-    //    world_pos[0] = out_point[0] / out_point[3];
-    //    world_pos[1] = out_point[1] / out_point[3];
-    //}
+        // project out_point to z=0 plane and get (x, y)
+        // assuming we are on orthographic projection
+
+        const float cam_to_look_at[3] = {
+            ttl->cam_look_at[0] - ttl->cam_eye[0],
+            ttl->cam_look_at[1] - ttl->cam_eye[1],
+            ttl->cam_look_at[2] - ttl->cam_eye[2],
+        };
+
+        const float d = -out_point[2] / cam_to_look_at[2];
+        const float p[3] = {
+            out_point[0] + d * cam_to_look_at[0],
+            out_point[1] + d * cam_to_look_at[1],
+            out_point[2] + d * cam_to_look_at[2],
+        };
+
+        world_pos[0] = p[0];
+        world_pos[1] = p[1];
+    }
 }
 
 static void nx_ny_to_lng_lat(const LWTTL* ttl, float nx, float ny, int width, int height, int* xc, int* yc, LWTTLLNGLAT* lnglat) {
     vec2 world_pos;
-    lwttl_screen_to_world_pos(nx,
+    lwttl_screen_to_world_pos(ttl,
+                              nx,
                               ny,
                               (float)width,
                               (float)height,
-                              ttl->proj,
-                              ttl->view,
                               world_pos);
     const LWTTLLNGLAT* center = &ttl->worldmap.center;
     const int view_scale = lwttl_view_scale(ttl);
@@ -1544,24 +1563,26 @@ void lwttl_view_proj(const LWTTL* ttl, mat4x4 view, mat4x4 proj) {
 }
 
 void lwttl_update_view_proj(LWTTL* ttl, float aspect_ratio) {
-    float ship_y = 0.0f;//+(float)pLwc->app_time;
-
     float half_height = 10.0f;
     float near_z = 0.1f;
     float far_z = 100.0f;
-    float cam_r = 0;// sinf((float)pLwc->app_time / 4) / 4.0f;
-    float c_r = cosf(cam_r);
-    float s_r = sinf(cam_r);
-    float eye_x = 15;
-    float eye_y = -15;
-    float eye_z = 15;
-    vec3 eye = { c_r * eye_x - s_r * eye_y, s_r * eye_x + c_r * eye_y, eye_z }; // eye position
-    eye[1] += ship_y;
-    vec3 center = { 0, ship_y, 0 }; // look position
+    float c_r = cosf(ttl->cam_r);
+    float s_r = sinf(ttl->cam_r);
+    // eye position
+    vec3 eye = {
+        c_r * ttl->cam_eye[0] - s_r * ttl->cam_eye[1],
+        s_r * ttl->cam_eye[0] + c_r * ttl->cam_eye[1],
+        ttl->cam_eye[2]
+    };
+    // look position
+    vec3 center = {
+        ttl->cam_look_at[0],
+        ttl->cam_look_at[1],
+        ttl->cam_look_at[2]
+    };
     vec3 center_to_eye;
     vec3_sub(center_to_eye, eye, center);
     float cam_a = atan2f(center_to_eye[1], center_to_eye[0]);
-    //vec3 right = { -sinf(cam_a),cosf(cam_a),0 };
     vec3 right = { cosf(cam_a), -sinf(cam_a), 0 };
     vec3 eye_right;
     vec3_mul_cross(eye_right, center_to_eye, right);
@@ -1966,12 +1987,20 @@ void lwttl_update(LWTTL* ttl, LWCONTEXT* pLwc, float delta_time) {
         && lw_get_normalized_dir_pad_input(pLwc, &pLwc->left_dir_pad, &dx, &dy, &dlen)
         && (dx || dy)
         && (dlen > 0.05f)) {
+        // dx, dy in world space coordinates
+        vec2 dworld;
+        lwttl_screen_to_world_pos(ttl, dx, dy, pLwc->aspect_ratio, 1.0f, dworld);
+
+        const float dworld_len = sqrtf(dworld[0] * dworld[0] + dworld[1] * dworld[1]);
+        dworld[0] /= dworld_len;
+        dworld[1] /= dworld_len;
+        
         // cancel tracking if user want to scroll around
         lwttl_set_track_object_ship_id(ttl, 0);
         // direction inverted
         lwttl_worldmap_scroll_to(ttl,
-                                 ttl->worldmap.center.lng + (-dx) / 50.0f * delta_time * ttl->view_scale,
-                                 ttl->worldmap.center.lat + (-dy) / 50.0f * delta_time * ttl->view_scale,
+                                 ttl->worldmap.center.lng + (-dworld[0]) / 50.0f * delta_time * ttl->view_scale,
+                                 ttl->worldmap.center.lat + (-dworld[1]) / 50.0f * delta_time * ttl->view_scale,
                                  0);
         // prevent unintentional change of cell selection
         // while spanning the map

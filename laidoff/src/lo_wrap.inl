@@ -49341,6 +49341,108 @@ fail:
 }
 
 
+static int _wrap_render_solid_vb_uv_shader_rot_view_proj(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  float arg2 ;
+  float arg3 ;
+  float arg4 ;
+  float arg5 ;
+  float arg6 ;
+  float arg7 ;
+  GLuint arg8 ;
+  enum _LW_VBO_TYPE arg9 ;
+  float arg10 ;
+  float arg11 ;
+  float arg12 ;
+  float arg13 ;
+  float arg14 ;
+  float *arg15 = (float *) 0 ;
+  float *arg16 = (float *) 0 ;
+  int arg17 ;
+  float arg18 ;
+  vec4 *arg19 ;
+  vec4 *arg20 ;
+  GLuint *argp8 ;
+  
+  SWIG_check_num_args("render_solid_vb_uv_shader_rot_view_proj",20,20)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("render_solid_vb_uv_shader_rot_view_proj",1,"LWCONTEXT const *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("render_solid_vb_uv_shader_rot_view_proj",2,"float");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("render_solid_vb_uv_shader_rot_view_proj",3,"float");
+  if(!lua_isnumber(L,4)) SWIG_fail_arg("render_solid_vb_uv_shader_rot_view_proj",4,"float");
+  if(!lua_isnumber(L,5)) SWIG_fail_arg("render_solid_vb_uv_shader_rot_view_proj",5,"float");
+  if(!lua_isnumber(L,6)) SWIG_fail_arg("render_solid_vb_uv_shader_rot_view_proj",6,"float");
+  if(!lua_isnumber(L,7)) SWIG_fail_arg("render_solid_vb_uv_shader_rot_view_proj",7,"float");
+  if(!lua_isuserdata(L,8)) SWIG_fail_arg("render_solid_vb_uv_shader_rot_view_proj",8,"GLuint");
+  if(!lua_isnumber(L,9)) SWIG_fail_arg("render_solid_vb_uv_shader_rot_view_proj",9,"enum _LW_VBO_TYPE");
+  if(!lua_isnumber(L,10)) SWIG_fail_arg("render_solid_vb_uv_shader_rot_view_proj",10,"float");
+  if(!lua_isnumber(L,11)) SWIG_fail_arg("render_solid_vb_uv_shader_rot_view_proj",11,"float");
+  if(!lua_isnumber(L,12)) SWIG_fail_arg("render_solid_vb_uv_shader_rot_view_proj",12,"float");
+  if(!lua_isnumber(L,13)) SWIG_fail_arg("render_solid_vb_uv_shader_rot_view_proj",13,"float");
+  if(!lua_isnumber(L,14)) SWIG_fail_arg("render_solid_vb_uv_shader_rot_view_proj",14,"float");
+  if(!SWIG_isptrtype(L,15)) SWIG_fail_arg("render_solid_vb_uv_shader_rot_view_proj",15,"float const *");
+  if(!SWIG_isptrtype(L,16)) SWIG_fail_arg("render_solid_vb_uv_shader_rot_view_proj",16,"float const *");
+  if(!lua_isnumber(L,17)) SWIG_fail_arg("render_solid_vb_uv_shader_rot_view_proj",17,"int");
+  if(!lua_isnumber(L,18)) SWIG_fail_arg("render_solid_vb_uv_shader_rot_view_proj",18,"float");
+  if(!SWIG_isptrtype(L,19)) SWIG_fail_arg("render_solid_vb_uv_shader_rot_view_proj",19,"mat4x4 const");
+  if(!SWIG_isptrtype(L,20)) SWIG_fail_arg("render_solid_vb_uv_shader_rot_view_proj",20,"mat4x4 const");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("render_solid_vb_uv_shader_rot_view_proj",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  arg2 = (float)lua_tonumber(L, 2);
+  arg3 = (float)lua_tonumber(L, 3);
+  arg4 = (float)lua_tonumber(L, 4);
+  arg5 = (float)lua_tonumber(L, 5);
+  arg6 = (float)lua_tonumber(L, 6);
+  arg7 = (float)lua_tonumber(L, 7);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,8,(void**)&argp8,SWIGTYPE_p_GLuint,0))){
+    SWIG_fail_ptr("render_solid_vb_uv_shader_rot_view_proj",8,SWIGTYPE_p_GLuint);
+  }
+  arg8 = *argp8;
+  
+  arg9 = (enum _LW_VBO_TYPE)(int)lua_tonumber(L, 9);
+  arg10 = (float)lua_tonumber(L, 10);
+  arg11 = (float)lua_tonumber(L, 11);
+  arg12 = (float)lua_tonumber(L, 12);
+  arg13 = (float)lua_tonumber(L, 13);
+  arg14 = (float)lua_tonumber(L, 14);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,15,(void**)&arg15,SWIGTYPE_p_float,0))){
+    SWIG_fail_ptr("render_solid_vb_uv_shader_rot_view_proj",15,SWIGTYPE_p_float);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,16,(void**)&arg16,SWIGTYPE_p_float,0))){
+    SWIG_fail_ptr("render_solid_vb_uv_shader_rot_view_proj",16,SWIGTYPE_p_float);
+  }
+  
+  arg17 = (int)lua_tonumber(L, 17);
+  arg18 = (float)lua_tonumber(L, 18);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,19,(void**)&arg19,SWIGTYPE_p_a_4__float,0))){
+    SWIG_fail_ptr("render_solid_vb_uv_shader_rot_view_proj",19,SWIGTYPE_p_a_4__float);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,20,(void**)&arg20,SWIGTYPE_p_a_4__float,0))){
+    SWIG_fail_ptr("render_solid_vb_uv_shader_rot_view_proj",20,SWIGTYPE_p_a_4__float);
+  }
+  
+  render_solid_vb_uv_shader_rot_view_proj((struct _LWCONTEXT const *)arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14,(float const *)arg15,(float const *)arg16,arg17,arg18,(float const (*)[4])arg19,(float const (*)[4])arg20);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_lwc_enable_additive_blending(lua_State* L) {
   int SWIG_arg = 0;
   
@@ -100999,42 +101101,35 @@ fail:
 
 static int _wrap_lwttl_screen_to_world_pos(lua_State* L) {
   int SWIG_arg = 0;
-  float arg1 ;
+  LWTTL *arg1 = (LWTTL *) 0 ;
   float arg2 ;
   float arg3 ;
   float arg4 ;
-  vec4 *arg5 ;
-  vec4 *arg6 ;
-  float *arg7 ;
+  float arg5 ;
+  float *arg6 ;
   
-  SWIG_check_num_args("lwttl_screen_to_world_pos",7,7)
-  if(!lua_isnumber(L,1)) SWIG_fail_arg("lwttl_screen_to_world_pos",1,"float const");
+  SWIG_check_num_args("lwttl_screen_to_world_pos",6,6)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_screen_to_world_pos",1,"LWTTL const *");
   if(!lua_isnumber(L,2)) SWIG_fail_arg("lwttl_screen_to_world_pos",2,"float const");
   if(!lua_isnumber(L,3)) SWIG_fail_arg("lwttl_screen_to_world_pos",3,"float const");
   if(!lua_isnumber(L,4)) SWIG_fail_arg("lwttl_screen_to_world_pos",4,"float const");
-  if(!SWIG_isptrtype(L,5)) SWIG_fail_arg("lwttl_screen_to_world_pos",5,"mat4x4 const");
-  if(!SWIG_isptrtype(L,6)) SWIG_fail_arg("lwttl_screen_to_world_pos",6,"mat4x4 const");
-  if(!SWIG_isptrtype(L,7)) SWIG_fail_arg("lwttl_screen_to_world_pos",7,"vec2");
-  arg1 = (float const)lua_tonumber(L, 1);
+  if(!lua_isnumber(L,5)) SWIG_fail_arg("lwttl_screen_to_world_pos",5,"float const");
+  if(!SWIG_isptrtype(L,6)) SWIG_fail_arg("lwttl_screen_to_world_pos",6,"vec2");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTL,0))){
+    SWIG_fail_ptr("lwttl_screen_to_world_pos",1,SWIGTYPE_p__LWTTL);
+  }
+  
   arg2 = (float const)lua_tonumber(L, 2);
   arg3 = (float const)lua_tonumber(L, 3);
   arg4 = (float const)lua_tonumber(L, 4);
+  arg5 = (float const)lua_tonumber(L, 5);
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,5,(void**)&arg5,SWIGTYPE_p_a_4__float,0))){
-    SWIG_fail_ptr("lwttl_screen_to_world_pos",5,SWIGTYPE_p_a_4__float);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,6,(void**)&arg6,SWIGTYPE_p_float,0))){
+    SWIG_fail_ptr("lwttl_screen_to_world_pos",6,SWIGTYPE_p_float);
   }
   
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,6,(void**)&arg6,SWIGTYPE_p_a_4__float,0))){
-    SWIG_fail_ptr("lwttl_screen_to_world_pos",6,SWIGTYPE_p_a_4__float);
-  }
-  
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,7,(void**)&arg7,SWIGTYPE_p_float,0))){
-    SWIG_fail_ptr("lwttl_screen_to_world_pos",7,SWIGTYPE_p_float);
-  }
-  
-  lwttl_screen_to_world_pos(arg1,arg2,arg3,arg4,(float const (*)[4])arg5,(float const (*)[4])arg6,arg7);
+  lwttl_screen_to_world_pos((struct _LWTTL const *)arg1,arg2,arg3,arg4,arg5,arg6);
   
   return SWIG_arg;
   
@@ -103556,8 +103651,8 @@ static swig_lua_const_info swig_SwigModule_constants[]= {
     {SWIG_LUA_CONSTTAB_INT("LTSOT_SEAPORT", LTSOT_SEAPORT)},
     {SWIG_LUA_CONSTTAB_INT("LTSOT_CITY", LTSOT_CITY)},
     {SWIG_LUA_CONSTTAB_INT("LTSOT_SALVAGE", LTSOT_SALVAGE)},
-    {SWIG_LUA_CONSTTAB_FLOAT("sea_render_scale", (50.0*20))},
-    {SWIG_LUA_CONSTTAB_FLOAT("earth_globe_render_scale", (45.0*20))},
+    {SWIG_LUA_CONSTTAB_FLOAT("sea_render_scale", (50.0*30))},
+    {SWIG_LUA_CONSTTAB_FLOAT("earth_globe_render_scale", (45.0*30))},
     {SWIG_LUA_CONSTTAB_INT("LNGLAT_RES_WIDTH", (172824))},
     {SWIG_LUA_CONSTTAB_INT("LNGLAT_RES_HEIGHT", (86412))},
     {SWIG_LUA_CONSTTAB_INT("LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS", (16))},
@@ -104032,6 +104127,7 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "render_solid_vb_ui_alpha_uv_shader", _wrap_render_solid_vb_ui_alpha_uv_shader},
     { "render_solid_vb_ui_uv_shader_rot", _wrap_render_solid_vb_ui_uv_shader_rot},
     { "render_solid_vb_ui_uv_shader_rot_view_proj", _wrap_render_solid_vb_ui_uv_shader_rot_view_proj},
+    { "render_solid_vb_uv_shader_rot_view_proj", _wrap_render_solid_vb_uv_shader_rot_view_proj},
     { "lwc_enable_additive_blending", _wrap_lwc_enable_additive_blending},
     { "lwc_disable_additive_blending", _wrap_lwc_disable_additive_blending},
     { "render_text_block", _wrap_render_text_block},
