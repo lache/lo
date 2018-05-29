@@ -179,7 +179,14 @@ void lwttl_get_cell_bound(const float lng_min,
                           int* xc1,
                           int* yc1);
 const void* lwttl_world_text_begin(const LWTTL* ttl);
-const char* lwttl_world_text(const LWTTL* ttl, const void* it, int* xc, int* yc, float* age, float* lifetime);
+const char* lwttl_world_text(const LWTTL* ttl,
+                             const void* it,
+                             const LWTTLLNGLAT* center,
+                             const float aspect_ratio,
+                             const mat4x4 proj_view,
+                             const int view_scale,
+                             float* ui_point_x,
+                             float* ui_point_y);
 const void* lwttl_world_text_next(const LWTTL* ttl, const void* it);
 void lwttl_toggle_cell_grid(LWTTL* ttl);
 int lwttl_cell_grid(const LWTTL* ttl);

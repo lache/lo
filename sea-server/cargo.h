@@ -1,14 +1,21 @@
-//
-// Created by 김거엽 on 2018. 5. 13..
-//
+#pragma once
 
-#ifndef SEA_SERVER_CARGO_H
-#define SEA_SERVER_CARGO_H
+#include "packet.h"
 
-
-class cargo {
-
-};
-
-
-#endif //SEA_SERVER_CARGO_H
+namespace ss {
+    enum cargo_notification_type {
+        cnt_created,
+        cnt_loaded,
+        cnt_unloaded,
+        cnt_consumed,
+        cnt_converted,
+    };
+    struct cargo_notification {
+        int xc0;
+        int yc0;
+        int xc1;
+        int yc1;
+        int amount;
+        cargo_notification_type cnt;
+    };
+}

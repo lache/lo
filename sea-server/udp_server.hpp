@@ -13,6 +13,7 @@ namespace ss {
     class region;
     class city;
     class salvage;
+    struct cargo_notification;
     class udp_server {
 
     public:
@@ -73,6 +74,8 @@ namespace ss {
             return v->first;
         }
         std::vector<endpoint_aoi_object::value> query_aoi_endpoints(int xc, int yc) const;
+        void flush_cargo_notifications();
+        void notify_to_client_cargo_notification(const cargo_notification& cn);
         udp::socket socket_;
         udp::endpoint remote_endpoint_;
         std::array<char, 1024> recv_buffer_;

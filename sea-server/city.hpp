@@ -1,6 +1,7 @@
 #pragma once
 
 #include "city_object.hpp"
+#include "cargo.h"
 
 typedef struct _xy32 xy32;
 namespace ss {
@@ -25,6 +26,7 @@ namespace ss {
         const char* query_single_cell(int xc0, int yc0, int& id) const;
         void update_single_chunk_key_ts(const LWTTLCHUNKKEY& chunk_key, long long monotonic_uptime);
         void update();
+        std::vector<cargo_notification>&& flush_cargo_notifications();
     private:
         std::vector<city_object::value> query_tree_ex(int xc, int yc, int half_lng_ex, int half_lat_ex) const;
         void update_chunk_key_ts(int xc0, int yc0);
@@ -45,5 +47,6 @@ namespace ss {
         std::shared_ptr<seaport> seaport_;
         long long time0_;
         int city_id_seq_;
+        std::vector<cargo_notification> cargo_notifications;
     };
 }

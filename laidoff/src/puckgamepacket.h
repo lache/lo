@@ -31,8 +31,9 @@ typedef enum _LW_PUCK_GAME_PACKET {
     LPGP_LWPTTLSINGLECELL = 121, // server -> client
     LPGP_LWPTTLSTATICSTATE3 = 122, // server -> client
     LPGP_LWPTTLCITYSTATE = 123, // server -> client
-    LPGP_LWPTTLGOLDEARNED = 124, // server -> client (push)
+    LPGP_LWPTTLGOLDEARNED = 124, // server -> client (aoi push)
     LPGP_LWPTTLSALVAGESTATE = 125, // server -> client
+    LPGP_LWPTTLCARGONOTIFICATION = 126, // server -> client (aoi push)
     LPGP_LWPQUEUE2 = 200,
     LPGP_LWPMAYBEMATCHED = 201,
     LPGP_LWPMATCHED2 = 202,
@@ -537,6 +538,25 @@ typedef struct _LWPTTLSALVAGESTATE {
     int count;
     LWPTTLSALVAGEOBJECT obj[256];
 } LWPTTLSALVAGESTATE;
+
+typedef struct _LWPTTLCARGONOTIFICATIONBITFIELD {
+    int created : 1;
+    int unloaded : 1;
+    int loaded : 1;
+} LWPTTLCARGONOTIFICATIONBITFIELD;
+
+typedef struct _LWPTTLCARGONOTIFICATION {
+    unsigned char type;
+    unsigned char padding0;
+    unsigned char padding1;
+    unsigned char padding2;
+    int xc0;
+    int yc0;
+    int xc1;
+    int yc1;
+    int amount;
+    LWPTTLCARGONOTIFICATIONBITFIELD cargo_flags;
+} LWPTTLCARGONOTIFICATION;
 /*
 * END: should sync with packet.h in sea-server
 */

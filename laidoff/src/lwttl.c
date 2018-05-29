@@ -19,6 +19,7 @@
 #include "input.h"
 #include "logic.h"
 #include "pcg_basic.h"
+#include "lwmath.h"
 
 typedef struct _LWTTLDATA_SEAPORT {
     char locode[8];
@@ -112,14 +113,22 @@ typedef struct _LWTTLSELECTED {
     int dragging;
 } LWTTLSELECTED;
 
+typedef enum _LW_TTL_WORLD_TEXT_ANIM_TYPE {
+    LTWTAT_UP,
+    LTWTAT_MOVE,
+} LW_TTL_WORLD_TEXT_ANIM_TYPE;
+
 typedef struct _LWTTLWORLDTEXT {
     int valid;
     int xc;
     int yc;
+    int xc1;
+    int yc1;
     float age;
     float lifetime;
     float move_dist;
     char text[128];
+    LW_TTL_WORLD_TEXT_ANIM_TYPE anim_type;
 } LWTTLWORLDTEXT;
 
 typedef struct _LWTTL {
@@ -915,7 +924,7 @@ static const LWTTLWORLDTEXT* first_valid_world_text(const LWTTL* ttl) {
     return valid_world_text_start(ttl, ttl->world_text);
 }
 
-static void spawn_world_text(LWTTL* ttl, const char* text, int xc, int yc) {
+static void spawn_world_text_move(LWTTL* ttl, const char* text, int xc, int yc, int xc1, int yc1, LW_TTL_WORLD_TEXT_ANIM_TYPE anim_type) {
     LWTTLWORLDTEXT* world_text = empty_world_text(ttl);
     if (world_text) {
         world_text->valid = 1;
@@ -926,9 +935,16 @@ static void spawn_world_text(LWTTL* ttl, const char* text, int xc, int yc) {
         world_text->text[ARRAY_SIZE(world_text->text) - 1] = 0;
         world_text->xc = xc;
         world_text->yc = yc;
+        world_text->xc1 = xc1;
+        world_text->yc1 = yc1;
+        world_text->anim_type = anim_type;
     } else {
         LOGEP("size exceeded");
     }
+}
+
+static void spawn_world_text(LWTTL* ttl, const char* text, int xc, int yc) {
+    spawn_world_text_move(ttl, text, xc, yc, xc, yc, LTWTAT_UP);
 }
 
 const LWPTTLWAYPOINTS* lwttl_get_waypoints(const LWTTL* ttl) {
@@ -1676,7 +1692,14 @@ const void* lwttl_world_text_begin(const LWTTL* ttl) {
     return first_valid_world_text(ttl);
 }
 
-const char* lwttl_world_text(const LWTTL* ttl, const void* it, int* xc, int* yc, float* age, float* lifetime) {
+const char* lwttl_world_text(const LWTTL* ttl,
+                             const void* it,
+                             const LWTTLLNGLAT* center,
+                             const float aspect_ratio,
+                             const mat4x4 proj_view,
+                             const int view_scale,
+                             float* ui_point_x,
+                             float* ui_point_y) {
     const LWTTLWORLDTEXT* wt = (const LWTTLWORLDTEXT*)it;
     if (wt < ttl->world_text || wt >= &ttl->world_text[ARRAY_SIZE(ttl->world_text)]) {
         LOGEP("out of bound it");
@@ -1686,10 +1709,43 @@ const char* lwttl_world_text(const LWTTL* ttl, const void* it, int* xc, int* yc,
         LOGEP("misaligned it");
         return 0;
     }
-    *xc = wt->xc;
-    *yc = wt->yc;
-    *age = wt->age;
-    *lifetime = wt->lifetime;
+    const float age = wt->age;
+    float lifetime = wt->lifetime;
+    if (lifetime <= 0) {
+        lifetime = 1;
+    }
+    const float ratio = LWCLAMP(age / lifetime, 0.0f, 1.0f);
+    const float x = cell_fx_to_render_coords((float)wt->xc, center, view_scale);
+    const float y = cell_fy_to_render_coords((float)wt->yc, center, view_scale);
+    vec4 obj_pos_vec4 = {
+        x,
+        y,
+        0,
+        1,
+    };
+    vec2 ui_point;
+    calculate_ui_point_from_world_point(aspect_ratio, proj_view, obj_pos_vec4, ui_point);
+    if (wt->anim_type == LTWTAT_UP) {
+        // move +Y direction animation
+        ui_point[1] += ratio / 5.0f;
+    } else {
+        const float x1 = cell_fx_to_render_coords((float)wt->xc1, center, view_scale);
+        const float y1 = cell_fy_to_render_coords((float)wt->yc1, center, view_scale);
+        vec4 obj_pos1_vec4 = {
+            x1,
+            y1,
+            0,
+            1,
+        };
+        vec2 ui_point1;
+        calculate_ui_point_from_world_point(aspect_ratio, proj_view, obj_pos1_vec4, ui_point1);
+        ui_point[0] = ui_point[0] * (1.0f - ratio) + ui_point1[0] * ratio;
+        ui_point[1] = ui_point[1] * (1.0f - ratio) + ui_point1[1] * ratio;
+    }
+    
+    *ui_point_x = ui_point[0];
+    *ui_point_y = ui_point[1];
+
     return wt->text;
 }
 
@@ -1948,7 +2004,23 @@ void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc) {
                 LOGIx("LWPTTLGOLDEARNED");
                 char text[64];
                 snprintf(text, ARRAY_SIZE(text), "GOLD %d", p->amount);
+                text[ARRAY_SIZE(text) - 1] = 0;
                 spawn_world_text(ttl, text, p->xc0, p->yc0);
+                break;
+            }
+            case LPGP_LWPTTLCARGONOTIFICATION:
+            {
+                if (decompressed_bytes != sizeof(LWPTTLCARGONOTIFICATION)) {
+                    LOGE("LWPTTLCARGONOTIFICATION: Size error %d (%zu expected)",
+                         decompressed_bytes,
+                         sizeof(LWPTTLCARGONOTIFICATION));
+                }
+                LWPTTLCARGONOTIFICATION* p = (LWPTTLCARGONOTIFICATION*)decompressed;
+                LOGIx("LWPTTLCARGONOTIFICATION");
+                char text[64];
+                snprintf(text, ARRAY_SIZE(text), "CARGO %d", p->amount);
+                text[ARRAY_SIZE(text) - 1] = 0;
+                spawn_world_text_move(ttl, text, p->xc0, p->yc0, p->xc1, p->yc1, LTWTAT_MOVE);
                 break;
             }
             default:

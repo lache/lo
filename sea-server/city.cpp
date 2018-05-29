@@ -2,13 +2,14 @@
 #include "city.hpp"
 #include "xy.hpp"
 #include "seaport.hpp"
+#include "cargo.h"
 
 #define CITY_RTREE_FILENAME "rtree/city.dat"
 #define CITY_RTREE_MMAP_MAX_SIZE (4 * 1024 * 1024)
 
 using namespace ss;
 
-const auto update_interval = boost::posix_time::milliseconds(1000);
+const auto update_interval = boost::posix_time::milliseconds(5000);
 
 typedef struct _LWTTLDATA_CITY {
     char name[64]; // max length 35
@@ -286,8 +287,13 @@ void city::generate_cargo() {
             const auto total_cargo = 10.0f;
             const auto cargo = std::max(1, boost::math::iround(total_cargo / seaports.size()));
             for (const auto sop : seaports) {
-                seaport_->add_cargo(sop.id, cargo, true);
+                auto actual_added = seaport_->add_cargo(sop.id, cargo, true);
+                cargo_notifications.emplace_back(cargo_notification{ xc, yc, sop.x0, sop.y0, actual_added, cnt_created });
             }
         }
     }
+}
+
+std::vector<cargo_notification>&& city::flush_cargo_notifications() {
+    return std::move(cargo_notifications);
 }

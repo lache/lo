@@ -1812,25 +1812,15 @@ static void render_world_text(const LWCONTEXT* pLwc, const mat4x4 view, const ma
     const int view_scale = lwttl_view_scale(pLwc->ttl);
     const void* wt_it = lwttl_world_text_begin(pLwc->ttl);
     while (wt_it) {
-        int xc0, yc0;
-        float age, lifetime;
-        const char* text = lwttl_world_text(pLwc->ttl, wt_it, &xc0, &yc0, &age, &lifetime);
-        if (lifetime <= 0) {
-            lifetime = 1;
-        }
-        const float ratio = age / lifetime;
-        const float x = cell_fx_to_render_coords((float)xc0, center, view_scale);
-        const float y = cell_fy_to_render_coords((float)yc0, center, view_scale);
-        vec4 obj_pos_vec4 = {
-            x,
-            y,
-            0,
-            1,
-        };
-        vec2 ui_point;
-        calculate_ui_point_from_world_point(pLwc->aspect_ratio, proj_view, obj_pos_vec4, ui_point);
-        // move +Y direction animation
-        ui_point[1] += ratio / 5.0f;
+        float ui_point_x, ui_point_y;
+        const char* text = lwttl_world_text(pLwc->ttl,
+                                            wt_it,
+                                            center,
+                                            pLwc->aspect_ratio,
+                                            proj_view,
+                                            view_scale,
+                                            &ui_point_x,
+                                            &ui_point_y);
         LWTEXTBLOCK test_text_block;
         test_text_block.text_block_width = 999.0f;// 2.00f * aspect_ratio;
         test_text_block.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_F;
@@ -1844,8 +1834,8 @@ static void render_world_text(const LWCONTEXT* pLwc, const mat4x4 view, const ma
         test_text_block.begin_index = 0;
         test_text_block.end_index = test_text_block.text_bytelen;
         test_text_block.multiline = 1;
-        test_text_block.text_block_x = ui_point[0];
-        test_text_block.text_block_y = ui_point[1];
+        test_text_block.text_block_x = ui_point_x;
+        test_text_block.text_block_y = ui_point_y;
         test_text_block.align = LTBA_LEFT_CENTER;
         render_text_block(pLwc, &test_text_block);
         wt_it = lwttl_world_text_next(pLwc->ttl, wt_it);

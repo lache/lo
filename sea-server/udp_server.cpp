@@ -71,6 +71,8 @@ void udp_server::update() {
         route_map_.erase(v);
     }
     remove_expired_endpoints();
+
+    flush_cargo_notifications();
 }
 
 void udp_server::salvage_update() {
@@ -830,6 +832,36 @@ void udp_server::notify_to_client_gold_earned(int xc, int yc, int amount) {
     notify_to_aoi_clients(reply, xc, yc);
 }
 
+void udp_server::notify_to_client_cargo_notification(const cargo_notification& cn) {
+    std::shared_ptr<LWPTTLCARGONOTIFICATION> reply(new LWPTTLCARGONOTIFICATION);
+    memset(reply.get(), 0, sizeof(LWPTTLCARGONOTIFICATION));
+    reply->type = LPGP_LWPTTLCARGONOTIFICATION;
+    reply->xc0 = cn.xc0;
+    reply->yc0 = cn.yc0;
+    reply->xc1 = cn.xc1;
+    reply->yc1 = cn.yc1;
+    reply->amount = cn.amount;
+    switch (cn.cnt) {
+    case cnt_consumed:
+        reply->cargo_flags.destroyed = 1;
+        break;
+    case cnt_converted:
+        reply->cargo_flags.converted = 1;
+        break;
+    case cnt_created:
+        reply->cargo_flags.created = 1;
+        reply->cargo_flags.moved = 1;
+        break;
+    case cnt_loaded:
+        reply->cargo_flags.moved = 1;
+        break;
+    case cnt_unloaded:
+        reply->cargo_flags.moved = 1;
+        break;
+    }
+    notify_to_aoi_clients(reply, cn.xc0, cn.yc0);
+}
+
 std::vector<endpoint_aoi_object::value> udp_server::query_aoi_endpoints(int xc, int yc) const {
     std::vector<endpoint_aoi_object::value> endpoints;
     auto p = endpoint_aoi_object::point(xc, yc);
@@ -845,3 +877,9 @@ template<> udp::endpoint udp_server::extract_endpoint(std::vector<endpoint_aoi_o
     return aoi_int_keys_[v->second];
 }
 
+void udp_server::flush_cargo_notifications() {
+    auto cns = city_->flush_cargo_notifications();
+    for (const auto& cn : cns) {
+        notify_to_client_cargo_notification(cn);
+    }
+}
