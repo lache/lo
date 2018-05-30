@@ -272,13 +272,26 @@ static void render_terminal_icon(const LWCONTEXT* pLwc,
                                  float h,
                                  LW_ATLAS_ENUM lae,
                                  LW_ATLAS_ENUM lae_alpha) {
+    mat4x4 proj_view;
+    mat4x4_identity(proj_view);
+    mat4x4_mul(proj_view, proj, view);
+    const vec4 obj_pos_vec4 = {
+        x,
+        y,
+        z,
+        1,
+    };
+    vec2 ui_point;
+    calculate_ui_point_from_world_point(pLwc->aspect_ratio, proj_view, obj_pos_vec4, ui_point);
+    mat4x4 identity_view;
+    mat4x4_identity(identity_view);
     lazy_tex_atlas_glBindTexture(pLwc, lae);
     lazy_tex_atlas_glBindTexture(pLwc, lae_alpha);
     render_solid_vb_ui_alpha_uv_shader_view_proj(pLwc,
-                                                 x,
-                                                 y - h / 2,
-                                                 w * 1,
-                                                 h * 1,
+                                                 ui_point[0],
+                                                 ui_point[1],
+                                                 w * 0.075f,
+                                                 h * 0.075f,
                                                  pLwc->tex_atlas[lae],
                                                  pLwc->tex_atlas[lae_alpha],
                                                  LVT_CENTER_BOTTOM_ANCHORED_SQUARE,
@@ -290,8 +303,8 @@ static void render_terminal_icon(const LWCONTEXT* pLwc,
                                                  default_uv_offset,
                                                  default_uv_scale,
                                                  LWST_ETC1,
-                                                 view,
-                                                 proj);
+                                                 identity_view,
+                                                 pLwc->proj);
 }
 
 static void render_seaport_icon(const LWCONTEXT* pLwc,
@@ -335,13 +348,26 @@ static void render_truck_terminal_icon(const LWCONTEXT* pLwc,
 }
 
 static void render_city_icon(const LWCONTEXT* pLwc, const mat4x4 view, const mat4x4 proj, float x, float y, float z, float w, float h, unsigned char population_level) {
+    mat4x4 proj_view;
+    mat4x4_identity(proj_view);
+    mat4x4_mul(proj_view, proj, view);
+    const vec4 obj_pos_vec4 = {
+        x,
+        y,
+        z,
+        1,
+    };
+    vec2 ui_point;
+    calculate_ui_point_from_world_point(pLwc->aspect_ratio, proj_view, obj_pos_vec4, ui_point);
+    mat4x4 identity_view;
+    mat4x4_identity(identity_view);
     lazy_tex_atlas_glBindTexture(pLwc, LAE_TTL_CITY);
     lazy_tex_atlas_glBindTexture(pLwc, LAE_TTL_CITY_ALPHA);
     render_solid_vb_ui_alpha_uv_shader_view_proj(pLwc,
-                                                 x,
-                                                 y - h / 2,
-                                                 w * (2 + (population_level >> 4)),
-                                                 h * (2 + (population_level >> 4)),
+                                                 ui_point[0],
+                                                 ui_point[1],
+                                                 w * (2 + (population_level >> 4)) * 0.075f,
+                                                 h * (2 + (population_level >> 4)) * 0.075f,
                                                  pLwc->tex_atlas[LAE_TTL_CITY],
                                                  pLwc->tex_atlas[LAE_TTL_CITY_ALPHA],
                                                  LVT_CENTER_BOTTOM_ANCHORED_SQUARE,
@@ -353,21 +379,34 @@ static void render_city_icon(const LWCONTEXT* pLwc, const mat4x4 view, const mat
                                                  default_uv_offset,
                                                  default_uv_scale,
                                                  LWST_ETC1,
-                                                 view,
-                                                 proj);
+                                                 identity_view,
+                                                 pLwc->proj);
 }
 
 static void render_salvage_icon(const LWCONTEXT* pLwc, const mat4x4 view, const mat4x4 proj, float x, float y, float z, float w, float h) {
+    mat4x4 proj_view;
+    mat4x4_identity(proj_view);
+    mat4x4_mul(proj_view, proj, view);
+    const vec4 obj_pos_vec4 = {
+        x,
+        y,
+        z,
+        1,
+    };
+    vec2 ui_point;
+    calculate_ui_point_from_world_point(pLwc->aspect_ratio, proj_view, obj_pos_vec4, ui_point);
+    mat4x4 identity_view;
+    mat4x4_identity(identity_view);
     lazy_tex_atlas_glBindTexture(pLwc, LAE_TTL_CONTAINER_ORANGE);
     lazy_tex_atlas_glBindTexture(pLwc, LAE_TTL_CONTAINER_ORANGE_ALPHA);
     render_solid_vb_ui_alpha_uv_shader_view_proj(pLwc,
-                                                 x,
-                                                 y - h / 2,
-                                                 w,
-                                                 h,
+                                                 ui_point[0],
+                                                 ui_point[1],
+                                                 w * 0.075f,
+                                                 h * 0.075f,
                                                  pLwc->tex_atlas[LAE_TTL_CONTAINER_ORANGE],
                                                  pLwc->tex_atlas[LAE_TTL_CONTAINER_ORANGE_ALPHA],
-                                                 LVT_CENTER_BOTTOM_ANCHORED_SQUARE,
+                                                 LVT_CENTER_CENTER_ANCHORED_SQUARE,
                                                  1.0f,
                                                  1.0f,
                                                  1.0f,
@@ -376,8 +415,8 @@ static void render_salvage_icon(const LWCONTEXT* pLwc, const mat4x4 view, const 
                                                  default_uv_offset,
                                                  default_uv_scale,
                                                  LWST_ETC1,
-                                                 view,
-                                                 proj);
+                                                 identity_view,
+                                                 pLwc->proj);
 }
 
 static void render_seaport_icon_xxx(const LWCONTEXT* pLwc, const mat4x4 view, const mat4x4 proj, float x, float y, float z, float w, float h) {
@@ -1315,7 +1354,7 @@ static void render_seaports(const LWCONTEXT* pLwc,
                                         proj,
                                         cell_x0,
                                         cell_y0,
-                                        0,
+                                        lwttl_is_selected_cell(pLwc->ttl, (int)x0, (int)y0) ? 1.0f : 0.0f,
                                         cell_render_width * clamped_view_scale * size_ratio,
                                         cell_render_height * clamped_view_scale * size_ratio);
                 } else {
@@ -1324,7 +1363,7 @@ static void render_seaports(const LWCONTEXT* pLwc,
                                                proj,
                                                cell_x0,
                                                cell_y0,
-                                               0,
+                                               lwttl_is_selected_cell(pLwc->ttl, (int)x0, (int)y0) ? 1.0f : 0.0f,
                                                cell_render_width * clamped_view_scale * size_ratio,
                                                cell_render_height * clamped_view_scale * size_ratio);
                 }
@@ -1417,7 +1456,7 @@ static void render_cities(const LWCONTEXT* pLwc,
                                  proj,
                                  cell_x0,
                                  cell_y0,
-                                 0,
+                                 lwttl_is_selected_cell(pLwc->ttl, (int)x0, (int)y0) ? 1.0f : 0.0f,
                                  cell_render_width * clamped_view_scale * size_ratio,
                                  cell_render_height * clamped_view_scale * size_ratio,
                                  obj_begin[i].population_level);
@@ -1510,7 +1549,7 @@ static void render_salvages(const LWCONTEXT* pLwc,
                                     proj,
                                     cell_x0,
                                     cell_y0,
-                                    0,
+                                    lwttl_is_selected_cell(pLwc->ttl, (int)x0, (int)y0) ? 1.0f : 0.0f,
                                     cell_render_width * clamped_view_scale * size_ratio,
                                     cell_render_height * clamped_view_scale * size_ratio);
             }
@@ -2041,9 +2080,6 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
     glDisable(GL_DEPTH_TEST);
     render_waypoints(pLwc->ttl, pLwc, view, proj, &view_center);
     render_waypoints_cache(pLwc->ttl, pLwc, view, proj, &view_center);
-    render_seaports(pLwc, view, proj, &view_center);
-    render_cities(pLwc, view, proj, &view_center);
-    render_salvages(pLwc, view, proj, &view_center);
     glEnable(GL_DEPTH_TEST);
     // render sea objects(ships)
     if (lwc_render_ttl_render("world")) {
@@ -2091,6 +2127,9 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
     if (lwc_render_ttl_render("landcell_nameplate")) {
         render_sea_static_objects_nameplate(pLwc, view, proj, &view_center);
     }
+    render_seaports(pLwc, view, proj, &view_center);
+    render_cities(pLwc, view, proj, &view_center);
+    render_salvages(pLwc, view, proj, &view_center);
     render_world_text(pLwc, view, proj, &view_center);
     //render_coords(pLwc, &view_center);
     render_region_name(pLwc);
