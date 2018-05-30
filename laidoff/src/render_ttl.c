@@ -237,7 +237,8 @@ static void render_ship(const LWCONTEXT* pLwc, const mat4x4 view, const mat4x4 p
 
 static void render_trunk(const LWCONTEXT* pLwc, const mat4x4 view, const mat4x4 proj, float x, float y, float z, float rot_z) {
     //render_vehicle(pLwc, view, proj, x, y, z, rot_z + (float)LWDEG2RAD(90), LWST_DEFAULT, LVT_OIL_TRUCK, LAE_3D_OIL_TRUCK_TEX_KTX, 0.3f);
-    const float s = 0.5f;
+    const int view_scale = lwttl_view_scale(pLwc->ttl);
+    const float s = 0.5f / view_scale;
     lazy_tex_atlas_glBindTexture(pLwc, LAE_3D_OIL_TRUCK_TEX_KTX);
     render_solid_vb_uv_shader_rot_view_proj(pLwc,
                                             x,
@@ -426,6 +427,7 @@ static void render_cell_color(const LWCONTEXT* pLwc,
                               float z,
                               float w,
                               float h,
+                              float d,
                               LW_VBO_TYPE lvt,
                               float vertex_color_ratio,
                               float vertex_color_r,
@@ -440,7 +442,7 @@ static void render_cell_color(const LWCONTEXT* pLwc,
     mat4x4 model_normal_transform;
     mat4x4_identity(model_normal_transform);
 
-    float sx = w, sy = h, sz = 1;
+    float sx = w, sy = h, sz = d;
     mat4x4 model;
     mat4x4_identity(model);
     mat4x4_mul(model, model, rot);
@@ -486,6 +488,7 @@ static void render_cell(const LWCONTEXT* pLwc,
                       z,
                       w,
                       h,
+                      1.0f,
                       lvt,
                       0,
                       0,
@@ -563,7 +566,23 @@ static void render_land_cell_bitmap(const LWTTL* ttl,
     const float tw = 1.0f / 2;
     const float th = 1.0f / 2;
 
-    LW_ATLAS_ENUM tile_lae = lwttl_cell_grid(ttl) ? LAE_WATER_SAND_TILE_GRID : LAE_WATER_SAND_TILE;
+    LW_ATLAS_ENUM tile_lae = LAE_WATER_SAND_TILE;
+    if (lwttl_cell_grid(ttl)) {
+        if (clamped_view_scale == 1) {
+            tile_lae = LAE_WATER_SAND_TILE_GRID_1X;
+        } else if (clamped_view_scale == 2) {
+            tile_lae = LAE_WATER_SAND_TILE_GRID_2X;
+        } else if (clamped_view_scale == 4) {
+            tile_lae = LAE_WATER_SAND_TILE_GRID_4X;
+        } else if (clamped_view_scale == 8) {
+            tile_lae = LAE_WATER_SAND_TILE_GRID_8X;
+        } else if (clamped_view_scale == 16) {
+            tile_lae = LAE_WATER_SAND_TILE_GRID_16X;
+        } else {
+            tile_lae = LAE_WATER_SAND_TILE;
+        }
+    }
+
     lazy_tex_atlas_glBindTexture(pLwc, tile_lae);
     for (int by = 0; by < LNGLAT_RENDER_EXTENT_MULTIPLIER_LAT_WITH_MARGIN*LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS; by++) {
         for (int bx = 0; bx < LNGLAT_RENDER_EXTENT_MULTIPLIER_LNG_WITH_MARGIN*LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS; bx++) {
@@ -621,7 +640,7 @@ static void render_land_cell_bitmap(const LWTTL* ttl,
                 | bitmap_land(bitmap, bx - 0, by - 0) << 0;
             const float sx = cell_w / 2;
             const float sy = cell_h / 2;
-            const float sz = 1.0f;
+            const float sz = 1.0f / clamped_view_scale;
             render_solid_vb_uv_shader_rot_view_proj(pLwc,
                                                     cell_x0,
                                                     cell_y0,
@@ -700,9 +719,23 @@ static void render_cell_pixel_selector(const LWTTL* ttl,
                                        const float y,
                                        const float z,
                                        const float w,
-                                       const float h) {
+                                       const float h,
+                                       const float d) {
     const LW_VBO_TYPE lvt = LVT_CELL_PIXEL_SELECTOR;
-    render_cell_color(pLwc, view, proj, x, y, z, w / 2, h / 2, lvt, 0.0f, 0.0f, 0.0f, 0.0f);
+    render_cell_color(pLwc,
+                      view,
+                      proj,
+                      x,
+                      y,
+                      z,
+                      w / 2,
+                      h / 2,
+                      d,
+                      lvt,
+                      0.0f,
+                      0.0f,
+                      0.0f,
+                      0.0f);
     float press_menu_gauge_current;
     float press_menu_gauge_total;
     float app_time = (float)pLwc->app_time;
@@ -1778,7 +1811,8 @@ static void render_cell_pixel_selector_lng_lat(const LWTTL* ttl,
                                selector_ry,
                                0,
                                cell_render_width,
-                               cell_render_height);
+                               cell_render_height,
+                               1.0f / view_scale);
     render_single_cell_info(pLwc,
                             selector_rx,
                             selector_ry,
