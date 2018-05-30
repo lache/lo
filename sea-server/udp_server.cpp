@@ -33,7 +33,8 @@ udp_server::udp_server(boost::asio::io_service& io_service,
     , city_(city)
     , salvage_(salvage)
     , tick_seq_(0)
-    , client_endpoint_aoi_int_key_(0) {
+    , client_endpoint_aoi_int_key_(0)
+    , gold_(0) {
     start_receive();
     timer_.async_wait(boost::bind(&udp_server::update, this));
     salvage_timer_.async_wait(boost::bind(&udp_server::salvage_update, this));
@@ -564,10 +565,13 @@ void udp_server::handle_receive(const boost::system::error_code& error, std::siz
             send_route_state(p->lng, p->lat, p->ex_lng, p->ex_lat, p->view_scale);
             // area titles
             send_seaarea(p->lng, p->lat);
+            // tracking info
             if (p->track_object_id || p->track_object_ship_id) {
-                // tracking info
                 send_track_object_coords(p->track_object_id, p->track_object_ship_id);
             }
+            // stat
+            send_stat();
+            // register(or refresh) endpoint and AOI
             auto xc = static_cast<int>(sea_->lng_to_xc(p->lng));
             auto yc = static_cast<int>(sea_->lat_to_yc(p->lat));
             auto ex_lng_scaled = static_cast<int>(p->ex_lng * p->view_scale);
@@ -768,7 +772,7 @@ void udp_server::send_single_cell(int xc0, int yc0) {
     if (salvage_id >= 0) {
         salvage_->despawn(salvage_id);
         if (salvage_gold_amount > 0) {
-            notify_to_client_gold_earned(xc0, yc0, salvage_gold_amount);
+            gold_earned(xc0, yc0, salvage_gold_amount);
         } else {
             LOGEP("salvage_gold_amount is %1% at salvage ID %2%", salvage_gold_amount, salvage_id);
         }
@@ -868,5 +872,24 @@ void udp_server::flush_cargo_notifications() {
     auto sea_cns = sea_->flush_cargo_notifications();
     for (const auto& cn : sea_cns) {
         notify_to_client_cargo_notification(cn);
+    }
+}
+
+void udp_server::send_stat() {
+    std::shared_ptr<LWPTTLSTAT> reply(new LWPTTLSTAT);
+    memset(reply.get(), 0, sizeof(LWPTTLSTAT));
+    reply->type = LPGP_LWPTTLSTAT;
+    reply->gold = gold_;
+    char compressed[1500];
+    int compressed_size = LZ4_compress_default((char*)reply.get(), compressed, sizeof(LWPTTLSTAT), static_cast<int>(boost::size(compressed)));
+    if (compressed_size > 0) {
+        socket_.async_send_to(boost::asio::buffer(compressed, compressed_size),
+                              remote_endpoint_,
+                              boost::bind(&udp_server::handle_send,
+                                          this,
+                                          boost::asio::placeholders::error,
+                                          boost::asio::placeholders::bytes_transferred));
+    } else {
+        LOGEP("LZ4_compress_default() error! - %1%", compressed_size);
     }
 }

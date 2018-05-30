@@ -244,7 +244,7 @@ void render_solid_vb_uv_shader_rot_view_proj(const LWCONTEXT* pLwc,
     mat4x4_scale_aniso(model_scale, model_scale, sx, sy, sz);
     mat4x4_rotate_Z(model_rotate, model_rotate, rot_z);
     mat4x4_mul(model_scale_rotate, model_rotate, model_scale);
-    mat4x4_translate(model_translate, x, y, 0);
+    mat4x4_translate(model_translate, x, y, z);
     mat4x4_identity(model);
     mat4x4_mul(model, model_translate, model_scale_rotate);
     mat4x4_mul(view_model, view, model);

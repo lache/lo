@@ -170,6 +170,7 @@ typedef struct _LWTTL {
     vec3 cam_eye;
     vec3 cam_look_at;
     float cam_r;
+    int gold;
 } LWTTL;
 
 LWTTL* lwttl_new(float aspect_ratio) {
@@ -193,6 +194,7 @@ LWTTL* lwttl_new(float aspect_ratio) {
     ttl->cam_look_at[2] = 0;
     ttl->cam_r = 0;// (float)LWDEG2RAD(90);
     ttl->cell_grid = 1;
+    ttl->gold = 0;
     LWMUTEX_INIT(ttl->rendering_mutex);
     ttl->earth_globe_scale_0 = earth_globe_render_scale;
     lwttl_set_earth_globe_scale(ttl, ttl->earth_globe_scale_0);
@@ -1764,7 +1766,7 @@ const char* lwttl_world_text(const LWTTL* ttl,
     } else {
         // no anim
     }
-    
+
     *ui_point_x = ui_point[0];
     *ui_point_y = ui_point[1];
 
@@ -2063,6 +2065,18 @@ void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc) {
                 spawn_world_text_move(ttl, text, p->xc0, p->yc0, p->xc1, p->yc1, anim_type);
                 break;
             }
+            case LPGP_LWPTTLSTAT:
+            {
+                if (decompressed_bytes != sizeof(LWPTTLSTAT)) {
+                    LOGE("LWPTTLSTAT: Size error %d (%zu expected)",
+                         decompressed_bytes,
+                         sizeof(LWPTTLSTAT));
+                }
+                LWPTTLSTAT* p = (LWPTTLSTAT*)decompressed;
+                LOGIx("LWPTTLSTAT");
+                ttl->gold = p->gold;
+                break;
+            }
             default:
             {
                 LOGEP("Unknown UDP packet");
@@ -2106,7 +2120,7 @@ void lwttl_update(LWTTL* ttl, LWCONTEXT* pLwc, float delta_time) {
         const float dworld_len = sqrtf(dworld[0] * dworld[0] + dworld[1] * dworld[1]);
         dworld[0] /= dworld_len;
         dworld[1] /= dworld_len;
-        
+
         // cancel tracking if user want to scroll around
         lwttl_set_track_object_ship_id(ttl, 0);
         // direction inverted
@@ -2154,4 +2168,26 @@ void lwttl_toggle_cell_grid(LWTTL* ttl) {
 
 int lwttl_cell_grid(const LWTTL* ttl) {
     return ttl->cell_grid;
+}
+
+int lwttl_gold(const LWTTL* ttl) {
+    return ttl->gold;
+}
+
+int lwttl_is_selected_cell(const LWTTL* ttl, int x0, int y0) {
+    return ttl->selected.selected
+        && ttl->selected.pos_xc == x0
+        && ttl->selected.pos_yc == y0;
+}
+
+int lwttl_is_selected_cell_intersect(const LWTTL* ttl, int x0, int y0) {
+    return ttl->selected.selected
+        && (ttl->selected.pos_xc - x0 == 0 || ttl->selected.pos_xc - x0 == -1)
+        && (ttl->selected.pos_yc - y0 == 0 || ttl->selected.pos_yc - y0 == -1);
+}
+
+int lwttl_is_selected_cell_diff(const LWTTL* ttl, int x0, int y0, int* dx0, int* dy0) {
+    *dx0 = ttl->selected.pos_xc - x0;
+    *dy0 = ttl->selected.pos_yc - y0;
+    return ttl->selected.selected;
 }

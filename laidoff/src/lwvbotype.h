@@ -61,6 +61,10 @@ typedef enum _LW_VBO_TYPE
     LVT_SEA_CELL_DEBUG,
     LVT_CELL_PIXEL_SELECTOR,
     LVT_OCTAGON_PLANE, // programmed
+    LVT_TILE_SEL_0_0,
+    LVT_TILE_SEL_1_0,
+    LVT_TILE_SEL_0_1,
+    LVT_TILE_SEL_1_1,
 
 	LVT_COUNT,
     LVT_DONTCARE,
@@ -133,6 +137,10 @@ static const LWVBOFILENAME vbo_filename[] = {
     { LVT_SEA_CELL_DEBUG, ASSETS_BASE_PATH "cvbo" PATH_SEPARATOR "sea-cell-debug.cvbo", LWST_DEFAULT_NORMAL_COLOR, },
     { LVT_CELL_PIXEL_SELECTOR, ASSETS_BASE_PATH "cvbo" PATH_SEPARATOR "cell-pixel-selector.cvbo", LWST_DEFAULT_NORMAL_COLOR, },
     { LVT_OCTAGON_PLANE, "", LWST_DEFAULT, },
+    { LVT_TILE_SEL_0_0, ASSETS_BASE_PATH "vbo" PATH_SEPARATOR "tile-sel-0-0.vbo", LWST_DEFAULT, },
+    { LVT_TILE_SEL_1_0, ASSETS_BASE_PATH "vbo" PATH_SEPARATOR "tile-sel-1-0.vbo", LWST_DEFAULT, },
+    { LVT_TILE_SEL_0_1, ASSETS_BASE_PATH "vbo" PATH_SEPARATOR "tile-sel-0-1.vbo", LWST_DEFAULT, },
+    { LVT_TILE_SEL_1_1, ASSETS_BASE_PATH "vbo" PATH_SEPARATOR "tile-sel-1-1.vbo", LWST_DEFAULT, },
 };
 LwStaticAssert(ARRAY_SIZE(vbo_filename) == LVT_COUNT, "LVT_COUNT error");
 

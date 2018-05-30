@@ -25,7 +25,10 @@ namespace ss {
                    std::shared_ptr<city> city,
                    std::shared_ptr<salvage> salvage);
         bool set_route(int id, int seaport_id1, int seaport_id2, int expect_land);
-        void notify_to_client_gold_earned(int xc, int yc, int amount);
+        void gold_earned(int xc, int yc, int amount) {
+            gold_ += amount;
+            notify_to_client_gold_earned(xc, yc, amount);
+        }
     private:
         void update();
         void salvage_update();
@@ -40,6 +43,7 @@ namespace ss {
         void send_land_cell_aligned_bitmap(int xc0_aligned, int yc0_aligned, float ex_lng, float ex_lat, int view_scale);
         void send_track_object_coords(int track_object_id, int track_object_ship_id);
         void send_seaarea(float lng, float lat);
+        void send_stat();
         void send_waypoints(int ship_id);
         std::shared_ptr<const route> find_route_map_by_ship_id(int ship_id) const;
         void send_single_cell(int xc0, int yc0);
@@ -76,6 +80,7 @@ namespace ss {
         std::vector<endpoint_aoi_object::value> query_aoi_endpoints(int xc, int yc) const;
         void flush_cargo_notifications();
         void notify_to_client_cargo_notification(const cargo_notification& cn);
+        void notify_to_client_gold_earned(int xc, int yc, int amount);
         udp::socket socket_;
         udp::endpoint remote_endpoint_;
         std::array<char, 1024> recv_buffer_;
@@ -94,6 +99,7 @@ namespace ss {
         std::unordered_map<unsigned long long, udp::endpoint> aoi_int_keys_;
         endpoint_aoi_object::rtree client_endpoint_aoi_rtree_;
         unsigned long long client_endpoint_aoi_int_key_;
+        int gold_;
     };
     template<> udp::endpoint udp_server::extract_endpoint(std::vector<udp::endpoint>::const_iterator v);
     template<> udp::endpoint udp_server::extract_endpoint(std::vector<endpoint_aoi_object::value>::const_iterator v);

@@ -244,7 +244,7 @@ static void render_trunk(const LWCONTEXT* pLwc, const mat4x4 view, const mat4x4 
                                             y,
                                             0,
                                             s,
-                                            s, 
+                                            s,
                                             s,
                                             pLwc->tex_atlas[LAE_3D_OIL_TRUCK_TEX_KTX],
                                             LVT_OIL_TRUCK,
@@ -594,35 +594,54 @@ static void render_land_cell_bitmap(const LWTTL* ttl,
 
             const float cell_x0 = lng_to_render_coords(lng0_not_clamped, center, clamped_view_scale * clamped_to_original_view_scale_ratio);
             const float cell_y0 = lat_to_render_coords(lat0_not_clamped, center, clamped_view_scale * clamped_to_original_view_scale_ratio);
+            const float cell_z0 = 0;// lwttl_is_selected_cell_intersect(ttl, (int)x0, (int)y0) ? 1.0f : 0.0f;
             const float cell_x1 = lng_to_render_coords(lng1_not_clamped, center, clamped_view_scale * clamped_to_original_view_scale_ratio);
             const float cell_y1 = lat_to_render_coords(lat1_not_clamped, center, clamped_view_scale * clamped_to_original_view_scale_ratio);
             const float cell_w = cell_x1 - cell_x0;
             // cell_y0 and cell_y1 are in OpenGL rendering coordinates (always cell_y0 > cell_y1)
             const float cell_h = cell_y0 - cell_y1;
 
+            int dx0, dy0;
+            LW_VBO_TYPE lvt = LVT_LEFT_TOP_ANCHORED_SQUARE;
+            if (lwttl_is_selected_cell_diff(ttl, (int)x0, (int)y0, &dx0, &dy0)) {
+                if (dx0 == 0 && dy0 == -1) {
+                    lvt = LVT_TILE_SEL_0_1;
+                } else if (dx0 == -1 && dy0 == 0) {
+                    lvt = LVT_TILE_SEL_1_0;
+                } else if (dx0 == -1 && dy0 == -1) {
+                    lvt = LVT_TILE_SEL_1_1;
+                } else if (dx0 == 0 && dy0 == 0) {
+                    lvt = LVT_TILE_SEL_0_0;
+                }
+            }
             const int uv_offset_index =
                 bitmap_land(bitmap, bx - 1, by - 1) << 3
                 | bitmap_land(bitmap, bx - 0, by - 1) << 2
                 | bitmap_land(bitmap, bx - 1, by - 0) << 1
                 | bitmap_land(bitmap, bx - 0, by - 0) << 0;
-            render_solid_vb_ui_uv_shader_rot_view_proj(pLwc,
-                                                       cell_x0,
-                                                       cell_y0,
-                                                       cell_w,
-                                                       cell_h,
-                                                       pLwc->tex_atlas[tile_lae],
-                                                       LVT_LEFT_TOP_ANCHORED_SQUARE,
-                                                       0.65f,
-                                                       0,
-                                                       0,
-                                                       0,
-                                                       0,
-                                                       tilemap_uv_offset[uv_offset_index],
-                                                       tilemap_uv_scale,
-                                                       LWST_DEFAULT,
-                                                       0,
-                                                       view,
-                                                       proj);
+            const float sx = cell_w / 2;
+            const float sy = cell_h / 2;
+            const float sz = 1.0f;
+            render_solid_vb_uv_shader_rot_view_proj(pLwc,
+                                                    cell_x0,
+                                                    cell_y0,
+                                                    cell_z0,
+                                                    sx,
+                                                    sy,
+                                                    sz,
+                                                    pLwc->tex_atlas[tile_lae],
+                                                    lvt,
+                                                    1.0f,
+                                                    0,
+                                                    0,
+                                                    0,
+                                                    0,
+                                                    tilemap_uv_offset[uv_offset_index],
+                                                    tilemap_uv_scale,
+                                                    LWST_DEFAULT,
+                                                    0,
+                                                    view,
+                                                    proj);
         }
     }
 }
@@ -683,7 +702,7 @@ static void render_cell_pixel_selector(const LWTTL* ttl,
                                        const float w,
                                        const float h) {
     const LW_VBO_TYPE lvt = LVT_CELL_PIXEL_SELECTOR;
-    render_cell_color(pLwc, view, proj, x, y, z, w, h, lvt, 0.0f, 0.0f, 0.0f, 0.0f);
+    render_cell_color(pLwc, view, proj, x, y, z, w / 2, h / 2, lvt, 0.0f, 0.0f, 0.0f, 0.0f);
     float press_menu_gauge_current;
     float press_menu_gauge_total;
     float app_time = (float)pLwc->app_time;
@@ -1514,7 +1533,7 @@ static void render_sea_static_objects(const LWCONTEXT* pLwc,
     const float lat_min = center->lat - half_lat_extent_in_deg;
     const float lat_max = center->lat + half_lat_extent_in_deg;
 
-    render_background_sea_water(pLwc,
+    /*render_background_sea_water(pLwc,
                                 view,
                                 proj,
                                 center,
@@ -1522,7 +1541,7 @@ static void render_sea_static_objects(const LWCONTEXT* pLwc,
                                 lng_max,
                                 lat_min,
                                 lat_max,
-                                clamped_view_scale * clamped_to_original_view_scale_ratio);
+                                clamped_view_scale * clamped_to_original_view_scale_ratio);*/
 
     // land
     //lwttl_lock_rendering_mutex(pLwc->ttl);
@@ -1943,6 +1962,29 @@ static void render_region_name(const LWCONTEXT* pLwc) {
     render_text_block(pLwc, &test_text_block);
 }
 
+static void render_ttl_stat(const LWTTL* ttl, const LWCONTEXT* pLwc) {
+    LWTEXTBLOCK test_text_block;
+    test_text_block.text_block_width = 999.0f;// 2.00f * aspect_ratio;
+    test_text_block.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_F;
+    test_text_block.size = DEFAULT_TEXT_BLOCK_SIZE_E;
+    SET_COLOR_RGBA_FLOAT(test_text_block.color_normal_glyph, 1, 1, 1, 1);
+    SET_COLOR_RGBA_FLOAT(test_text_block.color_normal_outline, 0, 0, 0, 1);
+    SET_COLOR_RGBA_FLOAT(test_text_block.color_emp_glyph, 1, 1, 0, 1);
+    SET_COLOR_RGBA_FLOAT(test_text_block.color_emp_outline, 0, 0, 0, 1);
+    char gold_text[64];
+    snprintf(gold_text, ARRAY_SIZE(gold_text), "GOLD %d", lwttl_gold(pLwc->ttl));
+    gold_text[ARRAY_SIZE(gold_text) - 1] = 0;
+    test_text_block.text = gold_text;
+    test_text_block.text_bytelen = (int)strlen(test_text_block.text);
+    test_text_block.begin_index = 0;
+    test_text_block.end_index = test_text_block.text_bytelen;
+    test_text_block.multiline = 1;
+    test_text_block.text_block_x = 0.0f;
+    test_text_block.text_block_y = 1.0f;
+    test_text_block.align = LTBA_CENTER_TOP;
+    render_text_block(pLwc, &test_text_block);
+}
+
 void lwc_render_ttl(const LWCONTEXT* pLwc) {
     LW_GL_VIEWPORT();
     lw_clear_color();
@@ -1956,13 +1998,13 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
     const LWTTLLNGLAT view_center = *lwttl_center(pLwc->ttl);
     // render earth minimap
     //render_earth(pLwc, &view_center, view_scale);
-    // render morphed earth
-    render_morphed_earth(pLwc, view, proj, &view_center, view_scale);
-    glDisable(GL_DEPTH_TEST);
+    // render morphed earth (globe)
+    //render_morphed_earth(pLwc, view, proj, &view_center, view_scale);
     // render land
     if (lwc_render_ttl_render("landcell")) {
         render_sea_static_objects(pLwc, view, proj, &view_center);
     }
+    glDisable(GL_DEPTH_TEST);
     render_waypoints(pLwc->ttl, pLwc, view, proj, &view_center);
     render_waypoints_cache(pLwc->ttl, pLwc, view, proj, &view_center);
     render_seaports(pLwc, view, proj, &view_center);
@@ -2018,6 +2060,7 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
     render_world_text(pLwc, view, proj, &view_center);
     //render_coords(pLwc, &view_center);
     render_region_name(pLwc);
+    render_ttl_stat(pLwc->ttl, pLwc);
     //render_coords_dms(pLwc, &view_center);
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     // render FBO (HTML UI)

@@ -9,6 +9,7 @@ typedef struct _LWVERTEX {
 
 static const LWVERTEX full_square_vertices[] =
 {
+    //x     y     z  r  g  b  u  v  s  s
 	{ -1.f, -1.f, 0, 0, 0, 0, 0, 1, 0, 0 },
 	{ +1.f, -1.f, 0, 0, 0, 0, 1, 1, 0, 0 },
 	{ +1.f, +1.f, 0, 0, 0, 0, 1, 0, 0, 0 },

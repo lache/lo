@@ -195,7 +195,7 @@ bool sea::update_route(float delta_time,
                     actual_unloaded,
                     LTCNT_UNLOADED});
                 const auto sp_point = sp->get_seaport_point(r->get_docked_seaport_id());
-                us->notify_to_client_gold_earned(sp_point.get<0>(), sp_point.get<1>(), 1);
+                us->gold_earned(sp_point.get<0>(), sp_point.get<1>(), 1);
                 obj->set_state(SOS_LOADING);
                 const auto loading_time = boost::posix_time::milliseconds(5000);
                 t->expires_at(t->expires_at() + loading_time);

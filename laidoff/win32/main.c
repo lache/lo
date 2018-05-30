@@ -33,8 +33,8 @@
 #define LwChangeDirectory(x) chdir(x)
 #endif
 
-#define INITIAL_SCREEN_RESOLUTION_X 640 //(1920)
-#define INITIAL_SCREEN_RESOLUTION_Y 360 //(1080)
+#define INITIAL_SCREEN_RESOLUTION_X (640*2) //(1920)
+#define INITIAL_SCREEN_RESOLUTION_Y (360*2) //(1080)
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
