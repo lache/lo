@@ -1,4 +1,4 @@
-#include <string.h>
+﻿#include <string.h>
 #include "render_ttl.h"
 #include "lwcontext.h"
 #include "render_text_block.h"
@@ -552,7 +552,7 @@ static int bitmap_land(const unsigned char bitmap[LNGLAT_RENDER_EXTENT_MULTIPLIE
     return bitmap[by][bx];
 }
 
-#define TILEMAP_GAP (0.005f)
+#define TILEMAP_GAP (0) //(0.005f)
 #define TILEMAP_TILE_COUNT (4)
 
 static const float tilemap_uv_offset[16][2] = {
@@ -1615,8 +1615,8 @@ static void render_sea_static_objects(const LWCONTEXT* pLwc,
                                 lat_max,
                                 clamped_view_scale * clamped_to_original_view_scale_ratio);*/
 
-    // land
-    //lwttl_lock_rendering_mutex(pLwc->ttl);
+                                // land
+                                //lwttl_lock_rendering_mutex(pLwc->ttl);
     int chunk_index_array[LNGLAT_RENDER_EXTENT_MULTIPLIER_LNG_WITH_MARGIN*LNGLAT_RENDER_EXTENT_MULTIPLIER_LAT_WITH_MARGIN];
     int bound_xcc0, bound_ycc0, bound_xcc1, bound_ycc1;
     const int chunk_index_array_count = lwttl_query_chunk_range_land(pLwc->ttl,
@@ -1799,21 +1799,23 @@ static void render_single_cell_info(const LWCONTEXT* pLwc,
         cell_type = "Water";
     }
     // short description
+    // "%s" is not interpolated if we use u8"★%s" as a format string... (why?)
     if (p->city_id >= 0 && p->city_name) {
         sprintf(info,
-                "CITY %s[%d] %s",
-                p->city_name,
-                p->city_id,
-                cell_type);
+                "%s%s",
+                u8"★",
+                p->city_name);
     } else if (p->port_id >= 0 && p->port_name) {
         sprintf(info,
-                "SEAPORT %s[%d] CARGO %d/%d/%d %s",
+                "%s%s\n%s%d%s%d%s%d",
+                u8"♦",
                 p->port_name,
-                p->port_id,
+                u8"☗",
                 p->cargo,
+                u8"⬆", 
                 p->cargo_loaded,
-                p->cargo_unloaded,
-                cell_type);
+                u8"⬇",
+                p->cargo_unloaded);
     } else {
         sprintf(info,
                 "%s",
@@ -1852,6 +1854,18 @@ static void render_cell_pixel_selector_lng_lat(const LWTTL* ttl,
                                cell_render_width,
                                cell_render_height,
                                lwttl_selected_cell_popup_height(pLwc->ttl) / view_scale);
+}
+
+static void render_single_cell_info_lng_lat(const LWTTL* ttl,
+                                            const LWCONTEXT* pLwc,
+                                            const mat4x4 view,
+                                            const mat4x4 proj,
+                                            const int xc0,
+                                            const int yc0,
+                                            const LWTTLLNGLAT* center,
+                                            const int view_scale) {
+    const float selector_rx = cell_x_to_render_coords(xc0, center, view_scale);
+    const float selector_ry = cell_y_to_render_coords(yc0, center, view_scale);
     render_single_cell_info(pLwc,
                             selector_rx,
                             selector_ry,
@@ -2045,7 +2059,11 @@ static void render_ttl_stat(const LWTTL* ttl, const LWCONTEXT* pLwc) {
     SET_COLOR_RGBA_FLOAT(test_text_block.color_emp_glyph, 1, 1, 0, 1);
     SET_COLOR_RGBA_FLOAT(test_text_block.color_emp_outline, 0, 0, 0, 1);
     char gold_text[64];
-    snprintf(gold_text, ARRAY_SIZE(gold_text), "GOLD %d", lwttl_gold(pLwc->ttl));
+    snprintf(gold_text,
+             ARRAY_SIZE(gold_text) - 1,
+             "%s%d",
+             u8"◊",
+             lwttl_gold(pLwc->ttl));
     gold_text[ARRAY_SIZE(gold_text) - 1] = 0;
     test_text_block.text = gold_text;
     test_text_block.text_bytelen = (int)strlen(test_text_block.text);
@@ -2120,18 +2138,29 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
                                      CELL_DRAGGING_LINE_COLOR_G,
                                      CELL_DRAGGING_LINE_COLOR_B);
     }
-    // UI
+    // UI (icons)
+    render_seaports(pLwc, view, proj, &view_center);
+    render_cities(pLwc, view, proj, &view_center);
+    render_salvages(pLwc, view, proj, &view_center);
+    //render_coords(pLwc, &view_center);
+    // UI (hud)
     if (lwc_render_ttl_render("world")) {
         render_sea_objects_nameplate(pLwc, view, proj, &view_center);
     }
     if (lwc_render_ttl_render("landcell_nameplate")) {
         render_sea_static_objects_nameplate(pLwc, view, proj, &view_center);
     }
-    render_seaports(pLwc, view, proj, &view_center);
-    render_cities(pLwc, view, proj, &view_center);
-    render_salvages(pLwc, view, proj, &view_center);
+    if (lwttl_selected_int(pLwc->ttl, &selected_xc0, &selected_yc0)) {
+        render_single_cell_info_lng_lat(pLwc->ttl,
+                                        pLwc,
+                                        view,
+                                        proj,
+                                        selected_xc0,
+                                        selected_yc0,
+                                        &view_center,
+                                        view_scale);
+    }
     render_world_text(pLwc, view, proj, &view_center);
-    //render_coords(pLwc, &view_center);
     render_region_name(pLwc);
     render_ttl_stat(pLwc->ttl, pLwc);
     //render_coords_dms(pLwc, &view_center);

@@ -1,4 +1,4 @@
-#include "lwttl.h"
+﻿#include "lwttl.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include "file.h"
@@ -2033,7 +2033,11 @@ void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc) {
                 LWPTTLGOLDEARNED* p = (LWPTTLGOLDEARNED*)decompressed;
                 LOGIx("LWPTTLGOLDEARNED");
                 char text[64];
-                snprintf(text, ARRAY_SIZE(text), "GOLD %d", p->amount);
+                snprintf(text,
+                         ARRAY_SIZE(text) - 1,
+                         "%s%d",
+                         u8"◊",
+                         p->amount);
                 text[ARRAY_SIZE(text) - 1] = 0;
                 spawn_world_text(ttl, text, p->xc0, p->yc0);
                 break;
@@ -2048,7 +2052,11 @@ void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc) {
                 LWPTTLCARGONOTIFICATION* p = (LWPTTLCARGONOTIFICATION*)decompressed;
                 LOGIx("LWPTTLCARGONOTIFICATION");
                 char text[64];
-                snprintf(text, ARRAY_SIZE(text), "CARGO %d", p->amount);
+                snprintf(text,
+                         ARRAY_SIZE(text) - 1,
+                         "%s%d",
+                         u8"☗",
+                         p->amount);
                 text[ARRAY_SIZE(text) - 1] = 0;
                 LW_TTL_WORLD_TEXT_ANIM_TYPE anim_type = LTWTAT_STOP;
                 switch (p->cargo_notification_type) {
