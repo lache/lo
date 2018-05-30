@@ -195,6 +195,7 @@ int lwttl_gold(const LWTTL* ttl);
 int lwttl_is_selected_cell(const LWTTL* ttl, int x0, int y0);
 int lwttl_is_selected_cell_intersect(const LWTTL* ttl, int x0, int y0);
 int lwttl_is_selected_cell_diff(const LWTTL* ttl, int x0, int y0, int* dx0, int* dy0);
+float lwttl_selected_cell_popup_height(const LWTTL* ttl);
 #ifdef __cplusplus
 }
 #endif

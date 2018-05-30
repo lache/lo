@@ -111,6 +111,9 @@ typedef struct _LWTTLSELECTED {
     float press_menu_gauge_appear_delay;
     float press_menu_gauge_total;
     int dragging;
+    float selected_cell_height;
+    float selected_cell_max_height;
+    float selected_cell_height_speed;
 } LWTTLSELECTED;
 
 typedef enum _LW_TTL_WORLD_TEXT_ANIM_TYPE {
@@ -202,6 +205,8 @@ LWTTL* lwttl_new(float aspect_ratio) {
     lwttl_clear_selected_pressed_pos(ttl);
     ttl->selected.press_menu_gauge_total = 0.45f;
     ttl->selected.press_menu_gauge_appear_delay = 0.2f;
+    ttl->selected.selected_cell_max_height = 0.2f;
+    ttl->selected.selected_cell_height_speed = 4.0f;
     return ttl;
 }
 
@@ -1535,6 +1540,7 @@ void lwttl_change_selected_cell_to(LWTTL* ttl,
             ttl->selected.pos = *lnglat;
             ttl->selected.pos_xc = xc;
             ttl->selected.pos_yc = yc;
+            ttl->selected.selected_cell_height = -ttl->selected.selected_cell_max_height;
             send_ttlpingsinglecell(ttl, ttl->sea_udp, xc, yc);
         }
     }
@@ -2160,6 +2166,9 @@ void lwttl_update(LWTTL* ttl, LWCONTEXT* pLwc, float delta_time) {
         }
     }
     update_world_text(ttl, delta_time);
+    ttl->selected.selected_cell_height = LWCLAMP(ttl->selected.selected_cell_height + delta_time * ttl->selected.selected_cell_height_speed,
+                                                 -ttl->selected.selected_cell_max_height,
+                                                 +ttl->selected.selected_cell_max_height);
 }
 
 void lwttl_toggle_cell_grid(LWTTL* ttl) {
@@ -2190,4 +2199,8 @@ int lwttl_is_selected_cell_diff(const LWTTL* ttl, int x0, int y0, int* dx0, int*
     *dx0 = ttl->selected.pos_xc - x0;
     *dy0 = ttl->selected.pos_yc - y0;
     return ttl->selected.selected;
+}
+
+float lwttl_selected_cell_popup_height(const LWTTL* ttl) {
+    return ttl->selected.selected_cell_height;
 }

@@ -679,7 +679,7 @@ static void render_land_cell_bitmap(const LWTTL* ttl,
                 | bitmap_land(bitmap, bx - 0, by - 0) << 0;
             const float sx = cell_w / 2;
             const float sy = cell_h / 2;
-            const float sz = 1.0f / clamped_view_scale;
+            const float sz = lwttl_selected_cell_popup_height(pLwc->ttl) / clamped_view_scale;
             render_solid_vb_uv_shader_rot_view_proj(pLwc,
                                                     cell_x0,
                                                     cell_y0,
@@ -1354,7 +1354,7 @@ static void render_seaports(const LWCONTEXT* pLwc,
                                         proj,
                                         cell_x0,
                                         cell_y0,
-                                        lwttl_is_selected_cell(pLwc->ttl, (int)x0, (int)y0) ? 1.0f : 0.0f,
+                                        lwttl_is_selected_cell(pLwc->ttl, (int)x0, (int)y0) ? lwttl_selected_cell_popup_height(pLwc->ttl) : 0.0f,
                                         cell_render_width * clamped_view_scale * size_ratio,
                                         cell_render_height * clamped_view_scale * size_ratio);
                 } else {
@@ -1363,7 +1363,7 @@ static void render_seaports(const LWCONTEXT* pLwc,
                                                proj,
                                                cell_x0,
                                                cell_y0,
-                                               lwttl_is_selected_cell(pLwc->ttl, (int)x0, (int)y0) ? 1.0f : 0.0f,
+                                               lwttl_is_selected_cell(pLwc->ttl, (int)x0, (int)y0) ? lwttl_selected_cell_popup_height(pLwc->ttl) : 0.0f,
                                                cell_render_width * clamped_view_scale * size_ratio,
                                                cell_render_height * clamped_view_scale * size_ratio);
                 }
@@ -1456,7 +1456,7 @@ static void render_cities(const LWCONTEXT* pLwc,
                                  proj,
                                  cell_x0,
                                  cell_y0,
-                                 lwttl_is_selected_cell(pLwc->ttl, (int)x0, (int)y0) ? 1.0f : 0.0f,
+                                 lwttl_is_selected_cell(pLwc->ttl, (int)x0, (int)y0) ? lwttl_selected_cell_popup_height(pLwc->ttl) : 0.0f,
                                  cell_render_width * clamped_view_scale * size_ratio,
                                  cell_render_height * clamped_view_scale * size_ratio,
                                  obj_begin[i].population_level);
@@ -1549,7 +1549,7 @@ static void render_salvages(const LWCONTEXT* pLwc,
                                     proj,
                                     cell_x0,
                                     cell_y0,
-                                    lwttl_is_selected_cell(pLwc->ttl, (int)x0, (int)y0) ? 1.0f : 0.0f,
+                                    lwttl_is_selected_cell(pLwc->ttl, (int)x0, (int)y0) ? lwttl_selected_cell_popup_height(pLwc->ttl) : 0.0f,
                                     cell_render_width * clamped_view_scale * size_ratio,
                                     cell_render_height * clamped_view_scale * size_ratio);
             }
@@ -1851,7 +1851,7 @@ static void render_cell_pixel_selector_lng_lat(const LWTTL* ttl,
                                0,
                                cell_render_width,
                                cell_render_height,
-                               1.0f / view_scale);
+                               lwttl_selected_cell_popup_height(pLwc->ttl) / view_scale);
     render_single_cell_info(pLwc,
                             selector_rx,
                             selector_ry,
