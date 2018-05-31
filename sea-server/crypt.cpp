@@ -1,6 +1,10 @@
 #include "precompiled.hpp"
 #include "crypt.hpp"
-
+#ifdef WIN32
+#else
+#include <iostream>
+#include <fstream>
+#endif
 namespace ss { ;
 #ifdef WIN32
 bool acquire_context(HCRYPTPROV *ctx) {
