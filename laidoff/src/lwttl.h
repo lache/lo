@@ -20,6 +20,7 @@ typedef struct _LWTTLLNGLAT LWTTLLNGLAT;
 typedef struct _LWHTMLUI LWHTMLUI;
 typedef struct _LWPTTLSINGLECELL LWPTTLSINGLECELL;
 typedef struct _LWPTTLSTATICSTATE3 LWPTTLSTATICSTATE3;
+typedef struct _LWPTTLROUTEOBJECT LWPTTLROUTEOBJECT;
 
 LWTTL* lwttl_new(float aspect_ratio);
 void lwttl_destroy(LWTTL** _ttl);
@@ -196,6 +197,7 @@ int lwttl_is_selected_cell(const LWTTL* ttl, int x0, int y0);
 int lwttl_is_selected_cell_intersect(const LWTTL* ttl, int x0, int y0);
 int lwttl_is_selected_cell_diff(const LWTTL* ttl, int x0, int y0, int* dx0, int* dy0);
 float lwttl_selected_cell_popup_height(const LWTTL* ttl);
+const char* lwttl_route_state(const LWPTTLROUTEOBJECT* obj);
 #ifdef __cplusplus
 }
 #endif

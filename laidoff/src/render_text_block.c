@@ -391,3 +391,19 @@ void render_query_text_block_alpha(const LWCONTEXT* pLwc, const LWTEXTBLOCK* tex
 		query_result->glyph_height = text_block->text_block_line_height;
 	}
 }
+
+// avoid outline overlapping by rendering the same text block twice:
+// (1) black outline once
+// (2) overwrite white glphy once
+void render_text_block_two_pass(const LWCONTEXT* pLwc, LWTEXTBLOCK* text_block) {
+    SET_COLOR_RGBA_FLOAT(text_block->color_normal_glyph, 0, 0, 0, 1);
+    SET_COLOR_RGBA_FLOAT(text_block->color_normal_outline, 0, 0, 0, 1);
+    SET_COLOR_RGBA_FLOAT(text_block->color_emp_glyph, 1, 1, 0, 1);
+    SET_COLOR_RGBA_FLOAT(text_block->color_emp_outline, 0, 0, 0, 1);
+    render_text_block(pLwc, text_block);
+    SET_COLOR_RGBA_FLOAT(text_block->color_normal_glyph, 1, 1, 1, 1);
+    SET_COLOR_RGBA_FLOAT(text_block->color_normal_outline, 1, 1, 1, 0); // should be 'white' even if alpha is zero; to correctly render thickness of the glyph
+    SET_COLOR_RGBA_FLOAT(text_block->color_emp_glyph, 1, 1, 0, 1);
+    SET_COLOR_RGBA_FLOAT(text_block->color_emp_outline, 0, 0, 0, 1);
+    render_text_block(pLwc, text_block);
+}

@@ -161,6 +161,7 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
             if ((spawn->expect_land == 0 && sea_static_->is_sea_water(spawn_pos))
                 || spawn->expect_land == 1 && sea_static_->is_land(spawn_pos)) {
                 int id = sea_->spawn(spawn->expected_db_id, spawn->x, spawn->y, 1, 1, spawn->expect_land);
+                udp_server_->gold_used(static_cast<int>(spawn->x), static_cast<int>(spawn->y), 1000);
                 reply.db_id = id;
                 int id1 = spawn->port1_id;
                 int id2 = spawn->port2_id;
@@ -208,6 +209,9 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
                 if (sea_static_->is_sea_water(spawn_pos)) {
                     bool existing = false;
                     int id = seaport_->spawn(spawn->expected_db_id, spawn->name, spawn->xc, spawn->yc, spawn->owner_id, existing, spawn->expect_land ? seaport::seaport_type::LAND : seaport::seaport_type::SEA);
+                    if (existing == false) {
+                        udp_server_->gold_used(spawn->xc, spawn->yc, 10000);
+                    }
                     reply.db_id = id;
                     if (id > 0) {
                         LOGI("New seaport SP %1% {%2%,%3%} spawned. owner_id=%4%",

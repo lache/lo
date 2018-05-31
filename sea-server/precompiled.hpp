@@ -26,6 +26,10 @@
 #include "sealog.hpp"
 #include "spinlock.hpp"
 #include "lwlnglat.h"
+#ifdef WIN32
+#include <Windows.h>
+#include <Wincrypt.h>
+#endif
 
 #define WORLD_MAP_PIXEL_RESOLUTION_WIDTH (172824)
 #define WORLD_MAP_PIXEL_RESOLUTION_HEIGHT (86412)

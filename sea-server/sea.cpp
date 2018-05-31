@@ -148,6 +148,22 @@ bool sea::update_route(float delta_time,
         } else {
             teleport_to(db_id, pos.first.first, pos.first.second, 0, 0);
         }
+        if (r->get_breakdown_drawing_lots_raised()) {
+            if (rand() % 2 == 0) {
+                set_object_state(db_id, SOS_BREAKDOWN);
+                us->gold_used(static_cast<int>(pos.first.first), static_cast<int>(pos.first.second), 10);
+            } else {
+                r->update_next_breakdown_drawing_lots_param();
+            }
+        }
+    }
+    if (state == SOS_BREAKDOWN) {
+        r->update_breakdown(delta_time);
+        if (r->get_breakdown_recovery_raised()) {
+            set_object_state(db_id, SOS_SAILING);
+            r->reset_breakdown_elapsed();
+            r->update_next_breakdown_drawing_lots_param();
+        }
     }
     if (finished && state == SOS_SAILING) {
         // ship docked at seaport2

@@ -1531,8 +1531,9 @@ void lwttl_change_selected_cell_to(LWTTL* ttl,
         if (ttl->selected.selected == 1
             && ttl->selected.pos_xc == xc
             && ttl->selected.pos_yc == yc) {
-            // deselect
+            // selected the same cell
             //ttl->selected.selected = 0;
+            ttl->selected.selected_cell_height = -ttl->selected.selected_cell_max_height;
         } else {
             // select a new cell
             memset(&ttl->ttl_single_cell, 0, sizeof(LWPTTLSINGLECELL));
@@ -2091,6 +2092,25 @@ void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc) {
                 ttl->gold = p->gold;
                 break;
             }
+            case LPGP_LWPTTLGOLDUSED:
+            {
+                if (decompressed_bytes != sizeof(LWPTTLGOLDUSED)) {
+                    LOGE("LWPTTLGOLDUSED: Size error %d (%zu expected)",
+                         decompressed_bytes,
+                         sizeof(LWPTTLGOLDUSED));
+                }
+                LWPTTLGOLDUSED* p = (LWPTTLGOLDUSED*)decompressed;
+                LOGIx("LWPTTLGOLDUSED");
+                char text[64];
+                snprintf(text,
+                         ARRAY_SIZE(text) - 1,
+                         "%s%d",
+                         u8"◊",
+                         -p->amount);
+                text[ARRAY_SIZE(text) - 1] = 0;
+                spawn_world_text(ttl, text, p->xc0, p->yc0);
+                break;
+            }
             default:
             {
                 LOGEP("Unknown UDP packet");
@@ -2110,7 +2130,9 @@ void lwttl_update(LWTTL* ttl, LWCONTEXT* pLwc, float delta_time) {
     const float app_time = (float)pLwc->app_time;
     for (int i = 0; i < ttl->ttl_dynamic_state.count; i++) {
         int route_dir = ttl->ttl_dynamic_state.obj[i].route_flags.reversed ? (-1) : (+1);
-        ttl->ttl_dynamic_state.obj[i].route_param += (float)delta_time * ttl->ttl_dynamic_state.obj[i].route_speed * route_dir;
+        if (ttl->ttl_dynamic_state.obj[i].route_flags.sailing) {
+            ttl->ttl_dynamic_state.obj[i].route_param += (float)delta_time * ttl->ttl_dynamic_state.obj[i].route_speed * route_dir;
+        }
         //ttl->ttl_dynamic_state.obj[i].fx0 += (float)delta_time * ttl->ttl_dynamic_state.obj[i].fvx;
         //ttl->ttl_dynamic_state.obj[i].fy0 += (float)delta_time * ttl->ttl_dynamic_state.obj[i].fvy;
         //ttl->ttl_dynamic_state.obj[i].fx1 += (float)delta_time * ttl->ttl_dynamic_state.obj[i].fvx;
@@ -2211,4 +2233,16 @@ int lwttl_is_selected_cell_diff(const LWTTL* ttl, int x0, int y0, int* dx0, int*
 
 float lwttl_selected_cell_popup_height(const LWTTL* ttl) {
     return ttl->selected.selected_cell_height;
+}
+
+const char* lwttl_route_state(const LWPTTLROUTEOBJECT* obj) {
+    if (obj->route_flags.breakdown) {
+        return "BREAKDOWN";
+    } else if (obj->route_flags.loading) {
+        return "LOADING";
+    } else if (obj->route_flags.unloading) {
+        return "UNLOADING";
+    } else {
+        return "";
+    }
 }

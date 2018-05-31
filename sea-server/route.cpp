@@ -1,6 +1,7 @@
 #include "precompiled.hpp"
 #include "route.hpp"
 #include "xy.hpp"
+#include "crypt.hpp"
 
 using namespace ss;
 
@@ -15,7 +16,9 @@ route::route(const std::vector<xy32>& waypoints, int seaport1_id, int seaport2_i
     , seaport1_id(seaport1_id)
     , seaport2_id(seaport2_id)
     , reversed(false)
-    , land(expectLand == 1 ? true : false) {
+    , land(expectLand == 1 ? true : false)
+    , accum_param(0)
+    , breakdown_elapsed(0) {
     if (waypoints.size() < 2) {
         LOGE("route created with less than two waypoints...");
     } else {
@@ -26,14 +29,30 @@ route::route(const std::vector<xy32>& waypoints, int seaport1_id, int seaport2_i
             accum_distance.push_back(dist);
         }
     }
+    std::uint_least32_t seed;
+    sysrandom(&seed, sizeof(seed));
+    rng.seed(seed);
+    update_next_breakdown_drawing_lots_param();
+}
+
+void route::update_next_breakdown_drawing_lots_param() {
+    next_breakdown_drawing_lots_param = accum_param + boost::random::uniform_real_distribution<float>(5, 10)(rng);
+    next_breakdown_recovery_duration = boost::random::uniform_real_distribution<float>(3, 5)(rng);
 }
 
 void route::update(float delta_time) {
+    const auto dparam = velocity * delta_time;
     if (reversed == false) {
-        param += velocity * delta_time;
+        param += dparam;
     } else {
-        param -= velocity * delta_time;
+        param -= dparam;
     }
+    accum_param += dparam;
+}
+
+void route::update_breakdown(float delta_time) {
+    breakdown_elapsed += delta_time;
+    accum_breakdown_elapsed += delta_time;
 }
 
 route::fxfyvxvy route::get_pos(bool& finished) const {

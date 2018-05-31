@@ -35,6 +35,7 @@ typedef enum _LW_PUCK_GAME_PACKET {
     LPGP_LWPTTLSALVAGESTATE = 125, // server -> client
     LPGP_LWPTTLCARGONOTIFICATION = 126, // server -> client (aoi push)
     LPGP_LWPTTLSTAT = 127, // server -> client (push)
+    LPGP_LWPTTLGOLDUSED = 128, // server -> client (aoi push)
     LPGP_LWPQUEUE2 = 200,
     LPGP_LWPMAYBEMATCHED = 201,
     LPGP_LWPMATCHED2 = 202,
@@ -270,6 +271,7 @@ typedef struct _LWPTTLROUTEBITFIELD {
     int loading : 1;
     int unloading : 1;
     int sailing : 1;
+    int breakdown : 1;
 } LWPTTLROUTEBITFIELD;
 
 typedef struct _LWPTTLROUTEOBJECT {
@@ -573,6 +575,17 @@ typedef struct _LWPTTLSTAT {
     unsigned char padding2;
     int gold;
 } LWPTTLSTAT;
+
+// UDP
+typedef struct _LWPTTLGOLDUSED {
+    unsigned char type;
+    unsigned char padding0;
+    unsigned char padding1;
+    unsigned char padding2;
+    int xc0;
+    int yc0;
+    int amount;
+} LWPTTLGOLDUSED;
 /*
 * END: should sync with packet.h in sea-server
 */

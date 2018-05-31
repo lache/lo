@@ -26,8 +26,20 @@ namespace ss {
                    std::shared_ptr<salvage> salvage);
         bool set_route(int id, int seaport_id1, int seaport_id2, int expect_land);
         void gold_earned(int xc, int yc, int amount) {
-            gold_ += amount;
-            notify_to_client_gold_earned(xc, yc, amount);
+            if (amount > 0) {
+                gold_ += amount;
+                notify_to_client_gold_earned(xc, yc, amount);
+            } else {
+                LOGEP("Zero or negative earning gold not expected.");
+            }
+        }
+        void gold_used(int xc, int yc, int amount) {
+            if (amount > 0) {
+                gold_ -= amount;
+                notify_to_client_gold_used(xc, yc, amount);
+            } else {
+                LOGEP("Zero or negative using gold not expected.");
+            }
         }
     private:
         void update();
@@ -81,6 +93,7 @@ namespace ss {
         void flush_cargo_notifications();
         void notify_to_client_cargo_notification(const cargo_notification& cn);
         void notify_to_client_gold_earned(int xc, int yc, int amount);
+        void notify_to_client_gold_used(int xc, int yc, int amount);
         udp::socket socket_;
         udp::endpoint remote_endpoint_;
         std::array<char, 1024> recv_buffer_;

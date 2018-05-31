@@ -62,5 +62,7 @@ void sea_object::fill_packet(LWPTTLROUTEOBJECT& p) const {
         p.route_flags.unloading = 1;
     } else if (state == SOS_SAILING) {
         p.route_flags.sailing = 1;
+    } else if (state == SOS_BREAKDOWN) {
+        p.route_flags.breakdown = 1;
     }
 }

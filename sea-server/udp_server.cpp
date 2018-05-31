@@ -832,7 +832,16 @@ void udp_server::notify_to_client_gold_earned(int xc, int yc, int amount) {
     reply->xc0 = xc;
     reply->yc0 = yc;
     reply->amount = amount;
-    //notify_to_all_clients(reply);
+    notify_to_aoi_clients(reply, xc, yc);
+}
+
+void udp_server::notify_to_client_gold_used(int xc, int yc, int amount) {
+    std::shared_ptr<LWPTTLGOLDUSED> reply(new LWPTTLGOLDUSED);
+    memset(reply.get(), 0, sizeof(LWPTTLGOLDUSED));
+    reply->type = LPGP_LWPTTLGOLDUSED;
+    reply->xc0 = xc;
+    reply->yc0 = yc;
+    reply->amount = amount;
     notify_to_aoi_clients(reply, xc, yc);
 }
 

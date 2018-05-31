@@ -41,6 +41,8 @@ static char visibility[MAX_VISIBILITY_ENTRY_COUNT][MAX_VISIBILITY_ENTRY_NAME_LEN
 #define CELL_DRAGGING_LINE_COLOR_G (0.9f)
 #define CELL_DRAGGING_LINE_COLOR_B (0.7f)
 
+#define UI_SCREEN_EDGE_MARGIN (0.01f)
+
 void lwc_render_ttl_fbo_body(const LWCONTEXT* pLwc, const char* html_body) {
     glBindFramebuffer(GL_FRAMEBUFFER, pLwc->shared_fbo.fbo);
     glDisable(GL_DEPTH_TEST);
@@ -1090,16 +1092,24 @@ static void render_sea_objects_nameplate(const LWCONTEXT* pLwc, const mat4x4 vie
         test_text_block.text_block_width = 999.0f;// 2.00f * aspect_ratio;
         test_text_block.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_F;
         test_text_block.size = DEFAULT_TEXT_BLOCK_SIZE_F;
-        SET_COLOR_RGBA_FLOAT(test_text_block.color_normal_glyph, 1, 1, 1, 1);
-        SET_COLOR_RGBA_FLOAT(test_text_block.color_normal_outline, 0, 0, 0, 1);
-        SET_COLOR_RGBA_FLOAT(test_text_block.color_emp_glyph, 1, 1, 0, 1);
-        SET_COLOR_RGBA_FLOAT(test_text_block.color_emp_outline, 0, 0, 0, 1);
         char obj_nameplate[256];
-        sprintf(obj_nameplate,
-                "%d [%s] %.0f",
-                ttl_dynamic_state->obj[i].db_id,
-                ttl_dynamic_state->obj[i].route_flags.loading ? "LOADING" : ttl_dynamic_state->obj[i].route_flags.unloading ? "UNLOADING" : "",
-                ttl_dynamic_state->obj[i].route_param);
+        const char* route_state = lwttl_route_state(&ttl_dynamic_state->obj[i]);
+        if (ttl_dynamic_state->obj[i].route_flags.breakdown) {
+            sprintf(obj_nameplate,
+                    "%s%s",
+                    u8"⊠",
+                    route_state);
+        } else if (ttl_dynamic_state->obj[i].route_flags.sailing) {
+            sprintf(obj_nameplate,
+                    "%s%.0f",
+                    u8"⏅",
+                    ttl_dynamic_state->obj[i].route_param);
+        } else {
+            sprintf(obj_nameplate,
+                    "%s%s",
+                    u8"⏅",
+                    route_state);
+        }
         test_text_block.text = obj_nameplate;
         test_text_block.text_bytelen = (int)strlen(test_text_block.text);
         test_text_block.begin_index = 0;
@@ -1108,7 +1118,7 @@ static void render_sea_objects_nameplate(const LWCONTEXT* pLwc, const mat4x4 vie
         test_text_block.text_block_x = ui_point[0];
         test_text_block.text_block_y = ui_point[1];
         test_text_block.align = LTBA_LEFT_TOP;
-        render_text_block(pLwc, &test_text_block);
+        render_text_block_two_pass(pLwc, &test_text_block);
     }
 }
 
@@ -1764,7 +1774,8 @@ static void render_single_cell_info(const LWCONTEXT* pLwc,
                                     const mat4x4 view,
                                     const mat4x4 proj,
                                     const int view_scale) {
-    if (lwttl_selected(pLwc->ttl, 0) == 0) {
+    const LWPTTLSINGLECELL* p = lwttl_single_cell(pLwc->ttl);
+    if (lwttl_is_selected_cell(pLwc->ttl, p->xc0, p->yc0) == 0) {
         return;
     }
     mat4x4 proj_view;
@@ -1778,17 +1789,11 @@ static void render_single_cell_info(const LWCONTEXT* pLwc,
     };
     vec2 ui_point;
     calculate_ui_point_from_world_point(pLwc->aspect_ratio, proj_view, obj_pos_vec4, ui_point);
-
     LWTEXTBLOCK tb;
     tb.text_block_width = 999.0f;// 2.00f * aspect_ratio;
     tb.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_F;
     tb.size = DEFAULT_TEXT_BLOCK_SIZE_E;
-    SET_COLOR_RGBA_FLOAT(tb.color_normal_glyph, 1, 1, 1, 1);
-    SET_COLOR_RGBA_FLOAT(tb.color_normal_outline, 0, 0, 0, 1);
-    SET_COLOR_RGBA_FLOAT(tb.color_emp_glyph, 1, 1, 0, 1);
-    SET_COLOR_RGBA_FLOAT(tb.color_emp_outline, 0, 0, 0, 1);
     char info[512];
-    const LWPTTLSINGLECELL* p = lwttl_single_cell(pLwc->ttl);
     const char* cell_type = 0;
     // fill cell type
     if ((p->attr >> 0) & 1) {
@@ -1802,9 +1807,11 @@ static void render_single_cell_info(const LWCONTEXT* pLwc,
     // "%s" is not interpolated if we use u8"★%s" as a format string... (why?)
     if (p->city_id >= 0 && p->city_name) {
         sprintf(info,
-                "%s%s",
+                "%s%s%s%d",
                 u8"★",
-                p->city_name);
+                p->city_name,
+                u8"❖",
+                1);
     } else if (p->port_id >= 0 && p->port_name) {
         sprintf(info,
                 "%s%s\n%s%d%s%d%s%d",
@@ -1812,14 +1819,15 @@ static void render_single_cell_info(const LWCONTEXT* pLwc,
                 p->port_name,
                 u8"☗",
                 p->cargo,
-                u8"⬆", 
+                u8"⬆",
                 p->cargo_loaded,
                 u8"⬇",
                 p->cargo_unloaded);
     } else {
-        sprintf(info,
+        /*sprintf(info,
                 "%s",
-                cell_type);
+                cell_type);*/
+        info[0] = 0;
     }
     tb.text = info;
     tb.text_bytelen = (int)strlen(tb.text);
@@ -1829,7 +1837,7 @@ static void render_single_cell_info(const LWCONTEXT* pLwc,
     tb.text_block_x = ui_point[0];
     tb.text_block_y = ui_point[1] + 0.05f / view_scale;
     tb.align = LTBA_LEFT_BOTTOM;
-    render_text_block(pLwc, &tb);
+    render_text_block_two_pass(pLwc, &tb);
 }
 
 static void render_cell_pixel_selector_lng_lat(const LWTTL* ttl,
@@ -1932,10 +1940,6 @@ static void render_world_text(const LWCONTEXT* pLwc, const mat4x4 view, const ma
         test_text_block.text_block_width = 999.0f;// 2.00f * aspect_ratio;
         test_text_block.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_F;
         test_text_block.size = DEFAULT_TEXT_BLOCK_SIZE_F * scale;
-        SET_COLOR_RGBA_FLOAT(test_text_block.color_normal_glyph, 1, 1, 1, 1);
-        SET_COLOR_RGBA_FLOAT(test_text_block.color_normal_outline, 0, 0, 0, 1);
-        SET_COLOR_RGBA_FLOAT(test_text_block.color_emp_glyph, 1, 1, 0, 1);
-        SET_COLOR_RGBA_FLOAT(test_text_block.color_emp_outline, 0, 0, 0, 1);
         test_text_block.text = text;
         test_text_block.text_bytelen = (int)strlen(test_text_block.text);
         test_text_block.begin_index = 0;
@@ -1944,7 +1948,7 @@ static void render_world_text(const LWCONTEXT* pLwc, const mat4x4 view, const ma
         test_text_block.text_block_x = ui_point_x;
         test_text_block.text_block_y = ui_point_y;
         test_text_block.align = LTBA_CENTER_CENTER;
-        render_text_block(pLwc, &test_text_block);
+        render_text_block_two_pass(pLwc, &test_text_block);
         wt_it = lwttl_world_text_next(pLwc->ttl, wt_it);
     }
 }
@@ -2034,30 +2038,22 @@ static void render_region_name(const LWCONTEXT* pLwc) {
     test_text_block.text_block_width = 999.0f;// 2.00f * aspect_ratio;
     test_text_block.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_F;
     test_text_block.size = DEFAULT_TEXT_BLOCK_SIZE_E;
-    SET_COLOR_RGBA_FLOAT(test_text_block.color_normal_glyph, 1, 1, 1, 1);
-    SET_COLOR_RGBA_FLOAT(test_text_block.color_normal_outline, 0, 0, 0, 1);
-    SET_COLOR_RGBA_FLOAT(test_text_block.color_emp_glyph, 1, 1, 0, 1);
-    SET_COLOR_RGBA_FLOAT(test_text_block.color_emp_outline, 0, 0, 0, 1);
     test_text_block.text = lwttl_seaarea(pLwc->ttl);
     test_text_block.text_bytelen = (int)strlen(test_text_block.text);
     test_text_block.begin_index = 0;
     test_text_block.end_index = test_text_block.text_bytelen;
     test_text_block.multiline = 1;
-    test_text_block.text_block_x = -pLwc->aspect_ratio;
-    test_text_block.text_block_y = -1.0f;
+    test_text_block.text_block_x = -pLwc->aspect_ratio + UI_SCREEN_EDGE_MARGIN;
+    test_text_block.text_block_y = -1.0f + UI_SCREEN_EDGE_MARGIN;
     test_text_block.align = LTBA_LEFT_BOTTOM;
-    render_text_block(pLwc, &test_text_block);
+    render_text_block_two_pass(pLwc, &test_text_block);
 }
 
 static void render_ttl_stat(const LWTTL* ttl, const LWCONTEXT* pLwc) {
     LWTEXTBLOCK test_text_block;
     test_text_block.text_block_width = 999.0f;// 2.00f * aspect_ratio;
     test_text_block.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_F;
-    test_text_block.size = DEFAULT_TEXT_BLOCK_SIZE_E;
-    SET_COLOR_RGBA_FLOAT(test_text_block.color_normal_glyph, 1, 1, 1, 1);
-    SET_COLOR_RGBA_FLOAT(test_text_block.color_normal_outline, 0, 0, 0, 1);
-    SET_COLOR_RGBA_FLOAT(test_text_block.color_emp_glyph, 1, 1, 0, 1);
-    SET_COLOR_RGBA_FLOAT(test_text_block.color_emp_outline, 0, 0, 0, 1);
+    test_text_block.size = DEFAULT_TEXT_BLOCK_SIZE_C;
     char gold_text[64];
     snprintf(gold_text,
              ARRAY_SIZE(gold_text) - 1,
@@ -2070,10 +2066,10 @@ static void render_ttl_stat(const LWTTL* ttl, const LWCONTEXT* pLwc) {
     test_text_block.begin_index = 0;
     test_text_block.end_index = test_text_block.text_bytelen;
     test_text_block.multiline = 1;
-    test_text_block.text_block_x = 0.0f;
-    test_text_block.text_block_y = 1.0f;
-    test_text_block.align = LTBA_CENTER_TOP;
-    render_text_block(pLwc, &test_text_block);
+    test_text_block.text_block_x = -pLwc->aspect_ratio + UI_SCREEN_EDGE_MARGIN;
+    test_text_block.text_block_y = 1.0f - UI_SCREEN_EDGE_MARGIN;
+    test_text_block.align = LTBA_LEFT_TOP;
+    render_text_block_two_pass(pLwc, &test_text_block);
 }
 
 void lwc_render_ttl(const LWCONTEXT* pLwc) {

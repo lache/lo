@@ -15,6 +15,7 @@ namespace ss {
         SOS_SAILING,
         SOS_LOADING,
         SOS_UNLOADING,
+        SOS_BREAKDOWN,
         SOS_ERROR,
     };
 
