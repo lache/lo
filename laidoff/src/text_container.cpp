@@ -35,23 +35,23 @@ void litehtml::text_container::delete_font(litehtml::uint_ptr hFont) {
 }
 
 static float conv_size_x(const LWCONTEXT* pLwc, int x) {
-    return 2 * ((float)x / pLwc->width * pLwc->aspect_ratio);
+    return 2 * ((float)x / pLwc->width * pLwc->rt_x);
 }
 
 static float conv_size_y(const LWCONTEXT* pLwc, int y) {
-    return 2 * ((float)y / pLwc->height);
+    return 2 * ((float)y / pLwc->height * pLwc->rt_y);
 }
 
 static float conv_coord_x(const LWCONTEXT* pLwc, int x) {
-    return -pLwc->aspect_ratio + conv_size_x(pLwc, x);
+    return -pLwc->rt_x + conv_size_x(pLwc, x);
 }
 
 static float conv_coord_y(const LWCONTEXT* pLwc, int y) {
-    return 1.0f - conv_size_y(pLwc, y);
+    return pLwc->rt_y - conv_size_y(pLwc, y);
 }
 
 static void fill_text_block(const LWCONTEXT* pLwc, LWTEXTBLOCK* text_block, int x, int y, const char* text, int size, const litehtml::web_color& color) {
-    text_block->text_block_width = 999.0f;// 2.00f * aspect_ratio;
+    text_block->text_block_width = 999.0f;
     LOGIx("font size: %d", size);
     text_block->text_block_line_height = size / 72.0f;
     text_block->size = size / 72.0f;
@@ -76,7 +76,7 @@ int litehtml::text_container::text_width(const litehtml::tchar_t * text, litehtm
     litehtml::web_color c;
     fill_text_block(pLwc, &text_block, 0, 0, text, size, c);
     render_query_only_text_block(pLwc, &text_block, &query_result);
-    return static_cast<int>(query_result.total_glyph_width / (2 * pLwc->aspect_ratio) * pLwc->width);
+    return static_cast<int>(query_result.total_glyph_width / (2 * pLwc->rt_x) * pLwc->width);
 }
 
 void litehtml::text_container::draw_text(litehtml::uint_ptr hdc, const litehtml::tchar_t * text, litehtml::uint_ptr hFont, litehtml::web_color color, const litehtml::position & pos) {

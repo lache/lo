@@ -125,6 +125,9 @@ typedef struct _LWCONTEXT {
 	int height;
     // Screen aspect ratio
     float aspect_ratio;
+    // Right Top UI coordinate (calculated from aspect ratio)
+    float rt_x;
+    float rt_y;
     // Vertex shader array
     GLuint vertex_shader[LWVS_COUNT];
     // Fragment shader array
@@ -432,6 +435,7 @@ void lwcontext_set_custom_puck_game_stage(LWCONTEXT* pLwc, LW_VBO_TYPE lvt, LW_A
 void lwcontext_set_update_frequency(LWCONTEXT* pLwc, int hz);
 float lwcontext_update_interval(LWCONTEXT* pLwc);
 int lwcontext_update_frequency(LWCONTEXT* pLwc);
+void lwcontext_rt_corner(const float aspect_ratio, float* x, float* y);
 #ifdef __cplusplus
 };
 #endif

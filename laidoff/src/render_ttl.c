@@ -887,8 +887,8 @@ static void render_earth(const LWCONTEXT* pLwc, const LWTTLLNGLAT* center, int v
     const LW_VBO_TYPE lvt = LVT_EARTH;
     const LW_ATLAS_ENUM lae = LAE_WATER_2048_1024_AA;
     const float scale = 2.5f;
-    const float x = -(pLwc->aspect_ratio - 0.5f);
-    const float y = 0.5f;
+    const float x = -(pLwc->rt_x - 0.5f);
+    const float y = pLwc->rt_y - 0.5f;
     const float alpha_multiplier = 0.5f;
     lazy_glBindBuffer(pLwc, lvt);
     lazy_tex_atlas_glBindTexture(pLwc, lae);
@@ -934,15 +934,6 @@ static void render_earth(const LWCONTEXT* pLwc, const LWTTLLNGLAT* center, int v
     //set_tex_filter(GL_NEAREST, GL_NEAREST);
     glUniformMatrix4fv(pLwc->shader[shader_index].mvp_location, 1, GL_FALSE, (const GLfloat*)proj_view_model);
     glDrawArrays(GL_TRIANGLES, 0, pLwc->vertex_buffer[lvt].vertex_count);
-
-    //render_solid_box_ui_lvt_flip_y_uv(pLwc,
-    //                                  pLwc->aspect_ratio - 0.5f,
-    //                                  0.5f,
-    //                                  1.0f,
-    //                                  1.0f,
-    //                                  pLwc->tex_atlas[LAE_WATER_2048_1024_AA],
-    //                                  LVT_EARTH,
-    //                                  0);
 
     const float half_lng_extent_in_deg = lwttl_half_lng_extent_in_degrees(view_scale);
     const float half_lat_extent_in_deg = lwttl_half_lat_extent_in_degrees(view_scale);
@@ -1088,7 +1079,7 @@ static void render_sea_objects_nameplate(const LWCONTEXT* pLwc, const mat4x4 vie
         vec2 ui_point;
         calculate_ui_point_from_world_point(pLwc->aspect_ratio, proj_view, obj_pos_vec4, ui_point);
         LWTEXTBLOCK test_text_block;
-        test_text_block.text_block_width = 999.0f;// 2.00f * aspect_ratio;
+        test_text_block.text_block_width = 999.0f;
         test_text_block.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_F;
         test_text_block.size = DEFAULT_TEXT_BLOCK_SIZE_F;
         char obj_nameplate[256];
@@ -1807,7 +1798,7 @@ static void render_single_cell_info(const LWCONTEXT* pLwc,
     vec2 ui_point;
     calculate_ui_point_from_world_point(pLwc->aspect_ratio, proj_view, obj_pos_vec4, ui_point);
     LWTEXTBLOCK tb;
-    tb.text_block_width = 999.0f;// 2.00f * aspect_ratio;
+    tb.text_block_width = 999.0f;
     tb.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_F;
     tb.size = DEFAULT_TEXT_BLOCK_SIZE_E;
     char info[512];
@@ -1917,7 +1908,7 @@ static void render_sea_static_objects_nameplate(const LWCONTEXT* pLwc, const mat
     //vec2 ui_point;
     //calculate_ui_point_from_world_point(pLwc->aspect_ratio, proj_view, obj_pos_vec4, ui_point);
     //LWTEXTBLOCK test_text_block;
-    //test_text_block.text_block_width = 999.0f;// 2.00f * aspect_ratio;
+    //test_text_block.text_block_width = 999.0f;
     //test_text_block.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_F;
     //test_text_block.size = DEFAULT_TEXT_BLOCK_SIZE_F;
     //SET_COLOR_RGBA_FLOAT(test_text_block.color_normal_glyph, 1, 1, 1, 1);
@@ -1954,7 +1945,7 @@ static void render_world_text(const LWCONTEXT* pLwc, const mat4x4 view, const ma
                                             &ui_point_y,
                                             &scale);
         LWTEXTBLOCK test_text_block;
-        test_text_block.text_block_width = 999.0f;// 2.00f * aspect_ratio;
+        test_text_block.text_block_width = 999.0f;
         test_text_block.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_F;
         test_text_block.size = DEFAULT_TEXT_BLOCK_SIZE_F * scale;
         test_text_block.text = text;
@@ -1988,7 +1979,7 @@ static void degrees_to_dms(int* d, int* m, float* s, const float degrees) {
 
 static void render_coords(const LWCONTEXT* pLwc, const LWTTLLNGLAT* lng_lat_center) {
     LWTEXTBLOCK test_text_block;
-    test_text_block.text_block_width = 999.0f;// 2.00f * aspect_ratio;
+    test_text_block.text_block_width = 999.0f;
     test_text_block.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_F;
     test_text_block.size = DEFAULT_TEXT_BLOCK_SIZE_E;
     SET_COLOR_RGBA_FLOAT(test_text_block.color_normal_glyph, 1, 1, 1, 1);
@@ -2007,15 +1998,15 @@ static void render_coords(const LWCONTEXT* pLwc, const LWTTLLNGLAT* lng_lat_cent
     test_text_block.begin_index = 0;
     test_text_block.end_index = test_text_block.text_bytelen;
     test_text_block.multiline = 1;
-    test_text_block.text_block_x = -pLwc->aspect_ratio;
-    test_text_block.text_block_y = 1.0f;
+    test_text_block.text_block_x = -pLwc->rt_x;
+    test_text_block.text_block_y = pLwc->rt_y;
     test_text_block.align = LTBA_LEFT_TOP;
     render_text_block(pLwc, &test_text_block);
 }
 
 static void render_coords_dms(const LWCONTEXT* pLwc, const LWTTLLNGLAT* lng_lat_center) {
     LWTEXTBLOCK test_text_block;
-    test_text_block.text_block_width = 999.0f;// 2.00f * aspect_ratio;
+    test_text_block.text_block_width = 999.0f;
     test_text_block.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_F;
     test_text_block.size = DEFAULT_TEXT_BLOCK_SIZE_E;
     SET_COLOR_RGBA_FLOAT(test_text_block.color_normal_glyph, 1, 1, 1, 1);
@@ -2044,7 +2035,7 @@ static void render_coords_dms(const LWCONTEXT* pLwc, const LWTTLLNGLAT* lng_lat_
     test_text_block.begin_index = 0;
     test_text_block.end_index = test_text_block.text_bytelen;
     test_text_block.multiline = 1;
-    test_text_block.text_block_x = -pLwc->aspect_ratio + 0.3f;
+    test_text_block.text_block_x = -pLwc->rt_x + 0.3f;
     test_text_block.text_block_y = 0;
     test_text_block.align = LTBA_LEFT_TOP;
     render_text_block(pLwc, &test_text_block);
@@ -2052,7 +2043,7 @@ static void render_coords_dms(const LWCONTEXT* pLwc, const LWTTLLNGLAT* lng_lat_
 
 static void render_region_name(const LWCONTEXT* pLwc) {
     LWTEXTBLOCK test_text_block;
-    test_text_block.text_block_width = 999.0f;// 2.00f * aspect_ratio;
+    test_text_block.text_block_width = 999.0f;
     test_text_block.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_F;
     test_text_block.size = DEFAULT_TEXT_BLOCK_SIZE_E;
     test_text_block.text = lwttl_seaarea(pLwc->ttl);
@@ -2060,15 +2051,15 @@ static void render_region_name(const LWCONTEXT* pLwc) {
     test_text_block.begin_index = 0;
     test_text_block.end_index = test_text_block.text_bytelen;
     test_text_block.multiline = 1;
-    test_text_block.text_block_x = -pLwc->aspect_ratio + UI_SCREEN_EDGE_MARGIN;
-    test_text_block.text_block_y = -1.0f + UI_SCREEN_EDGE_MARGIN;
+    test_text_block.text_block_x = -pLwc->rt_x + UI_SCREEN_EDGE_MARGIN;
+    test_text_block.text_block_y = -pLwc->rt_y + UI_SCREEN_EDGE_MARGIN;
     test_text_block.align = LTBA_LEFT_BOTTOM;
     render_text_block_two_pass(pLwc, &test_text_block);
 }
 
 static void render_ttl_stat(const LWTTL* ttl, const LWCONTEXT* pLwc) {
     LWTEXTBLOCK test_text_block;
-    test_text_block.text_block_width = 999.0f;// 2.00f * aspect_ratio;
+    test_text_block.text_block_width = 999.0f;
     test_text_block.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_D;
     test_text_block.size = DEFAULT_TEXT_BLOCK_SIZE_C;
     char gold_text[64];
@@ -2087,8 +2078,8 @@ static void render_ttl_stat(const LWTTL* ttl, const LWCONTEXT* pLwc) {
     test_text_block.begin_index = 0;
     test_text_block.end_index = test_text_block.text_bytelen;
     test_text_block.multiline = 1;
-    test_text_block.text_block_x = -pLwc->aspect_ratio + UI_SCREEN_EDGE_MARGIN;
-    test_text_block.text_block_y = 1.0f - UI_SCREEN_EDGE_MARGIN;
+    test_text_block.text_block_x = -pLwc->rt_x + UI_SCREEN_EDGE_MARGIN;
+    test_text_block.text_block_y = +pLwc->rt_y - UI_SCREEN_EDGE_MARGIN;
     test_text_block.align = LTBA_LEFT_TOP;
     render_text_block_two_pass(pLwc, &test_text_block);
 }
@@ -2183,7 +2174,7 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
     //render_coords_dms(pLwc, &view_center);
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     // render FBO (HTML UI)
-    render_solid_box_ui_lvt_flip_y_uv(pLwc, 0, 0, 2 * pLwc->aspect_ratio, 2, pLwc->shared_fbo.color_tex, LVT_CENTER_CENTER_ANCHORED_SQUARE, 1);
+    render_solid_box_ui_lvt_flip_y_uv(pLwc, 0, 0, 2 * pLwc->rt_x, 2 * pLwc->rt_y, pLwc->shared_fbo.color_tex, LVT_CENTER_CENTER_ANCHORED_SQUARE, 1);
     // render joystick
     if (0) {
         render_dir_pad_with_start_joystick(pLwc, &pLwc->left_dir_pad, 1.0f);

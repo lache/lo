@@ -761,7 +761,7 @@ int get_tex_index_by_hash_key(const LWCONTEXT* pLwc, const char *hash_key) {
     return 0;
 }
 
-void render_stat(const LWCONTEXT* pLwc) {
+static void render_stat(const LWCONTEXT* pLwc) {
     if (pLwc->show_stat == 0) {
         return;
     }
@@ -787,8 +787,8 @@ void render_stat(const LWCONTEXT* pLwc) {
     text_block.text_bytelen = (int)strlen(text_block.text);
     text_block.begin_index = 0;
     text_block.end_index = text_block.text_bytelen;
-    text_block.text_block_x = pLwc->aspect_ratio;
-    text_block.text_block_y = -1.0f;
+    text_block.text_block_x = +pLwc->rt_x;
+    text_block.text_block_y = -pLwc->rt_y;
     text_block.multiline = 1;
     render_text_block(pLwc, &text_block);
 }
@@ -815,8 +815,8 @@ void render_addr(const LWCONTEXT* pLwc) {
     text_block.text_bytelen = (int)strlen(text_block.text);
     text_block.begin_index = 0;
     text_block.end_index = text_block.text_bytelen;
-    text_block.text_block_x = -pLwc->aspect_ratio;
-    text_block.text_block_y = -1.0f;
+    text_block.text_block_x = -pLwc->rt_x;
+    text_block.text_block_y = -pLwc->rt_y;
     text_block.multiline = 1;
     render_text_block(pLwc, &text_block);
 }
@@ -1272,8 +1272,10 @@ void lwc_render(const LWCONTEXT* pLwc) {
     // Rendering a system message
     render_sys_msg(pLwc, pLwc->def_sys_msg);
     // Rendering stats
+    glDisable(GL_DEPTH_TEST);
     render_stat(pLwc);
     render_addr(pLwc);
+    glEnable(GL_DEPTH_TEST);
     htmlui_load_next_html_path(pLwc->htmlui);
     htmlui_load_next_html_body(pLwc->htmlui);
     remtex_render(pLwc->remtex, pLwc->htmlui);
@@ -1692,6 +1694,8 @@ void lw_set_size(LWCONTEXT* pLwc, int w, int h) {
         pLwc->aspect_ratio = (float)pLwc->width / pLwc->height;
     }
     LOGIP("new window size (%d, %d) [aspect ratio %f]", pLwc->width, pLwc->height, pLwc->aspect_ratio);
+
+    lwcontext_rt_corner(pLwc->aspect_ratio, &pLwc->rt_x, &pLwc->rt_y);
 }
 
 void lw_set_window(LWCONTEXT* pLwc, struct GLFWwindow *window) {

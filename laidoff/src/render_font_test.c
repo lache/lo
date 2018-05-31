@@ -36,7 +36,7 @@ void lwc_render_font_test_fbo(const LWCONTEXT* pLwc) {
     lwc_prerender_font_test_fbo(pLwc);
 
     LWTEXTBLOCK test_text_block;
-    test_text_block.text_block_width = 999.0f;// 2.00f * aspect_ratio;
+    test_text_block.text_block_width = 999.0f;
     test_text_block.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_D;
     test_text_block.size = DEFAULT_TEXT_BLOCK_SIZE_B;
     SET_COLOR_RGBA_FLOAT(test_text_block.color_normal_glyph, 1, 1, 1, 1);

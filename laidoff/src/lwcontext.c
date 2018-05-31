@@ -1,6 +1,7 @@
 #include "lwcontext.h"
 #include "htmlui.h"
 #include <stdlib.h>
+#include "lwlog.h"
 
 const vec4 EXP_COLOR = { 90 / 255.0f, 173 / 255.0f, 255 / 255.0f, 1 };
 
@@ -63,4 +64,18 @@ float lwcontext_update_interval(LWCONTEXT* pLwc) {
 
 int lwcontext_update_frequency(LWCONTEXT* pLwc) {
     return pLwc->update_frequency;
+}
+
+void lwcontext_rt_corner(const float aspect_ratio, float* x, float* y) {
+    if (aspect_ratio == 0) {
+        LOGEP("pLwc->aspect_ratio == 0");
+        *x = 1.0f;
+        *y = 1.0F;
+    } else if (aspect_ratio < 1.0f) {
+        *x = 1.0f;
+        *y = 1.0f / aspect_ratio;
+    } else {
+        *x = aspect_ratio;
+        *y = 1.0f;
+    }
 }

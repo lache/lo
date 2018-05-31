@@ -1,4 +1,5 @@
 #include "lwmath.h"
+#include "lwcontext.h"
 
 void calculate_ui_point_from_world_point(const float aspect_ratio,
                                          const mat4x4 proj_view,
@@ -14,6 +15,8 @@ void calculate_ui_point_from_world_point(const float aspect_ratio,
 		clip_space_point[2] / clip_space_point[3]
 	};
 
-	ui_point[0] = ndc_pos[0] * aspect_ratio;
-	ui_point[1] = ndc_pos[1];
+    float rt_x, rt_y;
+    lwcontext_rt_corner(aspect_ratio, &rt_x, &rt_y);
+	ui_point[0] = ndc_pos[0] * rt_x;
+	ui_point[1] = ndc_pos[1] * rt_y;
 }

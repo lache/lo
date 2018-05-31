@@ -99,11 +99,11 @@ int lwbutton_press(const LWCONTEXT* pLwc,
     for (int i = 0; i < button_list->button_count; i++) {
         const LWBUTTON* b = &button_list->button[i];
         // adjust x, y position according to viewport offset
-        float x_v = x - (float)b->viewport_x / pLwc->width * 2 * pLwc->aspect_ratio;
-        float y_v = y - (float)b->viewport_y / pLwc->height * 2;
+        float x_v = x - (float)b->viewport_x / pLwc->width * 2 * pLwc->rt_x;
+        float y_v = y - (float)b->viewport_y / pLwc->height * 2 * pLwc->rt_y;
         if (b->x <= x_v && x_v <= b->x + b->w && b->y - b->h <= y_v && y_v <= b->y) {
             *w_ratio = (x_v - b->x) / b->w;
-            *h_ratio = 1.0f - (y_v - (b->y - b->h)) / b->h;
+            *h_ratio = pLwc->rt_y - (y_v - (b->y - b->h)) / b->h;
             return i;
         }
     }

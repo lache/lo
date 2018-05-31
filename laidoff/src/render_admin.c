@@ -22,8 +22,8 @@ typedef struct _ADMIN_BUTTON_LAYOUT {
 void calculate_admin_button_layout(const LWCONTEXT* pLwc, ADMIN_BUTTON_LAYOUT* abl) {
 	abl->but_col_cnt = 6;
 	abl->but_row_cnt = 6;
-	abl->aspect_ratio_x = (float)pLwc->width / pLwc->height;
-	abl->aspect_ratio_y = 1;
+	abl->aspect_ratio_x = pLwc->rt_x;
+	abl->aspect_ratio_y = pLwc->rt_y;
 	abl->margin_x = 0.05f * abl->aspect_ratio_x;
 	abl->margin_y = 0.05f * abl->aspect_ratio_y;
 	abl->spacing_x = 0.05f * abl->aspect_ratio_x;
