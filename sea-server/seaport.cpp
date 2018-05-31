@@ -359,3 +359,11 @@ void seaport::convert_cargo() {
         }
     }
 }
+
+std::vector<seaport_object::value> seaport::query_nearest(int xc, int yc) const {
+    std::vector<seaport_object::value> result_s;
+    for (auto it = rtree_ptr->qbegin(bgi::nearest(seaport_object::point{ xc,yc }, 1)); it != rtree_ptr->qend(); it++) {
+        result_s.push_back(*it);
+    }
+    return result_s;
+}

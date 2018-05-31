@@ -204,57 +204,61 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
             memset(&reply, 0, sizeof(spawn_port_command_reply));
             reply._.type = 4;
             reply.reply_id = spawn->reply_id;
+            bool check_type = false;
             if (spawn->expect_land == 0) {
                 // Seaport
                 if (sea_static_->is_sea_water(spawn_pos)) {
-                    bool existing = false;
-                    int id = seaport_->spawn(spawn->expected_db_id, spawn->name, spawn->xc, spawn->yc, spawn->owner_id, existing, spawn->expect_land ? seaport::seaport_type::LAND : seaport::seaport_type::SEA);
-                    if (existing == false) {
-                        udp_server_->gold_used(spawn->xc, spawn->yc, 10000);
-                    }
-                    reply.db_id = id;
-                    if (id > 0) {
-                        LOGI("New seaport SP %1% {%2%,%3%} spawned. owner_id=%4%",
-                             id,
-                             spawn_pos.x,
-                             spawn_pos.y,
-                             spawn->owner_id);
-                        reply.existing = existing;
-                    } else {
-                        LOGEP("New port cannot be spawned at (x=%1%, y=%2%)",
-                              spawn_pos.x,
-                              spawn_pos.y);
-                    }
-                } else {
-                    LOGEP("Spawn position should be water. (x=%||, y=%||)",
-                          spawn_pos.x,
-                          spawn_pos.y);
+                    check_type = true;
                 }
             } else if (spawn->expect_land == 1) {
                 // (Land?)port
                 if (sea_static_->is_land(spawn_pos)) {
-                    bool existing = false;
-                    int id = seaport_->spawn(spawn->expected_db_id, spawn->name, spawn->xc, spawn->yc, spawn->owner_id, existing, seaport::seaport_type::LAND);
-                    reply.db_id = id;
-                    if (id > 0) {
-                        LOGI("New seaport SP %1% {%2%,%3%} spawned. owner_id=%4%",
-                             id,
-                             spawn_pos.x,
-                             spawn_pos.y,
-                             spawn->owner_id);
-                        reply.existing = existing;
-                    } else {
-                        LOGE("New seaport cannot be spawned at (x=%1%, y=%2%)",
-                             spawn_pos.x,
-                             spawn_pos.y);
-                    }
-                } else {
-                    LOGEP("Seaport Spawn position should be water. (x=%||, y=%||)",
-                          spawn_pos.x,
-                          spawn_pos.y);
+                    check_type = true;
                 }
             } else {
                 LOGEP("Unknown spawn type: %||", spawn->expect_land);
+            }
+            if (check_type == false) {
+                LOGEP("[1] check_type failure - spawn->expect_land=%||, but it is not.", spawn->expect_land);
+            }
+            bool check_distance = false;
+            if (check_type) {
+                const auto& nid = seaport_->query_nearest(spawn_pos.x, spawn_pos.y);
+                if (nid.size() > 0) {
+                    const auto nearest_x = nid[0].first.get<0>();
+                    const auto nearest_y = nid[0].first.get<1>();
+                    if (nearest_x == spawn_pos.x && nearest_y == spawn_pos.y) {
+                        // existing seaport should be returned as success
+                        check_distance = true;
+                    } else {
+                        check_distance = abs(nearest_x - spawn_pos.x) >= 3 || abs(nearest_y - spawn_pos.y) >= 3;
+                    }
+                } else {
+                    check_distance = true;
+                }
+            }
+            if (check_distance == false) {
+                LOGEP("[2] check_distance failure - minimum distance between existing seaports not satisfied.");
+            }
+            if (check_type && check_distance) {
+                bool existing = false;
+                int id = seaport_->spawn(spawn->expected_db_id, spawn->name, spawn->xc, spawn->yc, spawn->owner_id, existing, spawn->expect_land ? seaport::seaport_type::LAND : seaport::seaport_type::SEA);
+                if (existing == false) {
+                    udp_server_->gold_used(spawn->xc, spawn->yc, 10000);
+                }
+                reply.db_id = id;
+                if (id > 0) {
+                    LOGI("New seaport SP %1% {%2%,%3%} spawned. owner_id=%4%",
+                         id,
+                         spawn_pos.x,
+                         spawn_pos.y,
+                         spawn->owner_id);
+                    reply.existing = existing;
+                } else {
+                    LOGEP("New port cannot be spawned at (x=%1%, y=%2%)",
+                          spawn_pos.x,
+                          spawn_pos.y);
+                }
             }
             socket_.async_send_to(boost::asio::buffer(&reply,
                                                       sizeof(spawn_port_command_reply)),
