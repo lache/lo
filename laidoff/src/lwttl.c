@@ -174,6 +174,8 @@ typedef struct _LWTTL {
     vec3 cam_look_at;
     float cam_r;
     int gold;
+    int ports;
+    int ships;
 } LWTTL;
 
 LWTTL* lwttl_new(float aspect_ratio) {
@@ -197,7 +199,6 @@ LWTTL* lwttl_new(float aspect_ratio) {
     ttl->cam_look_at[2] = 0;
     ttl->cam_r = 0;// (float)LWDEG2RAD(90);
     ttl->cell_grid = 1;
-    ttl->gold = 0;
     LWMUTEX_INIT(ttl->rendering_mutex);
     ttl->earth_globe_scale_0 = earth_globe_render_scale;
     lwttl_set_earth_globe_scale(ttl, ttl->earth_globe_scale_0);
@@ -2090,6 +2091,8 @@ void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc) {
                 LWPTTLSTAT* p = (LWPTTLSTAT*)decompressed;
                 LOGIx("LWPTTLSTAT");
                 ttl->gold = p->gold;
+                ttl->ports = p->ports;
+                ttl->ships = p->ships;
                 break;
             }
             case LPGP_LWPTTLGOLDUSED:
@@ -2211,6 +2214,14 @@ int lwttl_cell_grid(const LWTTL* ttl) {
 
 int lwttl_gold(const LWTTL* ttl) {
     return ttl->gold;
+}
+
+int lwttl_ports(const LWTTL* ttl) {
+    return ttl->ports;
+}
+
+int lwttl_ships(const LWTTL* ttl) {
+    return ttl->ships;
 }
 
 int lwttl_is_selected_cell(const LWTTL* ttl, int x0, int y0) {

@@ -46,6 +46,9 @@ float calculate_pinch_zoom_dist() {
     return LWCLAMP(d, 0.5f, 10.0f);
 }
 
+static int admin_pressed = 0;
+static const float admin_button_size = 0.15f;
+
 void lw_trigger_mouse_press(LWCONTEXT* pLwc, float nx, float ny, int pointer_id) {
 	if (!pLwc) {
 		return;
@@ -56,6 +59,16 @@ void lw_trigger_mouse_press(LWCONTEXT* pLwc, float nx, float ny, int pointer_id)
 	convert_touch_coord_to_ui_coord(pLwc, &x, &y);
 
 	LOGIx("mouse press ui coord x=%f, y=%f", x, y);
+
+    // Touch right top corner of the screen
+    if (pLwc->game_scene != LGS_ADMIN
+        && x > +pLwc->aspect_ratio - admin_button_size
+        && y > 1.0f - admin_button_size
+        && is_file_exist(pLwc->user_data_path, "admin")) {
+        admin_pressed = 1;
+    } else {
+        admin_pressed = 0;
+    }
     
     if (pLwc->game_scene == LGS_TTL
         || (pLwc->game_scene == LGS_PUCK_GAME && pLwc->puck_game->game_state == LPGS_MAIN_MENU && pLwc->puck_game->show_html_ui && pLwc->puck_game->world_roll_dirty == 0)) {
@@ -316,11 +329,10 @@ void lw_trigger_mouse_release(LWCONTEXT* pLwc, float nx, float ny, int pointer_i
 	const float top_button_h = 0.75f;
 
 	// Touch right top corner of the screen
-    const float admin_button_size = 0.15f;
     if (pLwc->game_scene != LGS_ADMIN
         && x > +pLwc->aspect_ratio - admin_button_size
 		&& y > 1.0f - admin_button_size) {
-		if (is_file_exist(pLwc->user_data_path, "admin")) {
+		if (admin_pressed && is_file_exist(pLwc->user_data_path, "admin")) {
 			change_to_admin(pLwc);
 		} else {
 			static int admin_count = 0;
@@ -330,15 +342,7 @@ void lw_trigger_mouse_release(LWCONTEXT* pLwc, float nx, float ny, int pointer_i
 			}
 		}
 	}
-
-	// Touch right top corner of the screen
-	if (pLwc->game_scene != LGS_ADMIN
-		&& x > pLwc->aspect_ratio - 0.25f
-		&& y > 1.0f - 0.25f) {
-
-		reset_time(pLwc);
-		return;
-	}
+    admin_pressed = 0;
 
 	if (pLwc->game_scene == LGS_PUCK_GAME
 		&& fabs(top_button_x_center - x) < top_button_w

@@ -574,6 +574,8 @@ typedef struct _LWPTTLSTAT {
     unsigned char padding1;
     unsigned char padding2;
     int gold;
+    int ports;
+    int ships;
 } LWPTTLSTAT;
 
 // UDP

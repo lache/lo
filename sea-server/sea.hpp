@@ -34,6 +34,7 @@ namespace ss {
         float lng_to_xc(float lng) const;
         float lat_to_yc(float lat) const;
         std::vector<cargo_notification>&& flush_cargo_notifications();
+        size_t get_count() const { return rtree.size(); }
     private:
         std::vector<int> query_tree(float xc, float yc, float ex_lng, float ex_lat) const;
         boost::asio::io_service& io_service;

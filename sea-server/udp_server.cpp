@@ -889,6 +889,8 @@ void udp_server::send_stat() {
     memset(reply.get(), 0, sizeof(LWPTTLSTAT));
     reply->type = LPGP_LWPTTLSTAT;
     reply->gold = gold_;
+    reply->ports = static_cast<int>(seaport_->get_count());
+    reply->ships = static_cast<int>(sea_->get_count());
     char compressed[1500];
     int compressed_size = LZ4_compress_default((char*)reply.get(), compressed, sizeof(LWPTTLSTAT), static_cast<int>(boost::size(compressed)));
     if (compressed_size > 0) {

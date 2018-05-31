@@ -30,6 +30,7 @@ namespace ss {
         int get_owner_id(int id) const;
         int get_type(int id) const;
         void update();
+        size_t get_count() const { return rtree_ptr->size(); }
     private:
         std::vector<seaport_object::value> query_tree_ex(int xc, int yc, int half_lng_ex, int half_lat_ex) const;
         void update_chunk_key_ts(int xc0, int yc0);

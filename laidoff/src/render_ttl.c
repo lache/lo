@@ -1093,23 +1093,41 @@ static void render_sea_objects_nameplate(const LWCONTEXT* pLwc, const mat4x4 vie
         test_text_block.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_F;
         test_text_block.size = DEFAULT_TEXT_BLOCK_SIZE_F;
         char obj_nameplate[256];
+        obj_nameplate[0] = 0;
         const char* route_state = lwttl_route_state(&ttl_dynamic_state->obj[i]);
-        if (ttl_dynamic_state->obj[i].route_flags.breakdown) {
-            sprintf(obj_nameplate,
-                    "%s%s",
-                    u8"⊠",
-                    route_state);
-        } else if (ttl_dynamic_state->obj[i].route_flags.sailing) {
-            sprintf(obj_nameplate,
-                    "%s%.0f",
-                    u8"⏅",
-                    ttl_dynamic_state->obj[i].route_param);
-        } else {
-            sprintf(obj_nameplate,
-                    "%s%s",
-                    u8"⏅",
-                    route_state);
+        if (view_scale <= 4) {
+            if (ttl_dynamic_state->obj[i].route_flags.breakdown) {
+                sprintf(obj_nameplate,
+                        "%s%s",
+                        u8"⊠",
+                        route_state);
+            } else if (ttl_dynamic_state->obj[i].route_flags.sailing) {
+                sprintf(obj_nameplate,
+                        "%s%.0f",
+                        u8"⏅",
+                        ttl_dynamic_state->obj[i].route_param);
+            } else {
+                sprintf(obj_nameplate,
+                        "%s%s",
+                        u8"⏅",
+                        route_state);
+            }
+        } else if (view_scale <= 32) {
+            if (ttl_dynamic_state->obj[i].route_flags.breakdown) {
+                sprintf(obj_nameplate,
+                        "%s",
+                        u8"⊠");
+            } else if (ttl_dynamic_state->obj[i].route_flags.sailing) {
+                sprintf(obj_nameplate,
+                        "%s",
+                        u8"⏅");
+            } else {
+                sprintf(obj_nameplate,
+                        "%s",
+                        u8"⏅");
+            }
         }
+        
         test_text_block.text = obj_nameplate;
         test_text_block.text_bytelen = (int)strlen(test_text_block.text);
         test_text_block.begin_index = 0;
@@ -2052,14 +2070,18 @@ static void render_region_name(const LWCONTEXT* pLwc) {
 static void render_ttl_stat(const LWTTL* ttl, const LWCONTEXT* pLwc) {
     LWTEXTBLOCK test_text_block;
     test_text_block.text_block_width = 999.0f;// 2.00f * aspect_ratio;
-    test_text_block.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_F;
+    test_text_block.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_D;
     test_text_block.size = DEFAULT_TEXT_BLOCK_SIZE_C;
     char gold_text[64];
     snprintf(gold_text,
              ARRAY_SIZE(gold_text) - 1,
-             "%s%d",
+             "%s%d\n%s%d\n%s%d",
              u8"◊",
-             lwttl_gold(pLwc->ttl));
+             lwttl_gold(pLwc->ttl),
+             u8"♦",
+             lwttl_ports(pLwc->ttl),
+             u8"⏅",
+             lwttl_ships(pLwc->ttl));
     gold_text[ARRAY_SIZE(gold_text) - 1] = 0;
     test_text_block.text = gold_text;
     test_text_block.text_bytelen = (int)strlen(test_text_block.text);

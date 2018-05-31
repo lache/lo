@@ -193,6 +193,8 @@ const void* lwttl_world_text_next(const LWTTL* ttl, const void* it);
 void lwttl_toggle_cell_grid(LWTTL* ttl);
 int lwttl_cell_grid(const LWTTL* ttl);
 int lwttl_gold(const LWTTL* ttl);
+int lwttl_ports(const LWTTL* ttl);
+int lwttl_ships(const LWTTL* ttl);
 int lwttl_is_selected_cell(const LWTTL* ttl, int x0, int y0);
 int lwttl_is_selected_cell_intersect(const LWTTL* ttl, int x0, int y0);
 int lwttl_is_selected_cell_diff(const LWTTL* ttl, int x0, int y0, int* dx0, int* dy0);
