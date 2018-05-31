@@ -208,7 +208,7 @@ static void render_vehicle(const LWCONTEXT* pLwc,
     mat4x4 model_normal_transform;
     mat4x4_identity(model_normal_transform);
 
-
+    lazy_glBindBuffer(pLwc, lvt);
     if (shader_index == LWST_DEFAULT) {
         bind_all_vertex_attrib(pLwc, lvt);
     } else if (shader_index == LWST_DEFAULT_NORMAL_COLOR) {
@@ -221,7 +221,6 @@ static void render_vehicle(const LWCONTEXT* pLwc,
         lazy_tex_atlas_glBindTexture(pLwc, lae);
         set_tex_filter(GL_LINEAR, GL_LINEAR);
     }
-    lazy_glBindBuffer(pLwc, lvt);
     glUniformMatrix4fv(shader->mvp_location, 1, GL_FALSE, (const GLfloat*)proj_view_model);
     glUniformMatrix4fv(shader->m_location, 1, GL_FALSE, (const GLfloat*)model_normal_transform);
     glUniform1f(shader->vertex_color_ratio, 0);
