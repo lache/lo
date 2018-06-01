@@ -2,6 +2,11 @@
 
 #include <linmath.h>
 
+#define LNGLAT_RENDER_EXTENT_MULTIPLIER_LNG (1)
+#define LNGLAT_RENDER_EXTENT_MULTIPLIER_LAT (1)
+#define LNGLAT_RENDER_EXTENT_MULTIPLIER_LNG_WITH_MARGIN (LNGLAT_RENDER_EXTENT_MULTIPLIER_LNG + 1)
+#define LNGLAT_RENDER_EXTENT_MULTIPLIER_LAT_WITH_MARGIN (LNGLAT_RENDER_EXTENT_MULTIPLIER_LAT + 1)
+
 #ifdef __cplusplus
 extern "C" {;
 #endif
@@ -16,11 +21,15 @@ typedef struct _LWPTTLSTATICOBJECT2 LWPTTLSTATICOBJECT2;
 typedef struct _LWPTTLSEAPORTOBJECT LWPTTLSEAPORTOBJECT;
 typedef struct _LWPTTLCITYOBJECT LWPTTLCITYOBJECT;
 typedef struct _LWPTTLSALVAGEOBJECT LWPTTLSALVAGEOBJECT;
-typedef struct _LWTTLLNGLAT LWTTLLNGLAT;
 typedef struct _LWHTMLUI LWHTMLUI;
 typedef struct _LWPTTLSINGLECELL LWPTTLSINGLECELL;
 typedef struct _LWPTTLSTATICSTATE3 LWPTTLSTATICSTATE3;
 typedef struct _LWPTTLROUTEOBJECT LWPTTLROUTEOBJECT;
+
+typedef struct _LWTTLLNGLAT {
+    float lng;
+    float lat;
+} LWTTLLNGLAT;
 
 LWTTL* lwttl_new(float aspect_ratio);
 void lwttl_destroy(LWTTL** _ttl);
@@ -188,7 +197,8 @@ const char* lwttl_world_text(const LWTTL* ttl,
                              const int view_scale,
                              float* ui_point_x,
                              float* ui_point_y,
-                             float* scale);
+                             float* scale,
+                             float render_scale);
 const void* lwttl_world_text_next(const LWTTL* ttl, const void* it);
 void lwttl_toggle_cell_grid(LWTTL* ttl);
 int lwttl_cell_grid(const LWTTL* ttl);
@@ -204,6 +214,15 @@ void lwttl_cam_eye(const LWTTL* ttl, vec3 cam_eye);
 void lwttl_set_cam_eye(LWTTL* ttl, const vec3 cam_eye);
 void lwttl_cam_look_at(const LWTTL* ttl, vec3 cam_look_at);
 void lwttl_set_cam_look_at(LWTTL* ttl, const vec3 cam_look_at);
+float cell_fx_to_lng(float fx);
+float cell_fy_to_lat(float fy);
+float cell_x_to_lng(int x);
+float cell_y_to_lat(int y);
+float lwttl_sea_render_scale(const LWTTL* ttl);
+float render_coords_to_lng(float rc, const LWTTLLNGLAT* center, int view_scale, float render_scale);
+float render_coords_to_lat(float rc, const LWTTLLNGLAT* center, int view_scale, float render_scale);
+float cell_fx_to_render_coords(float fx, const LWTTLLNGLAT* center, int view_scale, float render_scale);
+float cell_fy_to_render_coords(float fy, const LWTTLLNGLAT* center, int view_scale, float render_scale);
 #ifdef __cplusplus
 }
 #endif

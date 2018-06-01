@@ -59,6 +59,7 @@ typedef struct _LWTTLFIELDVIEWPORT {
     int view_scale_msb;
     int clamped_view_scale;
     int clamped_to_original_view_scale_ratio;
+    float render_scale;
     float half_lng_extent_in_deg;
     float half_lat_extent_in_deg;
     float lng_min;
@@ -75,6 +76,22 @@ typedef struct _LWTTLFIELDVIEWPORT {
     float clamped_cell_render_height;
     int clamped_view_scale_msb;
 } LWTTLFIELDVIEWPORT;
+
+static float lng_to_render_coords(float lng, const LWTTLFIELDVIEWPORT* vp) {
+    return (lng - vp->view_center.lng) * vp->render_scale / vp->view_scale;
+}
+
+static float lat_to_render_coords(float lat, const LWTTLFIELDVIEWPORT* vp) {
+    return (lat - vp->view_center.lat) * vp->render_scale / vp->view_scale;
+}
+
+static float cell_x_to_render_coords(int x, const LWTTLFIELDVIEWPORT* vp) {
+    return lng_to_render_coords(cell_x_to_lng(x), vp);
+}
+
+static float cell_y_to_render_coords(int y, const LWTTLFIELDVIEWPORT* vp) {
+    return lat_to_render_coords(cell_y_to_lat(y), vp);
+}
 
 void lwc_render_ttl_fbo_body(const LWCONTEXT* pLwc, const char* html_body) {
     glBindFramebuffer(GL_FRAMEBUFFER, pLwc->shared_fbo.fbo);
@@ -216,9 +233,9 @@ static void render_vehicle(const LWCONTEXT* pLwc,
     mat4x4 rot;
     mat4x4_identity(rot);
     mat4x4_rotate_Z(rot, rot, rot_z);
-    const float sx = scale / vp->view_scale;
-    const float sy = scale / vp->view_scale;
-    const float sz = scale / vp->view_scale;
+    const float sx = scale / vp->view_scale * vp->render_scale / lwttl_sea_render_scale(pLwc->ttl);
+    const float sy = scale / vp->view_scale * vp->render_scale / lwttl_sea_render_scale(pLwc->ttl);
+    const float sz = scale / vp->view_scale * vp->render_scale / lwttl_sea_render_scale(pLwc->ttl);
     mat4x4 model;
     mat4x4_identity(model);
     mat4x4_mul(model, model, rot);
@@ -664,11 +681,11 @@ static void render_land_cell_bitmap(const LWTTL* ttl,
              const float lng1 = LWCLAMP(lng1_not_clamped, lng_min, lng_max);
              const float lat1 = LWCLAMP(lat1_not_clamped, lat_min, lat_max);*/
 
-            const float cell_x0 = lng_to_render_coords(lng0_not_clamped, &vp->view_center, vp->clamped_view_scale * vp->clamped_to_original_view_scale_ratio);
-            const float cell_y0 = lat_to_render_coords(lat0_not_clamped, &vp->view_center, vp->clamped_view_scale * vp->clamped_to_original_view_scale_ratio);
+            const float cell_x0 = lng_to_render_coords(lng0_not_clamped, vp);
+            const float cell_y0 = lat_to_render_coords(lat0_not_clamped, vp);
             const float cell_z0 = 0;// lwttl_is_selected_cell_intersect(ttl, (int)x0, (int)y0) ? 1.0f : 0.0f;
-            const float cell_x1 = lng_to_render_coords(lng1_not_clamped, &vp->view_center, vp->clamped_view_scale * vp->clamped_to_original_view_scale_ratio);
-            const float cell_y1 = lat_to_render_coords(lat1_not_clamped, &vp->view_center, vp->clamped_view_scale * vp->clamped_to_original_view_scale_ratio);
+            const float cell_x1 = lng_to_render_coords(lng1_not_clamped, vp);
+            const float cell_y1 = lat_to_render_coords(lat1_not_clamped, vp);
             const float cell_w = cell_x1 - cell_x0;
             // cell_y0 and cell_y1 are in OpenGL rendering coordinates (always cell_y0 > cell_y1)
             const float cell_h = cell_y0 - cell_y1;
@@ -1080,8 +1097,8 @@ static void render_sea_objects_nameplate(const LWCONTEXT* pLwc, const LWTTLFIELD
                            &py,
                            &dx,
                            &dy);
-        const float rx = cell_fx_to_render_coords(px + 0.5f, &vp->view_center, vp->view_scale);
-        const float ry = cell_fy_to_render_coords(py + 0.5f, &vp->view_center, vp->view_scale);
+        const float rx = cell_fx_to_render_coords(px + 0.5f, &vp->view_center, vp->view_scale, vp->render_scale);
+        const float ry = cell_fy_to_render_coords(py + 0.5f, &vp->view_center, vp->view_scale, vp->render_scale);
         vec4 obj_pos_vec4 = {
             rx,
             ry,
@@ -1158,8 +1175,8 @@ static void render_sea_objects(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* 
                            &py,
                            &dx,
                            &dy);
-        const float rx = cell_fx_to_render_coords(px + 0.5f, &vp->view_center, vp->view_scale);
-        const float ry = cell_fy_to_render_coords(py + 0.5f, &vp->view_center, vp->view_scale);
+        const float rx = cell_fx_to_render_coords(px + 0.5f, &vp->view_center, vp->view_scale, vp->render_scale);
+        const float ry = cell_fy_to_render_coords(py + 0.5f, &vp->view_center, vp->view_scale, vp->render_scale);
         const float rot_z = atan2f(-dy, dx) + (obj->route_flags.reversed ? (-1) : (+1)) * (-(float)(M_PI / 2));
         if (obj->route_flags.land == 0) {
             render_ship(pLwc,
@@ -1197,10 +1214,10 @@ static void render_waypoint_line_segment(const LWTTL* ttl,
     const float lng1_not_clamped = cell_fx_to_lng(x1 + 0.5f);
     const float lat1_not_clamped = cell_fy_to_lat(y1 + 0.5f);
 
-    const float cell_x0 = lng_to_render_coords(lng0_not_clamped, &vp->view_center, vp->view_scale);
-    const float cell_y0 = lat_to_render_coords(lat0_not_clamped, &vp->view_center, vp->view_scale);
-    const float cell_x1 = lng_to_render_coords(lng1_not_clamped, &vp->view_center, vp->view_scale);
-    const float cell_y1 = lat_to_render_coords(lat1_not_clamped, &vp->view_center, vp->view_scale);
+    const float cell_x0 = lng_to_render_coords(lng0_not_clamped, vp);
+    const float cell_y0 = lat_to_render_coords(lat0_not_clamped, vp);
+    const float cell_x1 = lng_to_render_coords(lng1_not_clamped, vp);
+    const float cell_y1 = lat_to_render_coords(lat1_not_clamped, vp);
 
     const float dx = cell_x1 - cell_x0;
     const float dy = cell_y1 - cell_y0;
@@ -1329,8 +1346,8 @@ static void render_seaports(const LWCONTEXT* pLwc,
                 }
                 const float lng0_not_clamped = cell_fx_to_lng(x0 + 0.5f);
                 const float lat0_not_clamped = cell_fy_to_lat(y0 + 0.5f);
-                const float cell_x0 = lng_to_render_coords(lng0_not_clamped, &vp->view_center, vp->clamped_view_scale * vp->clamped_to_original_view_scale_ratio);
-                const float cell_y0 = lat_to_render_coords(lat0_not_clamped, &vp->view_center, vp->clamped_view_scale * vp->clamped_to_original_view_scale_ratio);
+                const float cell_x0 = lng_to_render_coords(lng0_not_clamped, vp);
+                const float cell_y0 = lat_to_render_coords(lat0_not_clamped, vp);
 
                 if (obj_begin[i].flags.land == 0) {
                     render_seaport_icon(pLwc,
@@ -1407,8 +1424,8 @@ static void render_cities(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp) {
                 }
                 const float lng0_not_clamped = cell_fx_to_lng(x0 + 0.5f);
                 const float lat0_not_clamped = cell_fy_to_lat(y0 + 0.5f);
-                const float cell_x0 = lng_to_render_coords(lng0_not_clamped, &vp->view_center, vp->clamped_view_scale * vp->clamped_to_original_view_scale_ratio);
-                const float cell_y0 = lat_to_render_coords(lat0_not_clamped, &vp->view_center, vp->clamped_view_scale * vp->clamped_to_original_view_scale_ratio);
+                const float cell_x0 = lng_to_render_coords(lng0_not_clamped, vp);
+                const float cell_y0 = lat_to_render_coords(lat0_not_clamped, vp);
 
                 render_city_icon(pLwc,
                                  vp->view,
@@ -1475,8 +1492,8 @@ static void render_salvages(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp)
                 }
                 const float lng0_not_clamped = cell_fx_to_lng(x0 + 0.5f);
                 const float lat0_not_clamped = cell_fy_to_lat(y0 + 0.5f);
-                const float cell_x0 = lng_to_render_coords(lng0_not_clamped, &vp->view_center, vp->clamped_view_scale * vp->clamped_to_original_view_scale_ratio);
-                const float cell_y0 = lat_to_render_coords(lat0_not_clamped, &vp->view_center, vp->clamped_view_scale * vp->clamped_to_original_view_scale_ratio);
+                const float cell_x0 = lng_to_render_coords(lng0_not_clamped, vp);
+                const float cell_y0 = lat_to_render_coords(lat0_not_clamped, vp);
 
                 render_salvage_icon(pLwc,
                                     vp->view,
@@ -1491,19 +1508,11 @@ static void render_salvages(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp)
     }
 }
 
-static void render_background_sea_water(const LWCONTEXT* pLwc,
-                                        const mat4x4 view,
-                                        const mat4x4 proj,
-                                        const LWTTLLNGLAT* center,
-                                        const float lng_min,
-                                        const float lng_max,
-                                        const float lat_min,
-                                        const float lat_max,
-                                        const int view_scale) {
-    const float cell_x0 = lng_to_render_coords(lng_min, center, view_scale);
-    const float cell_y0 = lat_to_render_coords(lat_max, center, view_scale);
-    const float cell_x1 = lng_to_render_coords(lng_max, center, view_scale);
-    const float cell_y1 = lat_to_render_coords(lat_min, center, view_scale);
+static void render_background_sea_water(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp) {
+    const float cell_x0 = lng_to_render_coords(vp->lng_min, vp);
+    const float cell_y0 = lat_to_render_coords(vp->lat_max, vp);
+    const float cell_x1 = lng_to_render_coords(vp->lng_max, vp);
+    const float cell_y1 = lat_to_render_coords(vp->lat_min, vp);
     const float cell_w = cell_x1 - cell_x0;
     const float cell_h = cell_y0 - cell_y1;
     render_solid_vb_ui_uv_shader_rot_view_proj(pLwc,
@@ -1522,8 +1531,8 @@ static void render_background_sea_water(const LWCONTEXT* pLwc,
                                                default_uv_scale,
                                                LWST_DEFAULT,
                                                0,
-                                               view,
-                                               proj);
+                                               vp->view,
+                                               vp->proj);
 }
 
 static void render_sea_static_objects(const LWCONTEXT* pLwc,
@@ -1611,10 +1620,10 @@ static void render_sea_static_objects(const LWCONTEXT* pLwc,
                  const float lng1 = LWCLAMP(lng1_not_clamped, lng_min, lng_max);
                  const float lat1 = LWCLAMP(lat1_not_clamped, lat_min, lat_max);*/
 
-                const float cell_x0 = lng_to_render_coords(lng0_not_clamped, &vp->view_center, vp->clamped_view_scale * vp->clamped_to_original_view_scale_ratio);
-                const float cell_y0 = lat_to_render_coords(lat0_not_clamped, &vp->view_center, vp->clamped_view_scale * vp->clamped_to_original_view_scale_ratio);
-                const float cell_x1 = lng_to_render_coords(lng1_not_clamped, &vp->view_center, vp->clamped_view_scale * vp->clamped_to_original_view_scale_ratio);
-                const float cell_y1 = lat_to_render_coords(lat1_not_clamped, &vp->view_center, vp->clamped_view_scale * vp->clamped_to_original_view_scale_ratio);
+                const float cell_x0 = lng_to_render_coords(lng0_not_clamped, vp);
+                const float cell_y0 = lat_to_render_coords(lat0_not_clamped, vp);
+                const float cell_x1 = lng_to_render_coords(lng1_not_clamped, vp);
+                const float cell_y1 = lat_to_render_coords(lat1_not_clamped, vp);
                 const float cell_w = cell_x1 - cell_x0;
                 // cell_y0 and cell_y1 are in OpenGL rendering coordinates (always cell_y0 > cell_y1)
                 const float cell_h = cell_y0 - cell_y1;
@@ -1748,8 +1757,8 @@ static void render_cell_pixel_selector_lng_lat(const LWTTL* ttl,
                                                const LWTTLFIELDVIEWPORT* vp,
                                                const int xc0,
                                                const int yc0) {
-    const float selector_rx = cell_x_to_render_coords(xc0, &vp->view_center, vp->view_scale);
-    const float selector_ry = cell_y_to_render_coords(yc0, &vp->view_center, vp->view_scale);
+    const float selector_rx = cell_x_to_render_coords(xc0, vp);
+    const float selector_ry = cell_y_to_render_coords(yc0, vp);
     render_cell_pixel_selector(ttl,
                                pLwc,
                                vp->view,
@@ -1767,8 +1776,8 @@ static void render_single_cell_info_lng_lat(const LWTTL* ttl,
                                             const LWTTLFIELDVIEWPORT* vp,
                                             const int xc0,
                                             const int yc0) {
-    const float selector_rx = cell_x_to_render_coords(xc0, &vp->view_center, vp->view_scale);
-    const float selector_ry = cell_y_to_render_coords(yc0, &vp->view_center, vp->view_scale);
+    const float selector_rx = cell_x_to_render_coords(xc0, vp);
+    const float selector_ry = cell_y_to_render_coords(yc0, vp);
     render_single_cell_info(pLwc,
                             vp,
                             selector_rx,
@@ -1790,7 +1799,8 @@ static void render_world_text(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* v
                                             vp->view_scale,
                                             &ui_point_x,
                                             &ui_point_y,
-                                            &scale);
+                                            &scale,
+                                            vp->render_scale);
         LWTEXTBLOCK test_text_block;
         test_text_block.text_block_width = 999.0f;
         test_text_block.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_F;
@@ -2017,14 +2027,15 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
         vp.view_scale_msb = msb_index(vp.view_scale);
         vp.clamped_view_scale_msb = msb_index(vp.clamped_view_scale);
         vp.clamped_to_original_view_scale_ratio = vp.view_scale / vp.clamped_view_scale;
+        vp.render_scale = lwttl_sea_render_scale(pLwc->ttl) * 4;
         vp.half_lng_extent_in_deg = lwttl_half_lng_extent_in_degrees(vp.clamped_view_scale) / 2;
         vp.half_lat_extent_in_deg = lwttl_half_lat_extent_in_degrees(vp.clamped_view_scale) / 2;
         vp.lng_min = vp.view_center.lng - vp.half_lng_extent_in_deg;
         vp.lng_max = vp.view_center.lng + vp.half_lng_extent_in_deg;
         vp.lat_min = vp.view_center.lat - vp.half_lat_extent_in_deg;
         vp.lat_max = vp.view_center.lat + vp.half_lat_extent_in_deg;
-        vp.cell_render_width = cell_x_to_render_coords(1, &vp.view_center, vp.view_scale) - cell_x_to_render_coords(0, &vp.view_center, vp.view_scale);
-        vp.cell_render_height = cell_y_to_render_coords(0, &vp.view_center, vp.view_scale) - cell_y_to_render_coords(1, &vp.view_center, vp.view_scale);
+        vp.cell_render_width = cell_x_to_render_coords(1, &vp) - cell_x_to_render_coords(0, &vp);
+        vp.cell_render_height = cell_y_to_render_coords(0, &vp) - cell_y_to_render_coords(1, &vp);
         lwttl_get_cell_bound(vp.lng_min,
                              vp.lat_min,
                              vp.lng_max,
@@ -2033,8 +2044,8 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
                              &vp.cell_bound_yc0,
                              &vp.cell_bound_xc1,
                              &vp.cell_bound_yc1);
-        vp.clamped_cell_render_width = cell_x_to_render_coords(1, &vp.view_center, vp.clamped_view_scale) - cell_x_to_render_coords(0, &vp.view_center, vp.clamped_view_scale);
-        vp.clamped_cell_render_height = cell_y_to_render_coords(0, &vp.view_center, vp.clamped_view_scale) - cell_y_to_render_coords(1, &vp.view_center, vp.clamped_view_scale);
+        vp.clamped_cell_render_width = cell_x_to_render_coords(1, &vp) - cell_x_to_render_coords(0, &vp);
+        vp.clamped_cell_render_height = cell_y_to_render_coords(0, &vp) - cell_y_to_render_coords(1, &vp);
         glViewport(vp.field_viewport_x,
                    vp.field_viewport_y,
                    vp.field_viewport_width,
@@ -2062,14 +2073,15 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
         vp.view_scale_msb = msb_index(vp.view_scale);
         vp.clamped_view_scale_msb = msb_index(vp.clamped_view_scale);
         vp.clamped_to_original_view_scale_ratio = vp.view_scale / vp.clamped_view_scale;
+        vp.render_scale = lwttl_sea_render_scale(pLwc->ttl);
         vp.half_lng_extent_in_deg = lwttl_half_lng_extent_in_degrees(vp.clamped_view_scale);
         vp.half_lat_extent_in_deg = lwttl_half_lat_extent_in_degrees(vp.clamped_view_scale);
         vp.lng_min = vp.view_center.lng - vp.half_lng_extent_in_deg;
         vp.lng_max = vp.view_center.lng + vp.half_lng_extent_in_deg;
         vp.lat_min = vp.view_center.lat - vp.half_lat_extent_in_deg;
         vp.lat_max = vp.view_center.lat + vp.half_lat_extent_in_deg;
-        vp.cell_render_width = cell_x_to_render_coords(1, &vp.view_center, vp.view_scale) - cell_x_to_render_coords(0, &vp.view_center, vp.view_scale);
-        vp.cell_render_height = cell_y_to_render_coords(0, &vp.view_center, vp.view_scale) - cell_y_to_render_coords(1, &vp.view_center, vp.view_scale);
+        vp.cell_render_width = cell_x_to_render_coords(1, &vp) - cell_x_to_render_coords(0, &vp);
+        vp.cell_render_height = cell_y_to_render_coords(0, &vp) - cell_y_to_render_coords(1, &vp);
         lwttl_get_cell_bound(vp.lng_min,
                              vp.lat_min,
                              vp.lng_max,
@@ -2078,8 +2090,8 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
                              &vp.cell_bound_yc0,
                              &vp.cell_bound_xc1,
                              &vp.cell_bound_yc1);
-        vp.clamped_cell_render_width = cell_x_to_render_coords(1, &vp.view_center, vp.clamped_view_scale) - cell_x_to_render_coords(0, &vp.view_center, vp.clamped_view_scale);
-        vp.clamped_cell_render_height = cell_y_to_render_coords(0, &vp.view_center, vp.clamped_view_scale) - cell_y_to_render_coords(1, &vp.view_center, vp.clamped_view_scale);
+        vp.clamped_cell_render_width = cell_x_to_render_coords(1, &vp) - cell_x_to_render_coords(0, &vp);
+        vp.clamped_cell_render_height = cell_y_to_render_coords(0, &vp) - cell_y_to_render_coords(1, &vp);
         glViewport(vp.field_viewport_x,
                    vp.field_viewport_y,
                    vp.field_viewport_width,
@@ -2107,14 +2119,15 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
         vp.view_scale_msb = msb_index(vp.view_scale);
         vp.clamped_view_scale_msb = msb_index(vp.clamped_view_scale);
         vp.clamped_to_original_view_scale_ratio = vp.view_scale / vp.clamped_view_scale;
+        vp.render_scale = lwttl_sea_render_scale(pLwc->ttl);
         vp.half_lng_extent_in_deg = lwttl_half_lng_extent_in_degrees(vp.clamped_view_scale);
         vp.half_lat_extent_in_deg = lwttl_half_lat_extent_in_degrees(vp.clamped_view_scale);
         vp.lng_min = vp.view_center.lng - vp.half_lng_extent_in_deg;
         vp.lng_max = vp.view_center.lng + vp.half_lng_extent_in_deg;
         vp.lat_min = vp.view_center.lat - vp.half_lat_extent_in_deg;
         vp.lat_max = vp.view_center.lat + vp.half_lat_extent_in_deg;
-        vp.cell_render_width = cell_x_to_render_coords(1, &vp.view_center, vp.view_scale) - cell_x_to_render_coords(0, &vp.view_center, vp.view_scale);
-        vp.cell_render_height = cell_y_to_render_coords(0, &vp.view_center, vp.view_scale) - cell_y_to_render_coords(1, &vp.view_center, vp.view_scale);
+        vp.cell_render_width = cell_x_to_render_coords(1, &vp) - cell_x_to_render_coords(0, &vp);
+        vp.cell_render_height = cell_y_to_render_coords(0, &vp) - cell_y_to_render_coords(1, &vp);
         lwttl_get_cell_bound(vp.lng_min,
                              vp.lat_min,
                              vp.lng_max,
@@ -2123,8 +2136,8 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
                              &vp.cell_bound_yc0,
                              &vp.cell_bound_xc1,
                              &vp.cell_bound_yc1);
-        vp.clamped_cell_render_width = cell_x_to_render_coords(1, &vp.view_center, vp.clamped_view_scale) - cell_x_to_render_coords(0, &vp.view_center, vp.clamped_view_scale);
-        vp.clamped_cell_render_height = cell_y_to_render_coords(0, &vp.view_center, vp.clamped_view_scale) - cell_y_to_render_coords(1, &vp.view_center, vp.clamped_view_scale);
+        vp.clamped_cell_render_width = cell_x_to_render_coords(1, &vp) - cell_x_to_render_coords(0, &vp);
+        vp.clamped_cell_render_height = cell_y_to_render_coords(0, &vp) - cell_y_to_render_coords(1, &vp);
         glViewport(vp.field_viewport_x,
                    vp.field_viewport_y,
                    vp.field_viewport_width,

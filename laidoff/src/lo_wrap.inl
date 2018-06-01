@@ -101277,6 +101277,172 @@ fail:
 }
 
 
+static int _wrap_LWTTLLNGLAT_lng_set(lua_State* L) {
+  int SWIG_arg = 0;
+  struct _LWTTLLNGLAT *arg1 = (struct _LWTTLLNGLAT *) 0 ;
+  float arg2 ;
+  
+  SWIG_check_num_args("_LWTTLLNGLAT::lng",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLLNGLAT::lng",1,"struct _LWTTLLNGLAT *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWTTLLNGLAT::lng",2,"float");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLLNGLAT,0))){
+    SWIG_fail_ptr("LWTTLLNGLAT_lng_set",1,SWIGTYPE_p__LWTTLLNGLAT);
+  }
+  
+  arg2 = (float)lua_tonumber(L, 2);
+  if (arg1) (arg1)->lng = arg2;
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_LWTTLLNGLAT_lng_get(lua_State* L) {
+  int SWIG_arg = 0;
+  struct _LWTTLLNGLAT *arg1 = (struct _LWTTLLNGLAT *) 0 ;
+  float result;
+  
+  SWIG_check_num_args("_LWTTLLNGLAT::lng",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLLNGLAT::lng",1,"struct _LWTTLLNGLAT *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLLNGLAT,0))){
+    SWIG_fail_ptr("LWTTLLNGLAT_lng_get",1,SWIGTYPE_p__LWTTLLNGLAT);
+  }
+  
+  result = (float) ((arg1)->lng);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_LWTTLLNGLAT_lat_set(lua_State* L) {
+  int SWIG_arg = 0;
+  struct _LWTTLLNGLAT *arg1 = (struct _LWTTLLNGLAT *) 0 ;
+  float arg2 ;
+  
+  SWIG_check_num_args("_LWTTLLNGLAT::lat",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLLNGLAT::lat",1,"struct _LWTTLLNGLAT *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWTTLLNGLAT::lat",2,"float");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLLNGLAT,0))){
+    SWIG_fail_ptr("LWTTLLNGLAT_lat_set",1,SWIGTYPE_p__LWTTLLNGLAT);
+  }
+  
+  arg2 = (float)lua_tonumber(L, 2);
+  if (arg1) (arg1)->lat = arg2;
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_LWTTLLNGLAT_lat_get(lua_State* L) {
+  int SWIG_arg = 0;
+  struct _LWTTLLNGLAT *arg1 = (struct _LWTTLLNGLAT *) 0 ;
+  float result;
+  
+  SWIG_check_num_args("_LWTTLLNGLAT::lat",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLLNGLAT::lat",1,"struct _LWTTLLNGLAT *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLLNGLAT,0))){
+    SWIG_fail_ptr("LWTTLLNGLAT_lat_get",1,SWIGTYPE_p__LWTTLLNGLAT);
+  }
+  
+  result = (float) ((arg1)->lat);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_new_LWTTLLNGLAT(lua_State* L) {
+  int SWIG_arg = 0;
+  struct _LWTTLLNGLAT *result = 0 ;
+  
+  SWIG_check_num_args("_LWTTLLNGLAT::_LWTTLLNGLAT",0,0)
+  result = (struct _LWTTLLNGLAT *)calloc(1, sizeof(struct _LWTTLLNGLAT));
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p__LWTTLLNGLAT,1); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static void swig_delete_LWTTLLNGLAT(void *obj) {
+struct _LWTTLLNGLAT *arg1 = (struct _LWTTLLNGLAT *) obj;
+free((char *) arg1);
+}
+static int _proxy__wrap_new_LWTTLLNGLAT(lua_State *L) {
+    assert(lua_istable(L,1));
+    lua_pushcfunction(L,_wrap_new_LWTTLLNGLAT);
+    assert(!lua_isnil(L,-1));
+    lua_replace(L,1); /* replace our table with real constructor */
+    lua_call(L,lua_gettop(L)-1,1);
+    return 1;
+}
+static swig_lua_attribute swig_LWTTLLNGLAT_attributes[] = {
+    { "lng", _wrap_LWTTLLNGLAT_lng_get, _wrap_LWTTLLNGLAT_lng_set },
+    { "lat", _wrap_LWTTLLNGLAT_lat_get, _wrap_LWTTLLNGLAT_lat_set },
+    {0,0,0}
+};
+static swig_lua_method swig_LWTTLLNGLAT_methods[]= {
+    {0,0}
+};
+static swig_lua_method swig_LWTTLLNGLAT_meta[] = {
+    {0,0}
+};
+
+static swig_lua_attribute swig_LWTTLLNGLAT_Sf_SwigStatic_attributes[] = {
+    {0,0,0}
+};
+static swig_lua_const_info swig_LWTTLLNGLAT_Sf_SwigStatic_constants[]= {
+    {0,0,0,0,0,0}
+};
+static swig_lua_method swig_LWTTLLNGLAT_Sf_SwigStatic_methods[]= {
+    {0,0}
+};
+static swig_lua_class* swig_LWTTLLNGLAT_Sf_SwigStatic_classes[]= {
+    0
+};
+
+static swig_lua_namespace swig_LWTTLLNGLAT_Sf_SwigStatic = {
+    "LWTTLLNGLAT",
+    swig_LWTTLLNGLAT_Sf_SwigStatic_methods,
+    swig_LWTTLLNGLAT_Sf_SwigStatic_attributes,
+    swig_LWTTLLNGLAT_Sf_SwigStatic_constants,
+    swig_LWTTLLNGLAT_Sf_SwigStatic_classes,
+    0
+};
+static swig_lua_class *swig_LWTTLLNGLAT_bases[] = {0};
+static const char *swig_LWTTLLNGLAT_base_names[] = {0};
+static swig_lua_class _wrap_class_LWTTLLNGLAT = { "LWTTLLNGLAT", "LWTTLLNGLAT", &SWIGTYPE_p__LWTTLLNGLAT,_proxy__wrap_new_LWTTLLNGLAT, swig_delete_LWTTLLNGLAT, swig_LWTTLLNGLAT_methods, swig_LWTTLLNGLAT_attributes, &swig_LWTTLLNGLAT_Sf_SwigStatic, swig_LWTTLLNGLAT_meta, swig_LWTTLLNGLAT_bases, swig_LWTTLLNGLAT_base_names };
+
 static int _wrap_lwttl_new(lua_State* L) {
   int SWIG_arg = 0;
   float arg1 ;
@@ -103611,9 +103777,10 @@ static int _wrap_lwttl_world_text(lua_State* L) {
   float *arg7 = (float *) 0 ;
   float *arg8 = (float *) 0 ;
   float *arg9 = (float *) 0 ;
+  float arg10 ;
   char *result = 0 ;
   
-  SWIG_check_num_args("lwttl_world_text",9,9)
+  SWIG_check_num_args("lwttl_world_text",10,10)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_world_text",1,"LWTTL const *");
   if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("lwttl_world_text",2,"void const *");
   if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("lwttl_world_text",3,"LWTTLLNGLAT const *");
@@ -103623,6 +103790,7 @@ static int _wrap_lwttl_world_text(lua_State* L) {
   if(!SWIG_isptrtype(L,7)) SWIG_fail_arg("lwttl_world_text",7,"float *");
   if(!SWIG_isptrtype(L,8)) SWIG_fail_arg("lwttl_world_text",8,"float *");
   if(!SWIG_isptrtype(L,9)) SWIG_fail_arg("lwttl_world_text",9,"float *");
+  if(!lua_isnumber(L,10)) SWIG_fail_arg("lwttl_world_text",10,"float");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTL,0))){
     SWIG_fail_ptr("lwttl_world_text",1,SWIGTYPE_p__LWTTL);
@@ -103656,7 +103824,8 @@ static int _wrap_lwttl_world_text(lua_State* L) {
     SWIG_fail_ptr("lwttl_world_text",9,SWIGTYPE_p_float);
   }
   
-  result = (char *)lwttl_world_text((struct _LWTTL const *)arg1,(void const *)arg2,(struct _LWTTLLNGLAT const *)arg3,arg4,(float const (*)[4])arg5,arg6,arg7,arg8,arg9);
+  arg10 = (float)lua_tonumber(L, 10);
+  result = (char *)lwttl_world_text((struct _LWTTL const *)arg1,(void const *)arg2,(struct _LWTTLLNGLAT const *)arg3,arg4,(float const (*)[4])arg5,arg6,arg7,arg8,arg9,arg10);
   lua_pushstring(L,(const char *)result); SWIG_arg++;
   return SWIG_arg;
   
@@ -104086,45 +104255,15 @@ fail:
 }
 
 
-static int _wrap_LWTTLLNGLAT_lng_set(lua_State* L) {
+static int _wrap_cell_fx_to_lng(lua_State* L) {
   int SWIG_arg = 0;
-  struct _LWTTLLNGLAT *arg1 = (struct _LWTTLLNGLAT *) 0 ;
-  float arg2 ;
-  
-  SWIG_check_num_args("_LWTTLLNGLAT::lng",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLLNGLAT::lng",1,"struct _LWTTLLNGLAT *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWTTLLNGLAT::lng",2,"float");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLLNGLAT,0))){
-    SWIG_fail_ptr("LWTTLLNGLAT_lng_set",1,SWIGTYPE_p__LWTTLLNGLAT);
-  }
-  
-  arg2 = (float)lua_tonumber(L, 2);
-  if (arg1) (arg1)->lng = arg2;
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLLNGLAT_lng_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLLNGLAT *arg1 = (struct _LWTTLLNGLAT *) 0 ;
+  float arg1 ;
   float result;
   
-  SWIG_check_num_args("_LWTTLLNGLAT::lng",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLLNGLAT::lng",1,"struct _LWTTLLNGLAT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLLNGLAT,0))){
-    SWIG_fail_ptr("LWTTLLNGLAT_lng_get",1,SWIGTYPE_p__LWTTLLNGLAT);
-  }
-  
-  result = (float) ((arg1)->lng);
+  SWIG_check_num_args("cell_fx_to_lng",1,1)
+  if(!lua_isnumber(L,1)) SWIG_fail_arg("cell_fx_to_lng",1,"float");
+  arg1 = (float)lua_tonumber(L, 1);
+  result = (float)cell_fx_to_lng(arg1);
   lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
   return SWIG_arg;
   
@@ -104136,45 +104275,15 @@ fail:
 }
 
 
-static int _wrap_LWTTLLNGLAT_lat_set(lua_State* L) {
+static int _wrap_cell_fy_to_lat(lua_State* L) {
   int SWIG_arg = 0;
-  struct _LWTTLLNGLAT *arg1 = (struct _LWTTLLNGLAT *) 0 ;
-  float arg2 ;
-  
-  SWIG_check_num_args("_LWTTLLNGLAT::lat",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLLNGLAT::lat",1,"struct _LWTTLLNGLAT *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWTTLLNGLAT::lat",2,"float");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLLNGLAT,0))){
-    SWIG_fail_ptr("LWTTLLNGLAT_lat_set",1,SWIGTYPE_p__LWTTLLNGLAT);
-  }
-  
-  arg2 = (float)lua_tonumber(L, 2);
-  if (arg1) (arg1)->lat = arg2;
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLLNGLAT_lat_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLLNGLAT *arg1 = (struct _LWTTLLNGLAT *) 0 ;
+  float arg1 ;
   float result;
   
-  SWIG_check_num_args("_LWTTLLNGLAT::lat",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLLNGLAT::lat",1,"struct _LWTTLLNGLAT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLLNGLAT,0))){
-    SWIG_fail_ptr("LWTTLLNGLAT_lat_get",1,SWIGTYPE_p__LWTTLLNGLAT);
-  }
-  
-  result = (float) ((arg1)->lat);
+  SWIG_check_num_args("cell_fy_to_lat",1,1)
+  if(!lua_isnumber(L,1)) SWIG_fail_arg("cell_fy_to_lat",1,"float");
+  arg1 = (float)lua_tonumber(L, 1);
+  result = (float)cell_fy_to_lat(arg1);
   lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
   return SWIG_arg;
   
@@ -104186,13 +104295,16 @@ fail:
 }
 
 
-static int _wrap_new_LWTTLLNGLAT(lua_State* L) {
+static int _wrap_cell_x_to_lng(lua_State* L) {
   int SWIG_arg = 0;
-  struct _LWTTLLNGLAT *result = 0 ;
+  int arg1 ;
+  float result;
   
-  SWIG_check_num_args("_LWTTLLNGLAT::_LWTTLLNGLAT",0,0)
-  result = (struct _LWTTLLNGLAT *)calloc(1, sizeof(struct _LWTTLLNGLAT));
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p__LWTTLLNGLAT,1); SWIG_arg++; 
+  SWIG_check_num_args("cell_x_to_lng",1,1)
+  if(!lua_isnumber(L,1)) SWIG_fail_arg("cell_x_to_lng",1,"int");
+  arg1 = (int)lua_tonumber(L, 1);
+  result = (float)cell_x_to_lng(arg1);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
   return SWIG_arg;
   
   if(0) SWIG_fail;
@@ -104203,54 +104315,181 @@ fail:
 }
 
 
-static void swig_delete_LWTTLLNGLAT(void *obj) {
-struct _LWTTLLNGLAT *arg1 = (struct _LWTTLLNGLAT *) obj;
-free((char *) arg1);
+static int _wrap_cell_y_to_lat(lua_State* L) {
+  int SWIG_arg = 0;
+  int arg1 ;
+  float result;
+  
+  SWIG_check_num_args("cell_y_to_lat",1,1)
+  if(!lua_isnumber(L,1)) SWIG_fail_arg("cell_y_to_lat",1,"int");
+  arg1 = (int)lua_tonumber(L, 1);
+  result = (float)cell_y_to_lat(arg1);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
 }
-static int _proxy__wrap_new_LWTTLLNGLAT(lua_State *L) {
-    assert(lua_istable(L,1));
-    lua_pushcfunction(L,_wrap_new_LWTTLLNGLAT);
-    assert(!lua_isnil(L,-1));
-    lua_replace(L,1); /* replace our table with real constructor */
-    lua_call(L,lua_gettop(L)-1,1);
-    return 1;
+
+
+static int _wrap_lwttl_sea_render_scale(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTL *arg1 = (LWTTL *) 0 ;
+  float result;
+  
+  SWIG_check_num_args("lwttl_sea_render_scale",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_sea_render_scale",1,"LWTTL const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTL,0))){
+    SWIG_fail_ptr("lwttl_sea_render_scale",1,SWIGTYPE_p__LWTTL);
+  }
+  
+  result = (float)lwttl_sea_render_scale((struct _LWTTL const *)arg1);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
 }
-static swig_lua_attribute swig_LWTTLLNGLAT_attributes[] = {
-    { "lng", _wrap_LWTTLLNGLAT_lng_get, _wrap_LWTTLLNGLAT_lng_set },
-    { "lat", _wrap_LWTTLLNGLAT_lat_get, _wrap_LWTTLLNGLAT_lat_set },
-    {0,0,0}
-};
-static swig_lua_method swig_LWTTLLNGLAT_methods[]= {
-    {0,0}
-};
-static swig_lua_method swig_LWTTLLNGLAT_meta[] = {
-    {0,0}
-};
 
-static swig_lua_attribute swig_LWTTLLNGLAT_Sf_SwigStatic_attributes[] = {
-    {0,0,0}
-};
-static swig_lua_const_info swig_LWTTLLNGLAT_Sf_SwigStatic_constants[]= {
-    {0,0,0,0,0,0}
-};
-static swig_lua_method swig_LWTTLLNGLAT_Sf_SwigStatic_methods[]= {
-    {0,0}
-};
-static swig_lua_class* swig_LWTTLLNGLAT_Sf_SwigStatic_classes[]= {
-    0
-};
 
-static swig_lua_namespace swig_LWTTLLNGLAT_Sf_SwigStatic = {
-    "LWTTLLNGLAT",
-    swig_LWTTLLNGLAT_Sf_SwigStatic_methods,
-    swig_LWTTLLNGLAT_Sf_SwigStatic_attributes,
-    swig_LWTTLLNGLAT_Sf_SwigStatic_constants,
-    swig_LWTTLLNGLAT_Sf_SwigStatic_classes,
-    0
-};
-static swig_lua_class *swig_LWTTLLNGLAT_bases[] = {0};
-static const char *swig_LWTTLLNGLAT_base_names[] = {0};
-static swig_lua_class _wrap_class_LWTTLLNGLAT = { "LWTTLLNGLAT", "LWTTLLNGLAT", &SWIGTYPE_p__LWTTLLNGLAT,_proxy__wrap_new_LWTTLLNGLAT, swig_delete_LWTTLLNGLAT, swig_LWTTLLNGLAT_methods, swig_LWTTLLNGLAT_attributes, &swig_LWTTLLNGLAT_Sf_SwigStatic, swig_LWTTLLNGLAT_meta, swig_LWTTLLNGLAT_bases, swig_LWTTLLNGLAT_base_names };
+static int _wrap_render_coords_to_lng(lua_State* L) {
+  int SWIG_arg = 0;
+  float arg1 ;
+  LWTTLLNGLAT *arg2 = (LWTTLLNGLAT *) 0 ;
+  int arg3 ;
+  float arg4 ;
+  float result;
+  
+  SWIG_check_num_args("render_coords_to_lng",4,4)
+  if(!lua_isnumber(L,1)) SWIG_fail_arg("render_coords_to_lng",1,"float");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("render_coords_to_lng",2,"LWTTLLNGLAT const *");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("render_coords_to_lng",3,"int");
+  if(!lua_isnumber(L,4)) SWIG_fail_arg("render_coords_to_lng",4,"float");
+  arg1 = (float)lua_tonumber(L, 1);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWTTLLNGLAT,0))){
+    SWIG_fail_ptr("render_coords_to_lng",2,SWIGTYPE_p__LWTTLLNGLAT);
+  }
+  
+  arg3 = (int)lua_tonumber(L, 3);
+  arg4 = (float)lua_tonumber(L, 4);
+  result = (float)render_coords_to_lng(arg1,(struct _LWTTLLNGLAT const *)arg2,arg3,arg4);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_render_coords_to_lat(lua_State* L) {
+  int SWIG_arg = 0;
+  float arg1 ;
+  LWTTLLNGLAT *arg2 = (LWTTLLNGLAT *) 0 ;
+  int arg3 ;
+  float arg4 ;
+  float result;
+  
+  SWIG_check_num_args("render_coords_to_lat",4,4)
+  if(!lua_isnumber(L,1)) SWIG_fail_arg("render_coords_to_lat",1,"float");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("render_coords_to_lat",2,"LWTTLLNGLAT const *");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("render_coords_to_lat",3,"int");
+  if(!lua_isnumber(L,4)) SWIG_fail_arg("render_coords_to_lat",4,"float");
+  arg1 = (float)lua_tonumber(L, 1);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWTTLLNGLAT,0))){
+    SWIG_fail_ptr("render_coords_to_lat",2,SWIGTYPE_p__LWTTLLNGLAT);
+  }
+  
+  arg3 = (int)lua_tonumber(L, 3);
+  arg4 = (float)lua_tonumber(L, 4);
+  result = (float)render_coords_to_lat(arg1,(struct _LWTTLLNGLAT const *)arg2,arg3,arg4);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_cell_fx_to_render_coords(lua_State* L) {
+  int SWIG_arg = 0;
+  float arg1 ;
+  LWTTLLNGLAT *arg2 = (LWTTLLNGLAT *) 0 ;
+  int arg3 ;
+  float arg4 ;
+  float result;
+  
+  SWIG_check_num_args("cell_fx_to_render_coords",4,4)
+  if(!lua_isnumber(L,1)) SWIG_fail_arg("cell_fx_to_render_coords",1,"float");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("cell_fx_to_render_coords",2,"LWTTLLNGLAT const *");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("cell_fx_to_render_coords",3,"int");
+  if(!lua_isnumber(L,4)) SWIG_fail_arg("cell_fx_to_render_coords",4,"float");
+  arg1 = (float)lua_tonumber(L, 1);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWTTLLNGLAT,0))){
+    SWIG_fail_ptr("cell_fx_to_render_coords",2,SWIGTYPE_p__LWTTLLNGLAT);
+  }
+  
+  arg3 = (int)lua_tonumber(L, 3);
+  arg4 = (float)lua_tonumber(L, 4);
+  result = (float)cell_fx_to_render_coords(arg1,(struct _LWTTLLNGLAT const *)arg2,arg3,arg4);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_cell_fy_to_render_coords(lua_State* L) {
+  int SWIG_arg = 0;
+  float arg1 ;
+  LWTTLLNGLAT *arg2 = (LWTTLLNGLAT *) 0 ;
+  int arg3 ;
+  float arg4 ;
+  float result;
+  
+  SWIG_check_num_args("cell_fy_to_render_coords",4,4)
+  if(!lua_isnumber(L,1)) SWIG_fail_arg("cell_fy_to_render_coords",1,"float");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("cell_fy_to_render_coords",2,"LWTTLLNGLAT const *");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("cell_fy_to_render_coords",3,"int");
+  if(!lua_isnumber(L,4)) SWIG_fail_arg("cell_fy_to_render_coords",4,"float");
+  arg1 = (float)lua_tonumber(L, 1);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWTTLLNGLAT,0))){
+    SWIG_fail_ptr("cell_fy_to_render_coords",2,SWIGTYPE_p__LWTTLLNGLAT);
+  }
+  
+  arg3 = (int)lua_tonumber(L, 3);
+  arg4 = (float)lua_tonumber(L, 4);
+  result = (float)cell_fy_to_render_coords(arg1,(struct _LWTTLLNGLAT const *)arg2,arg3,arg4);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
 
 static int _wrap_LWTTLCHUNKKEY_v_set(lua_State* L) {
   int SWIG_arg = 0;
@@ -104622,326 +104861,6 @@ static int _wrap_msb_index(lua_State* L) {
   SWIG_contract_assert((lua_tonumber(L,1)>=0),"number must not be negative")
   arg1 = (unsigned int)lua_tonumber(L, 1);
   result = (int)msb_index(arg1);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_cell_fx_to_lng(lua_State* L) {
-  int SWIG_arg = 0;
-  float arg1 ;
-  float result;
-  
-  SWIG_check_num_args("cell_fx_to_lng",1,1)
-  if(!lua_isnumber(L,1)) SWIG_fail_arg("cell_fx_to_lng",1,"float");
-  arg1 = (float)lua_tonumber(L, 1);
-  result = (float)cell_fx_to_lng(arg1);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_cell_fy_to_lat(lua_State* L) {
-  int SWIG_arg = 0;
-  float arg1 ;
-  float result;
-  
-  SWIG_check_num_args("cell_fy_to_lat",1,1)
-  if(!lua_isnumber(L,1)) SWIG_fail_arg("cell_fy_to_lat",1,"float");
-  arg1 = (float)lua_tonumber(L, 1);
-  result = (float)cell_fy_to_lat(arg1);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_cell_x_to_lng(lua_State* L) {
-  int SWIG_arg = 0;
-  int arg1 ;
-  float result;
-  
-  SWIG_check_num_args("cell_x_to_lng",1,1)
-  if(!lua_isnumber(L,1)) SWIG_fail_arg("cell_x_to_lng",1,"int");
-  arg1 = (int)lua_tonumber(L, 1);
-  result = (float)cell_x_to_lng(arg1);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_cell_y_to_lat(lua_State* L) {
-  int SWIG_arg = 0;
-  int arg1 ;
-  float result;
-  
-  SWIG_check_num_args("cell_y_to_lat",1,1)
-  if(!lua_isnumber(L,1)) SWIG_fail_arg("cell_y_to_lat",1,"int");
-  arg1 = (int)lua_tonumber(L, 1);
-  result = (float)cell_y_to_lat(arg1);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_lng_to_render_coords(lua_State* L) {
-  int SWIG_arg = 0;
-  float arg1 ;
-  LWTTLLNGLAT *arg2 = (LWTTLLNGLAT *) 0 ;
-  int arg3 ;
-  float result;
-  
-  SWIG_check_num_args("lng_to_render_coords",3,3)
-  if(!lua_isnumber(L,1)) SWIG_fail_arg("lng_to_render_coords",1,"float");
-  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("lng_to_render_coords",2,"LWTTLLNGLAT const *");
-  if(!lua_isnumber(L,3)) SWIG_fail_arg("lng_to_render_coords",3,"int");
-  arg1 = (float)lua_tonumber(L, 1);
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWTTLLNGLAT,0))){
-    SWIG_fail_ptr("lng_to_render_coords",2,SWIGTYPE_p__LWTTLLNGLAT);
-  }
-  
-  arg3 = (int)lua_tonumber(L, 3);
-  result = (float)lng_to_render_coords(arg1,(struct _LWTTLLNGLAT const *)arg2,arg3);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_lat_to_render_coords(lua_State* L) {
-  int SWIG_arg = 0;
-  float arg1 ;
-  LWTTLLNGLAT *arg2 = (LWTTLLNGLAT *) 0 ;
-  int arg3 ;
-  float result;
-  
-  SWIG_check_num_args("lat_to_render_coords",3,3)
-  if(!lua_isnumber(L,1)) SWIG_fail_arg("lat_to_render_coords",1,"float");
-  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("lat_to_render_coords",2,"LWTTLLNGLAT const *");
-  if(!lua_isnumber(L,3)) SWIG_fail_arg("lat_to_render_coords",3,"int");
-  arg1 = (float)lua_tonumber(L, 1);
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWTTLLNGLAT,0))){
-    SWIG_fail_ptr("lat_to_render_coords",2,SWIGTYPE_p__LWTTLLNGLAT);
-  }
-  
-  arg3 = (int)lua_tonumber(L, 3);
-  result = (float)lat_to_render_coords(arg1,(struct _LWTTLLNGLAT const *)arg2,arg3);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_render_coords_to_lng(lua_State* L) {
-  int SWIG_arg = 0;
-  float arg1 ;
-  LWTTLLNGLAT *arg2 = (LWTTLLNGLAT *) 0 ;
-  int arg3 ;
-  float result;
-  
-  SWIG_check_num_args("render_coords_to_lng",3,3)
-  if(!lua_isnumber(L,1)) SWIG_fail_arg("render_coords_to_lng",1,"float");
-  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("render_coords_to_lng",2,"LWTTLLNGLAT const *");
-  if(!lua_isnumber(L,3)) SWIG_fail_arg("render_coords_to_lng",3,"int");
-  arg1 = (float)lua_tonumber(L, 1);
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWTTLLNGLAT,0))){
-    SWIG_fail_ptr("render_coords_to_lng",2,SWIGTYPE_p__LWTTLLNGLAT);
-  }
-  
-  arg3 = (int)lua_tonumber(L, 3);
-  result = (float)render_coords_to_lng(arg1,(struct _LWTTLLNGLAT const *)arg2,arg3);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_render_coords_to_lat(lua_State* L) {
-  int SWIG_arg = 0;
-  float arg1 ;
-  LWTTLLNGLAT *arg2 = (LWTTLLNGLAT *) 0 ;
-  int arg3 ;
-  float result;
-  
-  SWIG_check_num_args("render_coords_to_lat",3,3)
-  if(!lua_isnumber(L,1)) SWIG_fail_arg("render_coords_to_lat",1,"float");
-  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("render_coords_to_lat",2,"LWTTLLNGLAT const *");
-  if(!lua_isnumber(L,3)) SWIG_fail_arg("render_coords_to_lat",3,"int");
-  arg1 = (float)lua_tonumber(L, 1);
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWTTLLNGLAT,0))){
-    SWIG_fail_ptr("render_coords_to_lat",2,SWIGTYPE_p__LWTTLLNGLAT);
-  }
-  
-  arg3 = (int)lua_tonumber(L, 3);
-  result = (float)render_coords_to_lat(arg1,(struct _LWTTLLNGLAT const *)arg2,arg3);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_cell_x_to_render_coords(lua_State* L) {
-  int SWIG_arg = 0;
-  int arg1 ;
-  LWTTLLNGLAT *arg2 = (LWTTLLNGLAT *) 0 ;
-  int arg3 ;
-  float result;
-  
-  SWIG_check_num_args("cell_x_to_render_coords",3,3)
-  if(!lua_isnumber(L,1)) SWIG_fail_arg("cell_x_to_render_coords",1,"int");
-  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("cell_x_to_render_coords",2,"LWTTLLNGLAT const *");
-  if(!lua_isnumber(L,3)) SWIG_fail_arg("cell_x_to_render_coords",3,"int");
-  arg1 = (int)lua_tonumber(L, 1);
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWTTLLNGLAT,0))){
-    SWIG_fail_ptr("cell_x_to_render_coords",2,SWIGTYPE_p__LWTTLLNGLAT);
-  }
-  
-  arg3 = (int)lua_tonumber(L, 3);
-  result = (float)cell_x_to_render_coords(arg1,(struct _LWTTLLNGLAT const *)arg2,arg3);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_cell_y_to_render_coords(lua_State* L) {
-  int SWIG_arg = 0;
-  int arg1 ;
-  LWTTLLNGLAT *arg2 = (LWTTLLNGLAT *) 0 ;
-  int arg3 ;
-  float result;
-  
-  SWIG_check_num_args("cell_y_to_render_coords",3,3)
-  if(!lua_isnumber(L,1)) SWIG_fail_arg("cell_y_to_render_coords",1,"int");
-  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("cell_y_to_render_coords",2,"LWTTLLNGLAT const *");
-  if(!lua_isnumber(L,3)) SWIG_fail_arg("cell_y_to_render_coords",3,"int");
-  arg1 = (int)lua_tonumber(L, 1);
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWTTLLNGLAT,0))){
-    SWIG_fail_ptr("cell_y_to_render_coords",2,SWIGTYPE_p__LWTTLLNGLAT);
-  }
-  
-  arg3 = (int)lua_tonumber(L, 3);
-  result = (float)cell_y_to_render_coords(arg1,(struct _LWTTLLNGLAT const *)arg2,arg3);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_cell_fx_to_render_coords(lua_State* L) {
-  int SWIG_arg = 0;
-  float arg1 ;
-  LWTTLLNGLAT *arg2 = (LWTTLLNGLAT *) 0 ;
-  int arg3 ;
-  float result;
-  
-  SWIG_check_num_args("cell_fx_to_render_coords",3,3)
-  if(!lua_isnumber(L,1)) SWIG_fail_arg("cell_fx_to_render_coords",1,"float");
-  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("cell_fx_to_render_coords",2,"LWTTLLNGLAT const *");
-  if(!lua_isnumber(L,3)) SWIG_fail_arg("cell_fx_to_render_coords",3,"int");
-  arg1 = (float)lua_tonumber(L, 1);
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWTTLLNGLAT,0))){
-    SWIG_fail_ptr("cell_fx_to_render_coords",2,SWIGTYPE_p__LWTTLLNGLAT);
-  }
-  
-  arg3 = (int)lua_tonumber(L, 3);
-  result = (float)cell_fx_to_render_coords(arg1,(struct _LWTTLLNGLAT const *)arg2,arg3);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_cell_fy_to_render_coords(lua_State* L) {
-  int SWIG_arg = 0;
-  float arg1 ;
-  LWTTLLNGLAT *arg2 = (LWTTLLNGLAT *) 0 ;
-  int arg3 ;
-  float result;
-  
-  SWIG_check_num_args("cell_fy_to_render_coords",3,3)
-  if(!lua_isnumber(L,1)) SWIG_fail_arg("cell_fy_to_render_coords",1,"float");
-  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("cell_fy_to_render_coords",2,"LWTTLLNGLAT const *");
-  if(!lua_isnumber(L,3)) SWIG_fail_arg("cell_fy_to_render_coords",3,"int");
-  arg1 = (float)lua_tonumber(L, 1);
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWTTLLNGLAT,0))){
-    SWIG_fail_ptr("cell_fy_to_render_coords",2,SWIGTYPE_p__LWTTLLNGLAT);
-  }
-  
-  arg3 = (int)lua_tonumber(L, 3);
-  result = (float)cell_fy_to_render_coords(arg1,(struct _LWTTLLNGLAT const *)arg2,arg3);
   lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
   return SWIG_arg;
   
@@ -106127,16 +106046,14 @@ static swig_lua_const_info swig_SwigModule_constants[]= {
     {SWIG_LUA_CONSTTAB_INT("LTCNT_UNLOADED", LTCNT_UNLOADED)},
     {SWIG_LUA_CONSTTAB_INT("LTCNT_CONSUMED", LTCNT_CONSUMED)},
     {SWIG_LUA_CONSTTAB_INT("LTCNT_CONVERTED", LTCNT_CONVERTED)},
-    {SWIG_LUA_CONSTTAB_FLOAT("sea_render_scale", (50.0*20))},
-    {SWIG_LUA_CONSTTAB_FLOAT("earth_globe_render_scale", (45.0*20))},
-    {SWIG_LUA_CONSTTAB_INT("LNGLAT_RES_WIDTH", (172824))},
-    {SWIG_LUA_CONSTTAB_INT("LNGLAT_RES_HEIGHT", (86412))},
-    {SWIG_LUA_CONSTTAB_INT("LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS", (16))},
-    {SWIG_LUA_CONSTTAB_INT("LNGLAT_SEA_PING_EXTENT_IN_DEGREES", ((180.0/(86412))*(16)))},
     {SWIG_LUA_CONSTTAB_INT("LNGLAT_RENDER_EXTENT_MULTIPLIER_LNG", (1))},
     {SWIG_LUA_CONSTTAB_INT("LNGLAT_RENDER_EXTENT_MULTIPLIER_LAT", (1))},
     {SWIG_LUA_CONSTTAB_INT("LNGLAT_RENDER_EXTENT_MULTIPLIER_LNG_WITH_MARGIN", ((1) +1))},
     {SWIG_LUA_CONSTTAB_INT("LNGLAT_RENDER_EXTENT_MULTIPLIER_LAT_WITH_MARGIN", ((1) +1))},
+    {SWIG_LUA_CONSTTAB_INT("LNGLAT_RES_WIDTH", (172824))},
+    {SWIG_LUA_CONSTTAB_INT("LNGLAT_RES_HEIGHT", (86412))},
+    {SWIG_LUA_CONSTTAB_INT("LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS", (16))},
+    {SWIG_LUA_CONSTTAB_INT("LNGLAT_SEA_PING_EXTENT_IN_DEGREES", ((180.0/(86412))*(16)))},
     {SWIG_LUA_CONSTTAB_INT("LNGLAT_VIEW_SCALE_PING_MAX", (1 << 6))},
     {0,0,0,0,0,0}
 };
@@ -106900,19 +106817,16 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "lwttl_set_cam_eye", _wrap_lwttl_set_cam_eye},
     { "lwttl_cam_look_at", _wrap_lwttl_cam_look_at},
     { "lwttl_set_cam_look_at", _wrap_lwttl_set_cam_look_at},
-    { "msb_index", _wrap_msb_index},
     { "cell_fx_to_lng", _wrap_cell_fx_to_lng},
     { "cell_fy_to_lat", _wrap_cell_fy_to_lat},
     { "cell_x_to_lng", _wrap_cell_x_to_lng},
     { "cell_y_to_lat", _wrap_cell_y_to_lat},
-    { "lng_to_render_coords", _wrap_lng_to_render_coords},
-    { "lat_to_render_coords", _wrap_lat_to_render_coords},
+    { "lwttl_sea_render_scale", _wrap_lwttl_sea_render_scale},
     { "render_coords_to_lng", _wrap_render_coords_to_lng},
     { "render_coords_to_lat", _wrap_render_coords_to_lat},
-    { "cell_x_to_render_coords", _wrap_cell_x_to_render_coords},
-    { "cell_y_to_render_coords", _wrap_cell_y_to_render_coords},
     { "cell_fx_to_render_coords", _wrap_cell_fx_to_render_coords},
     { "cell_fy_to_render_coords", _wrap_cell_fy_to_render_coords},
+    { "msb_index", _wrap_msb_index},
     { "make_chunk_key", _wrap_make_chunk_key},
     { "aligned_chunk_index", _wrap_aligned_chunk_index},
     { "new_int", _wrap_new_int},
@@ -107287,7 +107201,7 @@ static swig_type_info _swigt__p__LWTIMEPOINT = {"_p__LWTIMEPOINT", "struct _LWTI
 static swig_type_info _swigt__p__LWTTL = {"_p__LWTTL", "struct _LWTTL *|LWTTL *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p__LWTTLCHUNKKEY = {"_p__LWTTLCHUNKKEY", "union _LWTTLCHUNKKEY *|_LWTTLCHUNKKEY *|LWTTLCHUNKKEY *", 0, 0, (void*)&_wrap_class_LWTTLCHUNKKEY, 0};
 static swig_type_info _swigt__p__LWTTLCHUNKKEY_bf = {"_p__LWTTLCHUNKKEY_bf", "_LWTTLCHUNKKEY_bf *", 0, 0, (void*)&_wrap_class__LWTTLCHUNKKEY_bf, 0};
-static swig_type_info _swigt__p__LWTTLLNGLAT = {"_p__LWTTLLNGLAT", "struct _LWTTLLNGLAT *|LWTTLLNGLAT *|_LWTTLLNGLAT *", 0, 0, (void*)&_wrap_class_LWTTLLNGLAT, 0};
+static swig_type_info _swigt__p__LWTTLLNGLAT = {"_p__LWTTLLNGLAT", "struct _LWTTLLNGLAT *|_LWTTLLNGLAT *|LWTTLLNGLAT *", 0, 0, (void*)&_wrap_class_LWTTLLNGLAT, 0};
 static swig_type_info _swigt__p__LWUDP = {"_p__LWUDP", "struct _LWUDP *|LWUDP *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p__LWUIDIM = {"_p__LWUIDIM", "struct _LWUIDIM *|_LWUIDIM *|LWUIDIM *", 0, 0, (void*)&_wrap_class_LWUIDIM, 0};
 static swig_type_info _swigt__p__LWUNIQUEID = {"_p__LWUNIQUEID", "struct _LWUNIQUEID *|LWUNIQUEID *", 0, 0, (void*)0, 0};

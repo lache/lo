@@ -6,7 +6,7 @@
 #include "lwgl.h"
 #include "lwcontext.h"
 #include "laidoff.h"
-#include "render_solid.h"
+//#include "render_solid.h"
 #include "lwudp.h"
 #include "lwlnglat.h"
 #include "lwlog.h"
@@ -20,6 +20,9 @@
 #include "logic.h"
 #include "pcg_basic.h"
 #include "lwmath.h"
+
+#define sea_render_scale (50.0f * 20)
+#define earth_globe_render_scale (45.0f * 20)
 
 typedef struct _LWTTLDATA_SEAPORT {
     char locode[8];
@@ -161,6 +164,7 @@ typedef struct _LWTTL {
     LWTTLOBJECTCACHEGROUP object_cache;
     float earth_globe_scale;
     float earth_globe_scale_0;
+    float sea_render_scale_0;
     LWTTLSELECTED selected;
     mat4x4 view;
     mat4x4 proj;
@@ -199,6 +203,7 @@ LWTTL* lwttl_new(float aspect_ratio) {
     ttl->cell_grid = 1;
     LWMUTEX_INIT(ttl->rendering_mutex);
     ttl->earth_globe_scale_0 = earth_globe_render_scale;
+    ttl->sea_render_scale_0 = sea_render_scale;
     lwttl_set_earth_globe_scale(ttl, ttl->earth_globe_scale_0);
     lwttl_update_view_proj(ttl, aspect_ratio);
     lwttl_clear_selected_pressed_pos(ttl);
@@ -1498,7 +1503,15 @@ void lwttl_screen_to_world_pos(const LWTTL* ttl,
     }
 }
 
-static void nx_ny_to_lng_lat(const LWTTL* ttl, float nx, float ny, int width, int height, int* xc, int* yc, LWTTLLNGLAT* lnglat) {
+static void nx_ny_to_lng_lat(const LWTTL* ttl,
+                             float nx,
+                             float ny,
+                             int width,
+                             int height,
+                             int* xc,
+                             int* yc,
+                             LWTTLLNGLAT* lnglat,
+                             float render_scale) {
     vec2 world_pos;
     lwttl_screen_to_world_pos(ttl,
                               nx,
@@ -1508,8 +1521,8 @@ static void nx_ny_to_lng_lat(const LWTTL* ttl, float nx, float ny, int width, in
                               world_pos);
     const LWTTLLNGLAT* center = &ttl->worldmap.center;
     const int view_scale = lwttl_view_scale(ttl);
-    lnglat->lng = render_coords_to_lng(world_pos[0], center, view_scale);
-    lnglat->lat = render_coords_to_lat(world_pos[1], center, view_scale);
+    lnglat->lng = render_coords_to_lng(world_pos[0], center, view_scale, render_scale);
+    lnglat->lat = render_coords_to_lat(world_pos[1], center, view_scale, render_scale);
     *xc = lwttl_lng_to_floor_int(lnglat->lng);
     *yc = lwttl_lat_to_floor_int(lnglat->lat);
 }
@@ -1544,7 +1557,15 @@ void lwttl_change_selected_cell_to(LWTTL* ttl,
 void lwttl_on_press(LWTTL* ttl, const LWCONTEXT* pLwc, float nx, float ny) {
     int xc, yc;
     LWTTLLNGLAT lnglat;
-    nx_ny_to_lng_lat(ttl, nx, ny, pLwc->viewport_width, pLwc->viewport_height, &xc, &yc, &lnglat);
+    nx_ny_to_lng_lat(ttl,
+                     nx,
+                     ny,
+                     pLwc->viewport_width,
+                     pLwc->viewport_height,
+                     &xc,
+                     &yc,
+                     &lnglat,
+                     sea_render_scale);
     ttl->selected.press_pos_xc = xc;
     ttl->selected.press_pos_yc = yc;
     ttl->selected.pressing = 1;
@@ -1555,7 +1576,15 @@ void lwttl_on_move(LWTTL* ttl, const LWCONTEXT* pLwc, float nx, float ny) {
     if (ttl->selected.dragging) {
         int xc, yc;
         LWTTLLNGLAT lnglat;
-        nx_ny_to_lng_lat(ttl, nx, ny, pLwc->viewport_width, pLwc->viewport_height, &xc, &yc, &lnglat);
+        nx_ny_to_lng_lat(ttl,
+                         nx,
+                         ny,
+                         pLwc->viewport_width,
+                         pLwc->viewport_height,
+                         &xc,
+                         &yc,
+                         &lnglat,
+                         sea_render_scale);
         ttl->selected.dragging_pos_xc = xc;
         ttl->selected.dragging_pos_yc = yc;
     }
@@ -1565,7 +1594,15 @@ void lwttl_on_release(LWTTL* ttl, LWCONTEXT* pLwc, float nx, float ny) {
     if (ttl->selected.pressing) {
         int xc, yc;
         LWTTLLNGLAT lnglat;
-        nx_ny_to_lng_lat(ttl, nx, ny, pLwc->viewport_width, pLwc->viewport_height, &xc, &yc, &lnglat);
+        nx_ny_to_lng_lat(ttl,
+                         nx,
+                         ny,
+                         pLwc->viewport_width,
+                         pLwc->viewport_height,
+                         &xc,
+                         &yc,
+                         &lnglat,
+                         sea_render_scale);
         lwttl_change_selected_cell_to(ttl,
                                       xc,
                                       yc,
@@ -1711,7 +1748,8 @@ const char* lwttl_world_text(const LWTTL* ttl,
                              const int view_scale,
                              float* ui_point_x,
                              float* ui_point_y,
-                             float* scale) {
+                             float* scale,
+                             float render_scale) {
     const LWTTLWORLDTEXT* wt = (const LWTTLWORLDTEXT*)it;
     if (wt < ttl->world_text || wt >= &ttl->world_text[ARRAY_SIZE(ttl->world_text)]) {
         LOGEP("out of bound it");
@@ -1726,8 +1764,8 @@ const char* lwttl_world_text(const LWTTL* ttl,
     if (lifetime <= 0) {
         lifetime = 1;
     }
-    const float x = cell_fx_to_render_coords((float)wt->xc + 0.5f, center, view_scale);
-    const float y = cell_fy_to_render_coords((float)wt->yc + 0.5f, center, view_scale);
+    const float x = cell_fx_to_render_coords((float)wt->xc + 0.5f, center, view_scale, render_scale);
+    const float y = cell_fy_to_render_coords((float)wt->yc + 0.5f, center, view_scale, render_scale);
     vec4 obj_pos_vec4 = {
         x,
         y,
@@ -1745,8 +1783,8 @@ const char* lwttl_world_text(const LWTTL* ttl,
         // move -Y direction animation
         ui_point[1] += 1.0f / 5.0f - ratio / 5.0f;
     } else if (wt->anim_type == LTWTAT_MOVE) {
-        const float x1 = cell_fx_to_render_coords((float)wt->xc1 + 0.5f, center, view_scale);
-        const float y1 = cell_fy_to_render_coords((float)wt->yc1 + 0.5f, center, view_scale);
+        const float x1 = cell_fx_to_render_coords((float)wt->xc1 + 0.5f, center, view_scale, render_scale);
+        const float y1 = cell_fy_to_render_coords((float)wt->yc1 + 0.5f, center, view_scale, render_scale);
         vec4 obj_pos1_vec4 = {
             x1,
             y1,
@@ -2268,4 +2306,40 @@ void lwttl_cam_look_at(const LWTTL* ttl, vec3 cam_look_at) {
 
 void lwttl_set_cam_look_at(LWTTL* ttl, const vec3 cam_look_at) {
     memcpy(ttl->cam_look_at, cam_look_at, sizeof(vec3));
+}
+
+float cell_fx_to_lng(float fx) {
+    return -180.0f + fx / LNGLAT_RES_WIDTH * 360.0f;
+}
+
+float cell_fy_to_lat(float fy) {
+    return 90.0f - fy / LNGLAT_RES_HEIGHT * 180.0f;
+}
+
+float cell_x_to_lng(int x) {
+    return cell_fx_to_lng((float)x);
+}
+
+float cell_y_to_lat(int y) {
+    return cell_fy_to_lat((float)y);
+}
+
+float lwttl_sea_render_scale(const LWTTL* ttl) {
+    return ttl->sea_render_scale_0;
+}
+
+float render_coords_to_lng(float rc, const LWTTLLNGLAT* center, int view_scale, float render_scale) {
+    return rc * view_scale / render_scale + center->lng;
+}
+
+float render_coords_to_lat(float rc, const LWTTLLNGLAT* center, int view_scale, float render_scale) {
+    return rc * view_scale / render_scale + center->lat;
+}
+
+float cell_fx_to_render_coords(float fx, const LWTTLLNGLAT* center, int view_scale, float render_scale) {
+    return (cell_fx_to_lng(fx) - center->lng) * render_scale / view_scale;
+}
+
+float cell_fy_to_render_coords(float fy, const LWTTLLNGLAT* center, int view_scale, float render_scale) {
+    return (cell_fy_to_lat(fy) - center->lat) * render_scale / view_scale;
 }
