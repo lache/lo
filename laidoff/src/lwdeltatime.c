@@ -58,6 +58,9 @@ long deltatime_last_time_nsec(const LWDELTATIME* self) {
 }
 
 double deltatime_delta_time(const LWDELTATIME* self) {
+	if (self == 0) {
+		return 0;
+	}
 	return self->delta_time;
 }
 
