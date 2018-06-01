@@ -2035,7 +2035,6 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
                              &vp.cell_bound_yc1);
         vp.clamped_cell_render_width = cell_x_to_render_coords(1, &vp.view_center, vp.clamped_view_scale) - cell_x_to_render_coords(0, &vp.view_center, vp.clamped_view_scale);
         vp.clamped_cell_render_height = cell_y_to_render_coords(0, &vp.view_center, vp.clamped_view_scale) - cell_y_to_render_coords(1, &vp.view_center, vp.clamped_view_scale);
-        vp.view_scale_msb = msb_index(vp.clamped_view_scale);
         glViewport(vp.field_viewport_x,
                    vp.field_viewport_y,
                    vp.field_viewport_width,
@@ -2081,7 +2080,6 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
                              &vp.cell_bound_yc1);
         vp.clamped_cell_render_width = cell_x_to_render_coords(1, &vp.view_center, vp.clamped_view_scale) - cell_x_to_render_coords(0, &vp.view_center, vp.clamped_view_scale);
         vp.clamped_cell_render_height = cell_y_to_render_coords(0, &vp.view_center, vp.clamped_view_scale) - cell_y_to_render_coords(1, &vp.view_center, vp.clamped_view_scale);
-        vp.view_scale_msb = msb_index(vp.clamped_view_scale);
         glViewport(vp.field_viewport_x,
                    vp.field_viewport_y,
                    vp.field_viewport_width,
@@ -2127,7 +2125,6 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
                              &vp.cell_bound_yc1);
         vp.clamped_cell_render_width = cell_x_to_render_coords(1, &vp.view_center, vp.clamped_view_scale) - cell_x_to_render_coords(0, &vp.view_center, vp.clamped_view_scale);
         vp.clamped_cell_render_height = cell_y_to_render_coords(0, &vp.view_center, vp.clamped_view_scale) - cell_y_to_render_coords(1, &vp.view_center, vp.clamped_view_scale);
-        vp.view_scale_msb = msb_index(vp.clamped_view_scale);
         glViewport(vp.field_viewport_x,
                    vp.field_viewport_y,
                    vp.field_viewport_width,
@@ -2148,7 +2145,14 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
     //render_coords_dms(pLwc, &view_center);
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     // render FBO (HTML UI)
-    render_solid_box_ui_lvt_flip_y_uv(pLwc, 0, 0, 2 * pLwc->viewport_rt_x, 2 * pLwc->viewport_rt_y, pLwc->shared_fbo.color_tex, LVT_CENTER_CENTER_ANCHORED_SQUARE, 1);
+    render_solid_box_ui_lvt_flip_y_uv(pLwc,
+                                      0,
+                                      0,
+                                      2 * pLwc->viewport_rt_x,
+                                      2 * pLwc->viewport_rt_y,
+                                      pLwc->shared_fbo.color_tex,
+                                      LVT_CENTER_CENTER_ANCHORED_SQUARE,
+                                      1);
     // render joystick
     if (0) {
         render_dir_pad_with_start_joystick(pLwc, &pLwc->left_dir_pad, 1.0f);
