@@ -2013,57 +2013,11 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
     {
         LWTTLFIELDVIEWPORT vp;
         vp.field_viewport_x = 0;
-        vp.field_viewport_y = 3 * pLwc->window_height / 4;
-        vp.field_viewport_width = pLwc->window_width / 2;
-        vp.field_viewport_height = pLwc->window_height / 4;
-        vp.view_scale = 1;// lwttl_view_scale(pLwc->ttl);
-        vp.clamped_view_scale = 1;// lwttl_clamped_view_scale(pLwc->ttl);
-        vp.view_center = *lwttl_center(pLwc->ttl); // get hardcopy
-
-        vp.field_viewport_aspect_ratio = (float)vp.field_viewport_width / vp.field_viewport_height;
-        lwcontext_rt_corner(vp.field_viewport_aspect_ratio,
-                            &vp.field_viewport_rt_x,
-                            &vp.field_viewport_rt_y);
-        vp.view_scale_msb = msb_index(vp.view_scale);
-        vp.clamped_view_scale_msb = msb_index(vp.clamped_view_scale);
-        vp.clamped_to_original_view_scale_ratio = vp.view_scale / vp.clamped_view_scale;
-        vp.render_scale = lwttl_sea_render_scale(pLwc->ttl) * 4;
-        vp.half_lng_extent_in_deg = lwttl_half_lng_extent_in_degrees(vp.clamped_view_scale) / 2;
-        vp.half_lat_extent_in_deg = lwttl_half_lat_extent_in_degrees(vp.clamped_view_scale) / 2;
-        vp.lng_min = vp.view_center.lng - vp.half_lng_extent_in_deg;
-        vp.lng_max = vp.view_center.lng + vp.half_lng_extent_in_deg;
-        vp.lat_min = vp.view_center.lat - vp.half_lat_extent_in_deg;
-        vp.lat_max = vp.view_center.lat + vp.half_lat_extent_in_deg;
-        vp.cell_render_width = cell_x_to_render_coords(1, &vp) - cell_x_to_render_coords(0, &vp);
-        vp.cell_render_height = cell_y_to_render_coords(0, &vp) - cell_y_to_render_coords(1, &vp);
-        lwttl_get_cell_bound(vp.lng_min,
-                             vp.lat_min,
-                             vp.lng_max,
-                             vp.lat_max,
-                             &vp.cell_bound_xc0,
-                             &vp.cell_bound_yc0,
-                             &vp.cell_bound_xc1,
-                             &vp.cell_bound_yc1);
-        vp.clamped_cell_render_width = cell_x_to_render_coords(1, &vp) - cell_x_to_render_coords(0, &vp);
-        vp.clamped_cell_render_height = cell_y_to_render_coords(0, &vp) - cell_y_to_render_coords(1, &vp);
-        glViewport(vp.field_viewport_x,
-                   vp.field_viewport_y,
-                   vp.field_viewport_width,
-                   vp.field_viewport_height);
-        lw_set_viewport_size((LWCONTEXT*)pLwc,
-                             vp.field_viewport_width,
-                             vp.field_viewport_height);
-        lwttl_view_proj(pLwc->ttl, vp.view, vp.proj);
-        lwc_render_ttl_field_viewport(pLwc, &vp);
-    }
-    {
-        LWTTLFIELDVIEWPORT vp;
-        vp.field_viewport_x = pLwc->window_width / 2;
-        vp.field_viewport_y = 3 * pLwc->window_height / 4;
-        vp.field_viewport_width = pLwc->window_width / 2;
-        vp.field_viewport_height = pLwc->window_height / 4;
-        vp.view_scale = 1;// lwttl_view_scale(pLwc->ttl);
-        vp.clamped_view_scale = 1;// lwttl_clamped_view_scale(pLwc->ttl);
+        vp.field_viewport_y = 0;
+        vp.field_viewport_width = pLwc->window_width;
+        vp.field_viewport_height = pLwc->window_height;
+        vp.view_scale = lwttl_view_scale(pLwc->ttl);
+        vp.clamped_view_scale = lwttl_clamped_view_scale(pLwc->ttl);
         vp.view_center = *lwttl_center(pLwc->ttl); // get hardcopy
 
         vp.field_viewport_aspect_ratio = (float)vp.field_viewport_width / vp.field_viewport_height;
@@ -2105,11 +2059,60 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
     {
         LWTTLFIELDVIEWPORT vp;
         vp.field_viewport_x = 0;
-        vp.field_viewport_y = 0;
-        vp.field_viewport_width = pLwc->window_width;
-        vp.field_viewport_height = 3 * pLwc->window_height / 4;
-        vp.view_scale = lwttl_view_scale(pLwc->ttl);
-        vp.clamped_view_scale = lwttl_clamped_view_scale(pLwc->ttl);
+        vp.field_viewport_y = 3 * pLwc->window_height / 4;
+        vp.field_viewport_width = pLwc->window_width / 2;
+        vp.field_viewport_height = pLwc->window_height / 4;
+        vp.view_scale = 1;// lwttl_view_scale(pLwc->ttl);
+        vp.clamped_view_scale = 1;// lwttl_clamped_view_scale(pLwc->ttl);
+        int selected_pos_xc, selected_pos_yc;
+        lwttl_selected_int(pLwc->ttl, &selected_pos_xc, &selected_pos_yc);
+        vp.view_center.lng = cell_fx_to_lng(selected_pos_xc + 0.5f);
+        vp.view_center.lat = cell_fy_to_lat(selected_pos_yc + 0.5f);
+
+        vp.field_viewport_aspect_ratio = (float)vp.field_viewport_width / vp.field_viewport_height;
+        lwcontext_rt_corner(vp.field_viewport_aspect_ratio,
+                            &vp.field_viewport_rt_x,
+                            &vp.field_viewport_rt_y);
+        vp.view_scale_msb = msb_index(vp.view_scale);
+        vp.clamped_view_scale_msb = msb_index(vp.clamped_view_scale);
+        vp.clamped_to_original_view_scale_ratio = vp.view_scale / vp.clamped_view_scale;
+        vp.render_scale = lwttl_sea_render_scale(pLwc->ttl) * 4;
+        vp.half_lng_extent_in_deg = LNGLAT_SEA_PING_EXTENT_IN_DEGREES / LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS * 3;
+        vp.half_lat_extent_in_deg = LNGLAT_SEA_PING_EXTENT_IN_DEGREES / LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS * 3;
+        vp.lng_min = vp.view_center.lng - vp.half_lng_extent_in_deg;
+        vp.lng_max = vp.view_center.lng + vp.half_lng_extent_in_deg;
+        vp.lat_min = vp.view_center.lat - vp.half_lat_extent_in_deg;
+        vp.lat_max = vp.view_center.lat + vp.half_lat_extent_in_deg;
+        vp.cell_render_width = cell_x_to_render_coords(1, &vp) - cell_x_to_render_coords(0, &vp);
+        vp.cell_render_height = cell_y_to_render_coords(0, &vp) - cell_y_to_render_coords(1, &vp);
+        lwttl_get_cell_bound(vp.lng_min,
+                             vp.lat_min,
+                             vp.lng_max,
+                             vp.lat_max,
+                             &vp.cell_bound_xc0,
+                             &vp.cell_bound_yc0,
+                             &vp.cell_bound_xc1,
+                             &vp.cell_bound_yc1);
+        vp.clamped_cell_render_width = cell_x_to_render_coords(1, &vp) - cell_x_to_render_coords(0, &vp);
+        vp.clamped_cell_render_height = cell_y_to_render_coords(0, &vp) - cell_y_to_render_coords(1, &vp);
+        glViewport(vp.field_viewport_x,
+                   vp.field_viewport_y,
+                   vp.field_viewport_width,
+                   vp.field_viewport_height);
+        lw_set_viewport_size((LWCONTEXT*)pLwc,
+                             vp.field_viewport_width,
+                             vp.field_viewport_height);
+        lwttl_view_proj(pLwc->ttl, vp.view, vp.proj);
+        lwc_render_ttl_field_viewport(pLwc, &vp);
+    }
+    {
+        LWTTLFIELDVIEWPORT vp;
+        vp.field_viewport_x = pLwc->window_width / 2;
+        vp.field_viewport_y = 3 * pLwc->window_height / 4;
+        vp.field_viewport_width = pLwc->window_width / 2;
+        vp.field_viewport_height = pLwc->window_height / 4;
+        vp.view_scale = 1;// lwttl_view_scale(pLwc->ttl);
+        vp.clamped_view_scale = 1;// lwttl_clamped_view_scale(pLwc->ttl);
         vp.view_center = *lwttl_center(pLwc->ttl); // get hardcopy
 
         vp.field_viewport_aspect_ratio = (float)vp.field_viewport_width / vp.field_viewport_height;
