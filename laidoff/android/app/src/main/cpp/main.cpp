@@ -417,8 +417,8 @@ static void engine_draw_frame(struct engine* engine) {
 
         if (swap_error == EGL_BAD_SURFACE) {
             // EGL 서피스 문제면 서피스만 새로 만들어보자...
-            engine->pLwc->width = 1;
-            engine->pLwc->height = 1;
+            engine->pLwc->window_width = 1;
+            engine->pLwc->window_height = 1;
             recreate_surface(engine);
         } else if (swap_error == EGL_BAD_NATIVE_WINDOW) {
             // 재초기화 위해서 `inited` 플래그 내림
@@ -438,7 +438,7 @@ static void recreate_surface(engine* engine) {
     EGLint w, h;
     eglQuerySurface(engine->display, engine->surface, EGL_WIDTH, &w);
     eglQuerySurface(engine->display, engine->surface, EGL_HEIGHT, &h);
-    if (engine->pLwc && w == engine->pLwc->width && h == engine->pLwc->height) {
+    if (engine->pLwc && w == engine->pLwc->window_width && h == engine->pLwc->window_height) {
         LOGI("recreate_surface: skipped since there is no size change...");
         return;
     }
@@ -468,7 +468,8 @@ static void recreate_surface(engine* engine) {
             if (w > 0 && w < 5000 && h > 0 && h < 5000) {
                 engine->width = w;
                 engine->height = h;
-                lw_set_size(engine->pLwc, w, h);
+                lw_set_window_size(engine->pLwc, w, h);
+                lw_set_viewport_size(engine->pLwc, w, h);
                 LOGI("Change surface (width x height) to (%d x %d)", w, h);
             } else {
                 LOGE("Surface recreated but size query result is not valid: w=%d, h=%d", w, h);
@@ -809,14 +810,16 @@ void android_main(struct android_app* state) {
             engine.pLwc = lw_init_initial_size(engine.width, engine.height);
             engine.pLwc->internal_data_path = state->activity->internalDataPath;
             engine.pLwc->user_data_path = state->activity->internalDataPath;
-            lw_set_size(engine.pLwc, engine.width, engine.height);
+            lw_set_window_size(engine.pLwc, engine.width, engine.height);
+            lw_set_viewport_size(engine.pLwc, engine.width, engine.height);
             engine.inited = true;
             lwc_start_logic_thread(engine.pLwc);
         }
         // update width & height on LWCONTEXT side if inconsistency with engine found
         if (engine.pLwc) {
-            if (engine.width != engine.pLwc->width || engine.height != engine.pLwc->height) {
-                lw_set_size(engine.pLwc, engine.width, engine.height);
+            if (engine.width != engine.pLwc->window_width || engine.height != engine.pLwc->window_height) {
+                lw_set_window_size(engine.pLwc, engine.width, engine.height);
+                lw_set_viewport_size(engine.pLwc, engine.width, engine.height);
             }
         }
         // Read all pending events.
@@ -1052,7 +1055,8 @@ Java_com_popsongremix_laidoff_LaidoffNativeActivity_setWindowSize(JNIEnv* env, j
         shared_engine->height = h;
         LWCONTEXT* pLwc = pLwcLong ? (LWCONTEXT*) pLwcLong : shared_engine->pLwc;
         if (pLwc) {
-            lw_set_size(pLwc, w, h);
+            lw_set_window_size(pLwc, w, h);
+            lw_set_viewport_size(pLwc, w, h);
         }
     }
 }

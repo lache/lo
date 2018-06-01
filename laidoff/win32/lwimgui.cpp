@@ -55,7 +55,7 @@ extern "C" void lwimgui_render(GLFWwindow* window) {
                 lwttl_set_cam_look_at(pLwc->ttl, cam_look_at);
             }
             if (eye_changed || look_at_changed) {
-                lwttl_update_view_proj(pLwc->ttl, pLwc->aspect_ratio);
+                lwttl_update_view_proj(pLwc->ttl, pLwc->viewport_aspect_ratio);
             }
         }
 		if (ImGui::Button("Test Window")) {

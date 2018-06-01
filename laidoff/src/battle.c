@@ -172,7 +172,7 @@ void play_player_hp_desc_anim(LWCONTEXT* pLwc, const int player_slot,
 	float area_height = 0;
 
 	
-	get_player_creature_ui_box(player_slot, pLwc->aspect_ratio, &left_top_x, &left_top_y, &area_width, &area_height);
+	get_player_creature_ui_box(player_slot, pLwc->viewport_aspect_ratio, &left_top_x, &left_top_y, &area_width, &area_height);
 	
 	char damage_str[128];
 
@@ -439,7 +439,7 @@ void update_battle(LWCONTEXT* pLwc) {
 
 	
 
-	mat4x4_perspective(pLwc->battle_proj, (float)(LWDEG2RAD(pLwc->battle_fov_deg) / pLwc->aspect_ratio), pLwc->aspect_ratio, 0.1f, 1000.0f);
+	mat4x4_perspective(pLwc->battle_proj, (float)(LWDEG2RAD(pLwc->battle_fov_deg) / pLwc->viewport_aspect_ratio), pLwc->viewport_aspect_ratio, 0.1f, 1000.0f);
 
 	vec3 eye = { 0, -5.0f, 0.9f };
 	vec3 center = { pLwc->battle_cam_center_x, 0, 0.3f };

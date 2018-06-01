@@ -119,15 +119,24 @@ typedef enum _LW_CONTROL_FLAGS {
 typedef struct _LWCONTEXT {
 	// Window instance
 	struct GLFWwindow* window;
-	// Screen width
-	int width;
-	// Screen height
-	int height;
+	// Window width
+	int window_width;
+	// Window height
+	int window_height;
+    // Window aspect ratio
+    float window_aspect_ratio;
+    // Window right top UI coordinate (calculated from aspect ratio)
+    float window_rt_x;
+    float window_rt_y;
+    // Screen width
+    int viewport_width;
+    // Screen height
+    int viewport_height;
     // Screen aspect ratio
-    float aspect_ratio;
+    float viewport_aspect_ratio;
     // Right Top UI coordinate (calculated from aspect ratio)
-    float rt_x;
-    float rt_y;
+    float viewport_rt_x;
+    float viewport_rt_y;
     // Vertex shader array
     GLuint vertex_shader[LWVS_COUNT];
     // Fragment shader array

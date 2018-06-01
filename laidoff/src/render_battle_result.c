@@ -42,9 +42,9 @@ void render_player_creature_battle_result_ui(const LWCONTEXT* pLwc, const LWBATT
     float area_width = 0;
     float area_height = 0;
     
-    get_player_creature_result_ui_box(pos, pLwc->aspect_ratio, &left_top_x, &left_top_y, &area_width, &area_height);
+    get_player_creature_result_ui_box(pos, pLwc->viewport_aspect_ratio, &left_top_x, &left_top_y, &area_width, &area_height);
     
-    const float block_x_margin = 0.075f * pLwc->aspect_ratio;
+    const float block_x_margin = 0.075f * pLwc->viewport_aspect_ratio;
     const float block_y_margin = 0.025f;
     
     const float bar_width = area_width - block_x_margin * 2;
@@ -151,7 +151,7 @@ void render_player_creature_battle_result_ui(const LWCONTEXT* pLwc, const LWBATT
 
 void render_header(const LWCONTEXT* pLwc) {
     
-    render_solid_vb_ui_flip_y_uv(pLwc, 0, header_y_center, 2 * pLwc->aspect_ratio, header_height,
+    render_solid_vb_ui_flip_y_uv(pLwc, 0, header_y_center, 2 * pLwc->viewport_aspect_ratio, header_height,
                                  pLwc->tex_programmed[LPT_BOTH_END_GRADIENT_HORIZONTAL], LVT_CENTER_CENTER_ANCHORED_SQUARE,
                                  1, 39 / 255.0f, 74 / 255.0f, 110 / 255.0f, 1.0f, 0);
     

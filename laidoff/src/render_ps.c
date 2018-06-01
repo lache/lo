@@ -36,7 +36,7 @@ void ps_render_explosion(const LWCONTEXT* pLwc, const LWPSCONTEXT* c, const LWEM
 	glUniform1f(pLwc->shader[shader_index].u_eDecay, c->emitter2.eDecay);
 	glUniform1f(pLwc->shader[shader_index].u_eSizeStart, c->emitter2.eSizeStart);
 	glUniform1f(pLwc->shader[shader_index].u_eSizeEnd, c->emitter2.eSizeEnd);
-	glUniform1f(pLwc->shader[shader_index].u_eScreenWidth, (float)pLwc->width);
+	glUniform1f(pLwc->shader[shader_index].u_eScreenWidth, (float)pLwc->viewport_width);
 	glUniform3fv(pLwc->shader[shader_index].u_eColorStart, 1, c->emitter2.eColorStart);
 	glUniform3fv(pLwc->shader[shader_index].u_eColorEnd, 1, c->emitter2.eColorEnd);
 

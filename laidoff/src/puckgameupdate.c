@@ -42,8 +42,8 @@ void puck_game_update_world_roll(LWPUCKGAME* puck_game) {
     if (pLwc->game_scene == LGS_PUCK_GAME) {
         vec2 world_right_top_end_ui_point;
         calculate_world_right_top_end_ui_point(pLwc, puck_game, world_right_top_end_ui_point);
-        const float width_ratio_of_world = fabsf(world_right_top_end_ui_point[0]) / pLwc->aspect_ratio;
-        pLwc->viewport_x = (int)(puck_game->main_menu_ui_alpha * pLwc->width * width_ratio_of_world / 2);
+        const float width_ratio_of_world = fabsf(world_right_top_end_ui_point[0]) / pLwc->viewport_aspect_ratio;
+        pLwc->viewport_x = (int)(puck_game->main_menu_ui_alpha * pLwc->viewport_width * width_ratio_of_world / 2);
         pLwc->viewport_y = 0;
     } else {
         pLwc->viewport_x = 0;
@@ -422,7 +422,7 @@ void puck_game_clear_match_data(LWCONTEXT* pLwc, LWPUCKGAME* puck_game) {
 void puck_game_reset_view_proj(LWCONTEXT* pLwc, LWPUCKGAME* puck_game) {
     // Setup puck game view, proj matrices
     
-    mat4x4_perspective(pLwc->puck_game_proj, (float)(LWDEG2RAD(49.1343) / pLwc->aspect_ratio), pLwc->aspect_ratio, 1.0f, 500.0f);
+    mat4x4_perspective(pLwc->puck_game_proj, (float)(LWDEG2RAD(49.1343) / pLwc->viewport_aspect_ratio), pLwc->viewport_aspect_ratio, 1.0f, 500.0f);
     vec3 eye = { 0.0f, 0.0f, 10.0f /*12.0f*/ };
     vec3 center = { 0, 0, 0 };
     vec3 up = { 0, 1, 0 };
@@ -449,8 +449,8 @@ void puck_game_reset_view_proj_ortho(LWCONTEXT* pLwc,
                                      float center_y,
                                      float center_z) {
     mat4x4_ortho(pLwc->puck_game_proj,
-                 -half_height * pLwc->aspect_ratio,
-                 +half_height * pLwc->aspect_ratio,
+                 -half_height * pLwc->viewport_aspect_ratio,
+                 +half_height * pLwc->viewport_aspect_ratio,
                  -half_height,
                  +half_height,
                  near_z,
@@ -491,7 +491,7 @@ void puck_game_spawn_tower_damage_text(LWCONTEXT* pLwc, LWPUCKGAME* puck_game, L
     vec2 ui_point;
     vec4 tower_world_point;
     puck_game_tower_pos(tower_world_point, puck_game, tower->owner_player_no);
-    calculate_ui_point_from_world_point(pLwc->aspect_ratio, proj_view, tower_world_point, ui_point);
+    calculate_ui_point_from_world_point(pLwc->viewport_aspect_ratio, proj_view, tower_world_point, ui_point);
     char damage_str[16];
     sprintf(damage_str, "%d", damage);
     spawn_damage_text(pLwc, ui_point[0], ui_point[1], 0, damage_str, LDTC_UI);

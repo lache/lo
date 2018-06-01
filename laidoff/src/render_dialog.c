@@ -43,7 +43,7 @@ static void render_dialog_balloon(const LWCONTEXT* pLwc) {
 
 
 
-    float ui_scale_x = pLwc->aspect_ratio;
+    float ui_scale_x = pLwc->viewport_aspect_ratio;
     float ui_scale_y = 0.275f;
 
     mat4x4 model_translate;
@@ -86,7 +86,7 @@ static void render_bg(const LWCONTEXT* pLwc) {
 
 
 
-    float ui_scale_x = pLwc->aspect_ratio;
+    float ui_scale_x = pLwc->viewport_aspect_ratio;
     float ui_scale_y = 1;
 
     mat4x4 model_translate;
@@ -143,7 +143,7 @@ void lwc_render_dialog(const LWCONTEXT* pLwc) {
     lw_clear_color();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    //LOGV("Viewport size: %d x %d", pLwc->width, pLwc->height);
+    //LOGV("Viewport size: %d x %d", pLwc->viewport_width, pLwc->viewport_height);
     // Result curtain
     //mat4x4 identity;
     //mat4x4_identity(identity);
@@ -179,9 +179,9 @@ void lwc_render_dialog(const LWCONTEXT* pLwc) {
     text_block.begin_index = pLwc->dialog_start_index;
     text_block.end_index = text_block.begin_index + pLwc->render_char < text_block.text_bytelen ? text_block.begin_index +
         pLwc->render_char : text_block.text_bytelen;
-    text_block.text_block_x = -0.75f * pLwc->aspect_ratio;
+    text_block.text_block_x = -0.75f * pLwc->viewport_aspect_ratio;
     text_block.text_block_y = -0.55f;
-    text_block.text_block_width = 0.70f * 2 * pLwc->aspect_ratio;
+    text_block.text_block_width = 0.70f * 2 * pLwc->viewport_aspect_ratio;
     text_block.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_A;
     text_block.size = DEFAULT_TEXT_BLOCK_SIZE_A;
     SET_COLOR_RGBA_FLOAT(text_block.color_normal_glyph, 1, 1, 1, 1);

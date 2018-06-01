@@ -41,7 +41,7 @@ static const float header_y_center = 0.9f;
 static const float header_height = 0.1f;
 
 static void s_render(const LWCONTEXT* pLwc, const char* msg) {
-	render_solid_vb_ui_flip_y_uv(pLwc, 0, -header_y_center, 2 * pLwc->aspect_ratio, header_height,
+	render_solid_vb_ui_flip_y_uv(pLwc, 0, -header_y_center, 2 * pLwc->viewport_aspect_ratio, header_height,
 		pLwc->tex_programmed[LPT_BOTH_END_GRADIENT_HORIZONTAL], LVT_CENTER_CENTER_ANCHORED_SQUARE,
 		1, 39 / 255.0f, 74 / 255.0f, 110 / 255.0f, 1.0f, 0);
 

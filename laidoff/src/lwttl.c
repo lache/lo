@@ -1005,8 +1005,7 @@ const LWPTTLROUTESTATE* lwttl_full_state(const LWTTL* ttl) {
     return &ttl->ttl_dynamic_state;
 }
 
-static int lwttl_query_chunk_range(const LWTTL* ttl,
-                                   const float lng_min,
+static int lwttl_query_chunk_range(const float lng_min,
                                    const float lat_min,
                                    const float lng_max,
                                    const float lat_max,
@@ -1068,8 +1067,7 @@ int lwttl_query_chunk_range_land(const LWTTL* ttl,
                                  int* ycc0,
                                  int* xcc1,
                                  int* ycc1) {
-    return lwttl_query_chunk_range(ttl,
-                                   lng_min,
+    return lwttl_query_chunk_range(lng_min,
                                    lat_min,
                                    lng_max,
                                    lat_max,
@@ -1095,8 +1093,7 @@ int lwttl_query_chunk_range_seaport(const LWTTL* ttl,
                                     int* ycc0,
                                     int* xcc1,
                                     int* ycc1) {
-    return lwttl_query_chunk_range(ttl,
-                                   lng_min,
+    return lwttl_query_chunk_range(lng_min,
                                    lat_min,
                                    lng_max,
                                    lat_max,
@@ -1122,8 +1119,7 @@ int lwttl_query_chunk_range_city(const LWTTL* ttl,
                                  int* ycc0,
                                  int* xcc1,
                                  int* ycc1) {
-    return lwttl_query_chunk_range(ttl,
-                                   lng_min,
+    return lwttl_query_chunk_range(lng_min,
                                    lat_min,
                                    lng_max,
                                    lat_max,
@@ -1149,8 +1145,7 @@ int lwttl_query_chunk_range_salvage(const LWTTL* ttl,
                                     int* ycc0,
                                     int* xcc1,
                                     int* ycc1) {
-    return lwttl_query_chunk_range(ttl,
-                                   lng_min,
+    return lwttl_query_chunk_range(lng_min,
                                    lat_min,
                                    lng_max,
                                    lat_max,
@@ -1549,7 +1544,7 @@ void lwttl_change_selected_cell_to(LWTTL* ttl,
 void lwttl_on_press(LWTTL* ttl, const LWCONTEXT* pLwc, float nx, float ny) {
     int xc, yc;
     LWTTLLNGLAT lnglat;
-    nx_ny_to_lng_lat(ttl, nx, ny, pLwc->width, pLwc->height, &xc, &yc, &lnglat);
+    nx_ny_to_lng_lat(ttl, nx, ny, pLwc->viewport_width, pLwc->viewport_height, &xc, &yc, &lnglat);
     ttl->selected.press_pos_xc = xc;
     ttl->selected.press_pos_yc = yc;
     ttl->selected.pressing = 1;
@@ -1560,7 +1555,7 @@ void lwttl_on_move(LWTTL* ttl, const LWCONTEXT* pLwc, float nx, float ny) {
     if (ttl->selected.dragging) {
         int xc, yc;
         LWTTLLNGLAT lnglat;
-        nx_ny_to_lng_lat(ttl, nx, ny, pLwc->width, pLwc->height, &xc, &yc, &lnglat);
+        nx_ny_to_lng_lat(ttl, nx, ny, pLwc->viewport_width, pLwc->viewport_height, &xc, &yc, &lnglat);
         ttl->selected.dragging_pos_xc = xc;
         ttl->selected.dragging_pos_yc = yc;
     }
@@ -1570,7 +1565,7 @@ void lwttl_on_release(LWTTL* ttl, LWCONTEXT* pLwc, float nx, float ny) {
     if (ttl->selected.pressing) {
         int xc, yc;
         LWTTLLNGLAT lnglat;
-        nx_ny_to_lng_lat(ttl, nx, ny, pLwc->width, pLwc->height, &xc, &yc, &lnglat);
+        nx_ny_to_lng_lat(ttl, nx, ny, pLwc->viewport_width, pLwc->viewport_height, &xc, &yc, &lnglat);
         lwttl_change_selected_cell_to(ttl,
                                       xc,
                                       yc,
@@ -1595,8 +1590,6 @@ void lwttl_update_view_proj(LWTTL* ttl, float aspect_ratio) {
     float half_height = 10.0f;
     float near_z = 0.1f;
     float far_z = 100.0f;
-    float c_r = 1.0f;
-    float s_r = 0.0f;
     // eye(camera) position
     vec3 eye = {
         ttl->cam_eye[0],
@@ -2157,7 +2150,7 @@ void lwttl_update(LWTTL* ttl, LWCONTEXT* pLwc, float delta_time) {
         && (dlen > 0.05f)) {
         // dx, dy in world space coordinates
         vec2 dworld;
-        lwttl_screen_to_world_pos(ttl, dx, dy, pLwc->aspect_ratio, 1.0f, dworld);
+        lwttl_screen_to_world_pos(ttl, dx, dy, pLwc->viewport_aspect_ratio, 1.0f, dworld);
 
         const float dworld_len = sqrtf(dworld[0] * dworld[0] + dworld[1] * dworld[1]);
         dworld[0] /= dworld_len;

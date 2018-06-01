@@ -32,7 +32,7 @@ void update_battle_result(LWCONTEXT* pLwc) {
 				float area_width = 0;
 				float area_height = 0;
 
-				get_player_creature_result_ui_box(i, pLwc->aspect_ratio, &left_top_x, &left_top_y, &area_width, &area_height);
+				get_player_creature_result_ui_box(i, pLwc->viewport_aspect_ratio, &left_top_x, &left_top_y, &area_width, &area_height);
 
 
 				// Exp string

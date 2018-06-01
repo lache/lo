@@ -20,10 +20,10 @@
 #include "input.h"
 
 static void convert_touch_coord_to_ui_coord(LWCONTEXT* pLwc, float *x, float *y) {
-	if (pLwc->aspect_ratio > 1) {
-		*x *= pLwc->rt_x;
+	if (pLwc->viewport_aspect_ratio > 1) {
+		*x *= pLwc->viewport_rt_x;
 	} else {
-		*y *= pLwc->rt_y;
+		*y *= pLwc->viewport_rt_y;
 	}
 }
 
@@ -62,8 +62,8 @@ void lw_trigger_mouse_press(LWCONTEXT* pLwc, float nx, float ny, int pointer_id)
 
     // Touch right top corner of the screen
     if (pLwc->game_scene != LGS_ADMIN
-        && x > pLwc->rt_x - admin_button_size
-        && y > pLwc->rt_y - admin_button_size
+        && x > pLwc->viewport_rt_x - admin_button_size
+        && y > pLwc->viewport_rt_y - admin_button_size
         && is_file_exist(pLwc->user_data_path, "admin")) {
         admin_pressed = 1;
     } else {
@@ -72,8 +72,8 @@ void lw_trigger_mouse_press(LWCONTEXT* pLwc, float nx, float ny, int pointer_id)
     
     if (pLwc->game_scene == LGS_TTL
         || (pLwc->game_scene == LGS_PUCK_GAME && pLwc->puck_game->game_state == LPGS_MAIN_MENU && pLwc->puck_game->show_html_ui && pLwc->puck_game->world_roll_dirty == 0)) {
-        const float nx = (x + pLwc->rt_x) / (2.0f * pLwc->rt_x);
-        const float ny = (pLwc->rt_y - y) / (2.0f * pLwc->rt_y);
+        const float nx = (x + pLwc->viewport_rt_x) / (2.0f * pLwc->viewport_rt_x);
+        const float ny = (pLwc->viewport_rt_y - y) / (2.0f * pLwc->viewport_rt_y);
         htmlui_on_lbutton_down(pLwc->htmlui, nx, ny);
         if (htmlui_over_element(pLwc->htmlui, nx, ny)) {
             return;
@@ -121,13 +121,13 @@ void lw_trigger_mouse_press(LWCONTEXT* pLwc, float nx, float ny, int pointer_id)
 
 		float left_dir_pad_center_x = 0;
 		float left_dir_pad_center_y = 0;
-		get_left_dir_pad_original_center(pLwc->aspect_ratio, &left_dir_pad_center_x, &left_dir_pad_center_y);
+		get_left_dir_pad_original_center(pLwc->viewport_aspect_ratio, &left_dir_pad_center_x, &left_dir_pad_center_y);
 		dir_pad_press(&pLwc->left_dir_pad, x, y, pointer_id, left_dir_pad_center_x, left_dir_pad_center_y, sr);
 
 		if (pLwc->control_flags & LCF_PUCK_GAME_RIGHT_DIR_PAD) {
 			float right_dir_pad_center_x = 0;
 			float right_dir_pad_center_y = 0;
-			get_right_dir_pad_original_center(pLwc->aspect_ratio, &right_dir_pad_center_x, &right_dir_pad_center_y);
+			get_right_dir_pad_original_center(pLwc->viewport_aspect_ratio, &right_dir_pad_center_x, &right_dir_pad_center_y);
 			dir_pad_press(&pLwc->right_dir_pad, x, y, pointer_id, right_dir_pad_center_x, right_dir_pad_center_y, sr);
 		}
     } else if (pLwc->game_scene == LGS_TTL) {
@@ -140,8 +140,8 @@ void lw_trigger_mouse_press(LWCONTEXT* pLwc, float nx, float ny, int pointer_id)
 
 	const float fist_button_w = 0.75f;
 	const float fist_button_h = 0.75f;
-	const float fist_button_x_center = +pLwc->rt_x - 0.3f - fist_button_w / 2;
-	const float fist_button_y_center = -pLwc->rt_y + fist_button_h / 2;
+	const float fist_button_x_center = +pLwc->viewport_rt_x - 0.3f - fist_button_w / 2;
+	const float fist_button_y_center = -pLwc->viewport_rt_y + fist_button_h / 2;
 
 	const float top_button_w = fist_button_w;
 	const float top_button_h = fist_button_h;
@@ -190,7 +190,7 @@ void lw_trigger_mouse_press(LWCONTEXT* pLwc, float nx, float ny, int pointer_id)
 			exec_attack_p2e_with_screen_point(pLwc, x, y);
 		} else {
 			// command palette area
-			int command_slot = (int)((x + pLwc->rt_x) / (2.0f / 10 * pLwc->rt_x)) - 2;
+			int command_slot = (int)((x + pLwc->viewport_rt_x) / (2.0f / 10 * pLwc->viewport_rt_x)) - 2;
 			if (command_slot >= 0 && command_slot < 6) {
 				const LWSKILL* skill = pLwc->player[pLwc->player_turn_creature_index].skill[command_slot];
 				if (skill && skill->valid) {
@@ -239,7 +239,7 @@ void lw_trigger_mouse_move(LWCONTEXT* pLwc, float nx, float ny, int pointer_id) 
         // TOO SLOW ON MANY HTML TAGS
 
 	/*htmlui_on_over(pLwc->htmlui,
-		(x + pLwc->aspect_ratio) / (2.0f * pLwc->aspect_ratio),
+		(x + pLwc->viewport_aspect_ratio) / (2.0f * pLwc->viewport_aspect_ratio),
 						 (1.0f - y) / 2.0f);*/
     }
 
@@ -258,13 +258,13 @@ void lw_trigger_mouse_move(LWCONTEXT* pLwc, float nx, float ny, int pointer_id) 
 
 		float left_dir_pad_center_x = 0;
 		float left_dir_pad_center_y = 0;
-		get_left_dir_pad_original_center(pLwc->aspect_ratio, &left_dir_pad_center_x, &left_dir_pad_center_y);
+		get_left_dir_pad_original_center(pLwc->viewport_aspect_ratio, &left_dir_pad_center_x, &left_dir_pad_center_y);
 		dir_pad_move(&pLwc->left_dir_pad, x, y, pointer_id, left_dir_pad_center_x, left_dir_pad_center_y, sr);
 
 		if (pLwc->control_flags & LCF_PUCK_GAME_RIGHT_DIR_PAD) {
 			float right_dir_pad_center_x = 0;
 			float right_dir_pad_center_y = 0;
-			get_right_dir_pad_original_center(pLwc->aspect_ratio, &right_dir_pad_center_x, &right_dir_pad_center_y);
+			get_right_dir_pad_original_center(pLwc->viewport_aspect_ratio, &right_dir_pad_center_x, &right_dir_pad_center_y);
 			dir_pad_move(&pLwc->right_dir_pad, x, y, pointer_id, right_dir_pad_center_x, right_dir_pad_center_y, sr);
 		}
 	} else if (pLwc->game_scene == LGS_TTL) {
@@ -293,8 +293,8 @@ void lw_trigger_mouse_release(LWCONTEXT* pLwc, float nx, float ny, int pointer_i
 
     if (pLwc->game_scene == LGS_TTL
         || (pLwc->game_scene == LGS_PUCK_GAME && pLwc->puck_game->show_html_ui)) {
-        const float nx = (x + pLwc->rt_x) / (2.0f * pLwc->rt_x);
-        const float ny = (pLwc->rt_y - y) / (2.0f * pLwc->rt_y);
+        const float nx = (x + pLwc->viewport_rt_x) / (2.0f * pLwc->viewport_rt_x);
+        const float ny = (pLwc->viewport_rt_y - y) / (2.0f * pLwc->viewport_rt_y);
         htmlui_on_lbutton_up(pLwc->htmlui, nx, ny);
     }
 
@@ -320,7 +320,7 @@ void lw_trigger_mouse_release(LWCONTEXT* pLwc, float nx, float ny, int pointer_i
 		mq_publish_now(pLwc, pLwc->mq, 1);
 	}
 
-	const float fist_button_x_center = pLwc->aspect_ratio - 0.3f - 0.75f / 2;
+	const float fist_button_x_center = pLwc->viewport_aspect_ratio - 0.3f - 0.75f / 2;
 	const float fist_button_y_center = -1 + 0.75f / 2;
 
 	const float top_button_x_center = fist_button_x_center;
@@ -330,8 +330,8 @@ void lw_trigger_mouse_release(LWCONTEXT* pLwc, float nx, float ny, int pointer_i
 
 	// Touch right top corner of the screen
     if (pLwc->game_scene != LGS_ADMIN
-        && x > +pLwc->rt_x - admin_button_size
-		&& y > +pLwc->rt_y - admin_button_size) {
+        && x > +pLwc->viewport_rt_x - admin_button_size
+		&& y > +pLwc->viewport_rt_y - admin_button_size) {
 		if (admin_pressed && is_file_exist(pLwc->user_data_path, "admin")) {
 			change_to_admin(pLwc);
 		} else {
@@ -503,7 +503,7 @@ static void simulate_dir_pad_touch_input(LWCONTEXT* pLwc) {
 
 	float dir_pad_center_x = 0;
 	float dir_pad_center_y = 0;
-	get_left_dir_pad_original_center(pLwc->aspect_ratio, &dir_pad_center_x, &dir_pad_center_y);
+	get_left_dir_pad_original_center(pLwc->viewport_aspect_ratio, &dir_pad_center_x, &dir_pad_center_y);
 
 	pLwc->left_dir_pad.x = dir_pad_center_x + (pLwc->player_move_right - pLwc->player_move_left) / 5.0f;
 	pLwc->left_dir_pad.y = dir_pad_center_y + (pLwc->player_move_up - pLwc->player_move_down) / 5.0f;

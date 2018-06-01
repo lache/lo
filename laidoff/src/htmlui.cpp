@@ -191,7 +191,7 @@ private:
 };
 
 void* htmlui_new(LWCONTEXT* pLwc) {
-    return new LWHTMLUI(pLwc, pLwc->width, pLwc->height);
+    return new LWHTMLUI(pLwc, pLwc->viewport_width, pLwc->viewport_height);
 }
 
 void htmlui_destroy(void** c) {
@@ -242,8 +242,8 @@ int test_html_ui(LWCONTEXT* pLwc) {
     char* master_css_str = create_string_from_file(ASSETS_BASE_PATH "css" PATH_SEPARATOR "master.css");
     browser_context.load_master_stylesheet(master_css_str);
 
-    const int w = pLwc->width;
-    const int h = pLwc->height;
+    const int w = pLwc->viewport_width;
+    const int h = pLwc->viewport_height;
     std::shared_ptr<litehtml::text_container> container(new litehtml::text_container(pLwc, w, h));
 
     char* test_html_str = create_string_from_file(ASSETS_BASE_PATH "html" PATH_SEPARATOR "HTMLPage1.html");

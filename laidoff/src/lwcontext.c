@@ -68,7 +68,7 @@ int lwcontext_update_frequency(LWCONTEXT* pLwc) {
 
 void lwcontext_rt_corner(const float aspect_ratio, float* x, float* y) {
     if (aspect_ratio == 0) {
-        LOGEP("pLwc->aspect_ratio == 0");
+        LOGEP("aspect_ratio == 0");
         *x = 1.0f;
         *y = 1.0F;
     } else if (aspect_ratio < 1.0f) {

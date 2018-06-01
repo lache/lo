@@ -51,17 +51,17 @@ void lwc_render_font_test_fbo(const LWCONTEXT* pLwc) {
 
     // The first column (left aligned)
 
-    test_text_block.text_block_x = -0.9f * pLwc->aspect_ratio;
+    test_text_block.text_block_x = -0.9f * pLwc->viewport_aspect_ratio;
     test_text_block.text_block_y = 0.25f;
     test_text_block.align = LTBA_LEFT_TOP;
     render_text_block(pLwc, &test_text_block);
 
-    test_text_block.text_block_x = -0.9f * pLwc->aspect_ratio;
+    test_text_block.text_block_x = -0.9f * pLwc->viewport_aspect_ratio;
     test_text_block.text_block_y = 0;
     test_text_block.align = LTBA_LEFT_CENTER;
     render_text_block(pLwc, &test_text_block);
 
-    test_text_block.text_block_x = -0.9f * pLwc->aspect_ratio;
+    test_text_block.text_block_x = -0.9f * pLwc->viewport_aspect_ratio;
     test_text_block.text_block_y = -0.25f;
     test_text_block.align = LTBA_LEFT_BOTTOM;
     render_text_block(pLwc, &test_text_block);
@@ -127,12 +127,12 @@ void lwc_render_font_test_fbo(const LWCONTEXT* pLwc) {
     test_text_block.text_bytelen = (int)strlen(test_text_block.text);
     test_text_block.begin_index = 0;
     test_text_block.end_index = test_text_block.text_bytelen;
-    test_text_block.text_block_x = 0.9f * pLwc->aspect_ratio;
+    test_text_block.text_block_x = 0.9f * pLwc->viewport_aspect_ratio;
     test_text_block.text_block_y = 0.25f;
     test_text_block.align = LTBA_RIGHT_TOP;
     render_text_block(pLwc, &test_text_block);
 
-    test_text_block.text_block_x = 0.9f * pLwc->aspect_ratio;
+    test_text_block.text_block_x = 0.9f * pLwc->viewport_aspect_ratio;
     test_text_block.text_block_y = 0;
     test_text_block.align = LTBA_RIGHT_CENTER;
     render_text_block(pLwc, &test_text_block);
@@ -141,7 +141,7 @@ void lwc_render_font_test_fbo(const LWCONTEXT* pLwc) {
     test_text_block.text_bytelen = (int)strlen(test_text_block.text);
     test_text_block.begin_index = 0;
     test_text_block.end_index = test_text_block.text_bytelen;
-    test_text_block.text_block_x = 0.9f * pLwc->aspect_ratio;
+    test_text_block.text_block_x = 0.9f * pLwc->viewport_aspect_ratio;
     test_text_block.text_block_y = -0.25f;
     test_text_block.align = LTBA_RIGHT_BOTTOM;
     render_text_block(pLwc, &test_text_block);
@@ -155,5 +155,5 @@ void lwc_render_font_test(const LWCONTEXT* pLwc) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     // render FBO
-    render_solid_box_ui_lvt_flip_y_uv(pLwc, 0, 0, 2 * pLwc->aspect_ratio, 2, pLwc->shared_fbo.color_tex, LVT_CENTER_CENTER_ANCHORED_SQUARE, 1);
+    render_solid_box_ui_lvt_flip_y_uv(pLwc, 0, 0, 2 * pLwc->viewport_aspect_ratio, 2, pLwc->shared_fbo.color_tex, LVT_CENTER_CENTER_ANCHORED_SQUARE, 1);
 }

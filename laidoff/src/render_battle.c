@@ -476,9 +476,9 @@ void render_player_creature_ui(const LWCONTEXT* pLwc, const LWBATTLECREATURE* c,
 	float area_width = 0;
 	float area_height = 0;
 
-	get_player_creature_ui_box(pos, pLwc->aspect_ratio, &left_top_x, &left_top_y, &area_width, &area_height);
+	get_player_creature_ui_box(pos, pLwc->viewport_aspect_ratio, &left_top_x, &left_top_y, &area_width, &area_height);
 
-	const float block_x_margin = 0.075f * pLwc->aspect_ratio;
+	const float block_x_margin = 0.075f * pLwc->viewport_aspect_ratio;
 	const float block_y_margin = 0.025f;
 
 	const float bar_width = area_width - block_x_margin * 2;
@@ -704,7 +704,7 @@ static void render_command_banner(const LWCONTEXT* pLwc) {
 	if (skill_name) {
 		const float x = 0;
 		const float y = -0.5f;
-		const float w = 1.0f * pLwc->aspect_ratio;
+		const float w = 1.0f * pLwc->viewport_aspect_ratio;
 		const float h = 0.2f;
 
 		const float anim_v = LWCLAMP(5 * lwanim_get_1d(&pLwc->command_banner_anim), 0, 1);
@@ -752,7 +752,7 @@ static void render_command_palette(const LWCONTEXT* pLwc) {
 
 	
 
-	const float screen_width = 2 * pLwc->aspect_ratio;
+	const float screen_width = 2 * pLwc->viewport_aspect_ratio;
 	const float screen_height = 2;
 	const int command_slot_margin_count = 2;
 	const int command_slot_count = 6;
@@ -924,7 +924,7 @@ void lwc_render_battle(const LWCONTEXT* pLwc) {
 			pLwc,
 			0,
 			0,
-			2 * pLwc->aspect_ratio,
+			2 * pLwc->viewport_aspect_ratio,
 			2,
 			pLwc->tex_programmed[LPT_SOLID_TRANSPARENT],
 			LVT_CENTER_CENTER_ANCHORED_SQUARE,

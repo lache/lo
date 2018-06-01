@@ -26,8 +26,8 @@ litehtml::uint_ptr litehtml::text_container::create_font(const litehtml::tchar_t
     LOGIx("create_font: faceName=%s, size=%d, weight=%d\n", faceName, size, weight);
     size_t font_idx = font_sizes.size();
     font_sizes.push_back(size);
-    fm->height = static_cast<int>(roundf(size * 0.8f * pLwc->height / 720.f));
-    fm->descent = static_cast<int>(roundf(size * 0.1f * pLwc->height / 720.f));
+    fm->height = static_cast<int>(roundf(size * 0.8f * pLwc->viewport_height / 720.f));
+    fm->descent = static_cast<int>(roundf(size * 0.1f * pLwc->viewport_height / 720.f));
     return litehtml::uint_ptr(font_idx);// litehtml::uint_ptr();
 }
 
@@ -35,19 +35,19 @@ void litehtml::text_container::delete_font(litehtml::uint_ptr hFont) {
 }
 
 static float conv_size_x(const LWCONTEXT* pLwc, int x) {
-    return 2 * ((float)x / pLwc->width * pLwc->rt_x);
+    return 2 * ((float)x / pLwc->viewport_width * pLwc->viewport_rt_x);
 }
 
 static float conv_size_y(const LWCONTEXT* pLwc, int y) {
-    return 2 * ((float)y / pLwc->height * pLwc->rt_y);
+    return 2 * ((float)y / pLwc->viewport_height * pLwc->viewport_rt_y);
 }
 
 static float conv_coord_x(const LWCONTEXT* pLwc, int x) {
-    return -pLwc->rt_x + conv_size_x(pLwc, x);
+    return -pLwc->viewport_rt_x + conv_size_x(pLwc, x);
 }
 
 static float conv_coord_y(const LWCONTEXT* pLwc, int y) {
-    return pLwc->rt_y - conv_size_y(pLwc, y);
+    return pLwc->viewport_rt_y - conv_size_y(pLwc, y);
 }
 
 static void fill_text_block(const LWCONTEXT* pLwc, LWTEXTBLOCK* text_block, int x, int y, const char* text, int size, const litehtml::web_color& color) {
@@ -76,7 +76,7 @@ int litehtml::text_container::text_width(const litehtml::tchar_t * text, litehtm
     litehtml::web_color c;
     fill_text_block(pLwc, &text_block, 0, 0, text, size, c);
     render_query_only_text_block(pLwc, &text_block, &query_result);
-    return static_cast<int>(query_result.total_glyph_width / (2 * pLwc->rt_x) * pLwc->width);
+    return static_cast<int>(query_result.total_glyph_width / (2 * pLwc->viewport_rt_x) * pLwc->viewport_width);
 }
 
 void litehtml::text_container::draw_text(litehtml::uint_ptr hdc, const litehtml::tchar_t * text, litehtml::uint_ptr hFont, litehtml::web_color color, const litehtml::position & pos) {
@@ -88,7 +88,7 @@ void litehtml::text_container::draw_text(litehtml::uint_ptr hdc, const litehtml:
 }
 
 int litehtml::text_container::pt_to_px(int pt) {
-    return static_cast<int>(roundf(pt * 3.6f * pLwc->width / 640.0f));
+    return static_cast<int>(roundf(pt * 3.6f * pLwc->viewport_width / 640.0f));
 }
 
 int litehtml::text_container::get_default_font_size() const {
@@ -150,7 +150,7 @@ void litehtml::text_container::get_image_size(const litehtml::tchar_t * src, con
     LOGIx("get_image_size: src=%s,baseurl=%s", src, baseurl);
     // [1] check for 'atlas type' image
     LWATLASSPRITEPTR atlas_sprite_ptr = atlas_sprite_ptr_from_url(pLwc, src);
-    float scale = pLwc->width / 640.0f;
+    float scale = pLwc->viewport_width / 640.0f;
     if (atlas_sprite_ptr.sprite) {
         sz.width = static_cast<int>(roundf(atlas_sprite_ptr.sprite->width * scale));
         sz.height = static_cast<int>(roundf(atlas_sprite_ptr.sprite->height * scale));

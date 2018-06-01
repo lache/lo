@@ -3,6 +3,7 @@
 #include "lwlog.h"
 #include "render_text_block.h"
 #include <string.h>
+#include <stdio.h>
 
 static void render_item(const LWCONTEXT* pLwc,
                         int index,
@@ -66,7 +67,7 @@ static void render_title(const LWCONTEXT* pLwc) {
     text_block.text_bytelen = (int)strlen(text_block.text);
     text_block.begin_index = 0;
     text_block.end_index = text_block.text_bytelen;
-    text_block.text_block_x = -pLwc->aspect_ratio;
+    text_block.text_block_x = -pLwc->viewport_aspect_ratio;
     text_block.text_block_y = 1.0f;
     render_text_block(pLwc, &text_block);
 }
@@ -102,7 +103,7 @@ static void render_leaderboard_page_button(const LWCONTEXT* pLwc, float x_center
     const char* sprite_name = "leaderboard-page.png";
     const LWATLASSPRITE* sprite = atlas_sprite_name(pLwc, sprite_lac, sprite_name);
     const float sprite_aspect_ratio = (float)sprite->width / sprite->height;
-    const float page_button_w = pLwc->aspect_ratio * 0.7f;
+    const float page_button_w = pLwc->viewport_aspect_ratio * 0.7f;
     const float page_button_h = page_button_w / sprite_aspect_ratio;
     lwbutton_lae_append_atlas_additive(pLwc,
                                        &(((LWCONTEXT*)pLwc)->button_list),
@@ -151,9 +152,9 @@ void render_leaderboard_table(const LWCONTEXT* pLwc, float x0, float y0, float u
         }
     }
     // render page texts (i.e. '23 / 1023')
-    render_leaderboard_page(pLwc, -pLwc->aspect_ratio / 2, -0.7f, ui_alpha);
+    render_leaderboard_page(pLwc, -pLwc->viewport_aspect_ratio / 2, -0.7f, ui_alpha);
     // render page buttons
-    render_leaderboard_page_button(pLwc, -pLwc->aspect_ratio / 2, -1.0f, ui_alpha);
+    render_leaderboard_page_button(pLwc, -pLwc->viewport_aspect_ratio / 2, -1.0f, ui_alpha);
 }
 
 void lwc_render_leaderboard(const LWCONTEXT* pLwc) {
@@ -164,13 +165,13 @@ void lwc_render_leaderboard(const LWCONTEXT* pLwc) {
     // Render title
     render_title(pLwc);
     const float back_button_size = 0.35f * 1.5f;
-    const float x0 = -pLwc->aspect_ratio + back_button_size + 0.1f;
+    const float x0 = -pLwc->viewport_aspect_ratio + back_button_size + 0.1f;
     const float y0 = +0.75f;
     render_leaderboard_table(pLwc, x0, y0, 1.0f);
     lwbutton_lae_append(pLwc,
                         &(((LWCONTEXT*)pLwc)->button_list),
                         "back_button",
-                        -pLwc->aspect_ratio,
+                        -pLwc->viewport_aspect_ratio,
                         0.8f,
                         back_button_size,
                         back_button_size,

@@ -83,7 +83,7 @@ static void render_tower_normal_2(const LWCONTEXT* pLwc, const mat4x4 view, cons
         if (tower->shake_remain_time > 0) {
             const float ratio = tower->shake_remain_time / pLwc->puck_game->tower_shake_time;
             const float shake_magnitude = 0.03f;
-            x += ratio * (2 * rand() / (float)RAND_MAX - 1.0f) * shake_magnitude * pLwc->aspect_ratio;
+            x += ratio * (2 * rand() / (float)RAND_MAX - 1.0f) * shake_magnitude * pLwc->viewport_aspect_ratio;
             y += ratio * (2 * rand() / (float)RAND_MAX - 1.0f) * shake_magnitude;
             float ratio4 = ratio * ratio;
             ratio4 *= ratio4;
@@ -357,7 +357,7 @@ void calculate_world_right_top_end_ui_point(const LWCONTEXT* pLwc, const LWPUCKG
     mat4x4 proj_view;
     mat4x4_identity(proj_view);
     mat4x4_mul(proj_view, pLwc->puck_game_proj, pLwc->puck_game_view);
-    calculate_ui_point_from_world_point(pLwc->aspect_ratio, proj_view, world_right_top_end_vec4, world_right_top_end_ui_point);
+    calculate_ui_point_from_world_point(pLwc->viewport_aspect_ratio, proj_view, world_right_top_end_vec4, world_right_top_end_ui_point);
     // ignore world rotation for player 2
     world_right_top_end_ui_point[0] = fabsf(world_right_top_end_ui_point[0]);
     world_right_top_end_ui_point[1] = fabsf(world_right_top_end_ui_point[1]);
@@ -371,13 +371,13 @@ static void render_hp_star(const LWCONTEXT* pLwc,
                            float hp_shake_remain_time,
                            const vec2 world_right_top_end_ui_point) {
     // render at the center of margins
-    float x = (world_right_top_end_ui_point[0] + pLwc->aspect_ratio) / 2 * (left ? -1 : +1);
+    float x = (world_right_top_end_ui_point[0] + pLwc->viewport_aspect_ratio) / 2 * (left ? -1 : +1);
     float y = 0.575f;
     float size = 0.5f;
     if (hp_shake_remain_time > 0) {
         const float ratio = hp_shake_remain_time / pLwc->puck_game->hp_shake_time;
         const float shake_magnitude = 0.02f;
-        x += ratio * (2 * rand() / (float)RAND_MAX - 1.0f) * shake_magnitude * pLwc->aspect_ratio;
+        x += ratio * (2 * rand() / (float)RAND_MAX - 1.0f) * shake_magnitude * pLwc->viewport_aspect_ratio;
         y += ratio * (2 * rand() / (float)RAND_MAX - 1.0f) * shake_magnitude;
     }
     lw_load_tex(pLwc, LAE_HP_STAR_0 + 2 * hp);
@@ -490,7 +490,7 @@ static void render_dash_ring_gauge(const LWCONTEXT* pLwc, vec4 player_pos, float
     mat4x4_identity(proj_view);
     mat4x4_mul(proj_view, pLwc->puck_game_proj, pLwc->puck_game_view);
     vec2 ui_point;
-    calculate_ui_point_from_world_point(pLwc->aspect_ratio, proj_view, player_pos, ui_point);
+    calculate_ui_point_from_world_point(pLwc->viewport_aspect_ratio, proj_view, player_pos, ui_point);
 
     lazy_glUseProgram(pLwc, LWST_RINGGAUGE);
     glUniform3f(pLwc->shader[LWST_RINGGAUGE].full_color, 0, 1, 0);
@@ -548,7 +548,7 @@ static void render_nickname_score(const LWCONTEXT* pLwc,
                                   const char* score,
                                   const vec2 world_right_top_end_ui_point) {
     // render at the center of margins
-    float x = (world_right_top_end_ui_point[0] + pLwc->aspect_ratio) / 2 * (left ? -1 : +1);
+    float x = (world_right_top_end_ui_point[0] + pLwc->viewport_aspect_ratio) / 2 * (left ? -1 : +1);
     // Render text
     LWTEXTBLOCK text_block;
     //text_block.align = left ? LTBA_LEFT_TOP : LTBA_RIGHT_TOP;
@@ -1460,7 +1460,7 @@ static void render_main_menu_ui_layer(const LWCONTEXT* pLwc,
     ((LWCONTEXT*)pLwc)->viewport_y = 0;
     LW_GL_VIEWPORT();
     // leaderboard
-    float leaderboard_x = -pLwc->aspect_ratio + 0.1f;
+    float leaderboard_x = -pLwc->viewport_aspect_ratio + 0.1f;
     float leaderboard_y = 0.85f;
     render_leaderboard_table(pLwc, leaderboard_x, leaderboard_y, puck_game->main_menu_ui_alpha);
     // render buttons appended so far while temporary viewport configuration valid
@@ -1555,7 +1555,7 @@ static void render_main_menu_ui_layer(const LWCONTEXT* pLwc,
         render_solid_box_ui_lvt_flip_y_uv(pLwc,
                                           0,
                                           0,
-                                          2 * pLwc->aspect_ratio,
+                                          2 * pLwc->viewport_aspect_ratio,
                                           2,
                                           pLwc->shared_fbo.color_tex,
                                           LVT_CENTER_CENTER_ANCHORED_SQUARE,
@@ -1585,7 +1585,7 @@ static void render_tower_invincible_mark(const LWCONTEXT* pLwc,
     mat4x4_identity(proj_view);
     mat4x4_mul(proj_view, pLwc->puck_game_proj, pLwc->puck_game_view);
     vec2 ui_point;
-    calculate_ui_point_from_world_point(pLwc->aspect_ratio, proj_view, tower_pos_vec4, ui_point);
+    calculate_ui_point_from_world_point(pLwc->viewport_aspect_ratio, proj_view, tower_pos_vec4, ui_point);
     int lae = LAE_STOP_MARK;
     int lae_alpha = LAE_STOP_MARK_ALPHA;
     lw_load_tex(pLwc, lae);
@@ -1627,7 +1627,7 @@ void render_puck_exclamation_mark(const LWCONTEXT* pLwc, const LWPUCKGAME* puck_
         mat4x4_identity(proj_view);
         mat4x4_mul(proj_view, pLwc->puck_game_proj, pLwc->puck_game_view);
         vec2 ui_point;
-        calculate_ui_point_from_world_point(pLwc->aspect_ratio, proj_view, puck_pos_vec4, ui_point);
+        calculate_ui_point_from_world_point(pLwc->viewport_aspect_ratio, proj_view, puck_pos_vec4, ui_point);
         int lae = LAE_EXCLAMATION_MARK;
         int lae_alpha = LAE_EXCLAMATION_MARK_ALPHA;
         lw_load_tex(pLwc, lae);
@@ -1710,9 +1710,9 @@ static void render_battle_ui_layer(const LWCONTEXT* pLwc,
     if (puck_game->hide_hp_star == 0 && puck_game->tower[0].geom) {
         char player_score[32];
         sprintf(player_score, "%d", puck_game->player_score[0]);
-        //        const float gauge_width = pLwc->aspect_ratio * 0.9f;
+        //        const float gauge_width = pLwc->viewport_aspect_ratio * 0.9f;
         //        const float gauge_height = 0.075f;
-        //        const float gauge1_x = (-world_right_top_end_ui_point[0] - pLwc->aspect_ratio) / 2 + gauge_width / 2;
+        //        const float gauge1_x = (-world_right_top_end_ui_point[0] - pLwc->viewport_aspect_ratio) / 2 + gauge_width / 2;
         //        const float gauge1_y = 1.0f - gauge_height;
         //        const int player_total_hp = remote ? state->bf.player_total_hp : puck_game->player.total_hp;
         //        render_hp_gauge(pLwc,
@@ -1733,9 +1733,9 @@ static void render_battle_ui_layer(const LWCONTEXT* pLwc,
     if (puck_game->hide_hp_star == 0 && puck_game->tower[1].geom) {
         char target_score[32];
         sprintf(target_score, "%d", puck_game->target_score[0]);
-        //        const float gauge_width = pLwc->aspect_ratio * 0.9f;
+        //        const float gauge_width = pLwc->viewport_aspect_ratio * 0.9f;
         //        const float gauge_height = 0.075f;
-        //        const float gauge2_x = pLwc->aspect_ratio - gauge_width / 2;
+        //        const float gauge2_x = pLwc->viewport_aspect_ratio - gauge_width / 2;
         //        const float gauge2_y = 1.0f - gauge_height;
         //        const int target_total_hp = remote ? state->bf.target_total_hp : puck_game->target.total_hp;
         //        render_hp_gauge(pLwc,
@@ -1831,7 +1831,7 @@ static void render_battle_ui_layer(const LWCONTEXT* pLwc,
         && ((puck_game->control_flags & LPGCF_HIDE_DASH_BUTTON) == 0)) {
         float cx, cy;
         float sx, sy;
-        get_left_dir_pad_original_center(pLwc->aspect_ratio, &cx, &cy);
+        get_left_dir_pad_original_center(pLwc->viewport_aspect_ratio, &cx, &cy);
         sx = button_size * 1.75f;
         sy = sx;
         lwbutton_lae_append(pLwc,
@@ -1870,7 +1870,7 @@ static void render_battle_ui_layer(const LWCONTEXT* pLwc,
         lwbutton_lae_append(pLwc,
                             &(((LWCONTEXT*)pLwc)->button_list),
                             "back_button",
-                            -pLwc->aspect_ratio,
+                            -pLwc->viewport_aspect_ratio,
                             1.0f,//0.8f,
                             button_size * 1.5f,
                             button_size * 1.5f,

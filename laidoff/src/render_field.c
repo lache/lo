@@ -79,7 +79,7 @@ void render_fist_button(const LWCONTEXT* pLwc) {
     lw_load_tex(pLwc, LAE_U_FIST_ICON_KTX);
     lw_load_tex(pLwc, LAE_U_FIST_ICON_ALPHA_KTX);
     render_solid_vb_ui_alpha(pLwc,
-                             pLwc->aspect_ratio - fist_icon_margin_x,
+                             pLwc->viewport_aspect_ratio - fist_icon_margin_x,
                              -1 + fist_icon_margin_y,
                              fist_icon_width,
                              fist_icon_height,
@@ -101,7 +101,7 @@ void render_top_button(const LWCONTEXT* pLwc) {
     lw_load_tex(pLwc, LAE_U_FIST_ICON_KTX);
     lw_load_tex(pLwc, LAE_U_FIST_ICON_ALPHA_KTX);
     render_solid_vb_ui_alpha(pLwc,
-                             pLwc->aspect_ratio - fist_icon_margin_x,
+                             pLwc->viewport_aspect_ratio - fist_icon_margin_x,
                              1 - fist_icon_margin_y,
                              fist_icon_width,
                              fist_icon_height,
@@ -603,7 +603,7 @@ void lwc_render_field(const LWCONTEXT* pLwc) {
     
     
     mat4x4 perspective;
-    mat4x4_perspective(perspective, (float)(LWDEG2RAD(49.134) / pLwc->aspect_ratio), pLwc->aspect_ratio, 1.0f, 500.0f);
+    mat4x4_perspective(perspective, (float)(LWDEG2RAD(49.134) / pLwc->viewport_aspect_ratio), pLwc->viewport_aspect_ratio, 1.0f, 500.0f);
     
     float player_x = 0, player_y = 0, player_z = 0;
     get_field_player_position(pLwc->field, &player_x, &player_y, &player_z);

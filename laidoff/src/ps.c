@@ -32,12 +32,12 @@ static float random_float_between(LWPSCONTEXT* c, float min, float max) {
 void load_emitter2(LWCONTEXT* pLwc, LWPSCONTEXT* c) {
 	// 3
 	// Offset bounds
-	float oRadius1 = 0.1f; //pLwc->width / 640.0f * 0.10f;      // 0.0 = circle; 1.0 = ring
+	float oRadius1 = 0.1f; //pLwc->viewport_width / 640.0f * 0.10f;      // 0.0 = circle; 1.0 = ring
 	float oRadius2 = 1.0f;
 	float oVelocity = 1.50f;    // Speed
 
 	float size_offset_range = 10.0f / 2;
-	float oSize = LWMIN(size_offset_range, pLwc->width / 1920.0f * size_offset_range);        // Pixels
+	float oSize = LWMIN(size_offset_range, pLwc->viewport_width / 1920.0f * size_offset_range);        // Pixels
 	float oColor = 0.25f;       // 0.5 = 50% shade offset
 
 	// 4
@@ -65,8 +65,8 @@ void load_emitter2(LWCONTEXT* pLwc, LWPSCONTEXT* c) {
 	c->emitter2.eRadius = 6.0f;                                     // Blast radius
 	c->emitter2.eVelocity = 3.00f;                                   // Explosion velocity
 	c->emitter2.eDecay = 2.00f;                                      // Explosion decay
-	c->emitter2.eSizeStart = LWMIN(50.0f / 2, pLwc->width / 1920.0f * 50.0f);        // Pixels
-	c->emitter2.eSizeEnd = LWMIN(16.0f / 2, pLwc->width / 1920.0f * 16.0f);        // Pixels
+	c->emitter2.eSizeStart = LWMIN(50.0f / 2, pLwc->viewport_width / 1920.0f * 50.0f);        // Pixels
+	c->emitter2.eSizeEnd = LWMIN(16.0f / 2, pLwc->viewport_width / 1920.0f * 16.0f);        // Pixels
 	c->emitter2.eColorStart[0] = 1.0f;
 	c->emitter2.eColorStart[1] = 0.5f;
 	c->emitter2.eColorStart[2] = 0.0f;

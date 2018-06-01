@@ -698,18 +698,18 @@ void init_shared_fbo(LWCONTEXT* pLwc) {
     
     // Start init
 #if LW_PLATFORM_IOS
-    pLwc->shared_fbo.width = (int)upper_power_of_two((unsigned long)pLwc->width);
-    pLwc->shared_fbo.height = (int)upper_power_of_two((unsigned long)pLwc->height);
+    pLwc->shared_fbo.width = (int)upper_power_of_two((unsigned long)pLwc->viewport_width);
+    pLwc->shared_fbo.height = (int)upper_power_of_two((unsigned long)pLwc->viewport_height);
 #else
-    pLwc->shared_fbo.width = pLwc->width;
-    pLwc->shared_fbo.height = pLwc->height;
+    pLwc->shared_fbo.width = pLwc->viewport_width;
+    pLwc->shared_fbo.height = pLwc->viewport_height;
 #endif
     glGenFramebuffers(1, &pLwc->shared_fbo.fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, pLwc->shared_fbo.fbo);
     
     glGenRenderbuffers(1, &pLwc->shared_fbo.depth_render_buffer);
     glBindRenderbuffer(GL_RENDERBUFFER, pLwc->shared_fbo.depth_render_buffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, pLwc->width, pLwc->height);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, pLwc->viewport_width, pLwc->viewport_height);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_COMPONENT, GL_RENDERBUFFER, pLwc->shared_fbo.depth_render_buffer);
     
     glGenTextures(1, &pLwc->shared_fbo.color_tex);
@@ -787,8 +787,8 @@ static void render_stat(const LWCONTEXT* pLwc) {
     text_block.text_bytelen = (int)strlen(text_block.text);
     text_block.begin_index = 0;
     text_block.end_index = text_block.text_bytelen;
-    text_block.text_block_x = +pLwc->rt_x;
-    text_block.text_block_y = -pLwc->rt_y;
+    text_block.text_block_x = +pLwc->viewport_rt_x;
+    text_block.text_block_y = -pLwc->viewport_rt_y;
     text_block.multiline = 1;
     render_text_block(pLwc, &text_block);
 }
@@ -815,8 +815,8 @@ void render_addr(const LWCONTEXT* pLwc) {
     text_block.text_bytelen = (int)strlen(text_block.text);
     text_block.begin_index = 0;
     text_block.end_index = text_block.text_bytelen;
-    text_block.text_block_x = -pLwc->rt_x;
-    text_block.text_block_y = -pLwc->rt_y;
+    text_block.text_block_x = -pLwc->viewport_rt_x;
+    text_block.text_block_y = -pLwc->viewport_rt_y;
     text_block.multiline = 1;
     render_text_block(pLwc, &text_block);
 }
@@ -1569,8 +1569,8 @@ LWCONTEXT* lw_init_initial_size(int width, int height) {
     pLwc->puck_game_stage_lae = LAE_DONTCARE;
     pLwc->control_flags = LCF_PUCK_GAME_DASH /*| LCF_PUCK_GAME_JUMP | LCF_PUCK_GAME_PULL*/;
     
-    pLwc->width = width;
-    pLwc->height = height;
+    pLwc->viewport_width = width;
+    pLwc->viewport_height = height;
     
     setlocale(LC_ALL, "");
 
@@ -1604,13 +1604,13 @@ LWCONTEXT* lw_init_initial_size(int width, int height) {
     pLwc->puck_game->pLwc = pLwc;
     
     float dir_pad_origin_x, dir_pad_origin_y;
-    get_left_dir_pad_original_center(pLwc->aspect_ratio, &dir_pad_origin_x, &dir_pad_origin_y);
+    get_left_dir_pad_original_center(pLwc->viewport_aspect_ratio, &dir_pad_origin_x, &dir_pad_origin_y);
     dir_pad_init(&pLwc->left_dir_pad,
                  dir_pad_origin_x,
                  dir_pad_origin_y,
                  0.1f,
                  0.2f);
-    get_right_dir_pad_original_center(pLwc->aspect_ratio, &dir_pad_origin_x, &dir_pad_origin_y);
+    get_right_dir_pad_original_center(pLwc->viewport_aspect_ratio, &dir_pad_origin_x, &dir_pad_origin_y);
     dir_pad_init(&pLwc->right_dir_pad,
                  dir_pad_origin_x,
                  dir_pad_origin_y,
@@ -1619,7 +1619,7 @@ LWCONTEXT* lw_init_initial_size(int width, int height) {
 
 	pLwc->htmlui = htmlui_new(pLwc);
 
-    pLwc->ttl = lwttl_new(pLwc->aspect_ratio);
+    pLwc->ttl = lwttl_new(pLwc->viewport_aspect_ratio);
 
     lwttl_fill_world_seaports_bookmarks(pLwc->htmlui);
 
@@ -1643,17 +1643,21 @@ void lw_set_device_model(LWCONTEXT* pLwc, const char* model) {
     }
 }
 
-void lw_set_size(LWCONTEXT* pLwc, int w, int h) {
-    LOGIP("trying to set window size old (%d, %d) --> new (%d, %d)", pLwc->width, pLwc->height, w, h);
-    pLwc->width = w;
-    pLwc->height = h;
-    if (pLwc->width > 0 && pLwc->height > 0) {
-        pLwc->aspect_ratio = (float)pLwc->width / pLwc->height;
+void lw_set_window_size(LWCONTEXT* pLwc, int w, int h) {
+    LOGIP("Trying to set window size old (%d, %d) --> new (%d, %d)",
+          pLwc->window_width,
+          pLwc->window_height,
+          w,
+          h);
+    pLwc->window_width = w;
+    pLwc->window_height = h;
+    if (pLwc->window_width > 0 && pLwc->window_height > 0) {
+        pLwc->window_aspect_ratio = (float)pLwc->window_width / pLwc->window_height;
 
-        get_left_dir_pad_original_center(pLwc->aspect_ratio,
+        get_left_dir_pad_original_center(pLwc->window_aspect_ratio,
                                          &pLwc->left_dir_pad.origin_x,
                                          &pLwc->left_dir_pad.origin_y);
-        get_right_dir_pad_original_center(pLwc->aspect_ratio,
+        get_right_dir_pad_original_center(pLwc->window_aspect_ratio,
                                           &pLwc->right_dir_pad.origin_x,
                                           &pLwc->right_dir_pad.origin_y);
 
@@ -1666,7 +1670,7 @@ void lw_set_size(LWCONTEXT* pLwc, int w, int h) {
 
         puck_game_reset_view_proj(pLwc, pLwc->puck_game);
 
-        lwttl_update_aspect_ratio(pLwc->ttl, pLwc->aspect_ratio);
+        lwttl_update_aspect_ratio(pLwc->ttl, pLwc->window_aspect_ratio);
 
         if (pLwc->game_scene == LGS_PUCK_GAME || pLwc->game_scene == LGS_FONT_TEST || pLwc->game_scene == LGS_TTL) {
             // Resize FBO
@@ -1674,7 +1678,7 @@ void lw_set_size(LWCONTEXT* pLwc, int w, int h) {
 
             if (pLwc->game_scene == LGS_PUCK_GAME || pLwc->game_scene == LGS_TTL) {
                 // Rerender HTML UI
-                htmlui_set_client_size(pLwc->htmlui, pLwc->width, pLwc->height);
+                htmlui_set_client_size(pLwc->htmlui, pLwc->window_width, pLwc->window_height);
                 htmlui_load_redraw_fbo(pLwc->htmlui);
             } else {
                 // Render font FBO using render-to-texture
@@ -1682,20 +1686,48 @@ void lw_set_size(LWCONTEXT* pLwc, int w, int h) {
             }
         }
     } else {
-        LOGE("Invalid screen size detected!");
-        if (pLwc->width <= 0) {
-            LOGE("Screen width is 0 or below! (%d) Width set to 1.0f", pLwc->width);
-            pLwc->width = 1;
+        LOGE("Invalid window size detected!");
+        if (pLwc->window_width <= 0) {
+            LOGE("Window width is 0 or below! (%d) Width set to 1.0f", pLwc->window_width);
+            pLwc->window_width = 1;
         }
-        if (pLwc->height <= 0) {
-            LOGE("Screen height is 0 or below! (%d) Height set to 1.0f", pLwc->height);
-            pLwc->height = 1;
+        if (pLwc->window_height <= 0) {
+            LOGE("Window height is 0 or below! (%d) Height set to 1.0f", pLwc->window_height);
+            pLwc->window_height = 1;
         }
-        pLwc->aspect_ratio = (float)pLwc->width / pLwc->height;
+        pLwc->window_aspect_ratio = (float)pLwc->window_width / pLwc->window_height;
     }
-    LOGIP("new window size (%d, %d) [aspect ratio %f]", pLwc->width, pLwc->height, pLwc->aspect_ratio);
+    LOGIP("New window size (%d, %d) [aspect ratio %f]", pLwc->window_width, pLwc->window_height, pLwc->window_aspect_ratio);
 
-    lwcontext_rt_corner(pLwc->aspect_ratio, &pLwc->rt_x, &pLwc->rt_y);
+    lwcontext_rt_corner(pLwc->window_aspect_ratio, &pLwc->window_rt_x, &pLwc->window_rt_y);
+}
+
+void lw_set_viewport_size(LWCONTEXT* pLwc, int w, int h) {
+    pLwc->viewport_width = w;
+    pLwc->viewport_height = h;
+    if (pLwc->viewport_width > 0 && pLwc->viewport_height > 0) {
+        pLwc->viewport_aspect_ratio = (float)pLwc->viewport_width / pLwc->viewport_height;
+
+        // Update default projection matrix (pLwc->proj)
+        logic_update_default_projection(pLwc);
+
+        puck_game_reset_view_proj(pLwc, pLwc->puck_game);
+
+        lwttl_update_aspect_ratio(pLwc->ttl, pLwc->viewport_aspect_ratio);
+    } else {
+        LOGE("Invalid viewport size detected!");
+        if (pLwc->viewport_width <= 0) {
+            LOGE("Viewport width is 0 or below! (%d) Width set to 1.0f", pLwc->viewport_width);
+            pLwc->viewport_width = 1;
+        }
+        if (pLwc->viewport_height <= 0) {
+            LOGE("Viewport height is 0 or below! (%d) Height set to 1.0f", pLwc->viewport_height);
+            pLwc->viewport_height = 1;
+        }
+        pLwc->viewport_aspect_ratio = (float)pLwc->viewport_width / pLwc->viewport_height;
+    }
+
+    lwcontext_rt_corner(pLwc->viewport_aspect_ratio, &pLwc->viewport_rt_x, &pLwc->viewport_rt_y);
 }
 
 void lw_set_window(LWCONTEXT* pLwc, struct GLFWwindow *window) {

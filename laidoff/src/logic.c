@@ -756,9 +756,9 @@ static void update_battle_wall(LWCONTEXT* pLwc) {
 }
 
 void logic_update_default_projection(LWCONTEXT* pLwc) {
-    float ratio = pLwc->width / (float)pLwc->height;
+    float ratio = pLwc->viewport_width / (float)pLwc->viewport_height;
 
-    //LOGV("Update(): width: %d height: %d ratio: %f", pLwc->width, pLwc->height, ratio);
+    //LOGV("Update(): width: %d height: %d ratio: %f", pLwc->viewport_width, pLwc->viewport_height, ratio);
 
     if (ratio > 1) {
         mat4x4_ortho(pLwc->proj, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
