@@ -200,6 +200,10 @@ int lwttl_is_selected_cell_intersect(const LWTTL* ttl, int x0, int y0);
 int lwttl_is_selected_cell_diff(const LWTTL* ttl, int x0, int y0, int* dx0, int* dy0);
 float lwttl_selected_cell_popup_height(const LWTTL* ttl);
 const char* lwttl_route_state(const LWPTTLROUTEOBJECT* obj);
+void lwttl_cam_eye(const LWTTL* ttl, vec3 cam_eye);
+void lwttl_set_cam_eye(LWTTL* ttl, const vec3 cam_eye);
+void lwttl_cam_look_at(const LWTTL* ttl, vec3 cam_look_at);
+void lwttl_set_cam_look_at(LWTTL* ttl, const vec3 cam_look_at);
 #ifdef __cplusplus
 }
 #endif

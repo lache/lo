@@ -172,7 +172,6 @@ typedef struct _LWTTL {
     int cell_grid;
     vec3 cam_eye;
     vec3 cam_look_at;
-    float cam_r;
     int gold;
     int ports;
     int ships;
@@ -197,7 +196,6 @@ LWTTL* lwttl_new(float aspect_ratio) {
     ttl->cam_look_at[0] = 0;
     ttl->cam_look_at[1] = 0;
     ttl->cam_look_at[2] = 0;
-    ttl->cam_r = 0;// (float)LWDEG2RAD(90);
     ttl->cell_grid = 1;
     LWMUTEX_INIT(ttl->rendering_mutex);
     ttl->earth_globe_scale_0 = earth_globe_render_scale;
@@ -1597,12 +1595,12 @@ void lwttl_update_view_proj(LWTTL* ttl, float aspect_ratio) {
     float half_height = 10.0f;
     float near_z = 0.1f;
     float far_z = 100.0f;
-    float c_r = cosf(ttl->cam_r);
-    float s_r = sinf(ttl->cam_r);
-    // eye position
+    float c_r = 1.0f;
+    float s_r = 0.0f;
+    // eye(camera) position
     vec3 eye = {
-        c_r * ttl->cam_eye[0] - s_r * ttl->cam_eye[1],
-        s_r * ttl->cam_eye[0] + c_r * ttl->cam_eye[1],
+        ttl->cam_eye[0],
+        ttl->cam_eye[1],
         ttl->cam_eye[2]
     };
     // look position
@@ -1614,7 +1612,12 @@ void lwttl_update_view_proj(LWTTL* ttl, float aspect_ratio) {
     vec3 center_to_eye;
     vec3_sub(center_to_eye, eye, center);
     float cam_a = atan2f(center_to_eye[1], center_to_eye[0]);
-    vec3 right = { cosf(cam_a), -sinf(cam_a), 0 };
+    // right := rotate (1, 0, 0) by cam_a in +Z axis
+    vec3 right = {
+        cosf((float)(M_PI / 2) + cam_a),
+        sinf((float)(M_PI / 2) + cam_a),
+        0 
+    };
     vec3 eye_right;
     vec3_mul_cross(eye_right, center_to_eye, right);
     vec3 up;
@@ -2256,4 +2259,20 @@ const char* lwttl_route_state(const LWPTTLROUTEOBJECT* obj) {
     } else {
         return "";
     }
+}
+
+void lwttl_cam_eye(const LWTTL* ttl, vec3 cam_eye) {
+    memcpy(cam_eye, ttl->cam_eye, sizeof(vec3));
+}
+
+void lwttl_set_cam_eye(LWTTL* ttl, const vec3 cam_eye) {
+    memcpy(ttl->cam_eye, cam_eye, sizeof(vec3));
+}
+
+void lwttl_cam_look_at(const LWTTL* ttl, vec3 cam_look_at) {
+    memcpy(cam_look_at, ttl->cam_look_at, sizeof(vec3));
+}
+
+void lwttl_set_cam_look_at(LWTTL* ttl, const vec3 cam_look_at) {
+    memcpy(ttl->cam_look_at, cam_look_at, sizeof(vec3));
 }

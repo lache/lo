@@ -55,13 +55,17 @@ public:
         browser_context.clear_loop(loop_name);
         unlock();
     }
-    void load_page(const char* html_path) {
+    bool load_page(const char* html_path) {
         std::shared_ptr<char> html_str(create_string_from_file(html_path), free);
-        lock();
-        container.clear_remtex_name_hash_set();
-        doc = litehtml::document::createFromString(html_str.get(), &container, &browser_context);
-        last_html_str = html_str.get();
-        unlock();
+        if (html_str) {
+            lock();
+            container.clear_remtex_name_hash_set();
+            doc = litehtml::document::createFromString(html_str.get(), &container, &browser_context);
+            last_html_str = html_str.get();
+            unlock();
+            return true;
+        }
+        return false;
     }
     void load_body(const char* html_body) {
         lock();
@@ -198,9 +202,10 @@ void htmlui_destroy(void** c) {
 
 void htmlui_load_render_draw(void* c, const char* html_path) {
     LWHTMLUI* htmlui = (LWHTMLUI*)c;
-    htmlui->load_page(html_path);
-    htmlui->render_page();
-    htmlui->draw();
+    if (htmlui->load_page(html_path)) {
+        htmlui->render_page();
+        htmlui->draw();
+    }
 }
 
 void htmlui_load_redraw_fbo(void* c) {

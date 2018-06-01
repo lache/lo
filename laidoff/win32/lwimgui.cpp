@@ -1,7 +1,9 @@
 #include "lwimgui.h"
 #include <imgui.h>
 #include "imgui_impl_glfw_gl3.h"
-#include <GLFW/glfw3.h>
+//#include <GLFW/glfw3.h>
+#include "lwcontext.h"
+#include "lwttl.h"
 
 static bool show_test_window = false;
 static bool show_another_window = true;
@@ -13,6 +15,7 @@ extern "C" void lwimgui_init(GLFWwindow* window) {
 }
 
 extern "C" void lwimgui_render(GLFWwindow* window) {
+    LWCONTEXT* pLwc = (LWCONTEXT*)glfwGetWindowUserPointer(window);
 	ImGui_ImplGlfwGL3_NewFrame();
 	// 1. Show a simple window
 	// Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets appears in a window automatically called "Debug"
@@ -31,7 +34,30 @@ extern "C" void lwimgui_render(GLFWwindow* window) {
 		ImGui::SetNextWindowPos(ImVec2(100, 0), ImGuiSetCond_FirstUseEver);
 		ImGui::SetNextWindowSize(ImVec2(500, 60), ImGuiSetCond_FirstUseEver);
 		ImGui::Begin("Admin", &show_another_window);
-		ImGui::Text("Hello...admin"); ImGui::SameLine();
+		ImGui::Text("Hello...admin");
+        {
+            vec3 cam_eye;
+            lwttl_cam_eye(pLwc->ttl, cam_eye);
+            bool eye_changed = false;
+            eye_changed |= ImGui::SliderFloat("eye x", &cam_eye[0], -20.0f, +20.0f);
+            eye_changed |= ImGui::SliderFloat("eye y", &cam_eye[1], -20.0f, +20.0f);
+            eye_changed |= ImGui::SliderFloat("eye z", &cam_eye[2], -20.0f, +20.0f);
+            if (eye_changed) {
+                lwttl_set_cam_eye(pLwc->ttl, cam_eye);
+            }
+            vec3 cam_look_at;
+            lwttl_cam_look_at(pLwc->ttl, cam_look_at);
+            bool look_at_changed = false;
+            look_at_changed |= ImGui::SliderFloat("look at x", &cam_look_at[0], -20.0f, +20.0f);
+            look_at_changed |= ImGui::SliderFloat("look at y", &cam_look_at[1], -20.0f, +20.0f);
+            look_at_changed |= ImGui::SliderFloat("look at z", &cam_look_at[2], -20.0f, +20.0f);
+            if (look_at_changed) {
+                lwttl_set_cam_look_at(pLwc->ttl, cam_look_at);
+            }
+            if (eye_changed || look_at_changed) {
+                lwttl_update_view_proj(pLwc->ttl, pLwc->aspect_ratio);
+            }
+        }
 		if (ImGui::Button("Test Window")) {
 			show_test_window ^= 1;
 		} ImGui::SameLine();
