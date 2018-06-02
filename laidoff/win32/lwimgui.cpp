@@ -26,6 +26,7 @@ extern "C" void lwimgui_init(GLFWwindow* window) {
     {
         0x0020, 0x00FF, // ASCII
         0x1100, 0x11FF, // Korean (Jamo)
+        0x3130, 0x318F, // Korean (Jamo; compatability)
         0xAC00, 0xD7AF, // Korean
         0,
     };
@@ -60,7 +61,7 @@ extern "C" void lwimgui_render(GLFWwindow* window) {
 	if (show_another_window)
 	{
         bool open = false;
-        const int chat_window_height = 150;
+        const int chat_window_height = 100;
         ImGui::SetNextWindowPos(ImVec2(0, (float)pLwc->window_height - chat_window_height));
         if (!ImGui::Begin("Example: Fixed Overlay",
                           &open,
@@ -75,9 +76,17 @@ extern "C" void lwimgui_render(GLFWwindow* window) {
         //ImGui::Text("Mouse Position: (%.1f,%.1f)", ImGui::GetIO().MousePos.x, ImGui::GetIO().MousePos.y);
         //ImGui::Text("%s Hello...admin", u8"으흐흐흐");
         static char buf[256] = u8"한글을 입력 해 보세요. 안될테니까요.";
-        if (ImGui::InputText("", buf, ARRAY_SIZE(buf))) {
+        static bool focus_here = false;
+        if (focus_here) {
+            ImGui::SetKeyboardFocusHere();
+            focus_here = false;
+        }
+        ImGui::PushItemWidth(-1);
+        if (ImGui::InputText("##On", buf, ARRAY_SIZE(buf), ImGuiInputTextFlags_EnterReturnsTrue)) {
             LOGI("Chat %s", buf);
             lwttl_udp_send_ttlchat(pLwc->ttl, lwttl_sea_udp(pLwc->ttl), buf);
+            buf[0] = 0;
+            focus_here = true;
         }
         ImGui::End();
 
