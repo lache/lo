@@ -88,12 +88,12 @@ int LoadWaveFile() {
 	XAUDIO2_BUFFER buffer = { 0 };
 
 #ifdef _XBOX
-	char * strFileName = "game:\\media\\MusicMono.wav";
+	const char * strFileName = "game:\\media\\MusicMono.wav";
 #else
-	TCHAR * strFileName = "media\\MusicMono.wav";
+	const char * strFileName = "media\\MusicMono.wav";
 #endif
 	// Open the file
-	HANDLE hFile = CreateFile(
+	HANDLE hFile = CreateFileA(
 		strFileName,
 		GENERIC_READ,
 		FILE_SHARE_READ,

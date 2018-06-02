@@ -28,7 +28,7 @@
 #endif
 
 #if LW_PLATFORM_WIN32
-#define LwChangeDirectory(x) SetCurrentDirectory(x)
+#define LwChangeDirectory(x) SetCurrentDirectoryA(x)
 #else
 #define LwChangeDirectory(x) chdir(x)
 #endif
@@ -49,7 +49,7 @@ static void error_callback(int error, const char* description) {
 
 static BOOL directory_exists(const char* szPath) {
 #if LW_PLATFORM_WIN32
-    DWORD dwAttrib = GetFileAttributes(szPath);
+    DWORD dwAttrib = GetFileAttributesA(szPath);
 
     return (dwAttrib != INVALID_FILE_ATTRIBUTES && (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
 #else
@@ -87,15 +87,15 @@ static GLFWwindow* create_glfw_window() {
 
 #if LW_PLATFORM_WIN32
 static int make_multiple_instances_nonoverlapping(GLFWwindow* window, const RECT* work_area, int window_rect_to_client_rect_dx, int window_rect_to_client_rect_dy, int width, int height) {
-    HANDLE first_mutex = CreateMutex(NULL, TRUE, "laidoff-win32-client-mutex-1");
+    HANDLE first_mutex = CreateMutexA(NULL, TRUE, "laidoff-win32-client-mutex-1");
     int first_window_exists = GetLastError() == ERROR_ALREADY_EXISTS;
     if (first_window_exists) {
         CloseHandle(first_mutex);
-        HANDLE second_mutex = CreateMutex(NULL, TRUE, "laidoff-win32-client-mutex-2");
+        HANDLE second_mutex = CreateMutexA(NULL, TRUE, "laidoff-win32-client-mutex-2");
         int second_window_exists = GetLastError() == ERROR_ALREADY_EXISTS;
         if (second_window_exists) {
             CloseHandle(second_mutex);
-            HANDLE third_mutex = CreateMutex(NULL, TRUE, "laidoff-win32-client-mutex-3");
+            HANDLE third_mutex = CreateMutexA(NULL, TRUE, "laidoff-win32-client-mutex-3");
             int third_window_exists = GetLastError() == ERROR_ALREADY_EXISTS;
             if (third_window_exists) {
                 CloseHandle(third_mutex);
@@ -171,7 +171,7 @@ int main(int argc, char* argv[]) {
 #endif
 
     // Borderless or bordered window
-    glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+    //glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 
     GLFWwindow* window = create_glfw_window();
 
@@ -273,6 +273,13 @@ int main(int argc, char* argv[]) {
     lwimgui_init(window);
 #endif
 
+    /*HIMC imc = ImmCreateContext();
+    BOOL associated = ImmAssociateContextEx(hwnd, imc, IACE_DEFAULT);
+    ImmSetOpenStatus(imc, TRUE);*/
+
+    HIMC himc = ImmGetContext(hwnd);
+    //ImmSetOpenStatus(himc, TRUE);
+    
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
         lwc_prerender_mutable_context(pLwc);
@@ -402,7 +409,28 @@ INT_PTR CALLBACK TextInputProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
         //default:
         //    return DefWindowProc(hDlg, message, wParam, lParam);
         //    break;
+    case WM_IME_NOTIFY:
+    {
+        LOGI("WM_IME_NOTIFY");
+        break;
     }
+    case WM_IME_SETCONTEXT:
+    {
+        LOGI("WM_IME_SETCONTEXT");
+        break;
+    }
+    case WM_INPUTLANGCHANGE:
+    {
+        LOGI("WM_INPUTLANGCHANGE");
+        break;
+    }
+    case WM_IME_STARTCOMPOSITION:
+    {
+        LOGI("WM_IME_STARTCOMPOSITION");
+        break;
+    }   
+    }
+    
     return FALSE;
 }
 

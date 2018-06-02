@@ -225,7 +225,7 @@ void lw_trigger_mouse_move(LWCONTEXT* pLwc, float nx, float ny, int pointer_id) 
                 // zoom in
                 const int zoom_factor_int = (int)(1.5f * zoom_factor + 0.5f);
                 lwttl_set_view_scale(pLwc->ttl, LWCLAMP(pinch_zoom.initial_view_scale >> (zoom_factor_int - 1), 1, view_scale_max));
-                lwttl_udp_send_ttlping(pLwc->ttl, lwttl_sea_udp(pLwc->ttl), 0);
+                lwttl_udp_send_ttlchat(pLwc->ttl, lwttl_sea_udp(pLwc->ttl), 0);
             } else if (0.0f < zoom_factor && zoom_factor < 1.0f) {
                 // zoom out
                 const int zoom_factor_int = (int)(1.5f * 1.0f / zoom_factor + 0.5f);

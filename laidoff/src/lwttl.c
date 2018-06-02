@@ -852,6 +852,14 @@ void lwttl_udp_send_ttlping(const LWTTL* ttl, LWUDP* udp, int ping_seq) {
                  LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS * LNGLAT_RENDER_EXTENT_MULTIPLIER_LAT);
 }
 
+void lwttl_udp_send_ttlchat(const LWTTL* ttl, LWUDP* udp, const char* line) {
+    LWPTTLCHAT p;
+    memset(&p, 0, sizeof(LWPTTLCHAT));
+    p.type = LPGP_LWPTTLCHAT;
+    memcpy(p.line, line, sizeof(p.line));
+    udp_send(udp, (const char*)&p, sizeof(LWPTTLCHAT));
+}
+
 void lwttl_udp_send_request_waypoints(const LWTTL* ttl, LWUDP* sea_udp, int ship_id) {
     LWPTTLREQUESTWAYPOINTS p;
     memset(&p, 0, sizeof(LWPTTLREQUESTWAYPOINTS));
@@ -1785,7 +1793,7 @@ const char* lwttl_world_text(const LWTTL* ttl,
     } else if (wt->anim_type == LTWTAT_MOVE) {
         const float x1 = cell_fx_to_render_coords((float)wt->xc1 + 0.5f, center, view_scale, render_scale);
         const float y1 = cell_fy_to_render_coords((float)wt->yc1 + 0.5f, center, view_scale, render_scale);
-        vec4 obj_pos1_vec4 = {
+        const vec4 obj_pos1_vec4 = {
             x1,
             y1,
             0,
@@ -2342,4 +2350,8 @@ float cell_fx_to_render_coords(float fx, const LWTTLLNGLAT* center, int view_sca
 
 float cell_fy_to_render_coords(float fy, const LWTTLLNGLAT* center, int view_scale, float render_scale) {
     return (cell_fy_to_lat(fy) - center->lat) * render_scale / view_scale;
+}
+
+int lwttl_add_field_viewport(LWTTL* ttl, const LWTTLFIELDVIEWPORT* vp) {
+    return 0;
 }

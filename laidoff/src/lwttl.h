@@ -31,6 +31,39 @@ typedef struct _LWTTLLNGLAT {
     float lat;
 } LWTTLLNGLAT;
 
+typedef struct _LWTTLFIELDVIEWPORT {
+    int field_viewport_x;
+    int field_viewport_y;
+    int field_viewport_width;
+    int field_viewport_height;
+    float field_viewport_aspect_ratio;
+    float field_viewport_rt_x;
+    float field_viewport_rt_y;
+    mat4x4 view;
+    mat4x4 proj;
+    LWTTLLNGLAT view_center;
+    int view_scale;
+    int view_scale_msb;
+    int clamped_view_scale;
+    int clamped_to_original_view_scale_ratio;
+    float render_scale;
+    float half_lng_extent_in_deg;
+    float half_lat_extent_in_deg;
+    float lng_min;
+    float lng_max;
+    float lat_min;
+    float lat_max;
+    float cell_render_width;
+    float cell_render_height;
+    int cell_bound_xc0;
+    int cell_bound_yc0;
+    int cell_bound_xc1;
+    int cell_bound_yc1;
+    float clamped_cell_render_width;
+    float clamped_cell_render_height;
+    int clamped_view_scale_msb;
+} LWTTLFIELDVIEWPORT;
+
 LWTTL* lwttl_new(float aspect_ratio);
 void lwttl_destroy(LWTTL** _ttl);
 void lwttl_worldmap_scroll_to(LWTTL* ttl, float lng, float lat, LWUDP* sea_udp);
@@ -52,7 +85,6 @@ int lwttl_view_scale(const LWTTL* ttl);
 int lwttl_view_scale_max(const LWTTL* ttl);
 int lwttl_clamped_view_scale(const LWTTL* ttl);
 void lwttl_set_sea_udp(LWTTL* ttl, LWUDP* sea_udp);
-void lwttl_udp_send_ttlping(const LWTTL* ttl, LWUDP* udp, int ping_seq);
 void lwttl_udp_send_request_waypoints(const LWTTL* ttl, LWUDP* sea_udp, int ship_id);
 void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc);
 void lwttl_lock_rendering_mutex(LWTTL* ttl);
@@ -144,6 +176,7 @@ float lwttl_earth_globe_morph_weight(float earth_globe_scale);
 float lwttl_earth_globe_y(const LWTTLLNGLAT* center, float earth_globe_scale, float earth_globe_morph_weight);
 void lwttl_fill_world_seaports_bookmarks(LWHTMLUI* htmlui);
 void lwttl_send_ping_now(LWTTL* ttl);
+void lwttl_send_chat_now(LWTTL* ttl);
 void lwttl_prerender_mutable_context(LWTTL* ttl, LWCONTEXT* pLwc, LWHTMLUI* htmlui);
 int lwttl_selected(const LWTTL* ttl, LWTTLLNGLAT* pos);
 int lwttl_selected_int(const LWTTL* ttl, int* xc0, int* yc0);
@@ -223,6 +256,8 @@ float render_coords_to_lng(float rc, const LWTTLLNGLAT* center, int view_scale, 
 float render_coords_to_lat(float rc, const LWTTLLNGLAT* center, int view_scale, float render_scale);
 float cell_fx_to_render_coords(float fx, const LWTTLLNGLAT* center, int view_scale, float render_scale);
 float cell_fy_to_render_coords(float fy, const LWTTLLNGLAT* center, int view_scale, float render_scale);
+void lwttl_udp_send_ttlchat(const LWTTL* ttl, LWUDP* udp, const char* line);
+void lwttl_udp_send_ttlping(const LWTTL* ttl, LWUDP* udp, int ping_seq);
 #ifdef __cplusplus
 }
 #endif

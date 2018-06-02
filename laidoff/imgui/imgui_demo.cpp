@@ -1,4 +1,4 @@
-// dear imgui, v1.51 WIP
+﻿// dear imgui, v1.51 WIP
 // (demo code)
 
 // Message to the person tempted to delete this file when integrating ImGui into their code base:
@@ -397,6 +397,7 @@ void ImGui::ShowTestWindow(bool* p_open)
             ImGui::TextWrapped("CJK text will only appears if the font was loaded with the appropriate CJK character ranges. Call io.Font->LoadFromFileTTF() manually to load extra character ranges.");
             ImGui::Text("Hiragana: \xe3\x81\x8b\xe3\x81\x8d\xe3\x81\x8f\xe3\x81\x91\xe3\x81\x93 (kakikukeko)");
             ImGui::Text("Kanjis: \xe6\x97\xa5\xe6\x9c\xac\xe8\xaa\x9e (nihongo)");
+            ImGui::Text(u8"Korean: 이히히힛");
             static char buf[32] = "\xe6\x97\xa5\xe6\x9c\xac\xe8\xaa\x9e";
             ImGui::InputText("UTF-8 input", buf, IM_ARRAYSIZE(buf));
             ImGui::TreePop();

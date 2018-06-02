@@ -1,9 +1,10 @@
-#include "lwimgui.h"
+﻿#include "lwimgui.h"
 #include <imgui.h>
 #include "imgui_impl_glfw_gl3.h"
 //#include <GLFW/glfw3.h>
 #include "lwcontext.h"
 #include "lwttl.h"
+#include "lwlog.h"
 
 static bool show_test_window = false;
 static bool show_another_window = true;
@@ -12,6 +13,33 @@ static ImVec4 clear_color = ImColor(114, 144, 154);
 extern "C" void lwimgui_init(GLFWwindow* window) {
 	// Callback for ImGui will be installed manually.
 	ImGui_ImplGlfwGL3_Init(window, false);
+    ImGuiIO& io = ImGui::GetIO();
+    //ImFont* font0 = io.Fonts->AddFontDefault();
+
+    ImFontConfig font_config;
+    memset(&font_config, 0, sizeof(ImFontConfig));
+    font_config.OversampleH = 2; //or 2 is the same
+    font_config.OversampleV = 2;
+    font_config.PixelSnapH = 1;
+
+    static const ImWchar ranges[] =
+    {
+        0x0020, 0x00FF, // ASCII
+        0x1100, 0x11FF, // Korean (Jamo)
+        0xAC00, 0xD7AF, // Korean
+        0,
+    };
+
+    ImFont* font1 = io.Fonts->AddFontFromFileTTF("C:\\Users\\gasbank\\Downloads\\NotoSansCJKkr-hinted\\NanumGothicCoding.ttf",
+                                                 16,
+                                                 nullptr,
+                                                 ranges);
+    //ImFontConfig config;
+    //config.OversampleH = 3;
+    //config.OversampleV = 1;
+    //config.GlyphOffset.y -= 2.0f;      // Move everything by 2 pixels up
+    //config.GlyphExtraSpacing.x = 1.0f; // Increase spacing between characters
+    //io.Fonts->LoadFromFileTTF("myfontfile.ttf", size_pixels, &config);
 }
 
 extern "C" void lwimgui_render(GLFWwindow* window) {
@@ -31,10 +59,31 @@ extern "C" void lwimgui_render(GLFWwindow* window) {
 	// 2. Show another simple window, this time using an explicit Begin/End pair
 	if (show_another_window)
 	{
+        bool open = false;
+        const int chat_window_height = 150;
+        ImGui::SetNextWindowPos(ImVec2(0, (float)pLwc->window_height - chat_window_height));
+        if (!ImGui::Begin("Example: Fixed Overlay",
+                          &open,
+                          ImVec2((float)pLwc->window_width, (float)chat_window_height),
+                          1.0f,
+                          ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings)) {
+            ImGui::End();
+            return;
+        }
+        ImGui::Text("%s", u8"누가 봐도 채팅창");
+        ImGui::Separator();
+        //ImGui::Text("Mouse Position: (%.1f,%.1f)", ImGui::GetIO().MousePos.x, ImGui::GetIO().MousePos.y);
+        //ImGui::Text("%s Hello...admin", u8"으흐흐흐");
+        static char buf[256] = u8"한글을 입력 해 보세요. 안될테니까요.";
+        if (ImGui::InputText("Chat", buf, ARRAY_SIZE(buf))) {
+            LOGI("Chat %s", buf);
+            lwttl_udp_send_ttlchat(pLwc->ttl, lwttl_sea_udp(pLwc->ttl), buf);
+        }
+        ImGui::End();
+
 		ImGui::SetNextWindowPos(ImVec2(100, 0), ImGuiSetCond_FirstUseEver);
 		ImGui::SetNextWindowSize(ImVec2(500, 60), ImGuiSetCond_FirstUseEver);
 		ImGui::Begin("Admin", &show_another_window);
-		ImGui::Text("Hello...admin");
         {
             vec3 cam_eye;
             lwttl_cam_eye(pLwc->ttl, cam_eye);

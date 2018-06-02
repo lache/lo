@@ -44,39 +44,6 @@ static char visibility[MAX_VISIBILITY_ENTRY_COUNT][MAX_VISIBILITY_ENTRY_NAME_LEN
 
 #define UI_SCREEN_EDGE_MARGIN (0.01f)
 
-typedef struct _LWTTLFIELDVIEWPORT {
-    int field_viewport_x;
-    int field_viewport_y;
-    int field_viewport_width;
-    int field_viewport_height;
-    float field_viewport_aspect_ratio;
-    float field_viewport_rt_x;
-    float field_viewport_rt_y;
-    mat4x4 view;
-    mat4x4 proj;
-    LWTTLLNGLAT view_center;
-    int view_scale;
-    int view_scale_msb;
-    int clamped_view_scale;
-    int clamped_to_original_view_scale_ratio;
-    float render_scale;
-    float half_lng_extent_in_deg;
-    float half_lat_extent_in_deg;
-    float lng_min;
-    float lng_max;
-    float lat_min;
-    float lat_max;
-    float cell_render_width;
-    float cell_render_height;
-    int cell_bound_xc0;
-    int cell_bound_yc0;
-    int cell_bound_xc1;
-    int cell_bound_yc1;
-    float clamped_cell_render_width;
-    float clamped_cell_render_height;
-    int clamped_view_scale_msb;
-} LWTTLFIELDVIEWPORT;
-
 static float lng_to_render_coords(float lng, const LWTTLFIELDVIEWPORT* vp) {
     return (lng - vp->view_center.lng) * vp->render_scale / vp->view_scale;
 }
