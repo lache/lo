@@ -30,8 +30,8 @@ extern "C" void lwimgui_init(GLFWwindow* window) {
         0,
     };
 
-    ImFont* font1 = io.Fonts->AddFontFromFileTTF("C:\\Users\\gasbank\\Downloads\\NotoSansCJKkr-hinted\\NanumGothicCoding.ttf",
-                                                 16,
+    ImFont* font1 = io.Fonts->AddFontFromFileTTF("fonts" PATH_SEPARATOR "NotoSansCJKkr-Regular.otf",
+                                                 18,
                                                  nullptr,
                                                  ranges);
     //ImFontConfig config;
@@ -75,7 +75,7 @@ extern "C" void lwimgui_render(GLFWwindow* window) {
         //ImGui::Text("Mouse Position: (%.1f,%.1f)", ImGui::GetIO().MousePos.x, ImGui::GetIO().MousePos.y);
         //ImGui::Text("%s Hello...admin", u8"으흐흐흐");
         static char buf[256] = u8"한글을 입력 해 보세요. 안될테니까요.";
-        if (ImGui::InputText("Chat", buf, ARRAY_SIZE(buf))) {
+        if (ImGui::InputText("", buf, ARRAY_SIZE(buf))) {
             LOGI("Chat %s", buf);
             lwttl_udp_send_ttlchat(pLwc->ttl, lwttl_sea_udp(pLwc->ttl), buf);
         }

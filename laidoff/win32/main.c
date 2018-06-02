@@ -219,7 +219,7 @@ int main(int argc, char* argv[]) {
     gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 #endif
     glfwSwapInterval(1);
-
+    
     // get version info
     const GLubyte* renderer = glGetString(GL_RENDERER); // get renderer string
     const GLubyte* version = glGetString(GL_VERSION); // version as a string

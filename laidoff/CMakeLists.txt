@@ -13,7 +13,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_C_STANDARD 11)
 add_subdirectory(tinycthread)
 if (NOT SERVER_ONLY)
-    add_subdirectory(glfw-3.2.1)
+    add_subdirectory(glfw)
     add_subdirectory(litehtml)
 else (NOT SERVER_ONLY)
 
@@ -25,7 +25,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif()
 
 include_directories(${glfw_INCLUDE_DIRS})
-include_directories("glfw-3.2.1/deps")
+include_directories("glfw/deps")
 
 # 컴파일 플래그 설정
 
