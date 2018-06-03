@@ -5,10 +5,52 @@
 #include "lwcontext.h"
 #include "lwttl.h"
 #include "lwlog.h"
+#include <stdio.h>
+#include <time.h>
 
 static bool show_test_window = false;
 static bool show_another_window = true;
 static ImVec4 clear_color = ImColor(114, 144, 154);
+
+typedef struct _LWCHATLINE {
+    time_t rawtime;
+    char strtime[64];
+    char line[512];
+} LWCHATLINE;
+
+typedef struct _LWCHATRINGBUFFER {
+    LWCHATLINE lines[512]; // array length should be power of 2 (wrapping index by bitwise operator)
+    int top;
+    int count;
+} LWCHATRINGBUFFER;
+
+void lwchatringbuffer_add(LWCHATRINGBUFFER* crb, const char* line) {
+    strncpy(crb->lines[crb->top].line, line, ARRAY_SIZE(crb->lines[crb->top].line) - 1);
+    crb->lines[crb->top].line[sizeof(crb->lines[crb->top].line) - 1] = 0;
+    time(&crb->lines[crb->top].rawtime);
+    struct tm* tm_info = localtime(&crb->lines[crb->top].rawtime);
+    strftime(crb->lines[crb->top].strtime, ARRAY_SIZE(crb->lines[crb->top].strtime), "%Y-%m-%d %H:%M:%S", tm_info);
+    crb->top = (crb->top + 1) & (ARRAY_SIZE(crb->lines) - 1);
+    crb->count = LWMIN(crb->count + 1, ARRAY_SIZE(crb->lines));
+}
+
+int lwchatringbuffer_count(const LWCHATRINGBUFFER* crb) {
+    return crb->count;
+}
+
+const LWCHATLINE* lwchatringbuffer_get(const LWCHATRINGBUFFER* crb, int index) {
+    if (index < 0 || index >= crb->count) {
+        return 0;
+    }
+    int wrapped_index = (crb->top - crb->count + index) & (ARRAY_SIZE(crb->lines) - 1);
+    return &crb->lines[wrapped_index];
+}
+
+void lwchatringbuffer_clear(LWCHATRINGBUFFER* crb) {
+    crb->count = 0;
+}
+
+LWCHATRINGBUFFER chat_ring_buffer;
 
 extern "C" void lwimgui_init(GLFWwindow* window) {
 	// Callback for ImGui will be installed manually.
@@ -41,6 +83,27 @@ extern "C" void lwimgui_init(GLFWwindow* window) {
     //config.GlyphOffset.y -= 2.0f;      // Move everything by 2 pixels up
     //config.GlyphExtraSpacing.x = 1.0f; // Increase spacing between characters
     //io.Fonts->LoadFromFileTTF("myfontfile.ttf", size_pixels, &config);
+
+    memset(&chat_ring_buffer, 0, sizeof(LWCHATRINGBUFFER));
+}
+
+char* trimwhitespace_inplace(char* str) {
+    char* end;
+
+    // Trim leading space
+    while (isspace((unsigned char)*str)) str++;
+
+    if (*str == 0)  // All spaces?
+        return str;
+
+    // Trim trailing space
+    end = str + strlen(str) - 1;
+    while (end > str && isspace((unsigned char)*end)) end--;
+
+    // Write new null terminator
+    *(end + 1) = 0;
+
+    return str;
 }
 
 extern "C" void lwimgui_render(GLFWwindow* window) {
@@ -60,31 +123,56 @@ extern "C" void lwimgui_render(GLFWwindow* window) {
 	// 2. Show another simple window, this time using an explicit Begin/End pair
 	if (show_another_window)
 	{
+        static char buf[256] = u8"한글을 입력 해 보세요. 안될테니까요.";
+        static bool focus_here = false;
+        static bool scroll_to_bottom = false;
         bool open = false;
-        const int chat_window_height = 100;
+        const int chat_window_height = 200;
         ImGui::SetNextWindowPos(ImVec2(0, (float)pLwc->window_height - chat_window_height));
         if (!ImGui::Begin("Example: Fixed Overlay",
                           &open,
                           ImVec2((float)pLwc->window_width, (float)chat_window_height),
-                          1.0f,
+                          0.8f,
                           ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings)) {
             ImGui::End();
             return;
         }
-        ImGui::Text("%s", u8"누가 봐도 채팅창");
+        ImGui::Text("%s", u8"채팅"); ImGui::SameLine();
+        if (ImGui::SmallButton(u8"모두 삭제")) {
+            lwchatringbuffer_clear(&chat_ring_buffer);
+        }
+        ImGui::BeginChild("ScrollingRegion", ImVec2(0, -ImGui::GetItemsLineHeightWithSpacing()), false, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_AlwaysVerticalScrollbar);
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1)); // Tighten spacing
+        int chat_lines = lwchatringbuffer_count(&chat_ring_buffer);
+        for (int i = 0; i < chat_lines; i++) {
+            const LWCHATLINE* cl = lwchatringbuffer_get(&chat_ring_buffer, i);
+            ImGui::TextUnformatted(cl->line);
+            ImGui::SameLine(ImGui::GetWindowWidth() - 130);
+            //ImGui::TextUnformatted(ctime(&cl->rawtime));
+            ImGui::TextUnformatted(cl->strtime);
+        }
+        if (scroll_to_bottom) {
+            ImGui::SetScrollHere();
+        }   
+        scroll_to_bottom = false;
+        ImGui::PopStyleVar();
+        ImGui::EndChild();
         ImGui::Separator();
         //ImGui::Text("Mouse Position: (%.1f,%.1f)", ImGui::GetIO().MousePos.x, ImGui::GetIO().MousePos.y);
         //ImGui::Text("%s Hello...admin", u8"으흐흐흐");
-        static char buf[256] = u8"한글을 입력 해 보세요. 안될테니까요.";
-        static bool focus_here = false;
         if (focus_here) {
             ImGui::SetKeyboardFocusHere();
             focus_here = false;
         }
         ImGui::PushItemWidth(-1);
-        if (ImGui::InputText("##On", buf, ARRAY_SIZE(buf), ImGuiInputTextFlags_EnterReturnsTrue)) {
-            LOGI("Chat %s", buf);
-            lwttl_udp_send_ttlchat(pLwc->ttl, lwttl_sea_udp(pLwc->ttl), buf);
+        if (ImGui::InputText("Chat", buf, ARRAY_SIZE(buf), ImGuiInputTextFlags_EnterReturnsTrue)) {
+            const char* buf_trimmed = trimwhitespace_inplace(buf);
+            if (buf_trimmed[0]) {
+                LOGI("Chat %s", buf_trimmed);
+                lwttl_udp_send_ttlchat(pLwc->ttl, lwttl_sea_udp(pLwc->ttl), buf_trimmed);
+                lwchatringbuffer_add(&chat_ring_buffer, buf_trimmed);
+                scroll_to_bottom = true;
+            }
             buf[0] = 0;
             focus_here = true;
         }
