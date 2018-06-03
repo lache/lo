@@ -166,7 +166,7 @@ extern "C" void unload_all_sound_osx();
 extern "C" HRESULT init_ext_sound_lib() {
 #if LW_PLATFORM_WIN32 && LW_ENABLE_SOUND
 
-    CoInitializeEx(NULL, COINIT_MULTITHREADED);
+    CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
 
     if (FAILED(XAudio2Create(&g_engine))) {
         CoUninitialize();

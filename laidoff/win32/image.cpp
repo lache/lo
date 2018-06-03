@@ -60,7 +60,7 @@ static VOID GetImageFromFile(LPCWSTR file, IWICBitmap** bitmap)
 extern "C" HRESULT init_ext_image_lib()
 {
 #if LW_PLATFORM_WIN32
-	return CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+	return CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
 #else
     return 0;
 #endif

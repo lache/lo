@@ -1558,9 +1558,9 @@ void init_action(LWCONTEXT* pLwc) {
 
 LWCONTEXT* lw_init_initial_size(int width, int height) {
     
-    //init_ext_image_lib();
+    init_ext_image_lib();
     
-    //init_ext_sound_lib();
+    init_ext_sound_lib();
     
     //test_image();
     
