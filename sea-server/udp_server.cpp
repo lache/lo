@@ -558,7 +558,6 @@ void udp_server::handle_receive(const boost::system::error_code& error, std::siz
     if (!error || error == boost::asio::error::message_size) {
         unsigned char type = *reinterpret_cast<unsigned char*>(recv_buffer_.data() + 0x00); // type
         if (type == LPGP_LWPTTLPING) {
-            // LPGP_LWPTTLPING
             LOGIx("PING received.");
             auto p = reinterpret_cast<LWPTTLPING*>(recv_buffer_.data());
             // routed ships
@@ -587,16 +586,13 @@ void udp_server::handle_receive(const boost::system::error_code& error, std::siz
             };
             register_client_endpoint(remote_endpoint_, aoi_box);
         } else if (type == LPGP_LWPTTLREQUESTWAYPOINTS) {
-            // LPGP_LWPTTLREQUESTWAYPOINTS
             LOGIx("REQUESTWAYPOINTS received.");
             auto p = reinterpret_cast<LWPTTLREQUESTWAYPOINTS*>(recv_buffer_.data());
             send_waypoints(p->ship_id);
             LOGIx("REQUESTWAYPOINTS replied with WAYPOINTS.");
         } else if (type == LPGP_LWPTTLPINGFLUSH) {
-            // LPGP_LWPTTLPINGFLUSH
             LOGI("PINGFLUSH received.");
         } else if (type == LPGP_LWPTTLPINGCHUNK) {
-            // LPGP_LWPTTLPINGCHUNK
             LOGIx("PINGCHUNK received.");
             auto p = reinterpret_cast<LWPTTLPINGCHUNK*>(recv_buffer_.data());
             LWTTLCHUNKKEY chunk_key;
@@ -607,7 +603,6 @@ void udp_server::handle_receive(const boost::system::error_code& error, std::siz
             const float ex_lng = LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS;
             const float ex_lat = LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS;
             if (p->static_object == LTSOT_LAND_CELL) {
-                // land cells
                 send_land_cell_aligned(xc0_aligned, yc0_aligned, ex_lng, ex_lat, clamped_view_scale);
                 //send_land_cell_aligned_bitmap(xc0_aligned, yc0_aligned, ex_lng, ex_lat, clamped_view_scale);
                 LOGIx("Land cells Chunk key (%1%,%2%,%3%) Sent!",
@@ -615,7 +610,6 @@ void udp_server::handle_receive(const boost::system::error_code& error, std::siz
                       static_cast<int>(chunk_key.bf.ycc0),
                       static_cast<int>(chunk_key.bf.view_scale_msb));
             } else if (p->static_object == LTSOT_SEAPORT) {
-                // seaports
                 auto ts = seaport_->query_ts(chunk_key);
                 if (ts == 0) {
                     // In this case, client requested 'first' query on 'empty' chunk
@@ -640,7 +634,6 @@ void udp_server::handle_receive(const boost::system::error_code& error, std::siz
                           ts);
                 }
             } else if (p->static_object == LTSOT_CITY) {
-                // cities
                 const auto ts = city_->query_ts(chunk_key);
                 if (ts > p->ts) {
                     send_city_cell_aligned(xc0_aligned, yc0_aligned, ex_lng, ex_lat, clamped_view_scale);
@@ -657,7 +650,6 @@ void udp_server::handle_receive(const boost::system::error_code& error, std::siz
                           ts);
                 }
             } else if (p->static_object == LTSOT_SALVAGE) {
-                // salvages
                 const auto ts = salvage_->query_ts(chunk_key);
                 if (ts > p->ts) {
                     send_salvage_cell_aligned(xc0_aligned, yc0_aligned, ex_lng, ex_lat, clamped_view_scale);
@@ -679,10 +671,18 @@ void udp_server::handle_receive(const boost::system::error_code& error, std::siz
                 LOGE("Unknown static_object value: %1%", p->static_object);
             }
         } else if (type == LPGP_LWPTTLPINGSINGLECELL) {
-            // LPGP_LWPTTLPINGSINGLECELL
             LOGIx("PINGSINGLECELL received.");
             auto p = reinterpret_cast<LWPTTLPINGSINGLECELL*>(recv_buffer_.data());
             send_single_cell(p->xc0, p->yc0);
+        } else if (type == LPGP_LWPTTLCHAT) {
+            LOGIx("CHAT received.");
+            auto p = reinterpret_cast<LWPTTLCHAT*>(recv_buffer_.data());
+            std::shared_ptr<LWPTTLCHAT> reply(new LWPTTLCHAT);
+            memset(reply.get(), 0, sizeof(LWPTTLCHAT));
+            reply->type = LPGP_LWPTTLCHAT;
+            strncpy(reply->line, p->line, boost::size(reply->line) - 1);
+            reply->line[boost::size(reply->line) - 1] = 0;
+            notify_to_all_clients(reply);
         } else {
             LOGIP("Unknown UDP request of type %1%", static_cast<int>(type));
         }

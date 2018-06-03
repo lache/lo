@@ -34,6 +34,7 @@
 #include "lwfvbo.h"
 #include "lwfanim.h"
 #include "lwcountry.h"
+#include "lwchatringbuffer.h"
 #define MAX_RENDER_QUEUE_CAPACITY (512)
 
 // Vertex attributes: Coordinates (3xf) + Normal (3xf) + UV (2xf) + S9 (2xf)
@@ -429,6 +430,7 @@ typedef struct _LWCONTEXT {
     LWCOUNTRYARRAY country_array;
     int country_page;
     void* remtex;
+    LWCHATRINGBUFFER chat_ring_buffer;
 } LWCONTEXT;
 
 double lwcontext_delta_time(const LWCONTEXT* pLwc);

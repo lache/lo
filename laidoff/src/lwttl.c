@@ -2156,6 +2156,18 @@ void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc) {
                 spawn_world_text(ttl, text, p->xc0, p->yc0);
                 break;
             }
+            case LPGP_LWPTTLCHAT:
+            {
+                if (decompressed_bytes != sizeof(LWPTTLCHAT)) {
+                    LOGE("LWPTTLCHAT: Size error %d (%zu expected)",
+                         decompressed_bytes,
+                         sizeof(LWPTTLCHAT));
+                }
+                LWPTTLCHAT* p = (LWPTTLCHAT*)decompressed;
+                LOGIx("LWPTTLCHAT");
+                lwchatringbuffer_add(&pLwc->chat_ring_buffer, p->line);
+                break;
+            }
             default:
             {
                 LOGEP("Unknown UDP packet");

@@ -6,51 +6,11 @@
 #include "lwttl.h"
 #include "lwlog.h"
 #include <stdio.h>
-#include <time.h>
 
 static bool show_test_window = false;
+static bool show_chat_window = false;
 static bool show_another_window = true;
 static ImVec4 clear_color = ImColor(114, 144, 154);
-
-typedef struct _LWCHATLINE {
-    time_t rawtime;
-    char strtime[64];
-    char line[512];
-} LWCHATLINE;
-
-typedef struct _LWCHATRINGBUFFER {
-    LWCHATLINE lines[512]; // array length should be power of 2 (wrapping index by bitwise operator)
-    int top;
-    int count;
-} LWCHATRINGBUFFER;
-
-void lwchatringbuffer_add(LWCHATRINGBUFFER* crb, const char* line) {
-    strncpy(crb->lines[crb->top].line, line, ARRAY_SIZE(crb->lines[crb->top].line) - 1);
-    crb->lines[crb->top].line[sizeof(crb->lines[crb->top].line) - 1] = 0;
-    time(&crb->lines[crb->top].rawtime);
-    struct tm* tm_info = localtime(&crb->lines[crb->top].rawtime);
-    strftime(crb->lines[crb->top].strtime, ARRAY_SIZE(crb->lines[crb->top].strtime), "%Y-%m-%d %H:%M:%S", tm_info);
-    crb->top = (crb->top + 1) & (ARRAY_SIZE(crb->lines) - 1);
-    crb->count = LWMIN(crb->count + 1, ARRAY_SIZE(crb->lines));
-}
-
-int lwchatringbuffer_count(const LWCHATRINGBUFFER* crb) {
-    return crb->count;
-}
-
-const LWCHATLINE* lwchatringbuffer_get(const LWCHATRINGBUFFER* crb, int index) {
-    if (index < 0 || index >= crb->count) {
-        return 0;
-    }
-    int wrapped_index = (crb->top - crb->count + index) & (ARRAY_SIZE(crb->lines) - 1);
-    return &crb->lines[wrapped_index];
-}
-
-void lwchatringbuffer_clear(LWCHATRINGBUFFER* crb) {
-    crb->count = 0;
-}
-
-LWCHATRINGBUFFER chat_ring_buffer;
 
 extern "C" void lwimgui_init(GLFWwindow* window) {
 	// Callback for ImGui will be installed manually.
@@ -83,11 +43,9 @@ extern "C" void lwimgui_init(GLFWwindow* window) {
     //config.GlyphOffset.y -= 2.0f;      // Move everything by 2 pixels up
     //config.GlyphExtraSpacing.x = 1.0f; // Increase spacing between characters
     //io.Fonts->LoadFromFileTTF("myfontfile.ttf", size_pixels, &config);
-
-    memset(&chat_ring_buffer, 0, sizeof(LWCHATRINGBUFFER));
 }
 
-char* trimwhitespace_inplace(char* str) {
+static char* trimwhitespace_inplace(char* str) {
     char* end;
 
     // Trim leading space
@@ -108,79 +66,77 @@ char* trimwhitespace_inplace(char* str) {
 
 extern "C" void lwimgui_render(GLFWwindow* window) {
     LWCONTEXT* pLwc = (LWCONTEXT*)glfwGetWindowUserPointer(window);
-	ImGui_ImplGlfwGL3_NewFrame();
-	// 1. Show a simple window
-	// Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets appears in a window automatically called "Debug"
-	//{
-	//	static float f = 0.0f;
-	//	ImGui::Text("Hello, world!");
-	//	ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
-	//	ImGui::ColorEdit3("clear color", (float*)&clear_color);
-	//	if (ImGui::Button("Test Window")) show_test_window ^= 1;
-	//	if (ImGui::Button("Another Window")) show_another_window ^= 1;
-	//	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-	//}
-	// 2. Show another simple window, this time using an explicit Begin/End pair
-	if (show_another_window)
-	{
-        static char buf[256] = u8"한글을 입력 해 보세요. 안될테니까요.";
-        static bool focus_here = false;
-        static bool scroll_to_bottom = false;
-        bool open = false;
-        const int chat_window_height = 200;
-        ImGui::SetNextWindowPos(ImVec2(0, (float)pLwc->window_height - chat_window_height));
-        if (!ImGui::Begin("Example: Fixed Overlay",
-                          &open,
-                          ImVec2((float)pLwc->window_width, (float)chat_window_height),
-                          0.8f,
-                          ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings)) {
-            ImGui::End();
-            return;
-        }
-        ImGui::Text("%s", u8"채팅"); ImGui::SameLine();
-        if (ImGui::SmallButton(u8"모두 삭제")) {
-            lwchatringbuffer_clear(&chat_ring_buffer);
-        }
-        ImGui::BeginChild("ScrollingRegion", ImVec2(0, -ImGui::GetItemsLineHeightWithSpacing()), false, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_AlwaysVerticalScrollbar);
-        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1)); // Tighten spacing
-        int chat_lines = lwchatringbuffer_count(&chat_ring_buffer);
-        for (int i = 0; i < chat_lines; i++) {
-            const LWCHATLINE* cl = lwchatringbuffer_get(&chat_ring_buffer, i);
-            ImGui::TextUnformatted(cl->line);
-            ImGui::SameLine(ImGui::GetWindowWidth() - 130);
-            //ImGui::TextUnformatted(ctime(&cl->rawtime));
-            ImGui::TextUnformatted(cl->strtime);
-        }
-        if (scroll_to_bottom) {
-            ImGui::SetScrollHere();
-        }   
-        scroll_to_bottom = false;
-        ImGui::PopStyleVar();
-        ImGui::EndChild();
-        ImGui::Separator();
-        //ImGui::Text("Mouse Position: (%.1f,%.1f)", ImGui::GetIO().MousePos.x, ImGui::GetIO().MousePos.y);
-        //ImGui::Text("%s Hello...admin", u8"으흐흐흐");
-        if (focus_here) {
-            ImGui::SetKeyboardFocusHere();
-            focus_here = false;
-        }
-        ImGui::PushItemWidth(-1);
-        if (ImGui::InputText("Chat", buf, ARRAY_SIZE(buf), ImGuiInputTextFlags_EnterReturnsTrue)) {
-            const char* buf_trimmed = trimwhitespace_inplace(buf);
-            if (buf_trimmed[0]) {
-                LOGI("Chat %s", buf_trimmed);
-                lwttl_udp_send_ttlchat(pLwc->ttl, lwttl_sea_udp(pLwc->ttl), buf_trimmed);
-                lwchatringbuffer_add(&chat_ring_buffer, buf_trimmed);
-                scroll_to_bottom = true;
+    ImGui_ImplGlfwGL3_NewFrame();
+    // 1. Show a simple window
+    // Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets appears in a window automatically called "Debug"
+    //{
+    //	static float f = 0.0f;
+    //	ImGui::Text("Hello, world!");
+    //	ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
+    //	ImGui::ColorEdit3("clear color", (float*)&clear_color);
+    //	if (ImGui::Button("Test Window")) show_test_window ^= 1;
+    //	if (ImGui::Button("Another Window")) show_another_window ^= 1;
+    //	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+    //}
+    // 2. Show another simple window, this time using an explicit Begin/End pair
+    if (show_another_window) {
+        if (show_chat_window) {
+            static char buf[256] = u8"";
+            static bool focus_here = false;
+            const int chat_window_height = 250;
+            ImGui::SetNextWindowPos(ImVec2(0, (float)pLwc->window_height - chat_window_height));
+            if (!ImGui::Begin("Chat",
+                              &show_chat_window,
+                              ImVec2((float)pLwc->window_width, (float)chat_window_height),
+                              0.8f,
+                              ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings)) {
+                ImGui::End();
+                return;
             }
-            buf[0] = 0;
-            focus_here = true;
+            ImGui::Text("%s", u8"채팅"); ImGui::SameLine();
+            if (ImGui::SmallButton(u8"모두 삭제")) {
+                lwchatringbuffer_clear(&pLwc->chat_ring_buffer);
+            }
+            ImGui::BeginChild("ScrollingRegion", ImVec2(0, -ImGui::GetItemsLineHeightWithSpacing()), false, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_AlwaysVerticalScrollbar);
+            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1)); // Tighten spacing
+            int chat_lines = lwchatringbuffer_count(&pLwc->chat_ring_buffer);
+            for (int i = 0; i < chat_lines; i++) {
+                const LWCHATLINE* cl = lwchatringbuffer_get(&pLwc->chat_ring_buffer, i);
+                ImGui::TextUnformatted(cl->line);
+                ImGui::SameLine(ImGui::GetWindowWidth() - 130);
+                //ImGui::TextUnformatted(ctime(&cl->rawtime));
+                ImGui::TextUnformatted(cl->strtime);
+            }
+            if (lwchatringbuffer_flush_scroll_to_bottom(&pLwc->chat_ring_buffer)) {
+                ImGui::SetScrollHere();
+            }
+            ImGui::PopStyleVar();
+            ImGui::EndChild();
+            ImGui::Separator();
+            //ImGui::Text("Mouse Position: (%.1f,%.1f)", ImGui::GetIO().MousePos.x, ImGui::GetIO().MousePos.y);
+            //ImGui::Text("%s Hello...admin", u8"으흐흐흐");
+            if (focus_here) {
+                ImGui::SetKeyboardFocusHere();
+                focus_here = false;
+            }
+            ImGui::PushItemWidth(-1);
+            if (ImGui::InputText("Chat", buf, ARRAY_SIZE(buf), ImGuiInputTextFlags_EnterReturnsTrue)) {
+                const char* buf_trimmed = trimwhitespace_inplace(buf);
+                if (buf_trimmed[0]) {
+                    LOGI("Chat %s", buf_trimmed);
+                    lwttl_udp_send_ttlchat(pLwc->ttl, lwttl_sea_udp(pLwc->ttl), buf_trimmed);
+                    //lwchatringbuffer_add(&pLwc->chat_ring_buffer, buf_trimmed);
+                    //scroll_to_bottom = true;
+                }
+                buf[0] = 0;
+                focus_here = true;
+            }
+            ImGui::End();
         }
-        ImGui::End();
-
-		ImGui::SetNextWindowPos(ImVec2(100, 0), ImGuiSetCond_FirstUseEver);
-		ImGui::SetNextWindowSize(ImVec2(500, 60), ImGuiSetCond_FirstUseEver);
-		ImGui::Begin("Admin", &show_another_window);
+    
+        ImGui::SetNextWindowPos(ImVec2(100, 0), ImGuiSetCond_FirstUseEver);
+        ImGui::SetNextWindowSize(ImVec2(500, 60), ImGuiSetCond_FirstUseEver);
+        ImGui::Begin("Admin", &show_another_window);
         {
             vec3 cam_eye;
             lwttl_cam_eye(pLwc->ttl, cam_eye);
@@ -204,55 +160,54 @@ extern "C" void lwimgui_render(GLFWwindow* window) {
                 lwttl_update_view_proj(pLwc->ttl, pLwc->viewport_aspect_ratio);
             }
         }
-		if (ImGui::Button("Test Window")) {
-			show_test_window ^= 1;
-		} ImGui::SameLine();
-		if (ImGui::Button("Test Window 2")) {
-			show_test_window ^= 1;
-		}
-		ImGui::End();
-	}
-	// 3. Show the ImGui test window. Most of the sample code is in ImGui::ShowTestWindow()
-	if (show_test_window)
-	{
-		ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiSetCond_FirstUseEver);
-		ImGui::SetNextWindowSize(ImVec2(200, 100), ImGuiSetCond_FirstUseEver);
-		ImGui::ShowTestWindow(&show_test_window);
-	}
-	ImGui::Render();
+        if (ImGui::Button("Test Window")) {
+            show_test_window ^= 1;
+        } ImGui::SameLine();
+        if (ImGui::Button("Chat Window")) {
+            show_chat_window ^= 1;
+        }
+        ImGui::End();
+    }
+    // 3. Show the ImGui test window. Most of the sample code is in ImGui::ShowTestWindow()
+    if (show_test_window) {
+        ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiSetCond_FirstUseEver);
+        ImGui::SetNextWindowSize(ImVec2(200, 100), ImGuiSetCond_FirstUseEver);
+        ImGui::ShowTestWindow(&show_test_window);
+    }
+    ImGui::Render();
 }
 
 extern "C" void lwimgui_shutdown() {
-	ImGui_ImplGlfwGL3_Shutdown();
+    ImGui_ImplGlfwGL3_Shutdown();
 }
 
 extern "C" void lwimgui_mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
-	ImGui_ImplGlfwGL3_MouseButtonCallback(window, button, action, mods);
+    ImGui_ImplGlfwGL3_MouseButtonCallback(window, button, action, mods);
 }
 
 extern "C" void lwimgui_scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-	ImGui_ImplGlfwGL3_ScrollCallback(window, xoffset, yoffset);
+    ImGui_ImplGlfwGL3_ScrollCallback(window, xoffset, yoffset);
 }
 
 extern "C" void lwimgui_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-	ImGui_ImplGlfwGL3_KeyCallback(window, key, scancode, action, mods);
+    ImGui_ImplGlfwGL3_KeyCallback(window, key, scancode, action, mods);
 }
 
 extern "C" void lwimgui_char_callback(GLFWwindow* window, unsigned int c) {
-	ImGui_ImplGlfwGL3_CharCallback(window, c);
+    ImGui_ImplGlfwGL3_CharCallback(window, c);
 }
 
 extern "C" int lwimgui_want_capture_mouse() {
-	ImGuiIO& io = ImGui::GetIO();
-	return io.WantCaptureMouse;
+    ImGuiIO& io = ImGui::GetIO();
+    return io.WantCaptureMouse;
 }
 
 extern "C" int lwimgui_want_capture_keyboard() {
-	ImGuiIO& io = ImGui::GetIO();
-	return io.WantCaptureKeyboard;
+    ImGuiIO& io = ImGui::GetIO();
+    return io.WantCaptureKeyboard;
 }
 
 extern "C" int lwimgui_want_text_input() {
-	ImGuiIO& io = ImGui::GetIO();
-	return io.WantTextInput;
+    ImGuiIO& io = ImGui::GetIO();
+    return io.WantTextInput;
 }
