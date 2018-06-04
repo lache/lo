@@ -216,7 +216,8 @@ static const LWTTLSELECTED* lwttl_main_viewport_selected(const LWTTL* ttl) {
     return 0;
 }
 
-static void lwttl_update_viewport_data(LWTTLFIELDVIEWPORT* vp,
+static void lwttl_update_viewport_data(const LWTTL* ttl,
+                                       LWTTLFIELDVIEWPORT* vp,
                                        int x,
                                        int y,
                                        int w,
@@ -230,7 +231,7 @@ static void lwttl_update_viewport_data(LWTTLFIELDVIEWPORT* vp,
     vp->field_viewport_y = y;
     vp->field_viewport_width = w;
     vp->field_viewport_height = h;
-    vp->view_scale = LWCLAMP(view_scale, 1, LNGLAT_VIEW_SCALE_PING_MAX);
+    vp->view_scale = LWCLAMP(view_scale, 1, ttl->view_scale_max);
     vp->clamped_view_scale = lwttl_calculate_clamped_view_scale(view_scale, LNGLAT_VIEW_SCALE_PING_MAX);
     memcpy(&vp->view_center, view_center, sizeof(LWTTLLNGLAT));
     vp->field_viewport_aspect_ratio = (float)vp->field_viewport_width / vp->field_viewport_height;
@@ -290,7 +291,8 @@ LWTTL* lwttl_new(float aspect_ratio) {
     // add main viewport
     LWTTLFIELDVIEWPORT vp;
     memset(&vp, 0, sizeof(LWTTLFIELDVIEWPORT));
-    lwttl_update_viewport_data(&vp,
+    lwttl_update_viewport_data(ttl,
+                               &vp,
                                0,
                                0,
                                1,
@@ -324,7 +326,8 @@ void lwttl_worldmap_scroll_to(LWTTL* ttl, float lng, float lat, LWUDP* sea_udp) 
         ttl->viewports[0].view_center.lng = lng;
     }
     ttl->viewports[0].view_center.lat = LWCLAMP(lat, -90.0f, +90.0f);
-    lwttl_update_viewport_data(&ttl->viewports[0],
+    lwttl_update_viewport_data(ttl,
+                               &ttl->viewports[0],
                                ttl->viewports[0].field_viewport_x,
                                ttl->viewports[0].field_viewport_y,
                                ttl->viewports[0].field_viewport_width,
@@ -1187,7 +1190,7 @@ int lwttl_query_chunk_range_land_vp(const LWTTL* ttl,
                                         vp->lat_min,
                                         vp->lng_max,
                                         vp->lat_max,
-                                        vp->view_scale,
+                                        vp->clamped_view_scale,
                                         chunk_index_array,
                                         chunk_index_array_len,
                                         xcc0,
@@ -1235,7 +1238,7 @@ int lwttl_query_chunk_range_seaport_vp(const LWTTL* ttl,
                                            vp->lat_min,
                                            vp->lng_max,
                                            vp->lat_max,
-                                           vp->view_scale,
+                                           vp->clamped_view_scale,
                                            chunk_index_array,
                                            chunk_index_array_len,
                                            xcc0,
@@ -1283,7 +1286,7 @@ int lwttl_query_chunk_range_city_vp(const LWTTL* ttl,
                                         vp->lat_min,
                                         vp->lng_max,
                                         vp->lat_max,
-                                        vp->view_scale,
+                                        vp->clamped_view_scale,
                                         chunk_index_array,
                                         chunk_index_array_len,
                                         xcc0,
@@ -1331,7 +1334,7 @@ int lwttl_query_chunk_range_salvage_vp(const LWTTL* ttl,
                                            vp->lat_min,
                                            vp->lng_max,
                                            vp->lat_max,
-                                           vp->view_scale,
+                                           vp->clamped_view_scale,
                                            chunk_index_array,
                                            chunk_index_array_len,
                                            xcc0,
@@ -2642,7 +2645,8 @@ void lwttl_set_viewport_view_scale(LWTTL* ttl, int viewport_index, int view_scal
         LOGEP("Viewport index %d is out of range.", viewport_index);
     } else {
         if (ttl->viewports[viewport_index].valid) {
-            lwttl_update_viewport_data(&ttl->viewports[viewport_index],
+            lwttl_update_viewport_data(ttl,
+                                       &ttl->viewports[viewport_index],
                                        ttl->viewports[viewport_index].field_viewport_x,
                                        ttl->viewports[viewport_index].field_viewport_y,
                                        ttl->viewports[viewport_index].field_viewport_width,
@@ -2826,7 +2830,8 @@ void lwttl_viewport_range(const LWTTLFIELDVIEWPORT* vp,
 }
 
 void lwttl_set_window_size(LWTTL* ttl, int w, int h, float aspect_ratio) {
-    lwttl_update_viewport_data(&ttl->viewports[0],
+    lwttl_update_viewport_data(ttl,
+                               &ttl->viewports[0],
                                ttl->viewports[0].field_viewport_x,
                                ttl->viewports[0].field_viewport_y,
                                w,
