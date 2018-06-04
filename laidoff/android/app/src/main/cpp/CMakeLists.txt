@@ -110,7 +110,7 @@ add_library(native-activity SHARED
 
 target_include_directories(native-activity PRIVATE
                            ${ANDROID_NDK}/sources/android/native_app_glue
-                           ../../../../../glfw-3.2.1/deps
+                           ../../../../../glfw/deps
                            ../../../../../src
                            ../../../../../lua-5.3.4
                            ../../../../../ode/include

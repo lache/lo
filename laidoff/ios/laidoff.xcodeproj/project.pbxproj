@@ -3403,7 +3403,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_CFLAGS = (
 					"-Ilaidoff",
-					"-I../glfw-3.2.1/deps",
+					"-I../glfw/deps",
 					"-I../lua-5.3.4",
 					"-I../ode/ode/src",
 					"-I../ode/ou/include",
@@ -3440,7 +3440,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_CFLAGS = (
 					"-Ilaidoff",
-					"-I../glfw-3.2.1/deps",
+					"-I../glfw/deps",
 					"-I../lua-5.3.4",
 					"-I../ode/ode/src",
 					"-I../ode/ou/include",
