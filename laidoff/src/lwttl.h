@@ -176,7 +176,6 @@ float lwttl_earth_globe_morph_weight(float earth_globe_scale);
 float lwttl_earth_globe_y(const LWTTLLNGLAT* center, float earth_globe_scale, float earth_globe_morph_weight);
 void lwttl_fill_world_seaports_bookmarks(LWHTMLUI* htmlui);
 void lwttl_send_ping_now(LWTTL* ttl);
-void lwttl_send_chat_now(LWTTL* ttl);
 void lwttl_prerender_mutable_context(LWTTL* ttl, LWCONTEXT* pLwc, LWHTMLUI* htmlui);
 int lwttl_selected(const LWTTL* ttl, LWTTLLNGLAT* pos);
 int lwttl_selected_int(const LWTTL* ttl, int* xc0, int* yc0);
@@ -186,10 +185,8 @@ void lwttl_on_release(LWTTL* ttl, LWCONTEXT* pLwc, float nx, float ny);
 void lwttl_view_proj(const LWTTL* ttl, mat4x4 view, mat4x4 proj);
 void lwttl_update_view_proj(LWTTL* ttl, float aspect_ratio);
 void lwttl_screen_to_world_pos(const LWTTL* ttl,
-                               const float touchx,
-                               const float touchy,
-                               const float screenw,
-                               const float screenh,
+                               const float touchnx,
+                               const float touchny,
                                vec2 world_pos);
 void lwttl_clear_selected_pressed_pos(LWTTL* ttl);
 const LWPTTLSINGLECELL* lwttl_single_cell(const LWTTL* ttl);

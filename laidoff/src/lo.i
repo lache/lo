@@ -127,7 +127,7 @@
 %immutable _LWTEXTBLOCK::text;
 %immutable _LWVBOFILENAME::filename;
 
-%include "../glfw-3.2.1/deps/linmath.h"
+%include "../glfw/deps/linmath.h"
 %include "lwmacro.h"
 %include "constants.h"
 %include "dialog.h"

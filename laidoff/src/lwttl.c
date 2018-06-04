@@ -224,7 +224,13 @@ void lwttl_destroy(LWTTL** __ttl) {
 void lwttl_worldmap_scroll_to(LWTTL* ttl, float lng, float lat, LWUDP* sea_udp) {
     // cancel tracking if user want to scroll around
     lwttl_set_track_object_ship_id(ttl, 0);
-    ttl->worldmap.center.lng = numcomp_wrap_min_max(lng, -180.0f, +180.0f);
+    // wrapping drift on float variable can be significant on some cases...
+    // only wrap if out of range
+    if (lng < -180.0f || lng > +180.0f) {
+        ttl->worldmap.center.lng = numcomp_wrap_min_max(lng, -180.0f, +180.0f);
+    } else {
+        ttl->worldmap.center.lng = lng;
+    }
     ttl->worldmap.center.lat = LWCLAMP(lat, -90.0f, +90.0f);
     if (sea_udp) {
         lwttl_udp_send_ttlping(ttl, sea_udp, 0);
@@ -1447,10 +1453,8 @@ static float inner_product(const float a[3], const float b[3]) {
 }
 
 void lwttl_screen_to_world_pos(const LWTTL* ttl,
-                               const float touchx,
-                               const float touchy,
-                               const float screenw,
-                               const float screenh,
+                               const float touchnx,
+                               const float touchny,
                                vec2 world_pos) {
     // Auxiliary matrix and vectors
     // to deal with ogl.
@@ -1459,14 +1463,9 @@ void lwttl_screen_to_world_pos(const LWTTL* ttl,
     vec4 normalized_in_point;
     vec4 out_point;
 
-    // Invert y coordinate, as android uses
-    // top-left, and ogl bottom-left.
-    int oglTouchY = (int)(screenh - touchy);
-
-    /* Transform the screen point to clip
-    space in ogl (-1,1) */
-    normalized_in_point[0] = touchx;
-    normalized_in_point[1] = touchy;
+    /* Transform the screen point to clip space in ogl (-1,1) */
+    normalized_in_point[0] = touchnx;
+    normalized_in_point[1] = touchny;
     normalized_in_point[2] = -1.0f;
     normalized_in_point[3] = 1.0f;
 
@@ -1524,8 +1523,6 @@ static void nx_ny_to_lng_lat(const LWTTL* ttl,
     lwttl_screen_to_world_pos(ttl,
                               nx,
                               ny,
-                              (float)width,
-                              (float)height,
                               world_pos);
     const LWTTLLNGLAT* center = &ttl->worldmap.center;
     const int view_scale = lwttl_view_scale(ttl);
@@ -2208,7 +2205,7 @@ void lwttl_update(LWTTL* ttl, LWCONTEXT* pLwc, float delta_time) {
         && (dlen > 0.05f)) {
         // dx, dy in world space coordinates
         vec2 dworld;
-        lwttl_screen_to_world_pos(ttl, dx, dy, pLwc->viewport_aspect_ratio, 1.0f, dworld);
+        lwttl_screen_to_world_pos(ttl, dx, dy, dworld);
 
         const float dworld_len = sqrtf(dworld[0] * dworld[0] + dworld[1] * dworld[1]);
         dworld[0] /= dworld_len;
