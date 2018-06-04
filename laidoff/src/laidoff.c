@@ -1670,7 +1670,10 @@ void lw_set_window_size(LWCONTEXT* pLwc, int w, int h) {
 
         puck_game_reset_view_proj(pLwc, pLwc->puck_game);
 
-        lwttl_update_aspect_ratio(pLwc->ttl, pLwc->window_aspect_ratio);
+        lwttl_set_window_size(pLwc->ttl,
+                              pLwc->window_width,
+                              pLwc->window_height,
+                              pLwc->window_aspect_ratio);
 
         if (pLwc->game_scene == LGS_PUCK_GAME || pLwc->game_scene == LGS_FONT_TEST || pLwc->game_scene == LGS_TTL) {
             // Resize FBO

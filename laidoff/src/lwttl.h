@@ -25,44 +25,12 @@ typedef struct _LWHTMLUI LWHTMLUI;
 typedef struct _LWPTTLSINGLECELL LWPTTLSINGLECELL;
 typedef struct _LWPTTLSTATICSTATE3 LWPTTLSTATICSTATE3;
 typedef struct _LWPTTLROUTEOBJECT LWPTTLROUTEOBJECT;
+typedef struct _LWTTLFIELDVIEWPORT LWTTLFIELDVIEWPORT;
 
 typedef struct _LWTTLLNGLAT {
     float lng;
     float lat;
 } LWTTLLNGLAT;
-
-typedef struct _LWTTLFIELDVIEWPORT {
-    int field_viewport_x;
-    int field_viewport_y;
-    int field_viewport_width;
-    int field_viewport_height;
-    float field_viewport_aspect_ratio;
-    float field_viewport_rt_x;
-    float field_viewport_rt_y;
-    mat4x4 view;
-    mat4x4 proj;
-    LWTTLLNGLAT view_center;
-    int view_scale;
-    int view_scale_msb;
-    int clamped_view_scale;
-    int clamped_to_original_view_scale_ratio;
-    float render_scale;
-    float half_lng_extent_in_deg;
-    float half_lat_extent_in_deg;
-    float lng_min;
-    float lng_max;
-    float lat_min;
-    float lat_max;
-    float cell_render_width;
-    float cell_render_height;
-    int cell_bound_xc0;
-    int cell_bound_yc0;
-    int cell_bound_xc1;
-    int cell_bound_yc1;
-    float clamped_cell_render_width;
-    float clamped_cell_render_height;
-    int clamped_view_scale_msb;
-} LWTTLFIELDVIEWPORT;
 
 LWTTL* lwttl_new(float aspect_ratio);
 void lwttl_destroy(LWTTL** _ttl);
@@ -94,6 +62,14 @@ const LWPTTLWAYPOINTS* lwttl_get_waypoints_by_ship_id(const LWTTL* ttl, int ship
 void lwttl_write_last_state(const LWTTL* ttl, const LWCONTEXT* pLwc);
 void lwttl_read_last_state(LWTTL* ttl, const LWCONTEXT* pLwc);
 const LWPTTLROUTESTATE* lwttl_full_state(const LWTTL* ttl);
+int lwttl_query_chunk_range_land_vp(const LWTTL* ttl,
+                                    const LWTTLFIELDVIEWPORT* vp,
+                                    int* chunk_index_array,
+                                    const int chunk_index_array_len,
+                                    int* xcc0,
+                                    int* ycc0,
+                                    int* xcc1,
+                                    int* ycc1);
 int lwttl_query_chunk_range_land(const LWTTL* ttl,
                                  const float lng_min,
                                  const float lat_min,
@@ -106,12 +82,28 @@ int lwttl_query_chunk_range_land(const LWTTL* ttl,
                                  int* ycc0,
                                  int* xcc1,
                                  int* ycc1);
+int lwttl_query_chunk_range_seaport_vp(const LWTTL* ttl,
+                                       const LWTTLFIELDVIEWPORT* vp,
+                                       int* chunk_index_array,
+                                       const int chunk_index_array_len,
+                                       int* xcc0,
+                                       int* ycc0,
+                                       int* xcc1,
+                                       int* ycc1);
 int lwttl_query_chunk_range_seaport(const LWTTL* ttl,
                                     const float lng_min,
                                     const float lat_min,
                                     const float lng_max,
                                     const float lat_max,
                                     const int view_scale,
+                                    int* chunk_index_array,
+                                    const int chunk_index_array_len,
+                                    int* xcc0,
+                                    int* ycc0,
+                                    int* xcc1,
+                                    int* ycc1);
+int lwttl_query_chunk_range_city_vp(const LWTTL* ttl,
+                                    const LWTTLFIELDVIEWPORT* vp,
                                     int* chunk_index_array,
                                     const int chunk_index_array_len,
                                     int* xcc0,
@@ -130,6 +122,14 @@ int lwttl_query_chunk_range_city(const LWTTL* ttl,
                                  int* ycc0,
                                  int* xcc1,
                                  int* ycc1);
+int lwttl_query_chunk_range_salvage_vp(const LWTTL* ttl,
+                                       const LWTTLFIELDVIEWPORT* vp,
+                                       int* chunk_index_array,
+                                       const int chunk_index_array_len,
+                                       int* xcc0,
+                                       int* ycc0,
+                                       int* xcc1,
+                                       int* ycc1);
 int lwttl_query_chunk_range_salvage(const LWTTL* ttl,
                                     const float lng_min,
                                     const float lat_min,
@@ -219,6 +219,13 @@ void lwttl_get_cell_bound(const float lng_min,
                           int* xc1,
                           int* yc1);
 const void* lwttl_world_text_begin(const LWTTL* ttl);
+const char* lwttl_world_text_vp(const LWTTL* ttl,
+                                const void* it,
+                                const LWTTLFIELDVIEWPORT* vp,
+                                const mat4x4 proj_view,
+                                float* ui_point_x,
+                                float* ui_point_y,
+                                float* scale);
 const char* lwttl_world_text(const LWTTL* ttl,
                              const void* it,
                              const LWTTLLNGLAT* center,
@@ -253,8 +260,62 @@ float render_coords_to_lng(float rc, const LWTTLLNGLAT* center, int view_scale, 
 float render_coords_to_lat(float rc, const LWTTLLNGLAT* center, int view_scale, float render_scale);
 float cell_fx_to_render_coords(float fx, const LWTTLLNGLAT* center, int view_scale, float render_scale);
 float cell_fy_to_render_coords(float fy, const LWTTLLNGLAT* center, int view_scale, float render_scale);
+float cell_fx_to_render_coords_vp(float fx, const LWTTLFIELDVIEWPORT* vp);
+float cell_fy_to_render_coords_vp(float fy, const LWTTLFIELDVIEWPORT* vp);
 void lwttl_udp_send_ttlchat(const LWTTL* ttl, LWUDP* udp, const char* line);
 void lwttl_udp_send_ttlping(const LWTTL* ttl, LWUDP* udp, int ping_seq);
+int lwttl_add_field_viewport(LWTTL* ttl, const LWTTLFIELDVIEWPORT* vp);
+void lwttl_remove_field_viewport(LWTTL* ttl, int viewport_index);
+const LWTTLFIELDVIEWPORT* lwttl_viewport(const LWTTL* ttl, int viewport_index);
+int lwttl_viewport_max_count(const LWTTL* ttl);
+int lwttl_calculate_clamped_view_scale(int view_scale, int view_scale_ping_max);
+void lwttl_set_viewport_show(LWTTL* ttl, int viewport_index, int show);
+float lng_to_render_coords(float lng, const LWTTLFIELDVIEWPORT* vp);
+float lat_to_render_coords(float lat, const LWTTLFIELDVIEWPORT* vp);
+float cell_x_to_render_coords(int x, const LWTTLFIELDVIEWPORT* vp);
+float cell_y_to_render_coords(int y, const LWTTLFIELDVIEWPORT* vp);
+float lwttl_vehicle_render_scale(const LWTTL* ttl, const LWTTLFIELDVIEWPORT* vp, float scale);
+const vec4* lwttl_viewport_view(const LWTTLFIELDVIEWPORT* vp);
+const vec4* lwttl_viewport_proj(const LWTTLFIELDVIEWPORT* vp);
+int lwttl_viewport_clamped_view_scale(const LWTTLFIELDVIEWPORT* vp);
+int lwttl_viewport_cell_render_info(const LWTTLFIELDVIEWPORT* vp,
+                                    const int bound_xc0,
+                                    const int bound_yc0,
+                                    const int bx,
+                                    const int by,
+                                    float* x0,
+                                    float* y0,
+                                    float* cell_x0,
+                                    float* cell_y0,
+                                    float* cell_z0,
+                                    float* cell_w,
+                                    float* cell_h);
+float lwttl_viewport_aspect_ratio(const LWTTLFIELDVIEWPORT* vp);
+int lwttl_viewport_view_scale(const LWTTLFIELDVIEWPORT* vp);
+float lwttl_viewport_waypoint_line_segment_thickness(const LWTTLFIELDVIEWPORT* vp);
+float lwttl_viewport_icon_size_ratio(const LWTTLFIELDVIEWPORT* vp);
+float lwttl_viewport_icon_width(const LWTTLFIELDVIEWPORT* vp);
+float lwttl_viewport_icon_height(const LWTTLFIELDVIEWPORT* vp);
+int lwttl_viewport_icon_render_info(const LWTTL* ttl,
+                                    const LWTTLFIELDVIEWPORT* vp,
+                                    const int xc0,
+                                    const int x_scaled_offset_0,
+                                    const int yc0,
+                                    const int y_scaled_offset_0,
+                                    float* cell_x0,
+                                    float* cell_y0,
+                                    float* cell_z0);
+float lwttl_viewport_cell_render_width(const LWTTLFIELDVIEWPORT* vp);
+float lwttl_viewport_cell_render_height(const LWTTLFIELDVIEWPORT* vp);
+float lwttl_viewport_rt_x(const LWTTLFIELDVIEWPORT* vp);
+float lwttl_viewport_rt_y(const LWTTLFIELDVIEWPORT* vp);
+void lwttl_viewport_range(const LWTTLFIELDVIEWPORT* vp,
+                          int* viewport_x,
+                          int* viewport_y,
+                          int* viewport_width,
+                          int* viewport_height);
+void lwttl_set_viewport_view_scale(LWTTL* ttl, int viewport_index, int view_scale);
+void lwttl_set_window_size(LWTTL* ttl, int w, int h, float aspect_ratio);
 #ifdef __cplusplus
 }
 #endif

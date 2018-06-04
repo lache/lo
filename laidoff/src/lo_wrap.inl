@@ -101838,1632 +101838,6 @@ static swig_lua_class *swig_LWTTLLNGLAT_bases[] = {0};
 static const char *swig_LWTTLLNGLAT_base_names[] = {0};
 static swig_lua_class _wrap_class_LWTTLLNGLAT = { "LWTTLLNGLAT", "LWTTLLNGLAT", &SWIGTYPE_p__LWTTLLNGLAT,_proxy__wrap_new_LWTTLLNGLAT, swig_delete_LWTTLLNGLAT, swig_LWTTLLNGLAT_methods, swig_LWTTLLNGLAT_attributes, &swig_LWTTLLNGLAT_Sf_SwigStatic, swig_LWTTLLNGLAT_meta, swig_LWTTLLNGLAT_bases, swig_LWTTLLNGLAT_base_names };
 
-static int _wrap_LWTTLFIELDVIEWPORT_field_viewport_x_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  int arg2 ;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::field_viewport_x",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::field_viewport_x",1,"struct _LWTTLFIELDVIEWPORT *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::field_viewport_x",2,"int");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_field_viewport_x_set",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  arg2 = (int)lua_tonumber(L, 2);
-  if (arg1) (arg1)->field_viewport_x = arg2;
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_field_viewport_x_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  int result;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::field_viewport_x",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::field_viewport_x",1,"struct _LWTTLFIELDVIEWPORT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_field_viewport_x_get",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  result = (int) ((arg1)->field_viewport_x);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_field_viewport_y_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  int arg2 ;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::field_viewport_y",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::field_viewport_y",1,"struct _LWTTLFIELDVIEWPORT *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::field_viewport_y",2,"int");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_field_viewport_y_set",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  arg2 = (int)lua_tonumber(L, 2);
-  if (arg1) (arg1)->field_viewport_y = arg2;
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_field_viewport_y_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  int result;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::field_viewport_y",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::field_viewport_y",1,"struct _LWTTLFIELDVIEWPORT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_field_viewport_y_get",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  result = (int) ((arg1)->field_viewport_y);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_field_viewport_width_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  int arg2 ;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::field_viewport_width",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::field_viewport_width",1,"struct _LWTTLFIELDVIEWPORT *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::field_viewport_width",2,"int");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_field_viewport_width_set",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  arg2 = (int)lua_tonumber(L, 2);
-  if (arg1) (arg1)->field_viewport_width = arg2;
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_field_viewport_width_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  int result;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::field_viewport_width",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::field_viewport_width",1,"struct _LWTTLFIELDVIEWPORT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_field_viewport_width_get",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  result = (int) ((arg1)->field_viewport_width);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_field_viewport_height_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  int arg2 ;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::field_viewport_height",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::field_viewport_height",1,"struct _LWTTLFIELDVIEWPORT *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::field_viewport_height",2,"int");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_field_viewport_height_set",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  arg2 = (int)lua_tonumber(L, 2);
-  if (arg1) (arg1)->field_viewport_height = arg2;
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_field_viewport_height_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  int result;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::field_viewport_height",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::field_viewport_height",1,"struct _LWTTLFIELDVIEWPORT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_field_viewport_height_get",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  result = (int) ((arg1)->field_viewport_height);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_field_viewport_aspect_ratio_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  float arg2 ;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::field_viewport_aspect_ratio",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::field_viewport_aspect_ratio",1,"struct _LWTTLFIELDVIEWPORT *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::field_viewport_aspect_ratio",2,"float");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_field_viewport_aspect_ratio_set",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  arg2 = (float)lua_tonumber(L, 2);
-  if (arg1) (arg1)->field_viewport_aspect_ratio = arg2;
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_field_viewport_aspect_ratio_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  float result;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::field_viewport_aspect_ratio",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::field_viewport_aspect_ratio",1,"struct _LWTTLFIELDVIEWPORT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_field_viewport_aspect_ratio_get",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  result = (float) ((arg1)->field_viewport_aspect_ratio);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_field_viewport_rt_x_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  float arg2 ;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::field_viewport_rt_x",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::field_viewport_rt_x",1,"struct _LWTTLFIELDVIEWPORT *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::field_viewport_rt_x",2,"float");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_field_viewport_rt_x_set",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  arg2 = (float)lua_tonumber(L, 2);
-  if (arg1) (arg1)->field_viewport_rt_x = arg2;
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_field_viewport_rt_x_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  float result;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::field_viewport_rt_x",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::field_viewport_rt_x",1,"struct _LWTTLFIELDVIEWPORT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_field_viewport_rt_x_get",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  result = (float) ((arg1)->field_viewport_rt_x);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_field_viewport_rt_y_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  float arg2 ;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::field_viewport_rt_y",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::field_viewport_rt_y",1,"struct _LWTTLFIELDVIEWPORT *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::field_viewport_rt_y",2,"float");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_field_viewport_rt_y_set",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  arg2 = (float)lua_tonumber(L, 2);
-  if (arg1) (arg1)->field_viewport_rt_y = arg2;
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_field_viewport_rt_y_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  float result;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::field_viewport_rt_y",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::field_viewport_rt_y",1,"struct _LWTTLFIELDVIEWPORT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_field_viewport_rt_y_get",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  result = (float) ((arg1)->field_viewport_rt_y);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_view_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  vec4 *arg2 ;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::view",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::view",1,"struct _LWTTLFIELDVIEWPORT *");
-  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::view",2,"mat4x4");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_view_set",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_a_4__float,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_view_set",2,SWIGTYPE_p_a_4__float);
-  }
-  
-  {
-    float (*inp)[4] = (float (*)[4])(arg2);
-    float (*dest)[4] = (float (*)[4])(arg1->view);
-    size_t ii = 0;
-    for (; ii < 4; ++ii) {
-      float *ip = inp[ii];
-      float *dp = dest[ii];
-      size_t jj = 0;
-      for (; jj < 4; ++jj) dp[jj] = ip[jj];
-    }
-  }
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_view_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  vec4 *result = 0 ;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::view",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::view",1,"struct _LWTTLFIELDVIEWPORT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_view_get",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  result = (vec4 *) ((arg1)->view);
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_a_4__float,0); SWIG_arg++; 
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_proj_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  vec4 *arg2 ;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::proj",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::proj",1,"struct _LWTTLFIELDVIEWPORT *");
-  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::proj",2,"mat4x4");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_proj_set",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_a_4__float,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_proj_set",2,SWIGTYPE_p_a_4__float);
-  }
-  
-  {
-    float (*inp)[4] = (float (*)[4])(arg2);
-    float (*dest)[4] = (float (*)[4])(arg1->proj);
-    size_t ii = 0;
-    for (; ii < 4; ++ii) {
-      float *ip = inp[ii];
-      float *dp = dest[ii];
-      size_t jj = 0;
-      for (; jj < 4; ++jj) dp[jj] = ip[jj];
-    }
-  }
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_proj_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  vec4 *result = 0 ;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::proj",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::proj",1,"struct _LWTTLFIELDVIEWPORT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_proj_get",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  result = (vec4 *) ((arg1)->proj);
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_a_4__float,0); SWIG_arg++; 
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_view_center_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  LWTTLLNGLAT *arg2 = (LWTTLLNGLAT *) 0 ;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::view_center",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::view_center",1,"struct _LWTTLFIELDVIEWPORT *");
-  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::view_center",2,"LWTTLLNGLAT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_view_center_set",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWTTLLNGLAT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_view_center_set",2,SWIGTYPE_p__LWTTLLNGLAT);
-  }
-  
-  if (arg1) (arg1)->view_center = *arg2;
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_view_center_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  LWTTLLNGLAT *result = 0 ;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::view_center",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::view_center",1,"struct _LWTTLFIELDVIEWPORT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_view_center_get",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  result = (LWTTLLNGLAT *)& ((arg1)->view_center);
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p__LWTTLLNGLAT,0); SWIG_arg++; 
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_view_scale_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  int arg2 ;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::view_scale",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::view_scale",1,"struct _LWTTLFIELDVIEWPORT *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::view_scale",2,"int");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_view_scale_set",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  arg2 = (int)lua_tonumber(L, 2);
-  if (arg1) (arg1)->view_scale = arg2;
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_view_scale_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  int result;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::view_scale",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::view_scale",1,"struct _LWTTLFIELDVIEWPORT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_view_scale_get",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  result = (int) ((arg1)->view_scale);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_view_scale_msb_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  int arg2 ;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::view_scale_msb",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::view_scale_msb",1,"struct _LWTTLFIELDVIEWPORT *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::view_scale_msb",2,"int");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_view_scale_msb_set",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  arg2 = (int)lua_tonumber(L, 2);
-  if (arg1) (arg1)->view_scale_msb = arg2;
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_view_scale_msb_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  int result;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::view_scale_msb",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::view_scale_msb",1,"struct _LWTTLFIELDVIEWPORT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_view_scale_msb_get",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  result = (int) ((arg1)->view_scale_msb);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_clamped_view_scale_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  int arg2 ;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::clamped_view_scale",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::clamped_view_scale",1,"struct _LWTTLFIELDVIEWPORT *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::clamped_view_scale",2,"int");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_clamped_view_scale_set",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  arg2 = (int)lua_tonumber(L, 2);
-  if (arg1) (arg1)->clamped_view_scale = arg2;
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_clamped_view_scale_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  int result;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::clamped_view_scale",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::clamped_view_scale",1,"struct _LWTTLFIELDVIEWPORT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_clamped_view_scale_get",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  result = (int) ((arg1)->clamped_view_scale);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_clamped_to_original_view_scale_ratio_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  int arg2 ;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::clamped_to_original_view_scale_ratio",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::clamped_to_original_view_scale_ratio",1,"struct _LWTTLFIELDVIEWPORT *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::clamped_to_original_view_scale_ratio",2,"int");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_clamped_to_original_view_scale_ratio_set",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  arg2 = (int)lua_tonumber(L, 2);
-  if (arg1) (arg1)->clamped_to_original_view_scale_ratio = arg2;
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_clamped_to_original_view_scale_ratio_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  int result;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::clamped_to_original_view_scale_ratio",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::clamped_to_original_view_scale_ratio",1,"struct _LWTTLFIELDVIEWPORT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_clamped_to_original_view_scale_ratio_get",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  result = (int) ((arg1)->clamped_to_original_view_scale_ratio);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_render_scale_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  float arg2 ;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::render_scale",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::render_scale",1,"struct _LWTTLFIELDVIEWPORT *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::render_scale",2,"float");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_render_scale_set",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  arg2 = (float)lua_tonumber(L, 2);
-  if (arg1) (arg1)->render_scale = arg2;
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_render_scale_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  float result;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::render_scale",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::render_scale",1,"struct _LWTTLFIELDVIEWPORT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_render_scale_get",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  result = (float) ((arg1)->render_scale);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_half_lng_extent_in_deg_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  float arg2 ;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::half_lng_extent_in_deg",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::half_lng_extent_in_deg",1,"struct _LWTTLFIELDVIEWPORT *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::half_lng_extent_in_deg",2,"float");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_half_lng_extent_in_deg_set",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  arg2 = (float)lua_tonumber(L, 2);
-  if (arg1) (arg1)->half_lng_extent_in_deg = arg2;
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_half_lng_extent_in_deg_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  float result;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::half_lng_extent_in_deg",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::half_lng_extent_in_deg",1,"struct _LWTTLFIELDVIEWPORT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_half_lng_extent_in_deg_get",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  result = (float) ((arg1)->half_lng_extent_in_deg);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_half_lat_extent_in_deg_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  float arg2 ;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::half_lat_extent_in_deg",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::half_lat_extent_in_deg",1,"struct _LWTTLFIELDVIEWPORT *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::half_lat_extent_in_deg",2,"float");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_half_lat_extent_in_deg_set",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  arg2 = (float)lua_tonumber(L, 2);
-  if (arg1) (arg1)->half_lat_extent_in_deg = arg2;
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_half_lat_extent_in_deg_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  float result;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::half_lat_extent_in_deg",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::half_lat_extent_in_deg",1,"struct _LWTTLFIELDVIEWPORT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_half_lat_extent_in_deg_get",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  result = (float) ((arg1)->half_lat_extent_in_deg);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_lng_min_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  float arg2 ;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::lng_min",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::lng_min",1,"struct _LWTTLFIELDVIEWPORT *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::lng_min",2,"float");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_lng_min_set",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  arg2 = (float)lua_tonumber(L, 2);
-  if (arg1) (arg1)->lng_min = arg2;
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_lng_min_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  float result;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::lng_min",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::lng_min",1,"struct _LWTTLFIELDVIEWPORT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_lng_min_get",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  result = (float) ((arg1)->lng_min);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_lng_max_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  float arg2 ;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::lng_max",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::lng_max",1,"struct _LWTTLFIELDVIEWPORT *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::lng_max",2,"float");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_lng_max_set",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  arg2 = (float)lua_tonumber(L, 2);
-  if (arg1) (arg1)->lng_max = arg2;
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_lng_max_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  float result;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::lng_max",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::lng_max",1,"struct _LWTTLFIELDVIEWPORT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_lng_max_get",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  result = (float) ((arg1)->lng_max);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_lat_min_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  float arg2 ;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::lat_min",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::lat_min",1,"struct _LWTTLFIELDVIEWPORT *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::lat_min",2,"float");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_lat_min_set",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  arg2 = (float)lua_tonumber(L, 2);
-  if (arg1) (arg1)->lat_min = arg2;
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_lat_min_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  float result;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::lat_min",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::lat_min",1,"struct _LWTTLFIELDVIEWPORT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_lat_min_get",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  result = (float) ((arg1)->lat_min);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_lat_max_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  float arg2 ;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::lat_max",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::lat_max",1,"struct _LWTTLFIELDVIEWPORT *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::lat_max",2,"float");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_lat_max_set",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  arg2 = (float)lua_tonumber(L, 2);
-  if (arg1) (arg1)->lat_max = arg2;
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_lat_max_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  float result;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::lat_max",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::lat_max",1,"struct _LWTTLFIELDVIEWPORT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_lat_max_get",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  result = (float) ((arg1)->lat_max);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_cell_render_width_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  float arg2 ;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::cell_render_width",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::cell_render_width",1,"struct _LWTTLFIELDVIEWPORT *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::cell_render_width",2,"float");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_cell_render_width_set",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  arg2 = (float)lua_tonumber(L, 2);
-  if (arg1) (arg1)->cell_render_width = arg2;
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_cell_render_width_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  float result;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::cell_render_width",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::cell_render_width",1,"struct _LWTTLFIELDVIEWPORT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_cell_render_width_get",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  result = (float) ((arg1)->cell_render_width);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_cell_render_height_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  float arg2 ;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::cell_render_height",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::cell_render_height",1,"struct _LWTTLFIELDVIEWPORT *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::cell_render_height",2,"float");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_cell_render_height_set",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  arg2 = (float)lua_tonumber(L, 2);
-  if (arg1) (arg1)->cell_render_height = arg2;
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_cell_render_height_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  float result;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::cell_render_height",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::cell_render_height",1,"struct _LWTTLFIELDVIEWPORT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_cell_render_height_get",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  result = (float) ((arg1)->cell_render_height);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_cell_bound_xc0_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  int arg2 ;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::cell_bound_xc0",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::cell_bound_xc0",1,"struct _LWTTLFIELDVIEWPORT *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::cell_bound_xc0",2,"int");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_cell_bound_xc0_set",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  arg2 = (int)lua_tonumber(L, 2);
-  if (arg1) (arg1)->cell_bound_xc0 = arg2;
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_cell_bound_xc0_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  int result;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::cell_bound_xc0",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::cell_bound_xc0",1,"struct _LWTTLFIELDVIEWPORT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_cell_bound_xc0_get",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  result = (int) ((arg1)->cell_bound_xc0);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_cell_bound_yc0_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  int arg2 ;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::cell_bound_yc0",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::cell_bound_yc0",1,"struct _LWTTLFIELDVIEWPORT *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::cell_bound_yc0",2,"int");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_cell_bound_yc0_set",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  arg2 = (int)lua_tonumber(L, 2);
-  if (arg1) (arg1)->cell_bound_yc0 = arg2;
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_cell_bound_yc0_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  int result;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::cell_bound_yc0",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::cell_bound_yc0",1,"struct _LWTTLFIELDVIEWPORT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_cell_bound_yc0_get",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  result = (int) ((arg1)->cell_bound_yc0);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_cell_bound_xc1_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  int arg2 ;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::cell_bound_xc1",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::cell_bound_xc1",1,"struct _LWTTLFIELDVIEWPORT *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::cell_bound_xc1",2,"int");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_cell_bound_xc1_set",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  arg2 = (int)lua_tonumber(L, 2);
-  if (arg1) (arg1)->cell_bound_xc1 = arg2;
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_cell_bound_xc1_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  int result;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::cell_bound_xc1",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::cell_bound_xc1",1,"struct _LWTTLFIELDVIEWPORT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_cell_bound_xc1_get",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  result = (int) ((arg1)->cell_bound_xc1);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_cell_bound_yc1_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  int arg2 ;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::cell_bound_yc1",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::cell_bound_yc1",1,"struct _LWTTLFIELDVIEWPORT *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::cell_bound_yc1",2,"int");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_cell_bound_yc1_set",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  arg2 = (int)lua_tonumber(L, 2);
-  if (arg1) (arg1)->cell_bound_yc1 = arg2;
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_cell_bound_yc1_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  int result;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::cell_bound_yc1",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::cell_bound_yc1",1,"struct _LWTTLFIELDVIEWPORT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_cell_bound_yc1_get",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  result = (int) ((arg1)->cell_bound_yc1);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_clamped_cell_render_width_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  float arg2 ;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::clamped_cell_render_width",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::clamped_cell_render_width",1,"struct _LWTTLFIELDVIEWPORT *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::clamped_cell_render_width",2,"float");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_clamped_cell_render_width_set",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  arg2 = (float)lua_tonumber(L, 2);
-  if (arg1) (arg1)->clamped_cell_render_width = arg2;
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_clamped_cell_render_width_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  float result;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::clamped_cell_render_width",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::clamped_cell_render_width",1,"struct _LWTTLFIELDVIEWPORT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_clamped_cell_render_width_get",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  result = (float) ((arg1)->clamped_cell_render_width);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_clamped_cell_render_height_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  float arg2 ;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::clamped_cell_render_height",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::clamped_cell_render_height",1,"struct _LWTTLFIELDVIEWPORT *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::clamped_cell_render_height",2,"float");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_clamped_cell_render_height_set",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  arg2 = (float)lua_tonumber(L, 2);
-  if (arg1) (arg1)->clamped_cell_render_height = arg2;
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_clamped_cell_render_height_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  float result;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::clamped_cell_render_height",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::clamped_cell_render_height",1,"struct _LWTTLFIELDVIEWPORT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_clamped_cell_render_height_get",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  result = (float) ((arg1)->clamped_cell_render_height);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_clamped_view_scale_msb_set(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  int arg2 ;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::clamped_view_scale_msb",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::clamped_view_scale_msb",1,"struct _LWTTLFIELDVIEWPORT *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::clamped_view_scale_msb",2,"int");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_clamped_view_scale_msb_set",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  arg2 = (int)lua_tonumber(L, 2);
-  if (arg1) (arg1)->clamped_view_scale_msb = arg2;
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_LWTTLFIELDVIEWPORT_clamped_view_scale_msb_get(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) 0 ;
-  int result;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::clamped_view_scale_msb",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTTLFIELDVIEWPORT::clamped_view_scale_msb",1,"struct _LWTTLFIELDVIEWPORT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("LWTTLFIELDVIEWPORT_clamped_view_scale_msb_get",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  result = (int) ((arg1)->clamped_view_scale_msb);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_new_LWTTLFIELDVIEWPORT(lua_State* L) {
-  int SWIG_arg = 0;
-  struct _LWTTLFIELDVIEWPORT *result = 0 ;
-  
-  SWIG_check_num_args("_LWTTLFIELDVIEWPORT::_LWTTLFIELDVIEWPORT",0,0)
-  result = (struct _LWTTLFIELDVIEWPORT *)calloc(1, sizeof(struct _LWTTLFIELDVIEWPORT));
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p__LWTTLFIELDVIEWPORT,1); SWIG_arg++; 
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static void swig_delete_LWTTLFIELDVIEWPORT(void *obj) {
-struct _LWTTLFIELDVIEWPORT *arg1 = (struct _LWTTLFIELDVIEWPORT *) obj;
-free((char *) arg1);
-}
-static int _proxy__wrap_new_LWTTLFIELDVIEWPORT(lua_State *L) {
-    assert(lua_istable(L,1));
-    lua_pushcfunction(L,_wrap_new_LWTTLFIELDVIEWPORT);
-    assert(!lua_isnil(L,-1));
-    lua_replace(L,1); /* replace our table with real constructor */
-    lua_call(L,lua_gettop(L)-1,1);
-    return 1;
-}
-static swig_lua_attribute swig_LWTTLFIELDVIEWPORT_attributes[] = {
-    { "field_viewport_x", _wrap_LWTTLFIELDVIEWPORT_field_viewport_x_get, _wrap_LWTTLFIELDVIEWPORT_field_viewport_x_set },
-    { "field_viewport_y", _wrap_LWTTLFIELDVIEWPORT_field_viewport_y_get, _wrap_LWTTLFIELDVIEWPORT_field_viewport_y_set },
-    { "field_viewport_width", _wrap_LWTTLFIELDVIEWPORT_field_viewport_width_get, _wrap_LWTTLFIELDVIEWPORT_field_viewport_width_set },
-    { "field_viewport_height", _wrap_LWTTLFIELDVIEWPORT_field_viewport_height_get, _wrap_LWTTLFIELDVIEWPORT_field_viewport_height_set },
-    { "field_viewport_aspect_ratio", _wrap_LWTTLFIELDVIEWPORT_field_viewport_aspect_ratio_get, _wrap_LWTTLFIELDVIEWPORT_field_viewport_aspect_ratio_set },
-    { "field_viewport_rt_x", _wrap_LWTTLFIELDVIEWPORT_field_viewport_rt_x_get, _wrap_LWTTLFIELDVIEWPORT_field_viewport_rt_x_set },
-    { "field_viewport_rt_y", _wrap_LWTTLFIELDVIEWPORT_field_viewport_rt_y_get, _wrap_LWTTLFIELDVIEWPORT_field_viewport_rt_y_set },
-    { "view", _wrap_LWTTLFIELDVIEWPORT_view_get, _wrap_LWTTLFIELDVIEWPORT_view_set },
-    { "proj", _wrap_LWTTLFIELDVIEWPORT_proj_get, _wrap_LWTTLFIELDVIEWPORT_proj_set },
-    { "view_center", _wrap_LWTTLFIELDVIEWPORT_view_center_get, _wrap_LWTTLFIELDVIEWPORT_view_center_set },
-    { "view_scale", _wrap_LWTTLFIELDVIEWPORT_view_scale_get, _wrap_LWTTLFIELDVIEWPORT_view_scale_set },
-    { "view_scale_msb", _wrap_LWTTLFIELDVIEWPORT_view_scale_msb_get, _wrap_LWTTLFIELDVIEWPORT_view_scale_msb_set },
-    { "clamped_view_scale", _wrap_LWTTLFIELDVIEWPORT_clamped_view_scale_get, _wrap_LWTTLFIELDVIEWPORT_clamped_view_scale_set },
-    { "clamped_to_original_view_scale_ratio", _wrap_LWTTLFIELDVIEWPORT_clamped_to_original_view_scale_ratio_get, _wrap_LWTTLFIELDVIEWPORT_clamped_to_original_view_scale_ratio_set },
-    { "render_scale", _wrap_LWTTLFIELDVIEWPORT_render_scale_get, _wrap_LWTTLFIELDVIEWPORT_render_scale_set },
-    { "half_lng_extent_in_deg", _wrap_LWTTLFIELDVIEWPORT_half_lng_extent_in_deg_get, _wrap_LWTTLFIELDVIEWPORT_half_lng_extent_in_deg_set },
-    { "half_lat_extent_in_deg", _wrap_LWTTLFIELDVIEWPORT_half_lat_extent_in_deg_get, _wrap_LWTTLFIELDVIEWPORT_half_lat_extent_in_deg_set },
-    { "lng_min", _wrap_LWTTLFIELDVIEWPORT_lng_min_get, _wrap_LWTTLFIELDVIEWPORT_lng_min_set },
-    { "lng_max", _wrap_LWTTLFIELDVIEWPORT_lng_max_get, _wrap_LWTTLFIELDVIEWPORT_lng_max_set },
-    { "lat_min", _wrap_LWTTLFIELDVIEWPORT_lat_min_get, _wrap_LWTTLFIELDVIEWPORT_lat_min_set },
-    { "lat_max", _wrap_LWTTLFIELDVIEWPORT_lat_max_get, _wrap_LWTTLFIELDVIEWPORT_lat_max_set },
-    { "cell_render_width", _wrap_LWTTLFIELDVIEWPORT_cell_render_width_get, _wrap_LWTTLFIELDVIEWPORT_cell_render_width_set },
-    { "cell_render_height", _wrap_LWTTLFIELDVIEWPORT_cell_render_height_get, _wrap_LWTTLFIELDVIEWPORT_cell_render_height_set },
-    { "cell_bound_xc0", _wrap_LWTTLFIELDVIEWPORT_cell_bound_xc0_get, _wrap_LWTTLFIELDVIEWPORT_cell_bound_xc0_set },
-    { "cell_bound_yc0", _wrap_LWTTLFIELDVIEWPORT_cell_bound_yc0_get, _wrap_LWTTLFIELDVIEWPORT_cell_bound_yc0_set },
-    { "cell_bound_xc1", _wrap_LWTTLFIELDVIEWPORT_cell_bound_xc1_get, _wrap_LWTTLFIELDVIEWPORT_cell_bound_xc1_set },
-    { "cell_bound_yc1", _wrap_LWTTLFIELDVIEWPORT_cell_bound_yc1_get, _wrap_LWTTLFIELDVIEWPORT_cell_bound_yc1_set },
-    { "clamped_cell_render_width", _wrap_LWTTLFIELDVIEWPORT_clamped_cell_render_width_get, _wrap_LWTTLFIELDVIEWPORT_clamped_cell_render_width_set },
-    { "clamped_cell_render_height", _wrap_LWTTLFIELDVIEWPORT_clamped_cell_render_height_get, _wrap_LWTTLFIELDVIEWPORT_clamped_cell_render_height_set },
-    { "clamped_view_scale_msb", _wrap_LWTTLFIELDVIEWPORT_clamped_view_scale_msb_get, _wrap_LWTTLFIELDVIEWPORT_clamped_view_scale_msb_set },
-    {0,0,0}
-};
-static swig_lua_method swig_LWTTLFIELDVIEWPORT_methods[]= {
-    {0,0}
-};
-static swig_lua_method swig_LWTTLFIELDVIEWPORT_meta[] = {
-    {0,0}
-};
-
-static swig_lua_attribute swig_LWTTLFIELDVIEWPORT_Sf_SwigStatic_attributes[] = {
-    {0,0,0}
-};
-static swig_lua_const_info swig_LWTTLFIELDVIEWPORT_Sf_SwigStatic_constants[]= {
-    {0,0,0,0,0,0}
-};
-static swig_lua_method swig_LWTTLFIELDVIEWPORT_Sf_SwigStatic_methods[]= {
-    {0,0}
-};
-static swig_lua_class* swig_LWTTLFIELDVIEWPORT_Sf_SwigStatic_classes[]= {
-    0
-};
-
-static swig_lua_namespace swig_LWTTLFIELDVIEWPORT_Sf_SwigStatic = {
-    "LWTTLFIELDVIEWPORT",
-    swig_LWTTLFIELDVIEWPORT_Sf_SwigStatic_methods,
-    swig_LWTTLFIELDVIEWPORT_Sf_SwigStatic_attributes,
-    swig_LWTTLFIELDVIEWPORT_Sf_SwigStatic_constants,
-    swig_LWTTLFIELDVIEWPORT_Sf_SwigStatic_classes,
-    0
-};
-static swig_lua_class *swig_LWTTLFIELDVIEWPORT_bases[] = {0};
-static const char *swig_LWTTLFIELDVIEWPORT_base_names[] = {0};
-static swig_lua_class _wrap_class_LWTTLFIELDVIEWPORT = { "LWTTLFIELDVIEWPORT", "LWTTLFIELDVIEWPORT", &SWIGTYPE_p__LWTTLFIELDVIEWPORT,_proxy__wrap_new_LWTTLFIELDVIEWPORT, swig_delete_LWTTLFIELDVIEWPORT, swig_LWTTLFIELDVIEWPORT_methods, swig_LWTTLFIELDVIEWPORT_attributes, &swig_LWTTLFIELDVIEWPORT_Sf_SwigStatic, swig_LWTTLFIELDVIEWPORT_meta, swig_LWTTLFIELDVIEWPORT_bases, swig_LWTTLFIELDVIEWPORT_base_names };
-
 static int _wrap_lwttl_new(lua_State* L) {
   int SWIG_arg = 0;
   float arg1 ;
@@ -104263,6 +102637,75 @@ fail:
 }
 
 
+static int _wrap_lwttl_query_chunk_range_land_vp(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTL *arg1 = (LWTTL *) 0 ;
+  LWTTLFIELDVIEWPORT *arg2 = (LWTTLFIELDVIEWPORT *) 0 ;
+  int *arg3 = (int *) 0 ;
+  int arg4 ;
+  int *arg5 = (int *) 0 ;
+  int *arg6 = (int *) 0 ;
+  int *arg7 = (int *) 0 ;
+  int *arg8 = (int *) 0 ;
+  int result;
+  
+  SWIG_check_num_args("lwttl_query_chunk_range_land_vp",8,8)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_query_chunk_range_land_vp",1,"LWTTL const *");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("lwttl_query_chunk_range_land_vp",2,"LWTTLFIELDVIEWPORT const *");
+  if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("lwttl_query_chunk_range_land_vp",3,"int *");
+  if(!lua_isnumber(L,4)) SWIG_fail_arg("lwttl_query_chunk_range_land_vp",4,"int const");
+  if(!SWIG_isptrtype(L,5)) SWIG_fail_arg("lwttl_query_chunk_range_land_vp",5,"int *");
+  if(!SWIG_isptrtype(L,6)) SWIG_fail_arg("lwttl_query_chunk_range_land_vp",6,"int *");
+  if(!SWIG_isptrtype(L,7)) SWIG_fail_arg("lwttl_query_chunk_range_land_vp",7,"int *");
+  if(!SWIG_isptrtype(L,8)) SWIG_fail_arg("lwttl_query_chunk_range_land_vp",8,"int *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTL,0))){
+    SWIG_fail_ptr("lwttl_query_chunk_range_land_vp",1,SWIGTYPE_p__LWTTL);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
+    SWIG_fail_ptr("lwttl_query_chunk_range_land_vp",2,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_int,0))){
+    SWIG_fail_ptr("lwttl_query_chunk_range_land_vp",3,SWIGTYPE_p_int);
+  }
+  
+  arg4 = (int const)lua_tonumber(L, 4);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,5,(void**)&arg5,SWIGTYPE_p_int,0))){
+    SWIG_fail_ptr("lwttl_query_chunk_range_land_vp",5,SWIGTYPE_p_int);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,6,(void**)&arg6,SWIGTYPE_p_int,0))){
+    SWIG_fail_ptr("lwttl_query_chunk_range_land_vp",6,SWIGTYPE_p_int);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,7,(void**)&arg7,SWIGTYPE_p_int,0))){
+    SWIG_fail_ptr("lwttl_query_chunk_range_land_vp",7,SWIGTYPE_p_int);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,8,(void**)&arg8,SWIGTYPE_p_int,0))){
+    SWIG_fail_ptr("lwttl_query_chunk_range_land_vp",8,SWIGTYPE_p_int);
+  }
+  
+  result = (int)lwttl_query_chunk_range_land_vp((struct _LWTTL const *)arg1,(struct _LWTTLFIELDVIEWPORT const *)arg2,arg3,arg4,arg5,arg6,arg7,arg8);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_lwttl_query_chunk_range_land(lua_State* L) {
   int SWIG_arg = 0;
   LWTTL *arg1 = (LWTTL *) 0 ;
@@ -104329,6 +102772,75 @@ static int _wrap_lwttl_query_chunk_range_land(lua_State* L) {
   }
   
   result = (int)lwttl_query_chunk_range_land((struct _LWTTL const *)arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_query_chunk_range_seaport_vp(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTL *arg1 = (LWTTL *) 0 ;
+  LWTTLFIELDVIEWPORT *arg2 = (LWTTLFIELDVIEWPORT *) 0 ;
+  int *arg3 = (int *) 0 ;
+  int arg4 ;
+  int *arg5 = (int *) 0 ;
+  int *arg6 = (int *) 0 ;
+  int *arg7 = (int *) 0 ;
+  int *arg8 = (int *) 0 ;
+  int result;
+  
+  SWIG_check_num_args("lwttl_query_chunk_range_seaport_vp",8,8)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_query_chunk_range_seaport_vp",1,"LWTTL const *");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("lwttl_query_chunk_range_seaport_vp",2,"LWTTLFIELDVIEWPORT const *");
+  if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("lwttl_query_chunk_range_seaport_vp",3,"int *");
+  if(!lua_isnumber(L,4)) SWIG_fail_arg("lwttl_query_chunk_range_seaport_vp",4,"int const");
+  if(!SWIG_isptrtype(L,5)) SWIG_fail_arg("lwttl_query_chunk_range_seaport_vp",5,"int *");
+  if(!SWIG_isptrtype(L,6)) SWIG_fail_arg("lwttl_query_chunk_range_seaport_vp",6,"int *");
+  if(!SWIG_isptrtype(L,7)) SWIG_fail_arg("lwttl_query_chunk_range_seaport_vp",7,"int *");
+  if(!SWIG_isptrtype(L,8)) SWIG_fail_arg("lwttl_query_chunk_range_seaport_vp",8,"int *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTL,0))){
+    SWIG_fail_ptr("lwttl_query_chunk_range_seaport_vp",1,SWIGTYPE_p__LWTTL);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
+    SWIG_fail_ptr("lwttl_query_chunk_range_seaport_vp",2,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_int,0))){
+    SWIG_fail_ptr("lwttl_query_chunk_range_seaport_vp",3,SWIGTYPE_p_int);
+  }
+  
+  arg4 = (int const)lua_tonumber(L, 4);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,5,(void**)&arg5,SWIGTYPE_p_int,0))){
+    SWIG_fail_ptr("lwttl_query_chunk_range_seaport_vp",5,SWIGTYPE_p_int);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,6,(void**)&arg6,SWIGTYPE_p_int,0))){
+    SWIG_fail_ptr("lwttl_query_chunk_range_seaport_vp",6,SWIGTYPE_p_int);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,7,(void**)&arg7,SWIGTYPE_p_int,0))){
+    SWIG_fail_ptr("lwttl_query_chunk_range_seaport_vp",7,SWIGTYPE_p_int);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,8,(void**)&arg8,SWIGTYPE_p_int,0))){
+    SWIG_fail_ptr("lwttl_query_chunk_range_seaport_vp",8,SWIGTYPE_p_int);
+  }
+  
+  result = (int)lwttl_query_chunk_range_seaport_vp((struct _LWTTL const *)arg1,(struct _LWTTLFIELDVIEWPORT const *)arg2,arg3,arg4,arg5,arg6,arg7,arg8);
   lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
   return SWIG_arg;
   
@@ -104417,6 +102929,75 @@ fail:
 }
 
 
+static int _wrap_lwttl_query_chunk_range_city_vp(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTL *arg1 = (LWTTL *) 0 ;
+  LWTTLFIELDVIEWPORT *arg2 = (LWTTLFIELDVIEWPORT *) 0 ;
+  int *arg3 = (int *) 0 ;
+  int arg4 ;
+  int *arg5 = (int *) 0 ;
+  int *arg6 = (int *) 0 ;
+  int *arg7 = (int *) 0 ;
+  int *arg8 = (int *) 0 ;
+  int result;
+  
+  SWIG_check_num_args("lwttl_query_chunk_range_city_vp",8,8)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_query_chunk_range_city_vp",1,"LWTTL const *");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("lwttl_query_chunk_range_city_vp",2,"LWTTLFIELDVIEWPORT const *");
+  if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("lwttl_query_chunk_range_city_vp",3,"int *");
+  if(!lua_isnumber(L,4)) SWIG_fail_arg("lwttl_query_chunk_range_city_vp",4,"int const");
+  if(!SWIG_isptrtype(L,5)) SWIG_fail_arg("lwttl_query_chunk_range_city_vp",5,"int *");
+  if(!SWIG_isptrtype(L,6)) SWIG_fail_arg("lwttl_query_chunk_range_city_vp",6,"int *");
+  if(!SWIG_isptrtype(L,7)) SWIG_fail_arg("lwttl_query_chunk_range_city_vp",7,"int *");
+  if(!SWIG_isptrtype(L,8)) SWIG_fail_arg("lwttl_query_chunk_range_city_vp",8,"int *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTL,0))){
+    SWIG_fail_ptr("lwttl_query_chunk_range_city_vp",1,SWIGTYPE_p__LWTTL);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
+    SWIG_fail_ptr("lwttl_query_chunk_range_city_vp",2,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_int,0))){
+    SWIG_fail_ptr("lwttl_query_chunk_range_city_vp",3,SWIGTYPE_p_int);
+  }
+  
+  arg4 = (int const)lua_tonumber(L, 4);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,5,(void**)&arg5,SWIGTYPE_p_int,0))){
+    SWIG_fail_ptr("lwttl_query_chunk_range_city_vp",5,SWIGTYPE_p_int);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,6,(void**)&arg6,SWIGTYPE_p_int,0))){
+    SWIG_fail_ptr("lwttl_query_chunk_range_city_vp",6,SWIGTYPE_p_int);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,7,(void**)&arg7,SWIGTYPE_p_int,0))){
+    SWIG_fail_ptr("lwttl_query_chunk_range_city_vp",7,SWIGTYPE_p_int);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,8,(void**)&arg8,SWIGTYPE_p_int,0))){
+    SWIG_fail_ptr("lwttl_query_chunk_range_city_vp",8,SWIGTYPE_p_int);
+  }
+  
+  result = (int)lwttl_query_chunk_range_city_vp((struct _LWTTL const *)arg1,(struct _LWTTLFIELDVIEWPORT const *)arg2,arg3,arg4,arg5,arg6,arg7,arg8);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_lwttl_query_chunk_range_city(lua_State* L) {
   int SWIG_arg = 0;
   LWTTL *arg1 = (LWTTL *) 0 ;
@@ -104483,6 +103064,75 @@ static int _wrap_lwttl_query_chunk_range_city(lua_State* L) {
   }
   
   result = (int)lwttl_query_chunk_range_city((struct _LWTTL const *)arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_query_chunk_range_salvage_vp(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTL *arg1 = (LWTTL *) 0 ;
+  LWTTLFIELDVIEWPORT *arg2 = (LWTTLFIELDVIEWPORT *) 0 ;
+  int *arg3 = (int *) 0 ;
+  int arg4 ;
+  int *arg5 = (int *) 0 ;
+  int *arg6 = (int *) 0 ;
+  int *arg7 = (int *) 0 ;
+  int *arg8 = (int *) 0 ;
+  int result;
+  
+  SWIG_check_num_args("lwttl_query_chunk_range_salvage_vp",8,8)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_query_chunk_range_salvage_vp",1,"LWTTL const *");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("lwttl_query_chunk_range_salvage_vp",2,"LWTTLFIELDVIEWPORT const *");
+  if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("lwttl_query_chunk_range_salvage_vp",3,"int *");
+  if(!lua_isnumber(L,4)) SWIG_fail_arg("lwttl_query_chunk_range_salvage_vp",4,"int const");
+  if(!SWIG_isptrtype(L,5)) SWIG_fail_arg("lwttl_query_chunk_range_salvage_vp",5,"int *");
+  if(!SWIG_isptrtype(L,6)) SWIG_fail_arg("lwttl_query_chunk_range_salvage_vp",6,"int *");
+  if(!SWIG_isptrtype(L,7)) SWIG_fail_arg("lwttl_query_chunk_range_salvage_vp",7,"int *");
+  if(!SWIG_isptrtype(L,8)) SWIG_fail_arg("lwttl_query_chunk_range_salvage_vp",8,"int *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTL,0))){
+    SWIG_fail_ptr("lwttl_query_chunk_range_salvage_vp",1,SWIGTYPE_p__LWTTL);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
+    SWIG_fail_ptr("lwttl_query_chunk_range_salvage_vp",2,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_int,0))){
+    SWIG_fail_ptr("lwttl_query_chunk_range_salvage_vp",3,SWIGTYPE_p_int);
+  }
+  
+  arg4 = (int const)lua_tonumber(L, 4);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,5,(void**)&arg5,SWIGTYPE_p_int,0))){
+    SWIG_fail_ptr("lwttl_query_chunk_range_salvage_vp",5,SWIGTYPE_p_int);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,6,(void**)&arg6,SWIGTYPE_p_int,0))){
+    SWIG_fail_ptr("lwttl_query_chunk_range_salvage_vp",6,SWIGTYPE_p_int);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,7,(void**)&arg7,SWIGTYPE_p_int,0))){
+    SWIG_fail_ptr("lwttl_query_chunk_range_salvage_vp",7,SWIGTYPE_p_int);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,8,(void**)&arg8,SWIGTYPE_p_int,0))){
+    SWIG_fail_ptr("lwttl_query_chunk_range_salvage_vp",8,SWIGTYPE_p_int);
+  }
+  
+  result = (int)lwttl_query_chunk_range_salvage_vp((struct _LWTTL const *)arg1,(struct _LWTTLFIELDVIEWPORT const *)arg2,arg3,arg4,arg5,arg6,arg7,arg8);
   lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
   return SWIG_arg;
   
@@ -105748,6 +104398,68 @@ fail:
 }
 
 
+static int _wrap_lwttl_world_text_vp(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTL *arg1 = (LWTTL *) 0 ;
+  void *arg2 = (void *) 0 ;
+  LWTTLFIELDVIEWPORT *arg3 = (LWTTLFIELDVIEWPORT *) 0 ;
+  vec4 *arg4 ;
+  float *arg5 = (float *) 0 ;
+  float *arg6 = (float *) 0 ;
+  float *arg7 = (float *) 0 ;
+  char *result = 0 ;
+  
+  SWIG_check_num_args("lwttl_world_text_vp",7,7)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_world_text_vp",1,"LWTTL const *");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("lwttl_world_text_vp",2,"void const *");
+  if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("lwttl_world_text_vp",3,"LWTTLFIELDVIEWPORT const *");
+  if(!SWIG_isptrtype(L,4)) SWIG_fail_arg("lwttl_world_text_vp",4,"mat4x4 const");
+  if(!SWIG_isptrtype(L,5)) SWIG_fail_arg("lwttl_world_text_vp",5,"float *");
+  if(!SWIG_isptrtype(L,6)) SWIG_fail_arg("lwttl_world_text_vp",6,"float *");
+  if(!SWIG_isptrtype(L,7)) SWIG_fail_arg("lwttl_world_text_vp",7,"float *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTL,0))){
+    SWIG_fail_ptr("lwttl_world_text_vp",1,SWIGTYPE_p__LWTTL);
+  }
+  
+  arg2=(void *)SWIG_MustGetPtr(L,2,0,0,2,"lwttl_world_text_vp");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
+    SWIG_fail_ptr("lwttl_world_text_vp",3,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,4,(void**)&arg4,SWIGTYPE_p_a_4__float,0))){
+    SWIG_fail_ptr("lwttl_world_text_vp",4,SWIGTYPE_p_a_4__float);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,5,(void**)&arg5,SWIGTYPE_p_float,0))){
+    SWIG_fail_ptr("lwttl_world_text_vp",5,SWIGTYPE_p_float);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,6,(void**)&arg6,SWIGTYPE_p_float,0))){
+    SWIG_fail_ptr("lwttl_world_text_vp",6,SWIGTYPE_p_float);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,7,(void**)&arg7,SWIGTYPE_p_float,0))){
+    SWIG_fail_ptr("lwttl_world_text_vp",7,SWIGTYPE_p_float);
+  }
+  
+  result = (char *)lwttl_world_text_vp((struct _LWTTL const *)arg1,(void const *)arg2,(struct _LWTTLFIELDVIEWPORT const *)arg3,(float const (*)[4])arg4,arg5,arg6,arg7);
+  lua_pushstring(L,(const char *)result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_lwttl_world_text(lua_State* L) {
   int SWIG_arg = 0;
   LWTTL *arg1 = (LWTTL *) 0 ;
@@ -106473,6 +105185,60 @@ fail:
 }
 
 
+static int _wrap_cell_fx_to_render_coords_vp(lua_State* L) {
+  int SWIG_arg = 0;
+  float arg1 ;
+  LWTTLFIELDVIEWPORT *arg2 = (LWTTLFIELDVIEWPORT *) 0 ;
+  float result;
+  
+  SWIG_check_num_args("cell_fx_to_render_coords_vp",2,2)
+  if(!lua_isnumber(L,1)) SWIG_fail_arg("cell_fx_to_render_coords_vp",1,"float");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("cell_fx_to_render_coords_vp",2,"LWTTLFIELDVIEWPORT const *");
+  arg1 = (float)lua_tonumber(L, 1);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
+    SWIG_fail_ptr("cell_fx_to_render_coords_vp",2,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
+  }
+  
+  result = (float)cell_fx_to_render_coords_vp(arg1,(struct _LWTTLFIELDVIEWPORT const *)arg2);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_cell_fy_to_render_coords_vp(lua_State* L) {
+  int SWIG_arg = 0;
+  float arg1 ;
+  LWTTLFIELDVIEWPORT *arg2 = (LWTTLFIELDVIEWPORT *) 0 ;
+  float result;
+  
+  SWIG_check_num_args("cell_fy_to_render_coords_vp",2,2)
+  if(!lua_isnumber(L,1)) SWIG_fail_arg("cell_fy_to_render_coords_vp",1,"float");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("cell_fy_to_render_coords_vp",2,"LWTTLFIELDVIEWPORT const *");
+  arg1 = (float)lua_tonumber(L, 1);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
+    SWIG_fail_ptr("cell_fy_to_render_coords_vp",2,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
+  }
+  
+  result = (float)cell_fy_to_render_coords_vp(arg1,(struct _LWTTLFIELDVIEWPORT const *)arg2);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_lwttl_udp_send_ttlchat(lua_State* L) {
   int SWIG_arg = 0;
   LWTTL *arg1 = (LWTTL *) 0 ;
@@ -106528,6 +105294,820 @@ static int _wrap_lwttl_udp_send_ttlping(lua_State* L) {
   
   arg3 = (int)lua_tonumber(L, 3);
   lwttl_udp_send_ttlping((struct _LWTTL const *)arg1,arg2,arg3);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_add_field_viewport(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTL *arg1 = (LWTTL *) 0 ;
+  LWTTLFIELDVIEWPORT *arg2 = (LWTTLFIELDVIEWPORT *) 0 ;
+  int result;
+  
+  SWIG_check_num_args("lwttl_add_field_viewport",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_add_field_viewport",1,"LWTTL *");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("lwttl_add_field_viewport",2,"LWTTLFIELDVIEWPORT const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTL,0))){
+    SWIG_fail_ptr("lwttl_add_field_viewport",1,SWIGTYPE_p__LWTTL);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
+    SWIG_fail_ptr("lwttl_add_field_viewport",2,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
+  }
+  
+  result = (int)lwttl_add_field_viewport(arg1,(struct _LWTTLFIELDVIEWPORT const *)arg2);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_remove_field_viewport(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTL *arg1 = (LWTTL *) 0 ;
+  int arg2 ;
+  
+  SWIG_check_num_args("lwttl_remove_field_viewport",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_remove_field_viewport",1,"LWTTL *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("lwttl_remove_field_viewport",2,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTL,0))){
+    SWIG_fail_ptr("lwttl_remove_field_viewport",1,SWIGTYPE_p__LWTTL);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  lwttl_remove_field_viewport(arg1,arg2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_viewport(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTL *arg1 = (LWTTL *) 0 ;
+  int arg2 ;
+  LWTTLFIELDVIEWPORT *result = 0 ;
+  
+  SWIG_check_num_args("lwttl_viewport",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_viewport",1,"LWTTL const *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("lwttl_viewport",2,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTL,0))){
+    SWIG_fail_ptr("lwttl_viewport",1,SWIGTYPE_p__LWTTL);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  result = (LWTTLFIELDVIEWPORT *)lwttl_viewport((struct _LWTTL const *)arg1,arg2);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_viewport_max_count(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTL *arg1 = (LWTTL *) 0 ;
+  int result;
+  
+  SWIG_check_num_args("lwttl_viewport_max_count",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_viewport_max_count",1,"LWTTL const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTL,0))){
+    SWIG_fail_ptr("lwttl_viewport_max_count",1,SWIGTYPE_p__LWTTL);
+  }
+  
+  result = (int)lwttl_viewport_max_count((struct _LWTTL const *)arg1);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_calculate_clamped_view_scale(lua_State* L) {
+  int SWIG_arg = 0;
+  int arg1 ;
+  int arg2 ;
+  int result;
+  
+  SWIG_check_num_args("lwttl_calculate_clamped_view_scale",2,2)
+  if(!lua_isnumber(L,1)) SWIG_fail_arg("lwttl_calculate_clamped_view_scale",1,"int");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("lwttl_calculate_clamped_view_scale",2,"int");
+  arg1 = (int)lua_tonumber(L, 1);
+  arg2 = (int)lua_tonumber(L, 2);
+  result = (int)lwttl_calculate_clamped_view_scale(arg1,arg2);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_set_viewport_show(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTL *arg1 = (LWTTL *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  
+  SWIG_check_num_args("lwttl_set_viewport_show",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_set_viewport_show",1,"LWTTL *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("lwttl_set_viewport_show",2,"int");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("lwttl_set_viewport_show",3,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTL,0))){
+    SWIG_fail_ptr("lwttl_set_viewport_show",1,SWIGTYPE_p__LWTTL);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  arg3 = (int)lua_tonumber(L, 3);
+  lwttl_set_viewport_show(arg1,arg2,arg3);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lng_to_render_coords(lua_State* L) {
+  int SWIG_arg = 0;
+  float arg1 ;
+  LWTTLFIELDVIEWPORT *arg2 = (LWTTLFIELDVIEWPORT *) 0 ;
+  float result;
+  
+  SWIG_check_num_args("lng_to_render_coords",2,2)
+  if(!lua_isnumber(L,1)) SWIG_fail_arg("lng_to_render_coords",1,"float");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("lng_to_render_coords",2,"LWTTLFIELDVIEWPORT const *");
+  arg1 = (float)lua_tonumber(L, 1);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
+    SWIG_fail_ptr("lng_to_render_coords",2,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
+  }
+  
+  result = (float)lng_to_render_coords(arg1,(struct _LWTTLFIELDVIEWPORT const *)arg2);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lat_to_render_coords(lua_State* L) {
+  int SWIG_arg = 0;
+  float arg1 ;
+  LWTTLFIELDVIEWPORT *arg2 = (LWTTLFIELDVIEWPORT *) 0 ;
+  float result;
+  
+  SWIG_check_num_args("lat_to_render_coords",2,2)
+  if(!lua_isnumber(L,1)) SWIG_fail_arg("lat_to_render_coords",1,"float");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("lat_to_render_coords",2,"LWTTLFIELDVIEWPORT const *");
+  arg1 = (float)lua_tonumber(L, 1);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
+    SWIG_fail_ptr("lat_to_render_coords",2,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
+  }
+  
+  result = (float)lat_to_render_coords(arg1,(struct _LWTTLFIELDVIEWPORT const *)arg2);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_cell_x_to_render_coords(lua_State* L) {
+  int SWIG_arg = 0;
+  int arg1 ;
+  LWTTLFIELDVIEWPORT *arg2 = (LWTTLFIELDVIEWPORT *) 0 ;
+  float result;
+  
+  SWIG_check_num_args("cell_x_to_render_coords",2,2)
+  if(!lua_isnumber(L,1)) SWIG_fail_arg("cell_x_to_render_coords",1,"int");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("cell_x_to_render_coords",2,"LWTTLFIELDVIEWPORT const *");
+  arg1 = (int)lua_tonumber(L, 1);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
+    SWIG_fail_ptr("cell_x_to_render_coords",2,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
+  }
+  
+  result = (float)cell_x_to_render_coords(arg1,(struct _LWTTLFIELDVIEWPORT const *)arg2);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_cell_y_to_render_coords(lua_State* L) {
+  int SWIG_arg = 0;
+  int arg1 ;
+  LWTTLFIELDVIEWPORT *arg2 = (LWTTLFIELDVIEWPORT *) 0 ;
+  float result;
+  
+  SWIG_check_num_args("cell_y_to_render_coords",2,2)
+  if(!lua_isnumber(L,1)) SWIG_fail_arg("cell_y_to_render_coords",1,"int");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("cell_y_to_render_coords",2,"LWTTLFIELDVIEWPORT const *");
+  arg1 = (int)lua_tonumber(L, 1);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
+    SWIG_fail_ptr("cell_y_to_render_coords",2,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
+  }
+  
+  result = (float)cell_y_to_render_coords(arg1,(struct _LWTTLFIELDVIEWPORT const *)arg2);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_vehicle_render_scale(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTL *arg1 = (LWTTL *) 0 ;
+  LWTTLFIELDVIEWPORT *arg2 = (LWTTLFIELDVIEWPORT *) 0 ;
+  float arg3 ;
+  float result;
+  
+  SWIG_check_num_args("lwttl_vehicle_render_scale",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_vehicle_render_scale",1,"LWTTL const *");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("lwttl_vehicle_render_scale",2,"LWTTLFIELDVIEWPORT const *");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("lwttl_vehicle_render_scale",3,"float");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTL,0))){
+    SWIG_fail_ptr("lwttl_vehicle_render_scale",1,SWIGTYPE_p__LWTTL);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
+    SWIG_fail_ptr("lwttl_vehicle_render_scale",2,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
+  }
+  
+  arg3 = (float)lua_tonumber(L, 3);
+  result = (float)lwttl_vehicle_render_scale((struct _LWTTL const *)arg1,(struct _LWTTLFIELDVIEWPORT const *)arg2,arg3);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_viewport_view(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTLFIELDVIEWPORT *arg1 = (LWTTLFIELDVIEWPORT *) 0 ;
+  float *result = 0 ;
+  
+  SWIG_check_num_args("lwttl_viewport_view",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_viewport_view",1,"LWTTLFIELDVIEWPORT const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
+    SWIG_fail_ptr("lwttl_viewport_view",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
+  }
+  
+  result = (float *)lwttl_viewport_view((struct _LWTTLFIELDVIEWPORT const *)arg1);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_float,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_viewport_proj(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTLFIELDVIEWPORT *arg1 = (LWTTLFIELDVIEWPORT *) 0 ;
+  float *result = 0 ;
+  
+  SWIG_check_num_args("lwttl_viewport_proj",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_viewport_proj",1,"LWTTLFIELDVIEWPORT const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
+    SWIG_fail_ptr("lwttl_viewport_proj",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
+  }
+  
+  result = (float *)lwttl_viewport_proj((struct _LWTTLFIELDVIEWPORT const *)arg1);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_float,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_viewport_clamped_view_scale(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTLFIELDVIEWPORT *arg1 = (LWTTLFIELDVIEWPORT *) 0 ;
+  int result;
+  
+  SWIG_check_num_args("lwttl_viewport_clamped_view_scale",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_viewport_clamped_view_scale",1,"LWTTLFIELDVIEWPORT const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
+    SWIG_fail_ptr("lwttl_viewport_clamped_view_scale",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
+  }
+  
+  result = (int)lwttl_viewport_clamped_view_scale((struct _LWTTLFIELDVIEWPORT const *)arg1);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_viewport_cell_render_info(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTLFIELDVIEWPORT *arg1 = (LWTTLFIELDVIEWPORT *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  int arg4 ;
+  int arg5 ;
+  float *arg6 = (float *) 0 ;
+  float *arg7 = (float *) 0 ;
+  float *arg8 = (float *) 0 ;
+  float *arg9 = (float *) 0 ;
+  float *arg10 = (float *) 0 ;
+  float *arg11 = (float *) 0 ;
+  float *arg12 = (float *) 0 ;
+  int result;
+  
+  SWIG_check_num_args("lwttl_viewport_cell_render_info",12,12)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_viewport_cell_render_info",1,"LWTTLFIELDVIEWPORT const *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("lwttl_viewport_cell_render_info",2,"int const");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("lwttl_viewport_cell_render_info",3,"int const");
+  if(!lua_isnumber(L,4)) SWIG_fail_arg("lwttl_viewport_cell_render_info",4,"int const");
+  if(!lua_isnumber(L,5)) SWIG_fail_arg("lwttl_viewport_cell_render_info",5,"int const");
+  if(!SWIG_isptrtype(L,6)) SWIG_fail_arg("lwttl_viewport_cell_render_info",6,"float *");
+  if(!SWIG_isptrtype(L,7)) SWIG_fail_arg("lwttl_viewport_cell_render_info",7,"float *");
+  if(!SWIG_isptrtype(L,8)) SWIG_fail_arg("lwttl_viewport_cell_render_info",8,"float *");
+  if(!SWIG_isptrtype(L,9)) SWIG_fail_arg("lwttl_viewport_cell_render_info",9,"float *");
+  if(!SWIG_isptrtype(L,10)) SWIG_fail_arg("lwttl_viewport_cell_render_info",10,"float *");
+  if(!SWIG_isptrtype(L,11)) SWIG_fail_arg("lwttl_viewport_cell_render_info",11,"float *");
+  if(!SWIG_isptrtype(L,12)) SWIG_fail_arg("lwttl_viewport_cell_render_info",12,"float *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
+    SWIG_fail_ptr("lwttl_viewport_cell_render_info",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
+  }
+  
+  arg2 = (int const)lua_tonumber(L, 2);
+  arg3 = (int const)lua_tonumber(L, 3);
+  arg4 = (int const)lua_tonumber(L, 4);
+  arg5 = (int const)lua_tonumber(L, 5);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,6,(void**)&arg6,SWIGTYPE_p_float,0))){
+    SWIG_fail_ptr("lwttl_viewport_cell_render_info",6,SWIGTYPE_p_float);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,7,(void**)&arg7,SWIGTYPE_p_float,0))){
+    SWIG_fail_ptr("lwttl_viewport_cell_render_info",7,SWIGTYPE_p_float);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,8,(void**)&arg8,SWIGTYPE_p_float,0))){
+    SWIG_fail_ptr("lwttl_viewport_cell_render_info",8,SWIGTYPE_p_float);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,9,(void**)&arg9,SWIGTYPE_p_float,0))){
+    SWIG_fail_ptr("lwttl_viewport_cell_render_info",9,SWIGTYPE_p_float);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,10,(void**)&arg10,SWIGTYPE_p_float,0))){
+    SWIG_fail_ptr("lwttl_viewport_cell_render_info",10,SWIGTYPE_p_float);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,11,(void**)&arg11,SWIGTYPE_p_float,0))){
+    SWIG_fail_ptr("lwttl_viewport_cell_render_info",11,SWIGTYPE_p_float);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,12,(void**)&arg12,SWIGTYPE_p_float,0))){
+    SWIG_fail_ptr("lwttl_viewport_cell_render_info",12,SWIGTYPE_p_float);
+  }
+  
+  result = (int)lwttl_viewport_cell_render_info((struct _LWTTLFIELDVIEWPORT const *)arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_viewport_aspect_ratio(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTLFIELDVIEWPORT *arg1 = (LWTTLFIELDVIEWPORT *) 0 ;
+  float result;
+  
+  SWIG_check_num_args("lwttl_viewport_aspect_ratio",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_viewport_aspect_ratio",1,"LWTTLFIELDVIEWPORT const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
+    SWIG_fail_ptr("lwttl_viewport_aspect_ratio",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
+  }
+  
+  result = (float)lwttl_viewport_aspect_ratio((struct _LWTTLFIELDVIEWPORT const *)arg1);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_viewport_view_scale(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTLFIELDVIEWPORT *arg1 = (LWTTLFIELDVIEWPORT *) 0 ;
+  int result;
+  
+  SWIG_check_num_args("lwttl_viewport_view_scale",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_viewport_view_scale",1,"LWTTLFIELDVIEWPORT const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
+    SWIG_fail_ptr("lwttl_viewport_view_scale",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
+  }
+  
+  result = (int)lwttl_viewport_view_scale((struct _LWTTLFIELDVIEWPORT const *)arg1);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_viewport_waypoint_line_segment_thickness(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTLFIELDVIEWPORT *arg1 = (LWTTLFIELDVIEWPORT *) 0 ;
+  float result;
+  
+  SWIG_check_num_args("lwttl_viewport_waypoint_line_segment_thickness",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_viewport_waypoint_line_segment_thickness",1,"LWTTLFIELDVIEWPORT const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
+    SWIG_fail_ptr("lwttl_viewport_waypoint_line_segment_thickness",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
+  }
+  
+  result = (float)lwttl_viewport_waypoint_line_segment_thickness((struct _LWTTLFIELDVIEWPORT const *)arg1);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_viewport_icon_size_ratio(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTLFIELDVIEWPORT *arg1 = (LWTTLFIELDVIEWPORT *) 0 ;
+  float result;
+  
+  SWIG_check_num_args("lwttl_viewport_icon_size_ratio",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_viewport_icon_size_ratio",1,"LWTTLFIELDVIEWPORT const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
+    SWIG_fail_ptr("lwttl_viewport_icon_size_ratio",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
+  }
+  
+  result = (float)lwttl_viewport_icon_size_ratio((struct _LWTTLFIELDVIEWPORT const *)arg1);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_viewport_icon_width(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTLFIELDVIEWPORT *arg1 = (LWTTLFIELDVIEWPORT *) 0 ;
+  float result;
+  
+  SWIG_check_num_args("lwttl_viewport_icon_width",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_viewport_icon_width",1,"LWTTLFIELDVIEWPORT const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
+    SWIG_fail_ptr("lwttl_viewport_icon_width",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
+  }
+  
+  result = (float)lwttl_viewport_icon_width((struct _LWTTLFIELDVIEWPORT const *)arg1);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_viewport_icon_height(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTLFIELDVIEWPORT *arg1 = (LWTTLFIELDVIEWPORT *) 0 ;
+  float result;
+  
+  SWIG_check_num_args("lwttl_viewport_icon_height",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_viewport_icon_height",1,"LWTTLFIELDVIEWPORT const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
+    SWIG_fail_ptr("lwttl_viewport_icon_height",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
+  }
+  
+  result = (float)lwttl_viewport_icon_height((struct _LWTTLFIELDVIEWPORT const *)arg1);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_viewport_icon_render_info(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTL *arg1 = (LWTTL *) 0 ;
+  LWTTLFIELDVIEWPORT *arg2 = (LWTTLFIELDVIEWPORT *) 0 ;
+  int arg3 ;
+  int arg4 ;
+  int arg5 ;
+  int arg6 ;
+  float *arg7 = (float *) 0 ;
+  float *arg8 = (float *) 0 ;
+  float *arg9 = (float *) 0 ;
+  int result;
+  
+  SWIG_check_num_args("lwttl_viewport_icon_render_info",9,9)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_viewport_icon_render_info",1,"LWTTL const *");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("lwttl_viewport_icon_render_info",2,"LWTTLFIELDVIEWPORT const *");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("lwttl_viewport_icon_render_info",3,"int const");
+  if(!lua_isnumber(L,4)) SWIG_fail_arg("lwttl_viewport_icon_render_info",4,"int const");
+  if(!lua_isnumber(L,5)) SWIG_fail_arg("lwttl_viewport_icon_render_info",5,"int const");
+  if(!lua_isnumber(L,6)) SWIG_fail_arg("lwttl_viewport_icon_render_info",6,"int const");
+  if(!SWIG_isptrtype(L,7)) SWIG_fail_arg("lwttl_viewport_icon_render_info",7,"float *");
+  if(!SWIG_isptrtype(L,8)) SWIG_fail_arg("lwttl_viewport_icon_render_info",8,"float *");
+  if(!SWIG_isptrtype(L,9)) SWIG_fail_arg("lwttl_viewport_icon_render_info",9,"float *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTL,0))){
+    SWIG_fail_ptr("lwttl_viewport_icon_render_info",1,SWIGTYPE_p__LWTTL);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
+    SWIG_fail_ptr("lwttl_viewport_icon_render_info",2,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
+  }
+  
+  arg3 = (int const)lua_tonumber(L, 3);
+  arg4 = (int const)lua_tonumber(L, 4);
+  arg5 = (int const)lua_tonumber(L, 5);
+  arg6 = (int const)lua_tonumber(L, 6);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,7,(void**)&arg7,SWIGTYPE_p_float,0))){
+    SWIG_fail_ptr("lwttl_viewport_icon_render_info",7,SWIGTYPE_p_float);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,8,(void**)&arg8,SWIGTYPE_p_float,0))){
+    SWIG_fail_ptr("lwttl_viewport_icon_render_info",8,SWIGTYPE_p_float);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,9,(void**)&arg9,SWIGTYPE_p_float,0))){
+    SWIG_fail_ptr("lwttl_viewport_icon_render_info",9,SWIGTYPE_p_float);
+  }
+  
+  result = (int)lwttl_viewport_icon_render_info((struct _LWTTL const *)arg1,(struct _LWTTLFIELDVIEWPORT const *)arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_viewport_cell_render_width(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTLFIELDVIEWPORT *arg1 = (LWTTLFIELDVIEWPORT *) 0 ;
+  float result;
+  
+  SWIG_check_num_args("lwttl_viewport_cell_render_width",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_viewport_cell_render_width",1,"LWTTLFIELDVIEWPORT const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
+    SWIG_fail_ptr("lwttl_viewport_cell_render_width",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
+  }
+  
+  result = (float)lwttl_viewport_cell_render_width((struct _LWTTLFIELDVIEWPORT const *)arg1);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_viewport_cell_render_height(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTLFIELDVIEWPORT *arg1 = (LWTTLFIELDVIEWPORT *) 0 ;
+  float result;
+  
+  SWIG_check_num_args("lwttl_viewport_cell_render_height",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_viewport_cell_render_height",1,"LWTTLFIELDVIEWPORT const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
+    SWIG_fail_ptr("lwttl_viewport_cell_render_height",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
+  }
+  
+  result = (float)lwttl_viewport_cell_render_height((struct _LWTTLFIELDVIEWPORT const *)arg1);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_viewport_rt_x(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTLFIELDVIEWPORT *arg1 = (LWTTLFIELDVIEWPORT *) 0 ;
+  float result;
+  
+  SWIG_check_num_args("lwttl_viewport_rt_x",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_viewport_rt_x",1,"LWTTLFIELDVIEWPORT const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
+    SWIG_fail_ptr("lwttl_viewport_rt_x",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
+  }
+  
+  result = (float)lwttl_viewport_rt_x((struct _LWTTLFIELDVIEWPORT const *)arg1);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_viewport_rt_y(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTLFIELDVIEWPORT *arg1 = (LWTTLFIELDVIEWPORT *) 0 ;
+  float result;
+  
+  SWIG_check_num_args("lwttl_viewport_rt_y",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_viewport_rt_y",1,"LWTTLFIELDVIEWPORT const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
+    SWIG_fail_ptr("lwttl_viewport_rt_y",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
+  }
+  
+  result = (float)lwttl_viewport_rt_y((struct _LWTTLFIELDVIEWPORT const *)arg1);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_viewport_range(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTLFIELDVIEWPORT *arg1 = (LWTTLFIELDVIEWPORT *) 0 ;
+  int *arg2 = (int *) 0 ;
+  int *arg3 = (int *) 0 ;
+  int *arg4 = (int *) 0 ;
+  int *arg5 = (int *) 0 ;
+  
+  SWIG_check_num_args("lwttl_viewport_range",5,5)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_viewport_range",1,"LWTTLFIELDVIEWPORT const *");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("lwttl_viewport_range",2,"int *");
+  if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("lwttl_viewport_range",3,"int *");
+  if(!SWIG_isptrtype(L,4)) SWIG_fail_arg("lwttl_viewport_range",4,"int *");
+  if(!SWIG_isptrtype(L,5)) SWIG_fail_arg("lwttl_viewport_range",5,"int *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
+    SWIG_fail_ptr("lwttl_viewport_range",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_int,0))){
+    SWIG_fail_ptr("lwttl_viewport_range",2,SWIGTYPE_p_int);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_int,0))){
+    SWIG_fail_ptr("lwttl_viewport_range",3,SWIGTYPE_p_int);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,4,(void**)&arg4,SWIGTYPE_p_int,0))){
+    SWIG_fail_ptr("lwttl_viewport_range",4,SWIGTYPE_p_int);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,5,(void**)&arg5,SWIGTYPE_p_int,0))){
+    SWIG_fail_ptr("lwttl_viewport_range",5,SWIGTYPE_p_int);
+  }
+  
+  lwttl_viewport_range((struct _LWTTLFIELDVIEWPORT const *)arg1,arg2,arg3,arg4,arg5);
   
   return SWIG_arg;
   
@@ -108808,9 +108388,13 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "lwttl_write_last_state", _wrap_lwttl_write_last_state},
     { "lwttl_read_last_state", _wrap_lwttl_read_last_state},
     { "lwttl_full_state", _wrap_lwttl_full_state},
+    { "lwttl_query_chunk_range_land_vp", _wrap_lwttl_query_chunk_range_land_vp},
     { "lwttl_query_chunk_range_land", _wrap_lwttl_query_chunk_range_land},
+    { "lwttl_query_chunk_range_seaport_vp", _wrap_lwttl_query_chunk_range_seaport_vp},
     { "lwttl_query_chunk_range_seaport", _wrap_lwttl_query_chunk_range_seaport},
+    { "lwttl_query_chunk_range_city_vp", _wrap_lwttl_query_chunk_range_city_vp},
     { "lwttl_query_chunk_range_city", _wrap_lwttl_query_chunk_range_city},
+    { "lwttl_query_chunk_range_salvage_vp", _wrap_lwttl_query_chunk_range_salvage_vp},
     { "lwttl_query_chunk_range_salvage", _wrap_lwttl_query_chunk_range_salvage},
     { "lwttl_query_chunk_land", _wrap_lwttl_query_chunk_land},
     { "lwttl_query_chunk_seaport", _wrap_lwttl_query_chunk_seaport},
@@ -108849,6 +108433,7 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "lwttl_ping_send_interval_multiplier", _wrap_lwttl_ping_send_interval_multiplier},
     { "lwttl_get_cell_bound", _wrap_lwttl_get_cell_bound},
     { "lwttl_world_text_begin", _wrap_lwttl_world_text_begin},
+    { "lwttl_world_text_vp", _wrap_lwttl_world_text_vp},
     { "lwttl_world_text", _wrap_lwttl_world_text},
     { "lwttl_world_text_next", _wrap_lwttl_world_text_next},
     { "lwttl_toggle_cell_grid", _wrap_lwttl_toggle_cell_grid},
@@ -108874,8 +108459,37 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "render_coords_to_lat", _wrap_render_coords_to_lat},
     { "cell_fx_to_render_coords", _wrap_cell_fx_to_render_coords},
     { "cell_fy_to_render_coords", _wrap_cell_fy_to_render_coords},
+    { "cell_fx_to_render_coords_vp", _wrap_cell_fx_to_render_coords_vp},
+    { "cell_fy_to_render_coords_vp", _wrap_cell_fy_to_render_coords_vp},
     { "lwttl_udp_send_ttlchat", _wrap_lwttl_udp_send_ttlchat},
     { "lwttl_udp_send_ttlping", _wrap_lwttl_udp_send_ttlping},
+    { "lwttl_add_field_viewport", _wrap_lwttl_add_field_viewport},
+    { "lwttl_remove_field_viewport", _wrap_lwttl_remove_field_viewport},
+    { "lwttl_viewport", _wrap_lwttl_viewport},
+    { "lwttl_viewport_max_count", _wrap_lwttl_viewport_max_count},
+    { "lwttl_calculate_clamped_view_scale", _wrap_lwttl_calculate_clamped_view_scale},
+    { "lwttl_set_viewport_show", _wrap_lwttl_set_viewport_show},
+    { "lng_to_render_coords", _wrap_lng_to_render_coords},
+    { "lat_to_render_coords", _wrap_lat_to_render_coords},
+    { "cell_x_to_render_coords", _wrap_cell_x_to_render_coords},
+    { "cell_y_to_render_coords", _wrap_cell_y_to_render_coords},
+    { "lwttl_vehicle_render_scale", _wrap_lwttl_vehicle_render_scale},
+    { "lwttl_viewport_view", _wrap_lwttl_viewport_view},
+    { "lwttl_viewport_proj", _wrap_lwttl_viewport_proj},
+    { "lwttl_viewport_clamped_view_scale", _wrap_lwttl_viewport_clamped_view_scale},
+    { "lwttl_viewport_cell_render_info", _wrap_lwttl_viewport_cell_render_info},
+    { "lwttl_viewport_aspect_ratio", _wrap_lwttl_viewport_aspect_ratio},
+    { "lwttl_viewport_view_scale", _wrap_lwttl_viewport_view_scale},
+    { "lwttl_viewport_waypoint_line_segment_thickness", _wrap_lwttl_viewport_waypoint_line_segment_thickness},
+    { "lwttl_viewport_icon_size_ratio", _wrap_lwttl_viewport_icon_size_ratio},
+    { "lwttl_viewport_icon_width", _wrap_lwttl_viewport_icon_width},
+    { "lwttl_viewport_icon_height", _wrap_lwttl_viewport_icon_height},
+    { "lwttl_viewport_icon_render_info", _wrap_lwttl_viewport_icon_render_info},
+    { "lwttl_viewport_cell_render_width", _wrap_lwttl_viewport_cell_render_width},
+    { "lwttl_viewport_cell_render_height", _wrap_lwttl_viewport_cell_render_height},
+    { "lwttl_viewport_rt_x", _wrap_lwttl_viewport_rt_x},
+    { "lwttl_viewport_rt_y", _wrap_lwttl_viewport_rt_y},
+    { "lwttl_viewport_range", _wrap_lwttl_viewport_range},
     { "msb_index", _wrap_msb_index},
     { "make_chunk_key", _wrap_make_chunk_key},
     { "aligned_chunk_index", _wrap_aligned_chunk_index},
@@ -109055,7 +108669,6 @@ static swig_lua_class* swig_SwigModule_classes[]= {
 &_wrap_class_LWPSETNICKNAMERESULT,
 &_wrap_class_LWPSETBATTLEPRESET,
 &_wrap_class_LWTTLLNGLAT,
-&_wrap_class_LWTTLFIELDVIEWPORT,
 &_wrap_class_LWTTLCHUNKKEY,
 &_wrap_class__LWTTLCHUNKKEY_bf,
     0
@@ -109255,7 +108868,7 @@ static swig_type_info _swigt__p__LWTIMEPOINT = {"_p__LWTIMEPOINT", "struct _LWTI
 static swig_type_info _swigt__p__LWTTL = {"_p__LWTTL", "struct _LWTTL *|LWTTL *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p__LWTTLCHUNKKEY = {"_p__LWTTLCHUNKKEY", "union _LWTTLCHUNKKEY *|_LWTTLCHUNKKEY *|LWTTLCHUNKKEY *", 0, 0, (void*)&_wrap_class_LWTTLCHUNKKEY, 0};
 static swig_type_info _swigt__p__LWTTLCHUNKKEY_bf = {"_p__LWTTLCHUNKKEY_bf", "_LWTTLCHUNKKEY_bf *", 0, 0, (void*)&_wrap_class__LWTTLCHUNKKEY_bf, 0};
-static swig_type_info _swigt__p__LWTTLFIELDVIEWPORT = {"_p__LWTTLFIELDVIEWPORT", "struct _LWTTLFIELDVIEWPORT *|_LWTTLFIELDVIEWPORT *|LWTTLFIELDVIEWPORT *", 0, 0, (void*)&_wrap_class_LWTTLFIELDVIEWPORT, 0};
+static swig_type_info _swigt__p__LWTTLFIELDVIEWPORT = {"_p__LWTTLFIELDVIEWPORT", "struct _LWTTLFIELDVIEWPORT *|LWTTLFIELDVIEWPORT *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p__LWTTLLNGLAT = {"_p__LWTTLLNGLAT", "struct _LWTTLLNGLAT *|_LWTTLLNGLAT *|LWTTLLNGLAT *", 0, 0, (void*)&_wrap_class_LWTTLLNGLAT, 0};
 static swig_type_info _swigt__p__LWUDP = {"_p__LWUDP", "struct _LWUDP *|LWUDP *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p__LWUIDIM = {"_p__LWUIDIM", "struct _LWUIDIM *|_LWUIDIM *|LWUIDIM *", 0, 0, (void*)&_wrap_class_LWUIDIM, 0};
