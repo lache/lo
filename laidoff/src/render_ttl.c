@@ -809,17 +809,15 @@ static void render_waves(const LWCONTEXT* pLwc, const mat4x4 view, const mat4x4 
 }
 
 static void render_morphed_earth(const LWCONTEXT* pLwc,
-                                 const mat4x4 view,
-                                 const mat4x4 proj,
-                                 const LWTTLLNGLAT* center,
-                                 int view_scale) {
+                                 const LWTTLFIELDVIEWPORT* vp) {
     const LW_MORPH_VBO_TYPE lmvt = LMVT_EARTH;
     const LW_ATLAS_ENUM lae = LAE_WATER_2048_1024_AA;
     const int tex_index = pLwc->tex_atlas[lae];
-    const float earth_globe_scale = lwttl_earth_globe_scale(pLwc->ttl) * (64.0f / view_scale);
-    const float earth_globe_morph_weight = lwttl_earth_globe_morph_weight(earth_globe_scale);
+    const float earth_globe_scale = lwttl_earth_globe_scale(pLwc->ttl) * (64.0f / lwttl_viewport_view_scale(vp));
+    const float earth_globe_morph_weight = 0;// lwttl_earth_globe_morph_weight(earth_globe_scale);
     const float x = 0.0f;
-    const float y = lwttl_earth_globe_y(center, earth_globe_scale, earth_globe_morph_weight);
+    const LWTTLLNGLAT* view_center = lwttl_center(pLwc->ttl);
+    const float y = lwttl_earth_globe_y(view_center, earth_globe_scale, earth_globe_morph_weight);
     lazy_glBindBuffer(pLwc, lmvt);
     lazy_tex_atlas_glBindTexture(pLwc, lae);
     mat4x4 model_translate;
@@ -831,7 +829,7 @@ static void render_morphed_earth(const LWCONTEXT* pLwc,
     mat4x4_identity(model);
     mat4x4_mul(model, model_translate, model_scale);
     const float uv_offset[] = {
-        +(center->lng) / 360.0f,
+        +(view_center->lng) / 360.0f,
         0.0f,
     };
     render_morph(pLwc,
@@ -842,8 +840,8 @@ static void render_morphed_earth(const LWCONTEXT* pLwc,
                  1.0f,
                  1.0f,
                  0.0f,
-                 proj,
-                 view,
+                 lwttl_viewport_proj(vp),
+                 lwttl_viewport_view(vp),
                  model,
                  uv_offset,
                  default_flip_y_uv_scale,
@@ -1764,10 +1762,11 @@ static void render_ttl_stat(const LWTTL* ttl, const LWCONTEXT* pLwc) {
 }
 
 static void lwc_render_ttl_field_viewport(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp) {
+    glDisable(GL_DEPTH_TEST);
+    render_morphed_earth(pLwc, vp);
     if (lwc_render_ttl_render("landcell")) {
         render_sea_static_objects(pLwc, vp);
     }
-    glDisable(GL_DEPTH_TEST);
     render_waypoints(pLwc->ttl, pLwc, vp);
     render_waypoints_cache(pLwc->ttl, pLwc, vp);
     glEnable(GL_DEPTH_TEST);
@@ -1999,10 +1998,10 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
 
     // revert to original viewport
     glViewport(0, 0, pLwc->window_width, pLwc->window_height);
-    lw_set_viewport_size((LWCONTEXT*)pLwc, pLwc->window_width, pLwc->window_height);
-    //lwttl_update_view_proj(pLwc->ttl, pLwc->viewport_aspect_ratio);
-    mat4x4 view, proj;
-    lwttl_view_proj(pLwc->ttl, view, proj);
+    //lw_set_viewport_size((LWCONTEXT*)pLwc, pLwc->window_width, pLwc->window_height);
+    ////lwttl_update_view_proj(pLwc->ttl, pLwc->viewport_aspect_ratio);
+    //mat4x4 view, proj;
+    //lwttl_view_proj(pLwc->ttl, view, proj);
     render_ttl_stat(pLwc->ttl, pLwc);
     //render_coords_dms(pLwc, &view_center);
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);

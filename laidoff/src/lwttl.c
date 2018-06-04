@@ -285,7 +285,6 @@ LWTTL* lwttl_new(float aspect_ratio) {
     LWMUTEX_INIT(ttl->rendering_mutex);
     ttl->earth_globe_scale_0 = earth_globe_render_scale;
     ttl->sea_render_scale_0 = sea_render_scale;
-    lwttl_set_earth_globe_scale(ttl, ttl->earth_globe_scale_0);
     lwttl_update_view_proj(ttl, aspect_ratio);
     lwttl_clear_selected_pressed_pos(ttl);
     // add main viewport
@@ -303,6 +302,7 @@ LWTTL* lwttl_new(float aspect_ratio) {
                                lwttl_half_lng_extent_in_degrees(1),
                                lwttl_half_lat_extent_in_degrees(1));
     lwttl_add_field_viewport(ttl, &vp);
+    lwttl_set_earth_globe_scale(ttl, ttl->earth_globe_scale_0);
     // Ulsan
     lwttl_worldmap_scroll_to(ttl, 129.496f, 35.494f, 0);
     return ttl;
@@ -1832,11 +1832,13 @@ void lwttl_update_view_proj(LWTTL* ttl, float aspect_ratio) {
     vec3_sub(center_to_eye, eye, center);
     float cam_a = atan2f(center_to_eye[1], center_to_eye[0]);
     // right := rotate (1, 0, 0) by cam_a in +Z axis
-    vec3 right = {
-        cosf((float)(M_PI / 2) + cam_a),
-        sinf((float)(M_PI / 2) + cam_a),
-        0
-    };
+    vec3 right = { 0, 0, 0 };
+    if (center_to_eye[0] == 0 && center_to_eye[1] == 0) {
+        right[0] = 1;
+    } else {
+        right[0] = cosf((float)(M_PI / 2) + cam_a);
+        right[1] = sinf((float)(M_PI / 2) + cam_a);
+    }
     vec3 eye_right;
     vec3_mul_cross(eye_right, center_to_eye, right);
     vec3 up;
