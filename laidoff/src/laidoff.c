@@ -1716,7 +1716,7 @@ void lw_set_viewport_size(LWCONTEXT* pLwc, int w, int h) {
 
         puck_game_reset_view_proj(pLwc, pLwc->puck_game);
 
-        lwttl_update_aspect_ratio(pLwc->ttl, pLwc->viewport_aspect_ratio);
+        //lwttl_update_aspect_ratio(pLwc->ttl, pLwc->viewport_aspect_ratio);
     } else {
         LOGE("Invalid viewport size detected!");
         if (pLwc->viewport_width <= 0) {

@@ -647,7 +647,7 @@ static void render_land_cell_bitmap(const LWTTL* ttl,
                 | bitmap_land(bitmap, bx - 0, by - 0) << 0;
             const float sx = cell_w / 2;
             const float sy = cell_h / 2;
-            const float sz = lwttl_selected_cell_popup_height(pLwc->ttl) / clamped_view_scale;
+            const float sz = lwttl_selected_cell_popup_height(pLwc->ttl, vp) / clamped_view_scale;
             render_solid_vb_uv_shader_rot_view_proj(pLwc,
                                                     cell_x0,
                                                     cell_y0,
@@ -1589,7 +1589,7 @@ static void render_cell_pixel_selector_lng_lat(const LWTTL* ttl,
                                0,
                                lwttl_viewport_cell_render_width(vp),
                                lwttl_viewport_cell_render_height(vp),
-                               lwttl_selected_cell_popup_height(pLwc->ttl) / lwttl_viewport_view_scale(vp));
+                               lwttl_selected_cell_popup_height(pLwc->ttl, vp) / lwttl_viewport_view_scale(vp));
 }
 
 static void render_single_cell_info_lng_lat(const LWTTL* ttl,
@@ -1834,24 +1834,23 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
 
     const int viewport_max_count = lwttl_viewport_max_count(pLwc->ttl);
     for (int i = 0; i < viewport_max_count; i++) {
-        const LWTTLFIELDVIEWPORT* vp = lwttl_viewport(pLwc->ttl, i);
-        if (vp == 0) {
-            continue;
+        LWTTLFIELDVIEWPORT* vp_copy = alloca(lwttl_sizeof_viewport());
+        if (lwttl_copy_viewport_data(pLwc->ttl, i, vp_copy)) {
+            int viewport_x, viewport_y, viewport_width, viewport_height;
+            lwttl_viewport_range(vp_copy,
+                                 &viewport_x,
+                                 &viewport_y,
+                                 &viewport_width,
+                                 &viewport_height);
+            glViewport(viewport_x,
+                       viewport_y,
+                       viewport_width,
+                       viewport_height);
+            lw_set_viewport_size((LWCONTEXT*)pLwc,
+                                 viewport_width,
+                                 viewport_height);
+            lwc_render_ttl_field_viewport(pLwc, vp_copy);
         }
-        int viewport_x, viewport_y, viewport_width, viewport_height;
-        lwttl_viewport_range(vp,
-                             &viewport_x,
-                             &viewport_y,
-                             &viewport_width,
-                             &viewport_height);
-        glViewport(viewport_x,
-                   viewport_y,
-                   viewport_width,
-                   viewport_height);
-        /*lw_set_viewport_size(pLwc,
-                             viewport_width,
-                             viewport_height);*/
-        lwc_render_ttl_field_viewport(pLwc, vp);
     }
 
     //{
@@ -1997,11 +1996,13 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
     //}
 
     // revert to original viewport
-    glViewport(0, 0, pLwc->window_width, pLwc->window_height);
-    //lw_set_viewport_size((LWCONTEXT*)pLwc, pLwc->window_width, pLwc->window_height);
-    ////lwttl_update_view_proj(pLwc->ttl, pLwc->viewport_aspect_ratio);
-    //mat4x4 view, proj;
-    //lwttl_view_proj(pLwc->ttl, view, proj);
+    glViewport(0,
+               0,
+               pLwc->window_width,
+               pLwc->window_height);
+    lw_set_viewport_size((LWCONTEXT*)pLwc,
+                         pLwc->window_width,
+                         pLwc->window_height);
     render_ttl_stat(pLwc->ttl, pLwc);
     //render_coords_dms(pLwc, &view_center);
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);

@@ -103453,86 +103453,6 @@ fail:
 }
 
 
-static int _wrap_lwttl_lng_to_floor_int(lua_State* L) {
-  int SWIG_arg = 0;
-  float arg1 ;
-  int result;
-  
-  SWIG_check_num_args("lwttl_lng_to_floor_int",1,1)
-  if(!lua_isnumber(L,1)) SWIG_fail_arg("lwttl_lng_to_floor_int",1,"float");
-  arg1 = (float)lua_tonumber(L, 1);
-  result = (int)lwttl_lng_to_floor_int(arg1);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_lwttl_lat_to_floor_int(lua_State* L) {
-  int SWIG_arg = 0;
-  float arg1 ;
-  int result;
-  
-  SWIG_check_num_args("lwttl_lat_to_floor_int",1,1)
-  if(!lua_isnumber(L,1)) SWIG_fail_arg("lwttl_lat_to_floor_int",1,"float");
-  arg1 = (float)lua_tonumber(L, 1);
-  result = (int)lwttl_lat_to_floor_int(arg1);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_lwttl_lng_to_ceil_int(lua_State* L) {
-  int SWIG_arg = 0;
-  float arg1 ;
-  int result;
-  
-  SWIG_check_num_args("lwttl_lng_to_ceil_int",1,1)
-  if(!lua_isnumber(L,1)) SWIG_fail_arg("lwttl_lng_to_ceil_int",1,"float");
-  arg1 = (float)lua_tonumber(L, 1);
-  result = (int)lwttl_lng_to_ceil_int(arg1);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_lwttl_lat_to_ceil_int(lua_State* L) {
-  int SWIG_arg = 0;
-  float arg1 ;
-  int result;
-  
-  SWIG_check_num_args("lwttl_lat_to_ceil_int",1,1)
-  if(!lua_isnumber(L,1)) SWIG_fail_arg("lwttl_lat_to_ceil_int",1,"float");
-  arg1 = (float)lua_tonumber(L, 1);
-  result = (int)lwttl_lat_to_ceil_int(arg1);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
 static int _wrap_lwttl_sea_udp(lua_State* L) {
   int SWIG_arg = 0;
   LWTTL *arg1 = (LWTTL *) 0 ;
@@ -103984,17 +103904,31 @@ static int _wrap_lwttl_update_view_proj(lua_State* L) {
   int SWIG_arg = 0;
   LWTTL *arg1 = (LWTTL *) 0 ;
   float arg2 ;
+  vec4 *arg3 ;
+  vec4 *arg4 ;
   
-  SWIG_check_num_args("lwttl_update_view_proj",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_update_view_proj",1,"LWTTL *");
+  SWIG_check_num_args("lwttl_update_view_proj",4,4)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_update_view_proj",1,"LWTTL const *");
   if(!lua_isnumber(L,2)) SWIG_fail_arg("lwttl_update_view_proj",2,"float");
+  if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("lwttl_update_view_proj",3,"mat4x4");
+  if(!SWIG_isptrtype(L,4)) SWIG_fail_arg("lwttl_update_view_proj",4,"mat4x4");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTL,0))){
     SWIG_fail_ptr("lwttl_update_view_proj",1,SWIGTYPE_p__LWTTL);
   }
   
   arg2 = (float)lua_tonumber(L, 2);
-  lwttl_update_view_proj(arg1,arg2);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_a_4__float,0))){
+    SWIG_fail_ptr("lwttl_update_view_proj",3,SWIGTYPE_p_a_4__float);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,4,(void**)&arg4,SWIGTYPE_p_a_4__float,0))){
+    SWIG_fail_ptr("lwttl_update_view_proj",4,SWIGTYPE_p_a_4__float);
+  }
+  
+  lwttl_update_view_proj((struct _LWTTL const *)arg1,arg2,(float (*)[4])arg3,(float (*)[4])arg4);
   
   return SWIG_arg;
   
@@ -104784,16 +104718,23 @@ fail:
 static int _wrap_lwttl_selected_cell_popup_height(lua_State* L) {
   int SWIG_arg = 0;
   LWTTL *arg1 = (LWTTL *) 0 ;
+  LWTTLFIELDVIEWPORT *arg2 = (LWTTLFIELDVIEWPORT *) 0 ;
   float result;
   
-  SWIG_check_num_args("lwttl_selected_cell_popup_height",1,1)
+  SWIG_check_num_args("lwttl_selected_cell_popup_height",2,2)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_selected_cell_popup_height",1,"LWTTL const *");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("lwttl_selected_cell_popup_height",2,"LWTTLFIELDVIEWPORT const *");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTL,0))){
     SWIG_fail_ptr("lwttl_selected_cell_popup_height",1,SWIGTYPE_p__LWTTL);
   }
   
-  result = (float)lwttl_selected_cell_popup_height((struct _LWTTL const *)arg1);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
+    SWIG_fail_ptr("lwttl_selected_cell_popup_height",2,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
+  }
+  
+  result = (float)lwttl_selected_cell_popup_height((struct _LWTTL const *)arg1,(struct _LWTTLFIELDVIEWPORT const *)arg2);
   lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
   return SWIG_arg;
   
@@ -105389,6 +105330,57 @@ fail:
 }
 
 
+static int _wrap_lwttl_sizeof_viewport(lua_State* L) {
+  int SWIG_arg = 0;
+  size_t result;
+  
+  SWIG_check_num_args("lwttl_sizeof_viewport",0,0)
+  result = lwttl_sizeof_viewport();
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_copy_viewport_data(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTL *arg1 = (LWTTL *) 0 ;
+  int arg2 ;
+  LWTTLFIELDVIEWPORT *arg3 = (LWTTLFIELDVIEWPORT *) 0 ;
+  LWTTLFIELDVIEWPORT *result = 0 ;
+  
+  SWIG_check_num_args("lwttl_copy_viewport_data",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_copy_viewport_data",1,"LWTTL const *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("lwttl_copy_viewport_data",2,"int");
+  if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("lwttl_copy_viewport_data",3,"LWTTLFIELDVIEWPORT *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTL,0))){
+    SWIG_fail_ptr("lwttl_copy_viewport_data",1,SWIGTYPE_p__LWTTL);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
+    SWIG_fail_ptr("lwttl_copy_viewport_data",3,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
+  }
+  
+  result = (LWTTLFIELDVIEWPORT *)lwttl_copy_viewport_data((struct _LWTTL const *)arg1,arg2,arg3);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_lwttl_viewport_max_count(lua_State* L) {
   int SWIG_arg = 0;
   LWTTL *arg1 = (LWTTL *) 0 ;
@@ -105610,7 +105602,7 @@ fail:
 static int _wrap_lwttl_viewport_view(lua_State* L) {
   int SWIG_arg = 0;
   LWTTLFIELDVIEWPORT *arg1 = (LWTTLFIELDVIEWPORT *) 0 ;
-  float *result = 0 ;
+  vec4 *result = 0 ;
   
   SWIG_check_num_args("lwttl_viewport_view",1,1)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_viewport_view",1,"LWTTLFIELDVIEWPORT const *");
@@ -105619,8 +105611,8 @@ static int _wrap_lwttl_viewport_view(lua_State* L) {
     SWIG_fail_ptr("lwttl_viewport_view",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
   }
   
-  result = (float *)lwttl_viewport_view((struct _LWTTLFIELDVIEWPORT const *)arg1);
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_float,0); SWIG_arg++; 
+  result = (vec4 *)lwttl_viewport_view((struct _LWTTLFIELDVIEWPORT const *)arg1);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_a_4__float,0); SWIG_arg++; 
   return SWIG_arg;
   
   if(0) SWIG_fail;
@@ -105634,7 +105626,7 @@ fail:
 static int _wrap_lwttl_viewport_proj(lua_State* L) {
   int SWIG_arg = 0;
   LWTTLFIELDVIEWPORT *arg1 = (LWTTLFIELDVIEWPORT *) 0 ;
-  float *result = 0 ;
+  vec4 *result = 0 ;
   
   SWIG_check_num_args("lwttl_viewport_proj",1,1)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_viewport_proj",1,"LWTTLFIELDVIEWPORT const *");
@@ -105643,8 +105635,8 @@ static int _wrap_lwttl_viewport_proj(lua_State* L) {
     SWIG_fail_ptr("lwttl_viewport_proj",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
   }
   
-  result = (float *)lwttl_viewport_proj((struct _LWTTLFIELDVIEWPORT const *)arg1);
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_float,0); SWIG_arg++; 
+  result = (vec4 *)lwttl_viewport_proj((struct _LWTTLFIELDVIEWPORT const *)arg1);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_a_4__float,0); SWIG_arg++; 
   return SWIG_arg;
   
   if(0) SWIG_fail;
@@ -106108,6 +106100,67 @@ static int _wrap_lwttl_viewport_range(lua_State* L) {
   }
   
   lwttl_viewport_range((struct _LWTTLFIELDVIEWPORT const *)arg1,arg2,arg3,arg4,arg5);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_set_viewport_view_scale(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTL *arg1 = (LWTTL *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  
+  SWIG_check_num_args("lwttl_set_viewport_view_scale",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_set_viewport_view_scale",1,"LWTTL *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("lwttl_set_viewport_view_scale",2,"int");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("lwttl_set_viewport_view_scale",3,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTL,0))){
+    SWIG_fail_ptr("lwttl_set_viewport_view_scale",1,SWIGTYPE_p__LWTTL);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  arg3 = (int)lua_tonumber(L, 3);
+  lwttl_set_viewport_view_scale(arg1,arg2,arg3);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_set_window_size(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTL *arg1 = (LWTTL *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  float arg4 ;
+  
+  SWIG_check_num_args("lwttl_set_window_size",4,4)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_set_window_size",1,"LWTTL *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("lwttl_set_window_size",2,"int");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("lwttl_set_window_size",3,"int");
+  if(!lua_isnumber(L,4)) SWIG_fail_arg("lwttl_set_window_size",4,"float");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTL,0))){
+    SWIG_fail_ptr("lwttl_set_window_size",1,SWIGTYPE_p__LWTTL);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  arg3 = (int)lua_tonumber(L, 3);
+  arg4 = (float)lua_tonumber(L, 4);
+  lwttl_set_window_size(arg1,arg2,arg3,arg4);
   
   return SWIG_arg;
   
@@ -108402,10 +108455,6 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "lwttl_query_chunk_salvage", _wrap_lwttl_query_chunk_salvage},
     { "lwttl_half_lng_extent_in_degrees", _wrap_lwttl_half_lng_extent_in_degrees},
     { "lwttl_half_lat_extent_in_degrees", _wrap_lwttl_half_lat_extent_in_degrees},
-    { "lwttl_lng_to_floor_int", _wrap_lwttl_lng_to_floor_int},
-    { "lwttl_lat_to_floor_int", _wrap_lwttl_lat_to_floor_int},
-    { "lwttl_lng_to_ceil_int", _wrap_lwttl_lng_to_ceil_int},
-    { "lwttl_lat_to_ceil_int", _wrap_lwttl_lat_to_ceil_int},
     { "lwttl_sea_udp", _wrap_lwttl_sea_udp},
     { "lwttl_set_earth_globe_scale", _wrap_lwttl_set_earth_globe_scale},
     { "lwttl_scroll_view_scale", _wrap_lwttl_scroll_view_scale},
@@ -108466,6 +108515,8 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "lwttl_add_field_viewport", _wrap_lwttl_add_field_viewport},
     { "lwttl_remove_field_viewport", _wrap_lwttl_remove_field_viewport},
     { "lwttl_viewport", _wrap_lwttl_viewport},
+    { "lwttl_sizeof_viewport", _wrap_lwttl_sizeof_viewport},
+    { "lwttl_copy_viewport_data", _wrap_lwttl_copy_viewport_data},
     { "lwttl_viewport_max_count", _wrap_lwttl_viewport_max_count},
     { "lwttl_calculate_clamped_view_scale", _wrap_lwttl_calculate_clamped_view_scale},
     { "lwttl_set_viewport_show", _wrap_lwttl_set_viewport_show},
@@ -108490,6 +108541,8 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "lwttl_viewport_rt_x", _wrap_lwttl_viewport_rt_x},
     { "lwttl_viewport_rt_y", _wrap_lwttl_viewport_rt_y},
     { "lwttl_viewport_range", _wrap_lwttl_viewport_range},
+    { "lwttl_set_viewport_view_scale", _wrap_lwttl_set_viewport_view_scale},
+    { "lwttl_set_window_size", _wrap_lwttl_set_window_size},
     { "msb_index", _wrap_msb_index},
     { "make_chunk_key", _wrap_make_chunk_key},
     { "aligned_chunk_index", _wrap_aligned_chunk_index},

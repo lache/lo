@@ -164,10 +164,6 @@ const LWPTTLSALVAGEOBJECT* lwttl_query_chunk_salvage(const LWTTL* ttl,
                                                      int* count);
 float lwttl_half_lng_extent_in_degrees(const int view_scale);
 float lwttl_half_lat_extent_in_degrees(const int view_scale);
-int lwttl_lng_to_floor_int(float lng);
-int lwttl_lat_to_floor_int(float lat);
-int lwttl_lng_to_ceil_int(float lng);
-int lwttl_lat_to_ceil_int(float lat);
 LWUDP* lwttl_sea_udp(LWTTL* ttl);
 void lwttl_set_earth_globe_scale(LWTTL* ttl, float earth_globe_scale);
 void lwttl_scroll_view_scale(LWTTL* ttl, float offset);
@@ -183,7 +179,7 @@ void lwttl_on_press(LWTTL* ttl, const LWCONTEXT* pLwc, float nx, float ny);
 void lwttl_on_move(LWTTL* ttl, const LWCONTEXT* pLwc, float nx, float ny);
 void lwttl_on_release(LWTTL* ttl, LWCONTEXT* pLwc, float nx, float ny);
 void lwttl_view_proj(const LWTTL* ttl, mat4x4 view, mat4x4 proj);
-void lwttl_update_view_proj(LWTTL* ttl, float aspect_ratio);
+void lwttl_update_view_proj(const LWTTL* ttl, float aspect_ratio, mat4x4 view, mat4x4 proj);
 void lwttl_screen_to_world_pos(const LWTTL* ttl,
                                const float touchnx,
                                const float touchny,
@@ -245,7 +241,7 @@ int lwttl_ships(const LWTTL* ttl);
 int lwttl_is_selected_cell(const LWTTL* ttl, int x0, int y0);
 int lwttl_is_selected_cell_intersect(const LWTTL* ttl, int x0, int y0);
 int lwttl_is_selected_cell_diff(const LWTTL* ttl, int x0, int y0, int* dx0, int* dy0);
-float lwttl_selected_cell_popup_height(const LWTTL* ttl);
+float lwttl_selected_cell_popup_height(const LWTTL* ttl, const LWTTLFIELDVIEWPORT* vp);
 const char* lwttl_route_state(const LWPTTLROUTEOBJECT* obj);
 void lwttl_cam_eye(const LWTTL* ttl, vec3 cam_eye);
 void lwttl_set_cam_eye(LWTTL* ttl, const vec3 cam_eye);
@@ -267,6 +263,8 @@ void lwttl_udp_send_ttlping(const LWTTL* ttl, LWUDP* udp, int ping_seq);
 int lwttl_add_field_viewport(LWTTL* ttl, const LWTTLFIELDVIEWPORT* vp);
 void lwttl_remove_field_viewport(LWTTL* ttl, int viewport_index);
 const LWTTLFIELDVIEWPORT* lwttl_viewport(const LWTTL* ttl, int viewport_index);
+size_t lwttl_sizeof_viewport();
+LWTTLFIELDVIEWPORT* lwttl_copy_viewport_data(const LWTTL* ttl, int viewport_index, LWTTLFIELDVIEWPORT* vp_copy);
 int lwttl_viewport_max_count(const LWTTL* ttl);
 int lwttl_calculate_clamped_view_scale(int view_scale, int view_scale_ping_max);
 void lwttl_set_viewport_show(LWTTL* ttl, int viewport_index, int show);
