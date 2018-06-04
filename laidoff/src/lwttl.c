@@ -241,8 +241,8 @@ static void lwttl_update_viewport_data(LWTTLFIELDVIEWPORT* vp,
     vp->clamped_view_scale_msb = msb_index(vp->clamped_view_scale);
     vp->clamped_to_original_view_scale_ratio = vp->view_scale / vp->clamped_view_scale;
     vp->render_scale = render_scale;
-    vp->half_lng_extent_in_deg = half_lng_extent_in_deg;
-    vp->half_lat_extent_in_deg = half_lat_extent_in_deg;
+    vp->half_lng_extent_in_deg = LWCLAMP(half_lng_extent_in_deg, 0, lwttl_half_lng_extent_in_degrees(vp->clamped_view_scale));
+    vp->half_lat_extent_in_deg = LWCLAMP(half_lat_extent_in_deg, 0, lwttl_half_lat_extent_in_degrees(vp->clamped_view_scale));
     vp->lng_min = vp->view_center.lng - vp->half_lng_extent_in_deg;
     vp->lng_max = vp->view_center.lng + vp->half_lng_extent_in_deg;
     vp->lat_min = vp->view_center.lat - vp->half_lat_extent_in_deg;
@@ -2650,8 +2650,8 @@ void lwttl_set_viewport_view_scale(LWTTL* ttl, int viewport_index, int view_scal
                                        view_scale,
                                        &ttl->viewports[viewport_index].view_center,
                                        ttl->viewports[viewport_index].render_scale,
-                                       ttl->viewports[viewport_index].half_lng_extent_in_deg,
-                                       ttl->viewports[viewport_index].half_lat_extent_in_deg);
+                                       lwttl_half_lng_extent_in_degrees(view_scale),
+                                       lwttl_half_lat_extent_in_degrees(view_scale));
         } else {
             LOGEP("Viewport data at index %d is invalid.", viewport_index);
         }
