@@ -273,13 +273,6 @@ int main(int argc, char* argv[]) {
     lwimgui_init(window);
 #endif
 
-    /*HIMC imc = ImmCreateContext();
-    BOOL associated = ImmAssociateContextEx(hwnd, imc, IACE_DEFAULT);
-    ImmSetOpenStatus(imc, TRUE);*/
-
-    HIMC himc = ImmGetContext(hwnd);
-    //ImmSetOpenStatus(himc, TRUE);
-    
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
         lwc_prerender_mutable_context(pLwc);
