@@ -282,7 +282,7 @@ void lwttl_udp_send_ttlping(const LWTTL* ttl, LWUDP* udp, int ping_seq);
 int lwttl_add_field_viewport(LWTTL* ttl, const LWTTLFIELDVIEWPORT* vp);
 void lwttl_remove_field_viewport(LWTTL* ttl, int viewport_index);
 const LWTTLFIELDVIEWPORT* lwttl_viewport(const LWTTL* ttl, int viewport_index);
-size_t lwttl_sizeof_viewport();
+int lwttl_sizeof_viewport();
 LWTTLFIELDVIEWPORT* lwttl_copy_viewport_data(const LWTTL* ttl, int viewport_index, LWTTLFIELDVIEWPORT* vp_copy);
 int lwttl_viewport_max_count(const LWTTL* ttl);
 int lwttl_calculate_clamped_view_scale(int view_scale, int view_scale_ping_max);

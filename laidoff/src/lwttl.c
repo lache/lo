@@ -2672,8 +2672,8 @@ const LWTTLFIELDVIEWPORT* lwttl_viewport(const LWTTL* ttl, int viewport_index) {
     return 0;
 }
 
-size_t lwttl_sizeof_viewport() {
-    return sizeof(LWTTLFIELDVIEWPORT);
+int lwttl_sizeof_viewport() {
+    return (int)sizeof(LWTTLFIELDVIEWPORT);
 }
 
 LWTTLFIELDVIEWPORT* lwttl_copy_viewport_data(const LWTTL* ttl, int viewport_index, LWTTLFIELDVIEWPORT* vp_copy) {

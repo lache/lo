@@ -1797,7 +1797,7 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
     // render field viewports
     const int viewport_max_count = lwttl_viewport_max_count(pLwc->ttl);
     for (int i = 0; i < viewport_max_count; i++) {
-        LWTTLFIELDVIEWPORT* vp_copy = alloca(lwttl_sizeof_viewport());
+        LWTTLFIELDVIEWPORT* vp_copy = alloca((size_t)lwttl_sizeof_viewport());
         if (lwttl_copy_viewport_data(pLwc->ttl, i, vp_copy)) {
             int viewport_x, viewport_y, viewport_width, viewport_height;
             lwttl_viewport_range(vp_copy,
