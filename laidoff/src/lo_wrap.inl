@@ -103480,32 +103480,6 @@ fail:
 }
 
 
-static int _wrap_lwttl_set_earth_globe_scale(lua_State* L) {
-  int SWIG_arg = 0;
-  LWTTL *arg1 = (LWTTL *) 0 ;
-  float arg2 ;
-  
-  SWIG_check_num_args("lwttl_set_earth_globe_scale",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_set_earth_globe_scale",1,"LWTTL *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("lwttl_set_earth_globe_scale",2,"float");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTL,0))){
-    SWIG_fail_ptr("lwttl_set_earth_globe_scale",1,SWIGTYPE_p__LWTTL);
-  }
-  
-  arg2 = (float)lua_tonumber(L, 2);
-  lwttl_set_earth_globe_scale(arg1,arg2);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
 static int _wrap_lwttl_scroll_view_scale(lua_State* L) {
   int SWIG_arg = 0;
   LWTTL *arg1 = (LWTTL *) 0 ;
@@ -103532,69 +103506,22 @@ fail:
 }
 
 
-static int _wrap_lwttl_earth_globe_scale(lua_State* L) {
-  int SWIG_arg = 0;
-  LWTTL *arg1 = (LWTTL *) 0 ;
-  float result;
-  
-  SWIG_check_num_args("lwttl_earth_globe_scale",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_earth_globe_scale",1,"LWTTL *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTL,0))){
-    SWIG_fail_ptr("lwttl_earth_globe_scale",1,SWIGTYPE_p__LWTTL);
-  }
-  
-  result = (float)lwttl_earth_globe_scale(arg1);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_lwttl_earth_globe_morph_weight(lua_State* L) {
-  int SWIG_arg = 0;
-  float arg1 ;
-  float result;
-  
-  SWIG_check_num_args("lwttl_earth_globe_morph_weight",1,1)
-  if(!lua_isnumber(L,1)) SWIG_fail_arg("lwttl_earth_globe_morph_weight",1,"float");
-  arg1 = (float)lua_tonumber(L, 1);
-  result = (float)lwttl_earth_globe_morph_weight(arg1);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
 static int _wrap_lwttl_earth_globe_y(lua_State* L) {
   int SWIG_arg = 0;
   LWTTLLNGLAT *arg1 = (LWTTLLNGLAT *) 0 ;
   float arg2 ;
-  float arg3 ;
   float result;
   
-  SWIG_check_num_args("lwttl_earth_globe_y",3,3)
+  SWIG_check_num_args("lwttl_earth_globe_y",2,2)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_earth_globe_y",1,"LWTTLLNGLAT const *");
   if(!lua_isnumber(L,2)) SWIG_fail_arg("lwttl_earth_globe_y",2,"float");
-  if(!lua_isnumber(L,3)) SWIG_fail_arg("lwttl_earth_globe_y",3,"float");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLLNGLAT,0))){
     SWIG_fail_ptr("lwttl_earth_globe_y",1,SWIGTYPE_p__LWTTLLNGLAT);
   }
   
   arg2 = (float)lua_tonumber(L, 2);
-  arg3 = (float)lua_tonumber(L, 3);
-  result = (float)lwttl_earth_globe_y((struct _LWTTLLNGLAT const *)arg1,arg2,arg3);
+  result = (float)lwttl_earth_globe_y((struct _LWTTLLNGLAT const *)arg1,arg2);
   lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
   return SWIG_arg;
   
@@ -104411,10 +104338,9 @@ static int _wrap_lwttl_world_text(lua_State* L) {
   float *arg7 = (float *) 0 ;
   float *arg8 = (float *) 0 ;
   float *arg9 = (float *) 0 ;
-  float arg10 ;
   char *result = 0 ;
   
-  SWIG_check_num_args("lwttl_world_text",10,10)
+  SWIG_check_num_args("lwttl_world_text",9,9)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_world_text",1,"LWTTL const *");
   if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("lwttl_world_text",2,"void const *");
   if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("lwttl_world_text",3,"LWTTLLNGLAT const *");
@@ -104424,7 +104350,6 @@ static int _wrap_lwttl_world_text(lua_State* L) {
   if(!SWIG_isptrtype(L,7)) SWIG_fail_arg("lwttl_world_text",7,"float *");
   if(!SWIG_isptrtype(L,8)) SWIG_fail_arg("lwttl_world_text",8,"float *");
   if(!SWIG_isptrtype(L,9)) SWIG_fail_arg("lwttl_world_text",9,"float *");
-  if(!lua_isnumber(L,10)) SWIG_fail_arg("lwttl_world_text",10,"float");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTL,0))){
     SWIG_fail_ptr("lwttl_world_text",1,SWIGTYPE_p__LWTTL);
@@ -104458,8 +104383,7 @@ static int _wrap_lwttl_world_text(lua_State* L) {
     SWIG_fail_ptr("lwttl_world_text",9,SWIGTYPE_p_float);
   }
   
-  arg10 = (float)lua_tonumber(L, 10);
-  result = (char *)lwttl_world_text((struct _LWTTL const *)arg1,(void const *)arg2,(struct _LWTTLLNGLAT const *)arg3,arg4,(float const (*)[4])arg5,arg6,arg7,arg8,arg9,arg10);
+  result = (char *)lwttl_world_text((struct _LWTTL const *)arg1,(void const *)arg2,(struct _LWTTLLNGLAT const *)arg3,arg4,(float const (*)[4])arg5,arg6,arg7,arg8,arg9);
   lua_pushstring(L,(const char *)result); SWIG_arg++;
   return SWIG_arg;
   
@@ -104976,43 +104900,17 @@ fail:
 }
 
 
-static int _wrap_lwttl_sea_render_scale(lua_State* L) {
-  int SWIG_arg = 0;
-  LWTTL *arg1 = (LWTTL *) 0 ;
-  float result;
-  
-  SWIG_check_num_args("lwttl_sea_render_scale",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_sea_render_scale",1,"LWTTL const *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTL,0))){
-    SWIG_fail_ptr("lwttl_sea_render_scale",1,SWIGTYPE_p__LWTTL);
-  }
-  
-  result = (float)lwttl_sea_render_scale((struct _LWTTL const *)arg1);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
 static int _wrap_render_coords_to_lng(lua_State* L) {
   int SWIG_arg = 0;
   float arg1 ;
   LWTTLLNGLAT *arg2 = (LWTTLLNGLAT *) 0 ;
   int arg3 ;
-  float arg4 ;
   float result;
   
-  SWIG_check_num_args("render_coords_to_lng",4,4)
+  SWIG_check_num_args("render_coords_to_lng",3,3)
   if(!lua_isnumber(L,1)) SWIG_fail_arg("render_coords_to_lng",1,"float");
   if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("render_coords_to_lng",2,"LWTTLLNGLAT const *");
   if(!lua_isnumber(L,3)) SWIG_fail_arg("render_coords_to_lng",3,"int");
-  if(!lua_isnumber(L,4)) SWIG_fail_arg("render_coords_to_lng",4,"float");
   arg1 = (float)lua_tonumber(L, 1);
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWTTLLNGLAT,0))){
@@ -105020,8 +104918,7 @@ static int _wrap_render_coords_to_lng(lua_State* L) {
   }
   
   arg3 = (int)lua_tonumber(L, 3);
-  arg4 = (float)lua_tonumber(L, 4);
-  result = (float)render_coords_to_lng(arg1,(struct _LWTTLLNGLAT const *)arg2,arg3,arg4);
+  result = (float)render_coords_to_lng(arg1,(struct _LWTTLLNGLAT const *)arg2,arg3);
   lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
   return SWIG_arg;
   
@@ -105038,14 +104935,12 @@ static int _wrap_render_coords_to_lat(lua_State* L) {
   float arg1 ;
   LWTTLLNGLAT *arg2 = (LWTTLLNGLAT *) 0 ;
   int arg3 ;
-  float arg4 ;
   float result;
   
-  SWIG_check_num_args("render_coords_to_lat",4,4)
+  SWIG_check_num_args("render_coords_to_lat",3,3)
   if(!lua_isnumber(L,1)) SWIG_fail_arg("render_coords_to_lat",1,"float");
   if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("render_coords_to_lat",2,"LWTTLLNGLAT const *");
   if(!lua_isnumber(L,3)) SWIG_fail_arg("render_coords_to_lat",3,"int");
-  if(!lua_isnumber(L,4)) SWIG_fail_arg("render_coords_to_lat",4,"float");
   arg1 = (float)lua_tonumber(L, 1);
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWTTLLNGLAT,0))){
@@ -105053,8 +104948,7 @@ static int _wrap_render_coords_to_lat(lua_State* L) {
   }
   
   arg3 = (int)lua_tonumber(L, 3);
-  arg4 = (float)lua_tonumber(L, 4);
-  result = (float)render_coords_to_lat(arg1,(struct _LWTTLLNGLAT const *)arg2,arg3,arg4);
+  result = (float)render_coords_to_lat(arg1,(struct _LWTTLLNGLAT const *)arg2,arg3);
   lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
   return SWIG_arg;
   
@@ -105071,14 +104965,12 @@ static int _wrap_cell_fx_to_render_coords(lua_State* L) {
   float arg1 ;
   LWTTLLNGLAT *arg2 = (LWTTLLNGLAT *) 0 ;
   int arg3 ;
-  float arg4 ;
   float result;
   
-  SWIG_check_num_args("cell_fx_to_render_coords",4,4)
+  SWIG_check_num_args("cell_fx_to_render_coords",3,3)
   if(!lua_isnumber(L,1)) SWIG_fail_arg("cell_fx_to_render_coords",1,"float");
   if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("cell_fx_to_render_coords",2,"LWTTLLNGLAT const *");
   if(!lua_isnumber(L,3)) SWIG_fail_arg("cell_fx_to_render_coords",3,"int");
-  if(!lua_isnumber(L,4)) SWIG_fail_arg("cell_fx_to_render_coords",4,"float");
   arg1 = (float)lua_tonumber(L, 1);
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWTTLLNGLAT,0))){
@@ -105086,8 +104978,7 @@ static int _wrap_cell_fx_to_render_coords(lua_State* L) {
   }
   
   arg3 = (int)lua_tonumber(L, 3);
-  arg4 = (float)lua_tonumber(L, 4);
-  result = (float)cell_fx_to_render_coords(arg1,(struct _LWTTLLNGLAT const *)arg2,arg3,arg4);
+  result = (float)cell_fx_to_render_coords(arg1,(struct _LWTTLLNGLAT const *)arg2,arg3);
   lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
   return SWIG_arg;
   
@@ -105104,14 +104995,12 @@ static int _wrap_cell_fy_to_render_coords(lua_State* L) {
   float arg1 ;
   LWTTLLNGLAT *arg2 = (LWTTLLNGLAT *) 0 ;
   int arg3 ;
-  float arg4 ;
   float result;
   
-  SWIG_check_num_args("cell_fy_to_render_coords",4,4)
+  SWIG_check_num_args("cell_fy_to_render_coords",3,3)
   if(!lua_isnumber(L,1)) SWIG_fail_arg("cell_fy_to_render_coords",1,"float");
   if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("cell_fy_to_render_coords",2,"LWTTLLNGLAT const *");
   if(!lua_isnumber(L,3)) SWIG_fail_arg("cell_fy_to_render_coords",3,"int");
-  if(!lua_isnumber(L,4)) SWIG_fail_arg("cell_fy_to_render_coords",4,"float");
   arg1 = (float)lua_tonumber(L, 1);
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWTTLLNGLAT,0))){
@@ -105119,8 +105008,7 @@ static int _wrap_cell_fy_to_render_coords(lua_State* L) {
   }
   
   arg3 = (int)lua_tonumber(L, 3);
-  arg4 = (float)lua_tonumber(L, 4);
-  result = (float)cell_fy_to_render_coords(arg1,(struct _LWTTLLNGLAT const *)arg2,arg3,arg4);
+  result = (float)cell_fy_to_render_coords(arg1,(struct _LWTTLLNGLAT const *)arg2,arg3);
   lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
   return SWIG_arg;
   
@@ -107741,6 +107629,7 @@ static swig_lua_const_info swig_SwigModule_constants[]= {
     {SWIG_LUA_CONSTTAB_INT("LNGLAT_RES_WIDTH", (172824))},
     {SWIG_LUA_CONSTTAB_INT("LNGLAT_RES_HEIGHT", (86412))},
     {SWIG_LUA_CONSTTAB_INT("LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS", (16))},
+    {SWIG_LUA_CONSTTAB_FLOAT("LNGLAT_SEA_CELL_UNIT_PER_DEGREES", ((86412)/180.0))},
     {SWIG_LUA_CONSTTAB_INT("LNGLAT_SEA_PING_EXTENT_IN_DEGREES", ((180.0/(86412))*(16)))},
     {SWIG_LUA_CONSTTAB_INT("LNGLAT_VIEW_SCALE_PING_MAX", (1 << 6))},
     {0,0,0,0,0,0}
@@ -108462,10 +108351,7 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "lwttl_half_lng_extent_in_degrees", _wrap_lwttl_half_lng_extent_in_degrees},
     { "lwttl_half_lat_extent_in_degrees", _wrap_lwttl_half_lat_extent_in_degrees},
     { "lwttl_sea_udp", _wrap_lwttl_sea_udp},
-    { "lwttl_set_earth_globe_scale", _wrap_lwttl_set_earth_globe_scale},
     { "lwttl_scroll_view_scale", _wrap_lwttl_scroll_view_scale},
-    { "lwttl_earth_globe_scale", _wrap_lwttl_earth_globe_scale},
-    { "lwttl_earth_globe_morph_weight", _wrap_lwttl_earth_globe_morph_weight},
     { "lwttl_earth_globe_y", _wrap_lwttl_earth_globe_y},
     { "lwttl_fill_world_seaports_bookmarks", _wrap_lwttl_fill_world_seaports_bookmarks},
     { "lwttl_send_ping_now", _wrap_lwttl_send_ping_now},
@@ -108509,7 +108395,6 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "cell_fy_to_lat", _wrap_cell_fy_to_lat},
     { "cell_x_to_lng", _wrap_cell_x_to_lng},
     { "cell_y_to_lat", _wrap_cell_y_to_lat},
-    { "lwttl_sea_render_scale", _wrap_lwttl_sea_render_scale},
     { "render_coords_to_lng", _wrap_render_coords_to_lng},
     { "render_coords_to_lat", _wrap_render_coords_to_lat},
     { "cell_fx_to_render_coords", _wrap_cell_fx_to_render_coords},

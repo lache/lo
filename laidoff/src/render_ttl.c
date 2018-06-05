@@ -819,7 +819,7 @@ static void render_morphed_earth(const LWCONTEXT* pLwc,
     const float earth_globe_morph_weight = 0;// lwttl_earth_globe_morph_weight(earth_globe_scale);
     const float x = 0.0f;
     const LWTTLLNGLAT* view_center = lwttl_center(pLwc->ttl);
-    const float y = lwttl_earth_globe_y(view_center, earth_globe_scale, earth_globe_morph_weight);
+    const float y = lwttl_earth_globe_y(view_center, earth_globe_scale);
     lazy_glBindBuffer(pLwc, lmvt);
     lazy_tex_atlas_glBindTexture(pLwc, lae);
     mat4x4 model_translate;
