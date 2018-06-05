@@ -36,7 +36,7 @@ LWTTL* lwttl_new(float aspect_ratio);
 void lwttl_destroy(LWTTL** _ttl);
 void lwttl_worldmap_scroll_to(LWTTL* ttl, float lng, float lat, LWUDP* sea_udp);
 void lwttl_worldmap_scroll_to_cell_center(LWTTL* ttl, int xc, int yc, LWUDP* sea_udp);
-void lwttl_update_aspect_ratio(LWTTL* ttl, float aspect_ratio);
+void lwttl_update_aspect_ratio(LWTTL* ttl, int width, int height);
 const LWTTLLNGLAT* lwttl_center(const LWTTL* ttl);
 void lwttl_update(LWTTL* ttl, LWCONTEXT* pLwc, float delta_time);
 const char* lwttl_http_header(const LWTTL* ttl);
@@ -179,7 +179,7 @@ void lwttl_on_press(LWTTL* ttl, const LWCONTEXT* pLwc, float nx, float ny);
 void lwttl_on_move(LWTTL* ttl, const LWCONTEXT* pLwc, float nx, float ny);
 void lwttl_on_release(LWTTL* ttl, LWCONTEXT* pLwc, float nx, float ny);
 void lwttl_view_proj(const LWTTL* ttl, mat4x4 view, mat4x4 proj);
-void lwttl_update_view_proj(const LWTTL* ttl, float aspect_ratio, mat4x4 view, mat4x4 proj);
+void lwttl_update_view_proj(const LWTTL* ttl, int width, int height, mat4x4 view, mat4x4 proj);
 void lwttl_screen_to_world_pos(const LWTTL* ttl,
                                const float touchnx,
                                const float touchny,
