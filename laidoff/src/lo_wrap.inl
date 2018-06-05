@@ -105722,30 +105722,6 @@ fail:
 }
 
 
-static int _wrap_lwttl_viewport_icon_size_ratio(lua_State* L) {
-  int SWIG_arg = 0;
-  LWTTLFIELDVIEWPORT *arg1 = (LWTTLFIELDVIEWPORT *) 0 ;
-  float result;
-  
-  SWIG_check_num_args("lwttl_viewport_icon_size_ratio",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_viewport_icon_size_ratio",1,"LWTTLFIELDVIEWPORT const *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
-    SWIG_fail_ptr("lwttl_viewport_icon_size_ratio",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
-  }
-  
-  result = (float)lwttl_viewport_icon_size_ratio((struct _LWTTLFIELDVIEWPORT const *)arg1);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
 static int _wrap_lwttl_viewport_icon_width(lua_State* L) {
   int SWIG_arg = 0;
   LWTTLFIELDVIEWPORT *arg1 = (LWTTLFIELDVIEWPORT *) 0 ;
@@ -108423,7 +108399,6 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "lwttl_viewport_aspect_ratio", _wrap_lwttl_viewport_aspect_ratio},
     { "lwttl_viewport_view_scale", _wrap_lwttl_viewport_view_scale},
     { "lwttl_viewport_waypoint_line_segment_thickness", _wrap_lwttl_viewport_waypoint_line_segment_thickness},
-    { "lwttl_viewport_icon_size_ratio", _wrap_lwttl_viewport_icon_size_ratio},
     { "lwttl_viewport_icon_width", _wrap_lwttl_viewport_icon_width},
     { "lwttl_viewport_icon_height", _wrap_lwttl_viewport_icon_height},
     { "lwttl_viewport_icon_render_info", _wrap_lwttl_viewport_icon_render_info},

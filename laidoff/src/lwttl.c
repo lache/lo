@@ -138,6 +138,7 @@ typedef struct _LWTTLFIELDVIEWPORT {
     float lng_max;
     float lat_min;
     float lat_max;
+    // scaled ('view_scale'-applied) rendering size of cell
     float cell_render_width;
     float cell_render_height;
     int cell_bound_xc0;
@@ -2777,11 +2778,11 @@ int lwttl_viewport_view_scale(const LWTTLFIELDVIEWPORT* vp) {
 }
 
 float lwttl_viewport_waypoint_line_segment_thickness(const LWTTLFIELDVIEWPORT* vp) {
-    return 0.2f / sqrtf((float)(vp->view_scale_msb + 1));
+    return 0.1f / sqrtf((float)(vp->view_scale_msb + 1));
 }
 
-float lwttl_viewport_icon_size_ratio(const LWTTLFIELDVIEWPORT* vp) {
-    return 1.0f / sqrtf((float)(vp->clamped_view_scale_msb + 1));
+static float lwttl_viewport_icon_size_ratio(const LWTTLFIELDVIEWPORT* vp) {
+    return 2.0f / sqrtf((float)(vp->clamped_view_scale_msb + 1));
 }
 
 float lwttl_viewport_icon_width(const LWTTLFIELDVIEWPORT* vp) {

@@ -286,7 +286,6 @@ int lwttl_viewport_cell_render_info(const LWTTLFIELDVIEWPORT* vp,
 float lwttl_viewport_aspect_ratio(const LWTTLFIELDVIEWPORT* vp);
 int lwttl_viewport_view_scale(const LWTTLFIELDVIEWPORT* vp);
 float lwttl_viewport_waypoint_line_segment_thickness(const LWTTLFIELDVIEWPORT* vp);
-float lwttl_viewport_icon_size_ratio(const LWTTLFIELDVIEWPORT* vp);
 float lwttl_viewport_icon_width(const LWTTLFIELDVIEWPORT* vp);
 float lwttl_viewport_icon_height(const LWTTLFIELDVIEWPORT* vp);
 int lwttl_viewport_icon_render_info(const LWTTL* ttl,

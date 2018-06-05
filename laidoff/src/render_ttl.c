@@ -234,33 +234,11 @@ static void render_vehicle(const LWCONTEXT* pLwc,
 }
 
 static void render_ship(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp, float x, float y, float z, float rot_z) {
-    render_vehicle(pLwc, vp, x, y, z, rot_z, LWST_DEFAULT_NORMAL_COLOR, LVT_SHIP, LAE_DONTCARE, 0.175f);
+    render_vehicle(pLwc, vp, x, y, z, rot_z, LWST_DEFAULT_NORMAL_COLOR, LVT_SHIP, LAE_DONTCARE, 0.075f);
 }
 
 static void render_truck(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp, float x, float y, float z, float rot_z) {
-    render_vehicle(pLwc, vp, x, y, z, rot_z + (float)LWDEG2RAD(90), LWST_DEFAULT, LVT_OIL_TRUCK, LAE_3D_OIL_TRUCK_TEX_KTX, 0.3f);
-    /*const float s = 0.5f / vp->view_scale;
-    lazy_tex_atlas_glBindTexture(pLwc, LAE_3D_OIL_TRUCK_TEX_KTX);
-    render_solid_vb_uv_shader_rot_view_proj(pLwc,
-                                            x,
-                                            y,
-                                            0,
-                                            s,
-                                            s,
-                                            s,
-                                            pLwc->tex_atlas[LAE_3D_OIL_TRUCK_TEX_KTX],
-                                            LVT_OIL_TRUCK,
-                                            1,
-                                            0,
-                                            0,
-                                            0,
-                                            0,
-                                            default_uv_offset,
-                                            default_uv_scale,
-                                            LWST_DEFAULT,
-                                            rot_z + (float)LWDEG2RAD(90),
-                                            view,
-                                            proj);*/
+    render_vehicle(pLwc, vp, x, y, z, rot_z + (float)LWDEG2RAD(90), LWST_DEFAULT, LVT_OIL_TRUCK, LAE_3D_OIL_TRUCK_TEX_KTX, 0.2f);
 }
 
 static void render_terminal_icon(const LWCONTEXT* pLwc,
@@ -367,8 +345,8 @@ static void render_city_icon(const LWCONTEXT* pLwc, const mat4x4 view, const mat
     render_solid_vb_ui_alpha_uv_shader_view_proj(pLwc,
                                                  ui_point[0],
                                                  ui_point[1],
-                                                 w * (2 + (population_level >> 4)) * 0.075f,
-                                                 h * (2 + (population_level >> 4)) * 0.075f,
+                                                 w * (2 + (population_level >> 4)) * 0.05f,
+                                                 h * (2 + (population_level >> 4)) * 0.05f,
                                                  pLwc->tex_atlas[LAE_TTL_CITY],
                                                  pLwc->tex_atlas[LAE_TTL_CITY_ALPHA],
                                                  LVT_CENTER_BOTTOM_ANCHORED_SQUARE,
