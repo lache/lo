@@ -18,9 +18,6 @@
 #if LW_PLATFORM_IOS
 #include <alloca.h>
 #endif
-#define MAX_VISIBILITY_ENTRY_COUNT (32)
-#define MAX_VISIBILITY_ENTRY_NAME_LENGTH (32)
-static char visibility[MAX_VISIBILITY_ENTRY_COUNT][MAX_VISIBILITY_ENTRY_NAME_LENGTH];
 
 #define WATER_COLOR_R (0 / 255.f)
 #define WATER_COLOR_G (94 / 255.f)
@@ -1634,7 +1631,7 @@ static void degrees_to_dms(int* d, int* m, float* s, const float degrees) {
     *s = (minutes - *m) * 60;
 }
 
-static void render_coords(const LWCONTEXT* pLwc, const LWTTLLNGLAT* lng_lat_center) {
+static void render_coords(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp) {
     LWTEXTBLOCK test_text_block;
     test_text_block.text_block_width = 999.0f;
     test_text_block.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_F;
@@ -1644,19 +1641,20 @@ static void render_coords(const LWCONTEXT* pLwc, const LWTTLLNGLAT* lng_lat_cent
     SET_COLOR_RGBA_FLOAT(test_text_block.color_emp_glyph, 1, 1, 0, 1);
     SET_COLOR_RGBA_FLOAT(test_text_block.color_emp_outline, 0, 0, 0, 1);
     char coords[256];
+    const LWTTLLNGLAT* view_center = lwttl_viewport_view_center(vp);
     snprintf(coords,
              ARRAY_SIZE(coords),
              "LNG %.3f LAT %.3f",
-             lng_lat_center->lng,
-             lng_lat_center->lat);
+             view_center->lng,
+             view_center->lat);
     coords[ARRAY_SIZE(coords) - 1] = 0;
     test_text_block.text = coords;
     test_text_block.text_bytelen = (int)strlen(test_text_block.text);
     test_text_block.begin_index = 0;
     test_text_block.end_index = test_text_block.text_bytelen;
     test_text_block.multiline = 1;
-    test_text_block.text_block_x = -pLwc->viewport_rt_x;
-    test_text_block.text_block_y = pLwc->viewport_rt_y;
+    test_text_block.text_block_x = -lwttl_viewport_rt_x(vp);
+    test_text_block.text_block_y = +lwttl_viewport_rt_y(vp);
     test_text_block.align = LTBA_LEFT_TOP;
     render_text_block(pLwc, &test_text_block);
 }
@@ -1742,27 +1740,34 @@ static void render_ttl_stat(const LWTTL* ttl, const LWCONTEXT* pLwc) {
 }
 
 static void lwc_render_ttl_field_viewport(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp) {
+    int render_flags = lwttl_viewport_render_flags(vp);
     glDisable(GL_DEPTH_TEST);
-    render_morphed_earth(pLwc, vp);
-    if (lwc_render_ttl_render("landcell")) {
+    if (render_flags & LTFVRF_MORPHED_EARTH) {
+        render_morphed_earth(pLwc, vp);
+    }
+    if (render_flags & LTFVRF_LAND_CELL) {
         render_sea_static_objects(pLwc, vp);
     }
-    render_waypoints(pLwc->ttl, pLwc, vp);
-    render_waypoints_cache(pLwc->ttl, pLwc, vp);
+    if (render_flags & LTFVRF_WAYPOINT_LINE_SEGMENT) {
+        render_waypoints(pLwc->ttl, pLwc, vp);
+        render_waypoints_cache(pLwc->ttl, pLwc, vp);
+    }
     glEnable(GL_DEPTH_TEST);
     // render sea objects(ships)
-    if (lwc_render_ttl_render("world")) {
+    if (render_flags & LTFVRF_SHIP) {
         render_world(pLwc, vp);
     }
     glDisable(GL_DEPTH_TEST);
     int selected_xc0;
     int selected_yc0;
     if (lwttl_selected_int(pLwc->ttl, &selected_xc0, &selected_yc0)) {
-        render_cell_pixel_selector_lng_lat(pLwc->ttl,
-                                           pLwc,
-                                           vp,
-                                           selected_xc0,
-                                           selected_yc0);
+        if (render_flags & LTFVRF_CELL_PIXEL_SELECTOR) {
+            render_cell_pixel_selector_lng_lat(pLwc->ttl,
+                                               pLwc,
+                                               vp,
+                                               selected_xc0,
+                                               selected_yc0);
+        }
     }
     int dragging_xc0;
     int dragging_yc0;
@@ -1773,37 +1778,51 @@ static void lwc_render_ttl_field_viewport(const LWCONTEXT* pLwc, const LWTTLFIEL
                             &dragging_yc0,
                             &dragging_xc1,
                             &dragging_yc1)) {
-        render_waypoint_line_segment(pLwc->ttl,
-                                     pLwc,
-                                     vp,
-                                     dragging_xc0,
-                                     dragging_yc0,
-                                     dragging_xc1,
-                                     dragging_yc1,
-                                     CELL_DRAGGING_LINE_COLOR_R,
-                                     CELL_DRAGGING_LINE_COLOR_G,
-                                     CELL_DRAGGING_LINE_COLOR_B);
+        if (render_flags & LTFVRF_DRAGGING_WAYPOINT_LINE_SEGMENT) {
+            render_waypoint_line_segment(pLwc->ttl,
+                                         pLwc,
+                                         vp,
+                                         dragging_xc0,
+                                         dragging_yc0,
+                                         dragging_xc1,
+                                         dragging_yc1,
+                                         CELL_DRAGGING_LINE_COLOR_R,
+                                         CELL_DRAGGING_LINE_COLOR_G,
+                                         CELL_DRAGGING_LINE_COLOR_B);
+        }
     }
     // UI (icons)
-    render_seaports(pLwc, vp);
-    render_cities(pLwc, vp);
-    render_salvages(pLwc, vp);
-    //render_coords(pLwc, &view_center);
+    if (render_flags & LTFVRF_SEAPORT) {
+        render_seaports(pLwc, vp);
+    }
+    if (render_flags & LTFVRF_CITY) {
+        render_cities(pLwc, vp);
+    }
+    if (render_flags & LTFVRF_SALVAGE) {
+        render_salvages(pLwc, vp);
+    }
+    if (render_flags & LTFVRF_COORDINATES) {
+        render_coords(pLwc, vp);
+    }
     // UI (hud)
-    if (lwc_render_ttl_render("world")) {
+    if (render_flags & LTFVRF_SEA_OBJECT_NAMEPLATE) {
         render_sea_objects_nameplate(pLwc, vp);
     }
-    if (lwc_render_ttl_render("landcell_nameplate")) {
-    }
     if (lwttl_selected_int(pLwc->ttl, &selected_xc0, &selected_yc0)) {
-        render_single_cell_info_lng_lat(pLwc->ttl,
-                                        pLwc,
-                                        vp,
-                                        selected_xc0,
-                                        selected_yc0);
+        if (render_flags & LTFVRF_SINGLE_CELL_INFO) {
+            render_single_cell_info_lng_lat(pLwc->ttl,
+                                            pLwc,
+                                            vp,
+                                            selected_xc0,
+                                            selected_yc0);
+        }
     }
-    render_world_text(pLwc, vp);
-    render_region_name(pLwc, vp);
+    if (render_flags & LTFVRF_WORLD_TEXT) {
+        render_world_text(pLwc, vp);
+    }
+    if (render_flags & LTFVRF_REGION_NAME) {
+        render_region_name(pLwc, vp);
+    }
 }
 
 void lwc_render_ttl(const LWCONTEXT* pLwc) {
@@ -1877,39 +1896,4 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
         render_dir_pad_with_start_joystick(pLwc, &pLwc->left_dir_pad, 1.0f);
     }
     glEnable(GL_DEPTH_TEST);
-}
-
-int lwc_render_ttl_render(const char* name) {
-    size_t i;
-    for (i = 0; i < MAX_VISIBILITY_ENTRY_COUNT; i++) {
-        if (strcmp(visibility[i], name) == 0) {
-            return 1;
-        }
-    }
-    return 0;
-}
-
-void lwc_render_ttl_enable_render(const char* name, int v) {
-    size_t i;
-    for (i = 0; i < MAX_VISIBILITY_ENTRY_COUNT; i++) {
-        if (strcmp(visibility[i], name) == 0) {
-            if (v) {
-                // already visible...
-                return;
-            } else {
-                // clear
-                visibility[i][0] = 0;
-                return;
-            }
-        }
-    }
-    if (v) {
-        for (i = 0; i < MAX_VISIBILITY_ENTRY_COUNT; i++) {
-            if (visibility[i][0] == 0) {
-                strcpy(visibility[i], name);
-                return;
-            }
-        }
-        LOGE("visibility_hash capacity exceeded.");
-    }
 }

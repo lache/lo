@@ -30,13 +30,6 @@
 #define TTL_OBJECT_CACHE_CITY_COUNT (TTL_OBJECT_CACHE_CHUNK_COUNT*16)
 #define TTL_OBJECT_CACHE_SALVAGE_COUNT (TTL_OBJECT_CACHE_CHUNK_COUNT*8)
 
-typedef struct _LWTTLDATA_SEAPORT {
-    char locode[8];
-    char name[64];
-    float lat;
-    float lng;
-} LWTTLDATA_SEAPORT;
-
 typedef struct _LWTTLCHUNKVALUE {
     LWTTLCHUNKKEY key;
     long long ts;
@@ -147,6 +140,10 @@ typedef struct _LWTTLFIELDVIEWPORT {
     int cell_bound_yc1;
     int clamped_view_scale_msb;
     LWTTLSELECTED selected;
+    vec3 cam_eye;
+    vec3 cam_look_at;
+    int cell_grid;
+    int render_flags;
 } LWTTLFIELDVIEWPORT;
 
 typedef enum _LW_TTL_WORLD_TEXT_ANIM_TYPE {
@@ -174,8 +171,6 @@ typedef struct _LWTTLWORLDTEXT {
 
 typedef struct _LWTTL {
     int version;
-    LWTTLDATA_SEAPORT* seaport;
-    size_t seaport_len;
     int track_object_id;
     int track_object_ship_id;
     char seaarea[128]; // should match with LWPTTLSEAAREA.name size
@@ -193,14 +188,10 @@ typedef struct _LWTTL {
     LWPTTLWAYPOINTS waypoints_cache[512];
     int waypoints_cache_count;
     LWTTLWORLDTEXT world_text[64];
-    int cell_grid;
-    vec3 cam_eye;
-    vec3 cam_look_at;
     int gold;
     int ports;
     int ships;
     LWTTLFIELDVIEWPORT viewports[4];
-    LWTTLFIELDVIEWPORT viewport_current;
 } LWTTL;
 
 static const LWTTLSELECTED* lwttl_main_viewport_selected(const LWTTL* ttl) {
@@ -258,7 +249,12 @@ static void lwttl_update_viewport_data(const LWTTL* ttl,
     vp->field_viewport_y = y;
     vp->field_viewport_width = w;
     vp->field_viewport_height = h;
-    lwttl_update_view_proj(ttl, w, h, vp->view, vp->proj);
+    lwttl_update_view_proj(vp,
+                           &ttl->viewports[0], // main viewport ref
+                           w,
+                           h,
+                           vp->view,
+                           vp->proj);
     vp->view_scale = LWCLAMP(view_scale, 1, ttl->view_scale_max);
     vp->clamped_view_scale = lwttl_calculate_clamped_view_scale(view_scale, LNGLAT_VIEW_SCALE_PING_MAX);
     memcpy(&vp->view_center, view_center, sizeof(LWTTLLNGLAT));
@@ -294,19 +290,8 @@ static void lwttl_update_viewport_data(const LWTTL* ttl,
 LWTTL* lwttl_new(float aspect_ratio) {
     LWTTL* ttl = (LWTTL*)calloc(1, sizeof(LWTTL));
     ttl->version = 1;
-    //size_t seaports_dat_size;
-    //ttl->seaport = (LWTTLDATA_SEAPORT*)create_binary_from_file(ASSETS_BASE_PATH "ttldata" PATH_SEPARATOR "seaports.dat", &seaports_dat_size);
-    //ttl->seaport_len = seaports_dat_size / sizeof(LWTTLDATA_SEAPORT);
     ttl->view_scale_max = 1 << 13; // should be no more than 2^15 (== 2 ^ MAX(LWTTLCHUNKKEY.view_scale_msb))
     ttl->view_scale_ping_max = LNGLAT_VIEW_SCALE_PING_MAX;
-    //ttl->view_scale = ttl->view_scale_ping_max;
-    ttl->cam_eye[0] = +10;
-    ttl->cam_eye[1] = -10;
-    ttl->cam_eye[2] = +10;
-    ttl->cam_look_at[0] = 0;
-    ttl->cam_look_at[1] = 0;
-    ttl->cam_look_at[2] = 0;
-    ttl->cell_grid = 1;
     LWMUTEX_INIT(ttl->rendering_mutex);
     LWTTLFIELDVIEWPORT vp;
     memset(&vp, 0, sizeof(LWTTLFIELDVIEWPORT));
@@ -321,8 +306,18 @@ LWTTL* lwttl_new(float aspect_ratio) {
                                &ttl->viewports[0].view_center,
                                lwttl_half_lng_extent_in_degrees(1),
                                lwttl_half_lat_extent_in_degrees(1));
+    vp.cell_grid = 1;
+    vp.cam_eye[0] = +10;
+    vp.cam_eye[1] = -10;
+    vp.cam_eye[2] = +10;
+    vp.cam_look_at[0] = 0;
+    vp.cam_look_at[1] = 0;
+    vp.cam_look_at[2] = 0;
+    vp.cell_grid = 1;
+    vp.render_flags = LTFVRF_ALL & ~LTFVRF_COORDINATES;
     lwttl_add_field_viewport(ttl, &vp);
-    lwttl_update_view_proj(ttl,
+    lwttl_update_view_proj(&ttl->viewports[0],
+                           &ttl->viewports[0], // main viewport ref
                            ttl->viewports[0].field_viewport_width,
                            ttl->viewports[0].field_viewport_height,
                            ttl->viewports[0].view,
@@ -338,12 +333,22 @@ LWTTL* lwttl_new(float aspect_ratio) {
                                200,
                                1,
                                &ttl->viewports[0].view_center,
-                               LNGLAT_SEA_PING_EXTENT_IN_DEGREES / LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS * 4,
-                               LNGLAT_SEA_PING_EXTENT_IN_DEGREES / LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS * 4);
-    // fix cell selector height to maximum
-    vp.selected.selected_cell_height = vp.selected.selected_cell_max_height * 3;
+                               LNGLAT_SEA_PING_EXTENT_IN_DEGREES / LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS * 5,
+                               LNGLAT_SEA_PING_EXTENT_IN_DEGREES / LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS * 5);
+    vp.cell_grid = 1;
+    vp.cam_eye[0] = +10;
+    vp.cam_eye[1] = -10;
+    vp.cam_eye[2] = +10;
+    vp.cam_look_at[0] = 0;
+    vp.cam_look_at[1] = 0;
+    vp.cam_look_at[2] = 0;
+    vp.cell_grid = 1;
+    vp.render_flags = LTFVRF_LAND_CELL | LTFVRF_CELL_PIXEL_SELECTOR | LTFVRF_SEAPORT | LTFVRF_CITY | LTFVRF_SALVAGE;
+    // fix cell selector height to maximum on aux1 viewport
+    vp.selected.selected_cell_height = vp.selected.selected_cell_max_height;
     lwttl_add_field_viewport(ttl, &vp);
-    lwttl_update_view_proj(ttl,
+    lwttl_update_view_proj(&ttl->viewports[1],
+                           &ttl->viewports[0], // main viewport ref
                            ttl->viewports[1].field_viewport_width,
                            ttl->viewports[1].field_viewport_height,
                            ttl->viewports[1].view,
@@ -394,7 +399,8 @@ void lwttl_worldmap_scroll_to_cell_center(LWTTL* ttl, int xc, int yc, LWUDP* sea
 }
 
 void lwttl_update_aspect_ratio(LWTTL* ttl, int width, int height) {
-    lwttl_update_view_proj(ttl,
+    lwttl_update_view_proj(&ttl->viewports[0],
+                           &ttl->viewports[0], // main viewport ref
                            ttl->viewports[0].field_viewport_width,
                            ttl->viewports[0].field_viewport_height,
                            ttl->viewports[0].view,
@@ -1116,8 +1122,8 @@ void lwttl_write_last_state(const LWTTL* ttl, const LWCONTEXT* pLwc) {
     save.lng = ttl->viewports[0].view_center.lng;
     save.lat = ttl->viewports[0].view_center.lat;
     save.view_scale = lwttl_view_scale(ttl);
-    memcpy(save.cam_eye, ttl->cam_eye, sizeof(vec3));
-    memcpy(save.cam_look_at, ttl->cam_look_at, sizeof(vec3));
+    memcpy(save.cam_eye, ttl->viewports[0].cam_eye, sizeof(vec3));
+    memcpy(save.cam_look_at, ttl->viewports[0].cam_look_at, sizeof(vec3));
     write_file_binary(pLwc->user_data_path, "lwttl.dat", (const char*)&save, sizeof(LWTTLSAVEDATA));
 }
 
@@ -1685,9 +1691,9 @@ void lwttl_screen_to_world_pos(const LWTTL* ttl,
         // assuming we are on orthographic projection
 
         const float cam_to_look_at[3] = {
-            ttl->cam_look_at[0] - ttl->cam_eye[0],
-            ttl->cam_look_at[1] - ttl->cam_eye[1],
-            ttl->cam_look_at[2] - ttl->cam_eye[2],
+            ttl->viewports[0].cam_look_at[0] - ttl->viewports[0].cam_eye[0],
+            ttl->viewports[0].cam_look_at[1] - ttl->viewports[0].cam_eye[1],
+            ttl->viewports[0].cam_look_at[2] - ttl->viewports[0].cam_eye[2],
         };
 
         const float d = -out_point[2] / cam_to_look_at[2];
@@ -1835,23 +1841,29 @@ void lwttl_view_proj(const LWTTL* ttl, mat4x4 view, mat4x4 proj) {
     memcpy(proj, ttl->viewports[0].proj, sizeof(mat4x4));
 }
 
-void lwttl_update_view_proj(const LWTTL* ttl, int width, int height, mat4x4 view, mat4x4 proj) {
-    const float aspect_ratio = (float)width / height;
+void lwttl_update_view_proj(const LWTTLFIELDVIEWPORT* vp,
+                            const LWTTLFIELDVIEWPORT* vp0,
+                            const int viewport_width,
+                            const int viewport_height,
+                            mat4x4 view,
+                            mat4x4 proj) {
+    const float aspect_ratio = (float)viewport_width / viewport_height;
     // half_height := (how many cells in vertical axis) / 2
-    float half_height = 6.0f * (float)height / ttl->viewports[0].field_viewport_height;
+    // (relative to main viewport height)
+    float half_height = 6.0f * (float)viewport_height / vp0->field_viewport_height;
     float near_z = 0.1f;
     float far_z = 1000.0f;
     // eye(camera) position
     vec3 eye = {
-        ttl->cam_eye[0],
-        ttl->cam_eye[1],
-        ttl->cam_eye[2]
+        vp->cam_eye[0],
+        vp->cam_eye[1],
+        vp->cam_eye[2]
     };
     // look position
     vec3 center = {
-        ttl->cam_look_at[0],
-        ttl->cam_look_at[1],
-        ttl->cam_look_at[2]
+        vp->cam_look_at[0],
+        vp->cam_look_at[1],
+        vp->cam_look_at[2]
     };
     vec3 center_to_eye;
     vec3_sub(center_to_eye, eye, center);
@@ -2485,11 +2497,11 @@ void lwttl_update(LWTTL* ttl, LWCONTEXT* pLwc, float delta_time) {
 }
 
 void lwttl_toggle_cell_grid(LWTTL* ttl) {
-    ttl->cell_grid = !ttl->cell_grid;
+    ttl->viewports[0].cell_grid = !ttl->viewports[0].cell_grid;
 }
 
 int lwttl_cell_grid(const LWTTL* ttl) {
-    return ttl->cell_grid;
+    return ttl->viewports[0].cell_grid;
 }
 
 int lwttl_gold(const LWTTL* ttl) {
@@ -2542,19 +2554,19 @@ const char* lwttl_route_state(const LWPTTLROUTEOBJECT* obj) {
 }
 
 void lwttl_cam_eye(const LWTTL* ttl, vec3 cam_eye) {
-    memcpy(cam_eye, ttl->cam_eye, sizeof(vec3));
+    memcpy(cam_eye, ttl->viewports[0].cam_eye, sizeof(vec3));
 }
 
 void lwttl_set_cam_eye(LWTTL* ttl, const vec3 cam_eye) {
-    memcpy(ttl->cam_eye, cam_eye, sizeof(vec3));
+    memcpy(ttl->viewports[0].cam_eye, cam_eye, sizeof(vec3));
 }
 
 void lwttl_cam_look_at(const LWTTL* ttl, vec3 cam_look_at) {
-    memcpy(cam_look_at, ttl->cam_look_at, sizeof(vec3));
+    memcpy(cam_look_at, ttl->viewports[0].cam_look_at, sizeof(vec3));
 }
 
 void lwttl_set_cam_look_at(LWTTL* ttl, const vec3 cam_look_at) {
-    memcpy(ttl->cam_look_at, cam_look_at, sizeof(vec3));
+    memcpy(ttl->viewports[0].cam_look_at, cam_look_at, sizeof(vec3));
 }
 
 float cell_fx_to_lng(float fx) {
@@ -2876,4 +2888,12 @@ void lwttl_set_window_size(LWTTL* ttl, int w, int h, float aspect_ratio) {
                                &ttl->viewports[1].view_center,
                                ttl->viewports[1].half_lng_extent_in_deg,
                                ttl->viewports[1].half_lat_extent_in_deg);
+}
+
+int lwttl_viewport_render_flags(const LWTTLFIELDVIEWPORT* vp) {
+    return vp->render_flags;
+}
+
+const LWTTLLNGLAT* lwttl_viewport_view_center(const LWTTLFIELDVIEWPORT* vp) {
+    return &vp->view_center;
 }

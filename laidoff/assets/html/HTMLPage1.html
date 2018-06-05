@@ -242,9 +242,6 @@
 <script type="text/x-lua">
 		local c = lo.script_context()
 		lo.htmlui_set_online(c.htmlui, 0)
-		lo.lwc_render_ttl_enable_render('world', 1)
-		lo.lwc_render_ttl_enable_render('landcell', 1)
-		lo.lwc_render_ttl_enable_render('landcell_nameplate', 1)
 		function worldmap_scroll(dlng, dlat, dscale)
 			lo.lwttl_worldmap_scroll(c.ttl, dlng/100, dlat/100, dscale)
 		end

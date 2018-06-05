@@ -32,6 +32,25 @@ typedef struct _LWTTLLNGLAT {
     float lat;
 } LWTTLLNGLAT;
 
+typedef enum _LW_TTL_FIELD_VIEWPORT_RENDER_FLAG {
+    LTFVRF_MORPHED_EARTH = 1 << 0,
+    LTFVRF_LAND_CELL = 1 << 1,
+    LTFVRF_WAYPOINT_LINE_SEGMENT = 1 << 2,
+    LTFVRF_SHIP = 1 << 3,
+    LTFVRF_CELL_PIXEL_SELECTOR = 1 << 4,
+    LTFVRF_DRAGGING_WAYPOINT_LINE_SEGMENT = 1 << 5,
+    LTFVRF_SEAPORT = 1 << 6,
+    LTFVRF_CITY = 1 << 7,
+    LTFVRF_SALVAGE = 1 << 8,
+    LTFVRF_COORDINATES = 1 << 9,
+    LTFVRF_SEA_OBJECT_NAMEPLATE = 1 << 10,
+    LTFVRF_SINGLE_CELL_INFO = 1 << 11,
+    LTFVRF_WORLD_TEXT = 1 << 12,
+    LTFVRF_REGION_NAME = 1 << 13,
+
+    LTFVRF_ALL = -1,
+} LW_TTL_FIELD_VIEWPORT_RENDER_FLAG;
+
 LWTTL* lwttl_new(float aspect_ratio);
 void lwttl_destroy(LWTTL** _ttl);
 void lwttl_worldmap_scroll_to(LWTTL* ttl, float lng, float lat, LWUDP* sea_udp);
@@ -176,7 +195,12 @@ void lwttl_on_press(LWTTL* ttl, const LWCONTEXT* pLwc, float nx, float ny);
 void lwttl_on_move(LWTTL* ttl, const LWCONTEXT* pLwc, float nx, float ny);
 void lwttl_on_release(LWTTL* ttl, LWCONTEXT* pLwc, float nx, float ny);
 void lwttl_view_proj(const LWTTL* ttl, mat4x4 view, mat4x4 proj);
-void lwttl_update_view_proj(const LWTTL* ttl, int width, int height, mat4x4 view, mat4x4 proj);
+void lwttl_update_view_proj(const LWTTLFIELDVIEWPORT* vp,
+                            const LWTTLFIELDVIEWPORT* vp0,
+                            const int viewport_width,
+                            const int viewport_height,
+                            mat4x4 view,
+                            mat4x4 proj);
 void lwttl_screen_to_world_pos(const LWTTL* ttl,
                                const float touchnx,
                                const float touchny,
@@ -308,6 +332,8 @@ void lwttl_viewport_range(const LWTTLFIELDVIEWPORT* vp,
                           int* viewport_height);
 void lwttl_set_viewport_view_scale(LWTTL* ttl, int viewport_index, int view_scale);
 void lwttl_set_window_size(LWTTL* ttl, int w, int h, float aspect_ratio);
+int lwttl_viewport_render_flags(const LWTTLFIELDVIEWPORT* vp);
+const LWTTLLNGLAT* lwttl_viewport_view_center(const LWTTLFIELDVIEWPORT* vp);
 #ifdef __cplusplus
 }
 #endif
