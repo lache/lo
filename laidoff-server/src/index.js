@@ -166,7 +166,11 @@ const teleportTo = (id, x, y) => {
 
 app.get('/idle', (req, res) => {
   const u = findOrCreateUser(req.query.u || uuidv1())
-  return res.render('idle', { user: u })
+  return res.render('idle', {
+    user: u,
+    resultMsg: req.query.resultMsg,
+    errMsg: req.query.errMsg
+  })
 })
 
 app.get('/loan', (req, res) => {
@@ -492,6 +496,7 @@ const execCreateShipWithRoute = async (
     console.error(`Ports cannot be found - ${p0}, ${p1}`)
     deleteShip(dbId)
   }
+  return 0
 }
 
 app.get('/sell_port', (req, res) => {
@@ -531,18 +536,38 @@ const link = async (req, res, expectLand) => {
   const xc1 = req.get('X-D-XC1')
   const yc1 = req.get('X-D-YC1')
   console.log(`Link [${xc0}, ${yc0}]-[${xc1}, ${yc1}]`)
+  let resultMsg = ''
+  let errMsg = ''
   const r0 = await execCreatePort(u, xc0, yc0, expectLand)
   if (r0 > 0) {
     const r1 = await execCreatePort(u, xc1, yc1, expectLand)
     if (r1 > 0) {
-      await execCreateShipWithRoute(u.user_id, xc0, yc0, expectLand, r0, r1)
+      const shipDbId = await execCreateShipWithRoute(
+        u.user_id,
+        xc0,
+        yc0,
+        expectLand,
+        r0,
+        r1
+      )
+      if (shipDbId > 0) {
+        resultMsg = '새 항로 등록 성공'
+      } else {
+        errMsg = '항로 등록 실패 (경로 찾을 수 없음)'
+      }
+    } else {
+      errMsg = '도착 항구 건설 실패 (다른 항구와 너무 가까움)'
     }
+  } else {
+    errMsg = '출발 항구 건설 실패 (다른 항구와 너무 가까움)'
   }
   res.redirect(
     url.format({
       pathname: '/idle',
       query: {
-        u: u.guid
+        u: u.guid,
+        resultMsg: resultMsg,
+        errMsg: errMsg
       }
     })
   )

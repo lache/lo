@@ -287,7 +287,7 @@ static void lwttl_update_viewport_data(const LWTTL* ttl,
                          &vp->cell_bound_yc1);
     vp->selected.press_menu_gauge_total = 0.45f;
     vp->selected.press_menu_gauge_appear_delay = 0.2f;
-    vp->selected.selected_cell_max_height = 0.2f;
+    vp->selected.selected_cell_max_height = 0.1f;
     vp->selected.selected_cell_height_speed = 4.0f;
 }
 
