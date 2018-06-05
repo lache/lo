@@ -1822,6 +1822,26 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
                                  &viewport_y,
                                  &viewport_width,
                                  &viewport_height);
+            // render viewport frame
+            if (i != 0) {
+                glViewport(0,
+                           0,
+                           pLwc->window_width,
+                           pLwc->window_height);
+                const float viewport_frame_half_thickness = 0.015f;
+                render_solid_vb_ui(pLwc,
+                                   (-1.0f + 2.0f * (float)viewport_x / pLwc->window_width) * pLwc->viewport_rt_x - viewport_frame_half_thickness,
+                                   (-1.0f + 2.0f * (float)viewport_y / pLwc->window_height) * pLwc->viewport_rt_y - viewport_frame_half_thickness,
+                                   (float)viewport_width / pLwc->window_width * 2.0f * pLwc->viewport_rt_x + 2.0f * viewport_frame_half_thickness,
+                                   (float)viewport_height / pLwc->window_height * 2.0f * pLwc->viewport_rt_y + 2.0f * viewport_frame_half_thickness,
+                                   pLwc->tex_atlas[LAE_ZERO_FOR_BLACK],
+                                   LVT_LEFT_BOTTOM_ANCHORED_SQUARE,
+                                   1.0f,
+                                   0.1f,
+                                   0.3f,
+                                   0.6f,
+                                   1.0f);
+            }
             glViewport(viewport_x,
                        viewport_y,
                        viewport_width,

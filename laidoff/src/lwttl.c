@@ -1837,7 +1837,8 @@ void lwttl_view_proj(const LWTTL* ttl, mat4x4 view, mat4x4 proj) {
 
 void lwttl_update_view_proj(const LWTTL* ttl, int width, int height, mat4x4 view, mat4x4 proj) {
     const float aspect_ratio = (float)width / height;
-    float half_height = 10.0f; // half_height := (how many cells in vertical axis) / 2
+    // half_height := (how many cells in vertical axis) / 2
+    float half_height = 6.0f * (float)height / ttl->viewports[0].field_viewport_height;
     float near_z = 0.1f;
     float far_z = 1000.0f;
     // eye(camera) position
@@ -2867,10 +2868,10 @@ void lwttl_set_window_size(LWTTL* ttl, int w, int h, float aspect_ratio) {
 
     lwttl_update_viewport_data(ttl,
                                &ttl->viewports[1],
-                               ttl->viewports[1].field_viewport_x,
-                               ttl->viewports[1].field_viewport_y,
-                               w / 3,
-                               h / 3,
+                               (int)((float)w / 2.0f - ((float)w / 1.5f) / 2.0f),
+                               (int)((float)h - w / 1.75f),
+                               (int)((float)w / 1.5f),
+                               (int)((float)w / 2.0f),
                                ttl->viewports[1].view_scale,
                                &ttl->viewports[1].view_center,
                                ttl->viewports[1].half_lng_extent_in_deg,
