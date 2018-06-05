@@ -120,6 +120,7 @@ typedef struct _LWTTLFIELDVIEWPORT {
     float field_viewport_rt_y;
     mat4x4 view;
     mat4x4 proj;
+    mat4x4 ui_proj;
     LWTTLLNGLAT view_center;
     int view_scale;
     int view_scale_msb;
@@ -255,6 +256,9 @@ static void lwttl_update_viewport_data(const LWTTL* ttl,
                            h,
                            vp->view,
                            vp->proj);
+    logic_update_default_ui_proj(w,
+                                 h,
+                                 vp->ui_proj);
     vp->view_scale = LWCLAMP(view_scale, 1, ttl->view_scale_max);
     vp->clamped_view_scale = lwttl_calculate_clamped_view_scale(view_scale, LNGLAT_VIEW_SCALE_PING_MAX);
     memcpy(&vp->view_center, view_center, sizeof(LWTTLLNGLAT));
@@ -2726,6 +2730,10 @@ const vec4* lwttl_viewport_proj(const LWTTLFIELDVIEWPORT* vp) {
     return vp->proj;
 }
 
+const vec4* lwttl_viewport_ui_proj(const LWTTLFIELDVIEWPORT* vp) {
+    return vp->ui_proj;
+}
+
 int lwttl_viewport_clamped_view_scale(const LWTTLFIELDVIEWPORT* vp) {
     return vp->clamped_view_scale;
 }
@@ -2876,8 +2884,6 @@ void lwttl_set_window_size(LWTTL* ttl, int w, int h, float aspect_ratio) {
                                &ttl->viewports[0].view_center,
                                ttl->viewports[0].half_lng_extent_in_deg,
                                ttl->viewports[0].half_lat_extent_in_deg);
-    lwttl_update_aspect_ratio(ttl, w, h);
-
     lwttl_update_viewport_data(ttl,
                                &ttl->viewports[1],
                                (int)((float)w / 2.0f - ((float)w / 1.5f) / 2.0f),

@@ -755,15 +755,17 @@ static void update_battle_wall(LWCONTEXT* pLwc) {
     pLwc->battle_wall_tex_v = fmodf(pLwc->battle_wall_tex_v, 1.0f);
 }
 
-void logic_update_default_projection(LWCONTEXT* pLwc) {
-    float ratio = pLwc->viewport_width / (float)pLwc->viewport_height;
-
-    //LOGV("Update(): width: %d height: %d ratio: %f", pLwc->viewport_width, pLwc->viewport_height, ratio);
-
-    if (ratio > 1) {
-        mat4x4_ortho(pLwc->proj, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
+void logic_update_default_ui_proj(const int width, const int height, mat4x4 proj) {
+    float aspect_ratio = (float)width / height;
+    LOGIx("Update(): width: %d height: %d ratio: %f", width, height, aspect_ratio);
+    if (aspect_ratio == 0) {
+        LOGEP("Aspect ratio is zero! Set to 1.0f.");
+        aspect_ratio = 1.0f;
+    }
+    if (aspect_ratio > 1) {
+        mat4x4_ortho(proj, -aspect_ratio, aspect_ratio, -1.0f, 1.0f, 1.0f, -1.0f);
     } else {
-        mat4x4_ortho(pLwc->proj, -1.f, 1.f, -1 / ratio, 1 / ratio, 1.f, -1.f);
+        mat4x4_ortho(proj, -1.0f, 1.0f, -1.0f / aspect_ratio, 1.0f / aspect_ratio, 1.0f, -1.0f);
     }
 }
 

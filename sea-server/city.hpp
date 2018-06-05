@@ -23,7 +23,7 @@ namespace ss {
         void set_name(int id, const char* name);
         long long query_ts(const int xc0, const int yc0, const int view_scale) const;
         long long query_ts(const LWTTLCHUNKKEY& chunk_key) const;
-        const char* query_single_cell(int xc0, int yc0, int& id) const;
+        const char* query_single_cell(int xc0, int yc0, int& id, int& population) const;
         void update_single_chunk_key_ts(const LWTTLCHUNKKEY& chunk_key, long long monotonic_uptime);
         void update();
         std::vector<cargo_notification>&& flush_cargo_notifications();

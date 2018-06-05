@@ -294,6 +294,7 @@ float cell_y_to_render_coords(int y, const LWTTLFIELDVIEWPORT* vp);
 float lwttl_vehicle_render_scale(const LWTTL* ttl, const LWTTLFIELDVIEWPORT* vp, float scale);
 const vec4* lwttl_viewport_view(const LWTTLFIELDVIEWPORT* vp);
 const vec4* lwttl_viewport_proj(const LWTTLFIELDVIEWPORT* vp);
+const vec4* lwttl_viewport_ui_proj(const LWTTLFIELDVIEWPORT* vp);
 int lwttl_viewport_clamped_view_scale(const LWTTLFIELDVIEWPORT* vp);
 int lwttl_viewport_cell_render_info(const LWTTLFIELDVIEWPORT* vp,
                                     const int bound_xc0,

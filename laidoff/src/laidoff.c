@@ -1661,8 +1661,8 @@ void lw_set_window_size(LWCONTEXT* pLwc, int w, int h) {
                                           &pLwc->right_dir_pad.origin_x,
                                           &pLwc->right_dir_pad.origin_y);
 
-        // Update default projection matrix (pLwc->proj)
-        logic_update_default_projection(pLwc);
+        // Update default UI projection matrix (pLwc->proj)
+        logic_update_default_ui_proj(pLwc->window_width, pLwc->window_height, pLwc->proj);
 
         // Reset dir pad input state
         reset_dir_pad_position(&pLwc->left_dir_pad);
@@ -1711,8 +1711,8 @@ void lw_set_viewport_size(LWCONTEXT* pLwc, int w, int h) {
     if (pLwc->viewport_width > 0 && pLwc->viewport_height > 0) {
         pLwc->viewport_aspect_ratio = (float)pLwc->viewport_width / pLwc->viewport_height;
 
-        // Update default projection matrix (pLwc->proj)
-        logic_update_default_projection(pLwc);
+        // Update default UI projection matrix (pLwc->proj)
+        logic_update_default_ui_proj(pLwc->viewport_width, pLwc->viewport_height, pLwc->proj);
 
         puck_game_reset_view_proj(pLwc, pLwc->puck_game);
 

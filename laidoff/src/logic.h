@@ -1,6 +1,7 @@
 #pragma once
 #include "lwgl.h"
 #include "lwvbotype.h"
+#include "linmath.h"
 
 typedef struct _LWCONTEXT LWCONTEXT;
 typedef struct _LWTCP LWTCP;
@@ -17,7 +18,7 @@ void lwc_update(LWCONTEXT* pLwc, double delta_time);
 void reset_runtime_context(LWCONTEXT* pLwc);
 void reset_time(LWCONTEXT* pLwc);
 const char* logic_server_addr(int idx);
-void logic_update_default_projection(LWCONTEXT* pLwc);
+void logic_update_default_ui_proj(const int width, const int height, mat4x4 proj);
 void reset_runtime_context(LWCONTEXT* pLwc);
 void reset_runtime_context_async(LWCONTEXT* pLwc);
 void logic_start_logic_update_job(LWCONTEXT* pLwc);

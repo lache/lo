@@ -759,11 +759,13 @@ void udp_server::send_single_cell(int xc0, int yc0) {
     }
     // city details
     int city_id = -1;
-    auto city_name = city_->query_single_cell(xc0, yc0, city_id);
+    int city_population = 0;
+    auto city_name = city_->query_single_cell(xc0, yc0, city_id, city_population);
     reply->city_id = city_id;
     if (city_id >= 0 && city_name) {
         strncpy(reply->city_name, city_name, boost::size(reply->city_name));
         reply->city_name[boost::size(reply->city_name) - 1] = 0;
+        reply->population = city_population;
     }
     // take salvage
     int salvage_id = -1;

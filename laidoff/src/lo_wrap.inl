@@ -10503,18 +10503,24 @@ fail:
 }
 
 
-static int _wrap_logic_update_default_projection(lua_State* L) {
+static int _wrap_logic_update_default_ui_proj(lua_State* L) {
   int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  int arg1 ;
+  int arg2 ;
+  vec4 *arg3 ;
   
-  SWIG_check_num_args("logic_update_default_projection",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("logic_update_default_projection",1,"LWCONTEXT *");
+  SWIG_check_num_args("logic_update_default_ui_proj",3,3)
+  if(!lua_isnumber(L,1)) SWIG_fail_arg("logic_update_default_ui_proj",1,"int const");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("logic_update_default_ui_proj",2,"int const");
+  if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("logic_update_default_ui_proj",3,"mat4x4");
+  arg1 = (int const)lua_tonumber(L, 1);
+  arg2 = (int const)lua_tonumber(L, 2);
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("logic_update_default_projection",1,SWIGTYPE_p__LWCONTEXT);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_a_4__float,0))){
+    SWIG_fail_ptr("logic_update_default_ui_proj",3,SWIGTYPE_p_a_4__float);
   }
   
-  logic_update_default_projection(arg1);
+  logic_update_default_ui_proj(arg1,arg2,(float (*)[4])arg3);
   
   return SWIG_arg;
   
@@ -107890,7 +107896,7 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "reset_runtime_context", _wrap_reset_runtime_context},
     { "reset_time", _wrap_reset_time},
     { "logic_server_addr", _wrap_logic_server_addr},
-    { "logic_update_default_projection", _wrap_logic_update_default_projection},
+    { "logic_update_default_ui_proj", _wrap_logic_update_default_ui_proj},
     { "reset_runtime_context_async", _wrap_reset_runtime_context_async},
     { "logic_start_logic_update_job", _wrap_logic_start_logic_update_job},
     { "logic_stop_logic_update_job", _wrap_logic_stop_logic_update_job},

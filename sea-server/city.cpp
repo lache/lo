@@ -255,10 +255,12 @@ long long city::query_ts(const LWTTLCHUNKKEY& chunk_key) const {
     return time0_;
 }
 
-const char* city::query_single_cell(int xc0, int yc0, int& id) const {
+const char* city::query_single_cell(int xc0, int yc0, int& id, int& population) const {
     const auto city_it = rtree_ptr->qbegin(bgi::intersects(city_object::point{ xc0, yc0 }));
     if (city_it != rtree_ptr->qend()) {
         id = city_it->second;
+        const auto population_it = id_population.find(id);
+        population = population_it != id_population.cend() ? population_it->second : 0;
         return get_city_name(city_it->second);
     }
     id = -1;
