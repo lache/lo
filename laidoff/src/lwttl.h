@@ -78,6 +78,8 @@ void lwttl_lock_rendering_mutex(LWTTL* ttl);
 void lwttl_unlock_rendering_mutex(LWTTL* ttl);
 const LWPTTLWAYPOINTS* lwttl_get_waypoints(const LWTTL* ttl);
 const LWPTTLWAYPOINTS* lwttl_get_waypoints_by_ship_id(const LWTTL* ttl, int ship_id);
+int lwttl_get_waypoints_count(const LWTTL* ttl);
+const LWPTTLWAYPOINTS* lwttl_get_waypoints_by_index(const LWTTL* ttl, int index);
 void lwttl_write_last_state(const LWTTL* ttl, const LWCONTEXT* pLwc);
 void lwttl_read_last_state(LWTTL* ttl, const LWCONTEXT* pLwc);
 const LWPTTLROUTESTATE* lwttl_full_state(const LWTTL* ttl);

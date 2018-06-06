@@ -655,7 +655,7 @@ static void render_land_cell_bitmap(const LWTTL* ttl,
                                                     sz,
                                                     pLwc->tex_atlas[tile_lae],
                                                     lvt,
-                                                    1.0f,
+                                                    0.5f,
                                                     0,
                                                     0,
                                                     0,
@@ -811,8 +811,8 @@ static void render_morphed_earth(const LWCONTEXT* pLwc,
     const LW_MORPH_VBO_TYPE lmvt = LMVT_EARTH;
     const LW_ATLAS_ENUM lae = LAE_WATER_2048_1024_AA;
     const int tex_index = pLwc->tex_atlas[lae];
-    // original planar earth mesh size
-    const float earth_planar_mesh_height = 3.0f;
+    // original planar earth mesh size: 2PI x PI
+    const float earth_planar_mesh_height = (float)M_PI;
     const float earth_globe_scale = LNGLAT_RES_HEIGHT / earth_planar_mesh_height / lwttl_viewport_view_scale(vp);
     const float earth_globe_morph_weight = 0;// lwttl_earth_globe_morph_weight(earth_globe_scale);
     const float x = 0.0f;
@@ -1123,11 +1123,10 @@ static void render_waypoints(const LWTTL* ttl, const LWCONTEXT* pLwc, const LWTT
     }
 }
 
-static void render_waypoints_by_ship_id(const LWTTL* ttl,
-                                        const LWCONTEXT* pLwc,
-                                        const LWTTLFIELDVIEWPORT* vp,
-                                        int ship_id) {
-    const LWPTTLWAYPOINTS* waypoints = lwttl_get_waypoints_by_ship_id(ttl, ship_id);
+static void render_route(const LWTTL* ttl,
+                         const LWCONTEXT* pLwc,
+                         const LWTTLFIELDVIEWPORT* vp,
+                         const LWPTTLWAYPOINTS* waypoints) {
     if (waypoints) {
         for (int i = 0; i < waypoints->count - 1; i++) {
             render_waypoint_line_segment(ttl,
@@ -1144,6 +1143,13 @@ static void render_waypoints_by_ship_id(const LWTTL* ttl,
     }
 }
 
+static void render_waypoints_by_ship_id(const LWTTL* ttl,
+                                        const LWCONTEXT* pLwc,
+                                        const LWTTLFIELDVIEWPORT* vp,
+                                        int ship_id) {
+    render_route(ttl, pLwc, vp, lwttl_get_waypoints_by_ship_id(ttl, ship_id));
+}
+
 static void render_waypoints_cache(const LWTTL* ttl, const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp) {
     const LWPTTLROUTESTATE* ttl_dynamic_state = lwttl_full_state(pLwc->ttl);
     for (int i = 0; i < ttl_dynamic_state->count; i++) {
@@ -1152,6 +1158,16 @@ static void render_waypoints_cache(const LWTTL* ttl, const LWCONTEXT* pLwc, cons
                                     pLwc,
                                     vp,
                                     ship_id);
+    }
+}
+
+static void render_waypoints_cache_all(const LWTTL* ttl, const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp) {
+    const int count = lwttl_get_waypoints_count(pLwc->ttl);
+    for (int i = 0; i < count; i++) {
+        render_route(pLwc->ttl,
+                     pLwc,
+                     vp,
+                     lwttl_get_waypoints_by_index(ttl, i));
     }
 }
 
@@ -1683,17 +1699,24 @@ static void render_ttl_stat(const LWTTL* ttl, const LWCONTEXT* pLwc) {
 }
 
 static void lwc_render_ttl_field_viewport(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp) {
-    int render_flags = lwttl_viewport_render_flags(vp);
+    const int render_flags = lwttl_viewport_render_flags(vp);
+    const int view_scale = lwttl_viewport_view_scale(vp);
     glDisable(GL_DEPTH_TEST);
     if (render_flags & LTFVRF_MORPHED_EARTH) {
         render_morphed_earth(pLwc, vp);
     }
     if (render_flags & LTFVRF_LAND_CELL) {
-        render_sea_static_objects(pLwc, vp);
+        if (view_scale < 4096) {
+            render_sea_static_objects(pLwc, vp);
+        }
     }
     if (render_flags & LTFVRF_WAYPOINT_LINE_SEGMENT) {
-        render_waypoints(pLwc->ttl, pLwc, vp);
-        render_waypoints_cache(pLwc->ttl, pLwc, vp);
+        if (view_scale < 16) {
+            render_waypoints(pLwc->ttl, pLwc, vp);
+            render_waypoints_cache(pLwc->ttl, pLwc, vp);
+        } else {
+            render_waypoints_cache_all(pLwc->ttl, pLwc, vp);
+        }
     }
     glEnable(GL_DEPTH_TEST);
     // render sea objects(ships)

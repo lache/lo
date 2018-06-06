@@ -1119,6 +1119,14 @@ const LWPTTLWAYPOINTS* lwttl_get_waypoints_by_ship_id(const LWTTL* ttl, int ship
     return 0;
 }
 
+int lwttl_get_waypoints_count(const LWTTL* ttl) {
+    return ttl->waypoints_cache_count;
+}
+
+const LWPTTLWAYPOINTS* lwttl_get_waypoints_by_index(const LWTTL* ttl, int index) {
+    return &ttl->waypoints_cache[index];
+}
+
 void lwttl_write_last_state(const LWTTL* ttl, const LWCONTEXT* pLwc) {
     LWTTLSAVEDATA save;
     save.magic = LOCAL_SAVE_FILE_MAGIC;
