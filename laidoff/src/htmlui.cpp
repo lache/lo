@@ -12,6 +12,7 @@
 #include "lwtcp.h"
 #include "lwmutex.h"
 #include "logic.h"
+#include "lwlog.h"
 
 class LWHTMLUI {
 public:
@@ -88,13 +89,14 @@ public:
         doc->draw(0, 0, 0, &clip);
     }
     void redraw_fbo() {
+        LOGI("Redrawing FBO with the same HTML data with client size %d x %d...", client_width, client_height);
         lock();
         container.clear_remtex_name_hash_set();
         doc = litehtml::document::createFromString(last_html_str.c_str(), &container, &browser_context);
         render_page();
-        if (lwc_prerender_ttl_fbo(pLwc) == 0) {
+        if (lwfbo_prerender(&pLwc->shared_fbo) == 0) {
             draw();
-            lwc_postrender_ttl_fbo(pLwc);
+            lwfbo_postrender(&pLwc->shared_fbo);
         }
         unlock();
     }

@@ -67,7 +67,6 @@ void set_vertex_attrib_pointer(const LWCONTEXT* pLwc, int shader_index);
 void set_color_vertex_attrib_pointer(const LWCONTEXT* pLwc, int shader_index);
 void load_png_pkm_sw_decoding(LWCONTEXT* pLwc, int i);
 void set_package_version(const char* package_version);
-void init_shared_fbo(LWCONTEXT* pLwc);
 void load_pkm_hw_decoding(const char *tex_atlas_filename);
 
 extern const float default_uv_offset[2];

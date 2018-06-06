@@ -10090,29 +10090,6 @@ fail:
 }
 
 
-static int _wrap_init_shared_fbo(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  
-  SWIG_check_num_args("init_shared_fbo",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("init_shared_fbo",1,"LWCONTEXT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("init_shared_fbo",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  init_shared_fbo(arg1);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
 static int _wrap_load_pkm_hw_decoding(lua_State* L) {
   int SWIG_arg = 0;
   char *arg1 = (char *) 0 ;
@@ -30922,6 +30899,105 @@ static swig_lua_class *swig_LWFBO_bases[] = {0};
 static const char *swig_LWFBO_base_names[] = {0};
 static swig_lua_class _wrap_class_LWFBO = { "LWFBO", "LWFBO", &SWIGTYPE_p__LWFBO,_proxy__wrap_new_LWFBO, swig_delete_LWFBO, swig_LWFBO_methods, swig_LWFBO_attributes, &swig_LWFBO_Sf_SwigStatic, swig_LWFBO_meta, swig_LWFBO_bases, swig_LWFBO_base_names };
 
+static int _wrap_lwfbo_init(lua_State* L) {
+  int SWIG_arg = 0;
+  LWFBO *arg1 = (LWFBO *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  
+  SWIG_check_num_args("lwfbo_init",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwfbo_init",1,"LWFBO *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("lwfbo_init",2,"int");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("lwfbo_init",3,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWFBO,0))){
+    SWIG_fail_ptr("lwfbo_init",1,SWIGTYPE_p__LWFBO);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  arg3 = (int)lua_tonumber(L, 3);
+  lwfbo_init(arg1,arg2,arg3);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwfbo_delete(lua_State* L) {
+  int SWIG_arg = 0;
+  LWFBO *arg1 = (LWFBO *) 0 ;
+  
+  SWIG_check_num_args("lwfbo_delete",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwfbo_delete",1,"LWFBO *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWFBO,0))){
+    SWIG_fail_ptr("lwfbo_delete",1,SWIGTYPE_p__LWFBO);
+  }
+  
+  lwfbo_delete(arg1);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwfbo_prerender(lua_State* L) {
+  int SWIG_arg = 0;
+  LWFBO *arg1 = (LWFBO *) 0 ;
+  int result;
+  
+  SWIG_check_num_args("lwfbo_prerender",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwfbo_prerender",1,"LWFBO const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWFBO,0))){
+    SWIG_fail_ptr("lwfbo_prerender",1,SWIGTYPE_p__LWFBO);
+  }
+  
+  result = (int)lwfbo_prerender((struct _LWFBO const *)arg1);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwfbo_postrender(lua_State* L) {
+  int SWIG_arg = 0;
+  LWFBO *arg1 = (LWFBO *) 0 ;
+  
+  SWIG_check_num_args("lwfbo_postrender",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwfbo_postrender",1,"LWFBO const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWFBO,0))){
+    SWIG_fail_ptr("lwfbo_postrender",1,SWIGTYPE_p__LWFBO);
+  }
+  
+  lwfbo_postrender((struct _LWFBO const *)arg1);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_LWFIELDOBJECT_valid_set(lua_State* L) {
   int SWIG_arg = 0;
   struct _LWFIELDOBJECT *arg1 = (struct _LWFIELDOBJECT *) 0 ;
@@ -48441,53 +48517,6 @@ static int _wrap_lwc_render_ttl(lua_State* L) {
   }
   
   lwc_render_ttl((struct _LWCONTEXT const *)arg1);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_lwc_prerender_ttl_fbo(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  int result;
-  
-  SWIG_check_num_args("lwc_prerender_ttl_fbo",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwc_prerender_ttl_fbo",1,"LWCONTEXT const *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("lwc_prerender_ttl_fbo",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  result = (int)lwc_prerender_ttl_fbo((struct _LWCONTEXT const *)arg1);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_lwc_postrender_ttl_fbo(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  
-  SWIG_check_num_args("lwc_postrender_ttl_fbo",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwc_postrender_ttl_fbo",1,"LWCONTEXT const *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("lwc_postrender_ttl_fbo",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  lwc_postrender_ttl_fbo((struct _LWCONTEXT const *)arg1);
   
   return SWIG_arg;
   
@@ -86760,6 +86789,56 @@ fail:
 }
 
 
+static int _wrap_LWPTTLSINGLECELL_population_set(lua_State* L) {
+  int SWIG_arg = 0;
+  struct _LWPTTLSINGLECELL *arg1 = (struct _LWPTTLSINGLECELL *) 0 ;
+  int arg2 ;
+  
+  SWIG_check_num_args("_LWPTTLSINGLECELL::population",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWPTTLSINGLECELL::population",1,"struct _LWPTTLSINGLECELL *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWPTTLSINGLECELL::population",2,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWPTTLSINGLECELL,0))){
+    SWIG_fail_ptr("LWPTTLSINGLECELL_population_set",1,SWIGTYPE_p__LWPTTLSINGLECELL);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  if (arg1) (arg1)->population = arg2;
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_LWPTTLSINGLECELL_population_get(lua_State* L) {
+  int SWIG_arg = 0;
+  struct _LWPTTLSINGLECELL *arg1 = (struct _LWPTTLSINGLECELL *) 0 ;
+  int result;
+  
+  SWIG_check_num_args("_LWPTTLSINGLECELL::population",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWPTTLSINGLECELL::population",1,"struct _LWPTTLSINGLECELL *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWPTTLSINGLECELL,0))){
+    SWIG_fail_ptr("LWPTTLSINGLECELL_population_get",1,SWIGTYPE_p__LWPTTLSINGLECELL);
+  }
+  
+  result = (int) ((arg1)->population);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_new_LWPTTLSINGLECELL(lua_State* L) {
   int SWIG_arg = 0;
   struct _LWPTTLSINGLECELL *result = 0 ;
@@ -86804,6 +86883,7 @@ static swig_lua_attribute swig_LWPTTLSINGLECELL_attributes[] = {
     { "cargo", _wrap_LWPTTLSINGLECELL_cargo_get, _wrap_LWPTTLSINGLECELL_cargo_set },
     { "cargo_loaded", _wrap_LWPTTLSINGLECELL_cargo_loaded_get, _wrap_LWPTTLSINGLECELL_cargo_loaded_set },
     { "cargo_unloaded", _wrap_LWPTTLSINGLECELL_cargo_unloaded_get, _wrap_LWPTTLSINGLECELL_cargo_unloaded_set },
+    { "population", _wrap_LWPTTLSINGLECELL_population_get, _wrap_LWPTTLSINGLECELL_population_set },
     {0,0,0}
 };
 static swig_lua_method swig_LWPTTLSINGLECELL_methods[]= {
@@ -105198,10 +105278,10 @@ fail:
 
 static int _wrap_lwttl_sizeof_viewport(lua_State* L) {
   int SWIG_arg = 0;
-  size_t result;
+  int result;
   
   SWIG_check_num_args("lwttl_sizeof_viewport",0,0)
-  result = lwttl_sizeof_viewport();
+  result = (int)lwttl_sizeof_viewport();
   lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
   return SWIG_arg;
   
@@ -105502,6 +105582,30 @@ static int _wrap_lwttl_viewport_proj(lua_State* L) {
   }
   
   result = (vec4 *)lwttl_viewport_proj((struct _LWTTLFIELDVIEWPORT const *)arg1);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_a_4__float,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_viewport_ui_proj(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTLFIELDVIEWPORT *arg1 = (LWTTLFIELDVIEWPORT *) 0 ;
+  vec4 *result = 0 ;
+  
+  SWIG_check_num_args("lwttl_viewport_ui_proj",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_viewport_ui_proj",1,"LWTTLFIELDVIEWPORT const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
+    SWIG_fail_ptr("lwttl_viewport_ui_proj",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
+  }
+  
+  result = (vec4 *)lwttl_viewport_ui_proj((struct _LWTTLFIELDVIEWPORT const *)arg1);
   SWIG_NewPointerObj(L,result,SWIGTYPE_p_a_4__float,0); SWIG_arg++; 
   return SWIG_arg;
   
@@ -107890,7 +107994,6 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "set_color_vertex_attrib_pointer", _wrap_set_color_vertex_attrib_pointer},
     { "load_png_pkm_sw_decoding", _wrap_load_png_pkm_sw_decoding},
     { "set_package_version", _wrap_set_package_version},
-    { "init_shared_fbo", _wrap_init_shared_fbo},
     { "load_pkm_hw_decoding", _wrap_load_pkm_hw_decoding},
     { "lwc_update", _wrap_lwc_update},
     { "reset_runtime_context", _wrap_reset_runtime_context},
@@ -107978,6 +108081,10 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "update_enemy", _wrap_update_enemy},
     { "get_battle_enemy_x_center", _wrap_get_battle_enemy_x_center},
     { "update_render_enemy_position", _wrap_update_render_enemy_position},
+    { "lwfbo_init", _wrap_lwfbo_init},
+    { "lwfbo_delete", _wrap_lwfbo_delete},
+    { "lwfbo_prerender", _wrap_lwfbo_prerender},
+    { "lwfbo_postrender", _wrap_lwfbo_postrender},
     { "lazy_glUseProgram", _wrap_lazy_glUseProgram},
     { "lw_null_printf", _wrap_lw_null_printf},
     { "lw_create_shader_program", _wrap_lw_create_shader_program},
@@ -108086,8 +108193,6 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "lwc_render_ttl_fbo_body", _wrap_lwc_render_ttl_fbo_body},
     { "lwc_render_ttl_fbo", _wrap_lwc_render_ttl_fbo},
     { "lwc_render_ttl", _wrap_lwc_render_ttl},
-    { "lwc_prerender_ttl_fbo", _wrap_lwc_prerender_ttl_fbo},
-    { "lwc_postrender_ttl_fbo", _wrap_lwc_postrender_ttl_fbo},
     { "lwc_render_puck_game", _wrap_lwc_render_puck_game},
     { "mult_world_roll", _wrap_mult_world_roll},
     { "calculate_world_right_top_end_ui_point", _wrap_calculate_world_right_top_end_ui_point},
@@ -108427,6 +108532,7 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "lwttl_vehicle_render_scale", _wrap_lwttl_vehicle_render_scale},
     { "lwttl_viewport_view", _wrap_lwttl_viewport_view},
     { "lwttl_viewport_proj", _wrap_lwttl_viewport_proj},
+    { "lwttl_viewport_ui_proj", _wrap_lwttl_viewport_ui_proj},
     { "lwttl_viewport_clamped_view_scale", _wrap_lwttl_viewport_clamped_view_scale},
     { "lwttl_viewport_cell_render_info", _wrap_lwttl_viewport_cell_render_info},
     { "lwttl_viewport_aspect_ratio", _wrap_lwttl_viewport_aspect_ratio},

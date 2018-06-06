@@ -16,7 +16,9 @@
 #include "remtex.h"
 
 litehtml::text_container::text_container(LWCONTEXT* pLwc, int w, int h)
-    : pLwc(pLwc), client_width(w), client_height(h), default_font_size(36) {
+    : pLwc(pLwc)
+    , default_font_size(36) {
+    set_client_size(w, h);
 }
 
 litehtml::text_container::~text_container() {
@@ -26,31 +28,15 @@ litehtml::uint_ptr litehtml::text_container::create_font(const litehtml::tchar_t
     LOGIx("create_font: faceName=%s, size=%d, weight=%d\n", faceName, size, weight);
     size_t font_idx = font_sizes.size();
     font_sizes.push_back(size);
-    fm->height = static_cast<int>(roundf(size * 0.8f * pLwc->viewport_height / 720.f));
-    fm->descent = static_cast<int>(roundf(size * 0.1f * pLwc->viewport_height / 720.f));
+    fm->height = static_cast<int>(roundf(size * 0.8f * client_height / 720.f));
+    fm->descent = static_cast<int>(roundf(size * 0.1f * client_height / 720.f));
     return litehtml::uint_ptr(font_idx);// litehtml::uint_ptr();
 }
 
 void litehtml::text_container::delete_font(litehtml::uint_ptr hFont) {
 }
 
-static float conv_size_x(const LWCONTEXT* pLwc, int x) {
-    return 2 * ((float)x / pLwc->viewport_width * pLwc->viewport_rt_x);
-}
-
-static float conv_size_y(const LWCONTEXT* pLwc, int y) {
-    return 2 * ((float)y / pLwc->viewport_height * pLwc->viewport_rt_y);
-}
-
-static float conv_coord_x(const LWCONTEXT* pLwc, int x) {
-    return -pLwc->viewport_rt_x + conv_size_x(pLwc, x);
-}
-
-static float conv_coord_y(const LWCONTEXT* pLwc, int y) {
-    return pLwc->viewport_rt_y - conv_size_y(pLwc, y);
-}
-
-static void fill_text_block(const LWCONTEXT* pLwc, LWTEXTBLOCK* text_block, int x, int y, const char* text, int size, const litehtml::web_color& color) {
+void litehtml::text_container::fill_text_block(LWTEXTBLOCK* text_block, int x, int y, const char* text, int size, const litehtml::web_color& color) {
     text_block->text_block_width = 999.0f;
     LOGIx("font size: %d", size);
     text_block->text_block_line_height = size / 72.0f;
@@ -64,8 +50,8 @@ static void fill_text_block(const LWCONTEXT* pLwc, LWTEXTBLOCK* text_block, int 
     text_block->begin_index = 0;
     text_block->end_index = text_block->text_bytelen;
     text_block->multiline = 1;
-    text_block->text_block_x = conv_coord_x(pLwc, x);
-    text_block->text_block_y = conv_coord_y(pLwc, y);
+    text_block->text_block_x = conv_coord_x(x);
+    text_block->text_block_y = conv_coord_y(y);
     text_block->align = LTBA_LEFT_BOTTOM;
 }
 
@@ -74,21 +60,21 @@ int litehtml::text_container::text_width(const litehtml::tchar_t * text, litehtm
     LWTEXTBLOCKQUERYRESULT query_result;
     int size = font_sizes[(int)(size_t)hFont];
     litehtml::web_color c;
-    fill_text_block(pLwc, &text_block, 0, 0, text, size, c);
+    fill_text_block(&text_block, 0, 0, text, size, c);
     render_query_only_text_block(pLwc, &text_block, &query_result);
-    return static_cast<int>(query_result.total_glyph_width / (2 * pLwc->viewport_rt_x) * pLwc->viewport_width);
+    return static_cast<int>(query_result.total_glyph_width / (2 * client_rt_x) * client_width);
 }
 
 void litehtml::text_container::draw_text(litehtml::uint_ptr hdc, const litehtml::tchar_t * text, litehtml::uint_ptr hFont, litehtml::web_color color, const litehtml::position & pos) {
     //wprintf(_t("draw_text: '%s' (x=%d,y=%d,color=0x%02X%02X%02X|%02X)\n"), text, pos.x, pos.y, color.red, color.green, color.blue, color.alpha);
     int size = font_sizes[(int)(size_t)hFont];
     LWTEXTBLOCK text_block;
-    fill_text_block(pLwc, &text_block, pos.x, pos.y, text, size, color);
+    fill_text_block(&text_block, pos.x, pos.y, text, size, color);
     render_text_block(pLwc, &text_block);
 }
 
 int litehtml::text_container::pt_to_px(int pt) {
-    return static_cast<int>(roundf(pt * 3.6f * pLwc->viewport_width / 640.0f));
+    return static_cast<int>(roundf(pt * 3.6f * client_width / 640.0f));
 }
 
 int litehtml::text_container::get_default_font_size() const {
@@ -103,7 +89,7 @@ void litehtml::text_container::draw_list_marker(litehtml::uint_ptr hdc, const li
     LOGIx("draw_list_marker");
     int size = font_sizes[0];
     LWTEXTBLOCK text_block;
-    fill_text_block(pLwc, &text_block, marker.pos.x + marker.pos.width, marker.pos.y + marker.pos.height, "*", size, marker.color);
+    fill_text_block(&text_block, marker.pos.x + marker.pos.width, marker.pos.y + marker.pos.height, "*", size, marker.color);
     render_text_block(pLwc, &text_block);
 }
 
@@ -150,7 +136,7 @@ void litehtml::text_container::get_image_size(const litehtml::tchar_t * src, con
     LOGIx("get_image_size: src=%s,baseurl=%s", src, baseurl);
     // [1] check for 'atlas type' image
     LWATLASSPRITEPTR atlas_sprite_ptr = atlas_sprite_ptr_from_url(pLwc, src);
-    float scale = pLwc->viewport_width / 640.0f;
+    float scale = client_width / 640.0f;
     if (atlas_sprite_ptr.sprite) {
         sz.width = static_cast<int>(roundf(atlas_sprite_ptr.sprite->width * scale));
         sz.height = static_cast<int>(roundf(atlas_sprite_ptr.sprite->height * scale));
@@ -272,10 +258,10 @@ void litehtml::text_container::draw_background(litehtml::uint_ptr hdc, const lit
         lazy_tex_atlas_glBindTexture(pLwc, lae_alpha);
         render_solid_vb_ui_alpha(
             pLwc,
-            conv_coord_x(pLwc, bg.border_box.x),
-            conv_coord_y(pLwc, bg.border_box.y),
-            conv_size_x(pLwc, bg.border_box.width),
-            conv_size_y(pLwc, bg.border_box.height),
+            conv_coord_x(bg.border_box.x),
+            conv_coord_y(bg.border_box.y),
+            conv_size_x(bg.border_box.width),
+            conv_size_y(bg.border_box.height),
             show_test_image ? pLwc->tex_atlas[lae] : 0,
             show_test_image ? pLwc->tex_atlas[lae_alpha] : 0,
             LVT_LEFT_TOP_ANCHORED_SQUARE,
@@ -293,10 +279,10 @@ void litehtml::text_container::draw_background(litehtml::uint_ptr hdc, const lit
         lazy_tex_atlas_glBindTexture(pLwc, lae);
         render_solid_vb_ui_uv_shader_rot(
             pLwc,
-            conv_coord_x(pLwc, bg.border_box.x),
-            conv_coord_y(pLwc, bg.border_box.y),
-            conv_size_x(pLwc, bg.border_box.width),
-            conv_size_y(pLwc, bg.border_box.height),
+            conv_coord_x(bg.border_box.x),
+            conv_coord_y(bg.border_box.y),
+            conv_size_x(bg.border_box.width),
+            conv_size_y(bg.border_box.height),
             show_test_image ? pLwc->tex_atlas[lae] : 0,
             LVT_LEFT_TOP_ANCHORED_SQUARE,
             bg.is_root ? 0.0f : show_test_image ? 1.0f : bg.color.alpha / 255.0f,
@@ -314,19 +300,19 @@ void litehtml::text_container::draw_background(litehtml::uint_ptr hdc, const lit
                                 atlas_sprite_ptr.sprite,
                                 (LW_ATLAS_ENUM)lae,
                                 (LW_ATLAS_ENUM)lae_alpha,
-                                conv_size_x(pLwc, bg.border_box.width),
-                                conv_coord_x(pLwc, bg.border_box.x),
-                                conv_coord_y(pLwc, bg.border_box.y),
+                                conv_size_x(bg.border_box.width),
+                                conv_coord_x(bg.border_box.x),
+                                conv_coord_y(bg.border_box.y),
                                 1.0f,
                                 LVT_LEFT_TOP_ANCHORED_SQUARE);
     } else if (show_test_image == 4 && remtex_id) {
         if (alpha_remtex_id == 0) {
             render_solid_vb_ui_flip_y_uv_shader(
                 pLwc,
-                conv_coord_x(pLwc, bg.border_box.x),
-                conv_coord_y(pLwc, bg.border_box.y),
-                conv_size_x(pLwc, bg.border_box.width),
-                conv_size_y(pLwc, bg.border_box.height),
+                conv_coord_x(bg.border_box.x),
+                conv_coord_y(bg.border_box.y),
+                conv_size_x(bg.border_box.width),
+                conv_size_y(bg.border_box.height),
                 remtex_id,
                 LVT_LEFT_TOP_ANCHORED_SQUARE,
                 bg.is_root ? 0.0f : show_test_image ? 1.0f : bg.color.alpha / 255.0f,
@@ -340,10 +326,10 @@ void litehtml::text_container::draw_background(litehtml::uint_ptr hdc, const lit
         } else {
             render_solid_vb_ui_alpha(
                 pLwc,
-                conv_coord_x(pLwc, bg.border_box.x),
-                conv_coord_y(pLwc, bg.border_box.y),
-                conv_size_x(pLwc, bg.border_box.width),
-                conv_size_y(pLwc, bg.border_box.height),
+                conv_coord_x(bg.border_box.x),
+                conv_coord_y(bg.border_box.y),
+                conv_size_x(bg.border_box.width),
+                conv_size_y(bg.border_box.height),
                 remtex_id,
                 alpha_remtex_id,
                 LVT_LEFT_TOP_ANCHORED_SQUARE,
@@ -357,10 +343,10 @@ void litehtml::text_container::draw_background(litehtml::uint_ptr hdc, const lit
     } else {
         render_solid_vb_ui_flip_y_uv_shader(
             pLwc,
-            conv_coord_x(pLwc, bg.border_box.x),
-            conv_coord_y(pLwc, bg.border_box.y),
-            conv_size_x(pLwc, bg.border_box.width),
-            conv_size_y(pLwc, bg.border_box.height),
+            conv_coord_x(bg.border_box.x),
+            conv_coord_y(bg.border_box.y),
+            conv_size_x(bg.border_box.width),
+            conv_size_y(bg.border_box.height),
             show_test_image ? pLwc->tex_atlas[lae] : 0,
             LVT_LEFT_TOP_ANCHORED_SQUARE,
             bg.is_root ? 0.0f : show_test_image ? 1.0f : bg.color.alpha / 255.0f,
@@ -383,10 +369,10 @@ void litehtml::text_container::draw_border_rect(const litehtml::border& border, 
     }
     render_solid_vb_ui_flip_y_uv_shader(
         pLwc,
-        conv_coord_x(pLwc, x),
-        conv_coord_y(pLwc, y),
-        conv_size_x(pLwc, w),
-        conv_size_y(pLwc, h),
+        conv_coord_x(x),
+        conv_coord_y(y),
+        conv_size_x(w),
+        conv_size_y(h),
         0,
         lvt,
         color.alpha / 255.0f,
@@ -516,4 +502,5 @@ void litehtml::text_container::get_language(litehtml::tstring & language, liteht
 void litehtml::text_container::set_client_size(int client_width, int client_height) {
     this->client_width = client_width;
     this->client_height = client_height;
+    lwcontext_rt_corner((float)client_width / client_height, &client_rt_x, &client_rt_y);
 }

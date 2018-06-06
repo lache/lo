@@ -61,6 +61,7 @@
 #include "remtex.h"
 #include "render_remtex.h"
 #include "render_font_test.h"
+#include "lwfbo.h"
 // SWIG output file
 #include "lo_wrap.inl"
 
@@ -658,82 +659,6 @@ static void init_gl_context(LWCONTEXT* pLwc) {
     // enable depth test
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
-}
-
-void delete_font_fbo(LWCONTEXT* pLwc) {
-    if (pLwc->shared_fbo.fbo) {
-        glDeleteFramebuffers(1, &pLwc->shared_fbo.fbo);
-        pLwc->shared_fbo.fbo = 0;
-    }
-    
-    if (pLwc->shared_fbo.depth_render_buffer) {
-        glDeleteRenderbuffers(1, &pLwc->shared_fbo.depth_render_buffer);
-        pLwc->shared_fbo.depth_render_buffer = 0;
-    }
-    
-    if (pLwc->shared_fbo.color_tex) {
-        glDeleteTextures(1, &pLwc->shared_fbo.color_tex);
-        pLwc->shared_fbo.color_tex = 0;
-    }
-}
-
-// https://stackoverflow.com/questions/466204/rounding-up-to-next-power-of-2
-unsigned long upper_power_of_two(unsigned long v)
-{
-    v--;
-    v |= v >> 1;
-    v |= v >> 2;
-    v |= v >> 4;
-    v |= v >> 8;
-    v |= v >> 16;
-    v++;
-    return v;
-}
-
-void init_shared_fbo(LWCONTEXT* pLwc) {
-    
-    // Delete GL resources before init
-    
-    delete_font_fbo(pLwc);
-    
-    // Start init
-#if LW_PLATFORM_IOS
-    pLwc->shared_fbo.width = (int)upper_power_of_two((unsigned long)pLwc->viewport_width);
-    pLwc->shared_fbo.height = (int)upper_power_of_two((unsigned long)pLwc->viewport_height);
-#else
-    pLwc->shared_fbo.width = pLwc->viewport_width;
-    pLwc->shared_fbo.height = pLwc->viewport_height;
-#endif
-    glGenFramebuffers(1, &pLwc->shared_fbo.fbo);
-    glBindFramebuffer(GL_FRAMEBUFFER, pLwc->shared_fbo.fbo);
-    
-    glGenRenderbuffers(1, &pLwc->shared_fbo.depth_render_buffer);
-    glBindRenderbuffer(GL_RENDERBUFFER, pLwc->shared_fbo.depth_render_buffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, pLwc->viewport_width, pLwc->viewport_height);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_COMPONENT, GL_RENDERBUFFER, pLwc->shared_fbo.depth_render_buffer);
-    
-    glGenTextures(1, &pLwc->shared_fbo.color_tex);
-    glBindTexture(GL_TEXTURE_2D, pLwc->shared_fbo.color_tex);
-    glGetError();
-    glTexImage2D(GL_TEXTURE_2D,
-                 0,
-                 GL_RGBA,
-                 pLwc->shared_fbo.width,
-                 pLwc->shared_fbo.height,
-                 0,
-                 GL_RGBA,
-                 GL_UNSIGNED_BYTE,
-                 NULL);
-    GLenum render_texture_result = glGetError();
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pLwc->shared_fbo.color_tex, 0);
-    
-    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-    if (status != GL_FRAMEBUFFER_COMPLETE) {
-        LOGE("init_shared_fbo: glCheckFramebufferStatus failed. return = %d", status);
-        delete_font_fbo(pLwc);
-    }
-    
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 // http://www.cse.yorku.ca/~oz/hash.html
@@ -1677,7 +1602,7 @@ void lw_set_window_size(LWCONTEXT* pLwc, int w, int h) {
 
         if (pLwc->game_scene == LGS_PUCK_GAME || pLwc->game_scene == LGS_FONT_TEST || pLwc->game_scene == LGS_TTL) {
             // Resize FBO
-            init_shared_fbo(pLwc);
+            lwfbo_init(&pLwc->shared_fbo, pLwc->window_width, pLwc->window_height);
 
             if (pLwc->game_scene == LGS_PUCK_GAME || pLwc->game_scene == LGS_TTL) {
                 // Rerender HTML UI

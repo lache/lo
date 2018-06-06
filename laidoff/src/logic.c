@@ -63,16 +63,14 @@ void change_to_battle(LWCONTEXT* pLwc) {
 
 void change_to_font_test(LWCONTEXT* pLwc) {
     pLwc->next_game_scene = LGS_FONT_TEST;
-    // Initialize test font FBO
-    init_shared_fbo(pLwc);
+    lwfbo_init(&pLwc->shared_fbo, pLwc->window_width, pLwc->window_height);
     // Render font FBO using render-to-texture
     lwc_render_font_test_fbo(pLwc);
 }
 
 void change_to_ttl(LWCONTEXT* pLwc) {
     pLwc->next_game_scene = LGS_TTL;
-    // Initialize test font FBO
-    init_shared_fbo(pLwc);
+    lwfbo_init(&pLwc->shared_fbo, pLwc->window_width, pLwc->window_height);
     // Render font FBO using render-to-texture
     lwc_render_ttl_fbo(pLwc, ASSETS_BASE_PATH "html" PATH_SEPARATOR "HTMLPage1.html");
 }
@@ -98,8 +96,7 @@ void change_to_puck_game(LWCONTEXT* pLwc) {
                             parse_recv_packets);
     }
     pLwc->next_game_scene = LGS_PUCK_GAME;
-    // Initialize test font FBO
-    init_shared_fbo(pLwc);
+    lwfbo_init(&pLwc->shared_fbo, pLwc->window_width, pLwc->window_height);
 }
 
 void change_to_particle_system(LWCONTEXT* pLwc) {
