@@ -79,6 +79,8 @@ sea_static::sea_static()
     }
     land_rtree_ptr->insert(std::make_pair(test_land_cell, -1));
     // TESTING-----------------
+
+    calculate_waypoints(xy32{ 63405 ,42055 }, xy32{ 47800,48936 }, 0);
 }
 
 int sea_static::lng_to_xc(float lng) const {

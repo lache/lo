@@ -4,18 +4,14 @@
 #include "CohenSutherland.h"
 
 using namespace astarrtree;
-using ss::LOGI;
-using ss::LOGI_WITH_PREFIX;
-using ss::LOGIx;
-using ss::LOGE;
-using ss::LOGE_WITH_PREFIX;
-using ss::LOGEx;
 
 struct PathfindContext {
     xy32xy32 from_rect;
     xy32xy32 to_rect;
     rtree* rtree_water;
     rtree* rtree_land;
+    std::unordered_map<void*, std::pair<size_t, size_t> > neighbor_cache_map;
+    std::vector<std::pair<xy32xy32xy32, float> > neighbor_cache;
 };
 
 xy32xy32 xyxy_from_box_t(const box& v) {
@@ -37,23 +33,44 @@ box box_t_from_xyxy(const xy32xy32& v) {
 }
 
 void RTreePathNodeNeighbors(ASNeighborList neighbors, void *node, void *context) {
-    auto n = reinterpret_cast<const xy32xy32xy32*>(node);
-    rtree* rtree_water_ptr = reinterpret_cast<PathfindContext*>(context)->rtree_water;
-    box query_box = box_t_from_xyxy(n->box);
-    std::vector<value> result_s;
-    rtree_water_ptr->query(bgi::intersects(query_box), std::back_inserter(result_s));
-    for (const auto& v : result_s) {
-        auto xyxy = xyxy_from_box_t(v.first);
-        const xy32 enter_point{
-            boost::algorithm::clamp(n->point.x, xyxy.xy0.x, xyxy.xy1.x - 1),
-            boost::algorithm::clamp(n->point.y, xyxy.xy0.y, xyxy.xy1.y - 1),
-        };
-        xy32xy32xy32 n2 = { xyxy, enter_point };
-        const int dx = enter_point.x - n->point.x;
-        const int dy = enter_point.y - n->point.y;
-        const float edge_cost = sqrtf(static_cast<float>(dx * dx + dy * dy));
-        ASNeighborListAdd(neighbors, &n2, edge_cost);
+    auto pathfind_context = reinterpret_cast<PathfindContext*>(context);
+    auto cache_it = pathfind_context->neighbor_cache_map.find(node);
+    if (cache_it != pathfind_context->neighbor_cache_map.end()) {
+        // neighbor cache hit
+        for (size_t i = cache_it->second.first; i < cache_it->second.second; i++) {
+            auto& nc = pathfind_context->neighbor_cache[i];
+            ASNeighborListAdd(neighbors, &nc.first, nc.second);
+        }
+    } else {
+        // neighbor cache no hit
+        auto n = reinterpret_cast<const xy32xy32xy32*>(node);
+        rtree* rtree_water_ptr = pathfind_context->rtree_water;
+        box query_box = box_t_from_xyxy(n->box);
+        std::vector<value> result_s;
+        rtree_water_ptr->query(bgi::intersects(query_box), std::back_inserter(result_s));
+        const size_t begin_index = pathfind_context->neighbor_cache.size();
+        for (const auto& v : result_s) {
+            // skip 'node' itself from neighbor
+            if (query_box.min_corner().get<0>() == v.first.min_corner().get<0>()
+                && query_box.min_corner().get<1>() == v.first.min_corner().get<1>()) {
+                continue;
+            }
+            auto xyxy = xyxy_from_box_t(v.first);
+            const xy32 enter_point{
+                boost::algorithm::clamp(n->point.x, xyxy.xy0.x, xyxy.xy1.x - 1),
+                boost::algorithm::clamp(n->point.y, xyxy.xy0.y, xyxy.xy1.y - 1),
+            };
+            xy32xy32xy32 n2 = { xyxy, enter_point };
+            const int dx = enter_point.x - n->point.x;
+            const int dy = enter_point.y - n->point.y;
+            const float edge_cost = sqrtf(static_cast<float>(dx * dx + dy * dy));
+            ASNeighborListAdd(neighbors, &n2, edge_cost);
+            pathfind_context->neighbor_cache.push_back(std::make_pair(n2, edge_cost));
+        }
+        const size_t end_index = pathfind_context->neighbor_cache.size();
+        pathfind_context->neighbor_cache_map[node] = std::make_pair(begin_index, end_index);
     }
+    
 }
 
 int RectDistance(const xy32xy32* a, const xy32xy32* b) {
@@ -101,23 +118,23 @@ void convexHull(ixy32 points[], size_t n, float& shortest_len) {
     if (n < 3) {
         return;
     }
-        
+
 
     // Initialize Result
     int* next = reinterpret_cast<int*>(alloca(sizeof(int) * n));
     for (int i = 0; i < n; i++) {
         next[i] = -1;
     }
-        
+
 
     // Find the leftmost point
     int l = 0;
     for (int i = 1; i < n; i++) {
         if (points[i].x < points[l].x) {
             l = i;
-        }   
+        }
     }
-        
+
 
     // Start from leftmost point, keep moving counterclockwise
     // until reach the start point again
@@ -138,7 +155,7 @@ void convexHull(ixy32 points[], size_t n, float& shortest_len) {
     } while (p != l);
 
     // Print Result
-    
+
     p = l;
     bool from = false;
     bool to = false;
@@ -189,9 +206,14 @@ float RTreePathNodeHeuristic(void *fromNode, void *toNode, void *context) {
     const auto from = reinterpret_cast<const xy32xy32xy32*>(fromNode);
     const auto to = reinterpret_cast<const xy32xy32xy32*>(toNode);
 
+    const int d1 = from->box.xy1.x <= to->point.x ? (1 + to->point.x - from->box.xy1.x) : from->box.xy0.x > to->point.x ? (from->box.xy0.x - to->point.x) : 0;
+    const int d2 = from->box.xy1.y <= to->point.y ? (1 + to->point.y - from->box.xy1.y) : from->box.xy0.y > to->point.y ? (from->box.xy0.y - to->point.y) : 0;
+    return sqrtf((float)d1 * d1 + d2 * d2);
+    
+
     // [1] Cell Midpoint Distance Method
     // TOO SLOW; illogical on very big cells
-    const auto fromMedX = (from->box.xy1.x - from->box.xy0.x) / 2.0f;
+    const auto fromMedX = (from->box.xy1.y - from->box.xy0.x) / 2.0f;
     const auto fromMedY = (from->box.xy1.y - from->box.xy0.y) / 2.0f;
     const auto toMedX = (to->box.xy1.x - to->box.xy0.x) / 2.0f;
     const auto toMedY = (to->box.xy1.y - to->box.xy0.y) / 2.0f;
@@ -852,16 +874,34 @@ bool astarrtree::find_nearest_point_if_empty(rtree* rtree_ptr, xy32& from, box& 
 }
 
 static int RTreePathNodeEarlyExit(size_t visitedCount, void *visitingNode, void *goalNode, void *context) {
-    if (visitedCount >= 1000) {
-        LOGIP("Too many visit! (%1% visits) Pathfinding aborted.", visitedCount);
+    if (visitedCount >= 100000) {
+        LOGI("Too many visits! (%1% visits) Pathfinding aborted.", visitedCount);
         return -1;
+    } else {
+        const auto visiting = reinterpret_cast<const xy32xy32xy32*>(visitingNode);
+        const auto goal = reinterpret_cast<const xy32xy32xy32*>(goalNode);
+        //printf("%d\n", (int)visitedCount);
+        /*LOGI("%|| visits so far... visiting:%||,%||[%||,%||-%||,%||] / goal:%||,%||[%||,%||-%||,%||]",
+             visitedCount,
+             visiting->point.x,
+             visiting->point.y,
+             visiting->box.xy0.x,
+             visiting->box.xy0.y,
+             visiting->box.xy1.x,
+             visiting->box.xy1.y,
+             goal->point.x,
+             goal->point.y,
+             goal->box.xy0.x,
+             goal->box.xy0.y,
+             goal->box.xy1.x,
+             goal->box.xy1.y);*/
     }
     return 0;
 }
 
 std::vector<xy32> astarrtree::astar_rtree_memory(rtree* rtree_water_ptr, rtree* rtree_land_ptr, xy32 from, xy32 to) {
     float distance = static_cast<float>(abs(from.x - to.x) + abs(from.y - to.y));
-    ss::LOGI("Pathfinding from (%1%,%2%) -> (%3%,%4%) [Manhattan distance = %5%]",
+    LOGI("Pathfinding from (%1%,%2%) -> (%3%,%4%) [Manhattan distance = %5%]",
              from.x,
              from.y,
              to.x,
@@ -869,18 +909,18 @@ std::vector<xy32> astarrtree::astar_rtree_memory(rtree* rtree_water_ptr, rtree* 
              distance);
 
     std::vector<xy32> waypoints;
-    ss::LOGI("R Tree water size: %1%", rtree_water_ptr->size());
+    LOGI("R Tree water size: %1%", rtree_water_ptr->size());
     if (rtree_water_ptr->size() == 0) {
         return waypoints;
     }
 
-    ss::LOGI("R Tree land size: %1%", rtree_land_ptr->size());
+    LOGI("R Tree land size: %1%", rtree_land_ptr->size());
 
     auto from_box = box_t_from_xy(from);
     std::vector<value> from_result_s;
     rtree_water_ptr->query(bgi::contains(from_box), std::back_inserter(from_result_s));
     if (astarrtree::find_nearest_point_if_empty(rtree_water_ptr, from, from_box, from_result_s)) {
-        ss::LOGI("  'From' point changed to (%1%,%2%)",
+        LOGI("  'From' point changed to (%1%,%2%)",
                  from.x,
                  from.y);
     }
@@ -889,7 +929,7 @@ std::vector<xy32> astarrtree::astar_rtree_memory(rtree* rtree_water_ptr, rtree* 
     std::vector<value> to_result_s;
     rtree_water_ptr->query(bgi::contains(to_box), std::back_inserter(to_result_s));
     if (astarrtree::find_nearest_point_if_empty(rtree_water_ptr, to, to_box, to_result_s)) {
-        ss::LOGI("  'To' point changed to (%1%,%2%)",
+        LOGI("  'To' point changed to (%1%,%2%)",
                  to.x,
                  to.y);
     }

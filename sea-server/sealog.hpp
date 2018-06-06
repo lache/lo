@@ -44,7 +44,7 @@ namespace ss {
     }
 
     template<typename... Arguments>
-    void LOG_WITH_PREFIX(std::ostream& stream, const std::string& prefix, const std::string& fmt, Arguments&&... args) {
+    void XXLOG_WITH_PREFIX(std::ostream& stream, const std::string& prefix, const std::string& fmt, Arguments&&... args) {
         try {
             stream << prefix;
             boost::format f(fmt);
@@ -58,40 +58,40 @@ namespace ss {
     }
 
     template<typename... Arguments>
-    void LOG(std::ostream& stream, const std::string& fmt, Arguments&&... args) {
-        LOG_WITH_PREFIX(stream, "", fmt, std::forward<Arguments>(args)...);
+    void XXLOG(std::ostream& stream, const std::string& fmt, Arguments&&... args) {
+        XXLOG_WITH_PREFIX(stream, "", fmt, std::forward<Arguments>(args)...);
     }
 
     template<typename... Arguments>
-    void LOGI(const std::string& fmt, Arguments&&... args) {
-        LOG(std::cout, fmt, std::forward<Arguments>(args)...);
+    void XXLOGI(const std::string& fmt, Arguments&&... args) {
+        XXLOG(std::cout, fmt, std::forward<Arguments>(args)...);
     }
 
     template<typename... Arguments>
-    void LOGI_WITH_PREFIX(const std::string& prefix, const std::string& fmt, Arguments&&... args) {
-        LOG_WITH_PREFIX(std::cout, prefix, fmt, std::forward<Arguments>(args)...);
+    void XXLOGI_WITH_PREFIX(const std::string& prefix, const std::string& fmt, Arguments&&... args) {
+        XXLOG_WITH_PREFIX(std::cout, prefix, fmt, std::forward<Arguments>(args)...);
     }
 
     template<typename... Arguments>
-    void LOGE(const std::string& fmt, Arguments&&... args) {
+    void XXLOGE(const std::string& fmt, Arguments&&... args) {
         auto elc = prepare_error_log();
-        LOG(std::cerr, fmt, std::forward<Arguments>(args)...);
+        XXLOG(std::cerr, fmt, std::forward<Arguments>(args)...);
         finish_error_log(elc);
     }
 
     template<typename... Arguments>
-    void LOGE_WITH_PREFIX(const std::string& prefix, const std::string& fmt, Arguments&&... args) {
+    void XXLOGE_WITH_PREFIX(const std::string& prefix, const std::string& fmt, Arguments&&... args) {
         auto elc = prepare_error_log();
-        LOG_WITH_PREFIX(std::cerr, prefix, fmt, std::forward<Arguments>(args)...);
+        XXLOG_WITH_PREFIX(std::cerr, prefix, fmt, std::forward<Arguments>(args)...);
         finish_error_log(elc);
     }
 
     template<typename... Arguments>
-    void LOGIx(const std::string& fmt, Arguments&&... args) {
+    void XXLOGIx(const std::string& fmt, Arguments&&... args) {
     }
 
     template<typename... Arguments>
-    void LOGEx(const std::string& fmt, Arguments&&... args) {
+    void XXLOGEx(const std::string& fmt, Arguments&&... args) {
     }
 }
 
@@ -101,5 +101,16 @@ namespace ss {
 #define __FILENAME__ (strrchr("/" __FILE__, '/') + 1)
 #endif
 
-#define LOGIP(...) LOGI_WITH_PREFIX((boost::format("%||(%||): ") % __FILENAME__ % __LINE__).str(), __VA_ARGS__)
-#define LOGEP(...) LOGE_WITH_PREFIX((boost::format("%||(%||): ") % __FILENAME__ % __LINE__).str(), __VA_ARGS__)
+#if 0
+#define LOGI(...) ss::XXLOGI(__VA_ARGS__)
+#define LOGE(...) ss::XXLOGE(__VA_ARGS__)
+#define LOGIx(...) ss::XXLOGIx(__VA_ARGS__)
+#define LOGIP(...) ss::XXLOGI_WITH_PREFIX((boost::format("%||(%||): ") % __FILENAME__ % __LINE__).str(), __VA_ARGS__)
+#define LOGEP(...) ss::XXLOGE_WITH_PREFIX((boost::format("%||(%||): ") % __FILENAME__ % __LINE__).str(), __VA_ARGS__)
+#else
+#define LOGI(...)
+#define LOGE(...) ss::XXLOGE(__VA_ARGS__)
+#define LOGIx(...)
+#define LOGIP(...)
+#define LOGEP(...) ss::XXLOGE_WITH_PREFIX((boost::format("%||(%||): ") % __FILENAME__ % __LINE__).str(), __VA_ARGS__)
+#endif
