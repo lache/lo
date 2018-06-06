@@ -80,9 +80,9 @@ const listPortToArray = () => {
 const findShip = shipId => query.findShip.get(shipId)
 const findUser = guid => query.findUser.get(guid)
 const findUserGuid = userId => query.findUserGuid.get(userId)
-const earnGold = (guid, reward) => query.earnGold.run(reward, guid)
-const earnGoldUser = (userId, reward) => query.earnGoldUser.run(reward, userId)
-const spendGold = (guid, cost) => query.spendGold.run(cost, guid)
+const earnGold = (guid, reward) => {} // query.earnGold.run(reward, guid)
+const earnGoldUser = (userId, reward) => {} // query.earnGoldUser.run(reward, userId)
+const spendGold = (guid, cost) => {} // query.spendGold.run(cost, guid)
 const findOrCreateUser = guid => {
   if (guid in userCache) {
     return userCache[guid]
