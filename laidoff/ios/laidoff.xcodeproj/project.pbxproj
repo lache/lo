@@ -463,9 +463,12 @@
 		71E4555CFCE0FC140AB64668 /* render_morph.c in Sources */ = {isa = PBXBuildFile; fileRef = 3EF18865C9E87623A8107AC5 /* render_morph.c */; };
 		78C0045A2ED2FB61C2B8D165 /* render_puckgame.c in Sources */ = {isa = PBXBuildFile; fileRef = FE6E8484ADBCBB3A0251BB37 /* render_puckgame.c */; };
 		D8531FF879956455D7126889 /* render_ttl.c in Sources */ = {isa = PBXBuildFile; fileRef = 153809DC50A3E01320158089 /* render_ttl.c */; };
+		E60E57B5481CB001701AE180 /* lwfbo.c in Sources */ = {isa = PBXBuildFile; fileRef = 0E38E11C6E337B7525B05C1D /* lwfbo.c */; };
+		F6ADF47571DFD34379A49919 /* lwchatringbuffer.c in Sources */ = {isa = PBXBuildFile; fileRef = EA30351E6C793142A9AC7BD3 /* lwchatringbuffer.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0E38E11C6E337B7525B05C1D /* lwfbo.c */ = {isa = PBXFileReference; includeInIndex = 1; name = lwfbo.c; path = ../src/lwfbo.c; sourceTree = "<group>"; };
 		153809DC50A3E01320158089 /* render_ttl.c */ = {isa = PBXFileReference; includeInIndex = 1; name = render_ttl.c; path = ../src/render_ttl.c; sourceTree = "<group>"; };
 		2601AFFC1EE1549700989AA6 /* platform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = platform.h; path = ../build/include/platform.h; sourceTree = "<group>"; };
 		3EF18865C9E87623A8107AC5 /* render_morph.c */ = {isa = PBXFileReference; includeInIndex = 1; name = render_morph.c; path = ../src/render_morph.c; sourceTree = "<group>"; };
@@ -1430,6 +1433,7 @@
 		6CF70E4020597A2B00F782C8 /* xxhash.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = xxhash.h; path = ../../../../lz4/lib/xxhash.h; sourceTree = "<group>"; };
 		6CFC5017206012360077E1B7 /* lwttl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lwttl.h; sourceTree = "<group>"; };
 		6CFC5018206012360077E1B7 /* lwttl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lwttl.c; sourceTree = "<group>"; };
+		EA30351E6C793142A9AC7BD3 /* lwchatringbuffer.c */ = {isa = PBXFileReference; includeInIndex = 1; name = lwchatringbuffer.c; path = ../src/lwchatringbuffer.c; sourceTree = "<group>"; };
 		FE6E8484ADBCBB3A0251BB37 /* render_puckgame.c */ = {isa = PBXFileReference; includeInIndex = 1; name = render_puckgame.c; path = ../src/render_puckgame.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -2359,6 +2363,8 @@
 				153809DC50A3E01320158089 /* render_ttl.c */,
 				3EF18865C9E87623A8107AC5 /* render_morph.c */,
 				FE6E8484ADBCBB3A0251BB37 /* render_puckgame.c */,
+				EA30351E6C793142A9AC7BD3 /* lwchatringbuffer.c */,
+				0E38E11C6E337B7525B05C1D /* lwfbo.c */,
 			);
 			sourceTree = "<group>";
 		};
@@ -3258,6 +3264,8 @@
 				D8531FF879956455D7126889 /* render_ttl.c in Sources */,
 				71E4555CFCE0FC140AB64668 /* render_morph.c in Sources */,
 				78C0045A2ED2FB61C2B8D165 /* render_puckgame.c in Sources */,
+				F6ADF47571DFD34379A49919 /* lwchatringbuffer.c in Sources */,
+				E60E57B5481CB001701AE180 /* lwfbo.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
