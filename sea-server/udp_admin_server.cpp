@@ -158,8 +158,9 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
             reply.port1_id = -1;
             reply.port2_id = -1;
             reply.reply_id = spawn->reply_id;
-            if ((spawn->expect_land == 0 && sea_static_->is_water(spawn_pos))
-                || spawn->expect_land == 1 && sea_static_->is_land(spawn_pos)) {
+            // spawn ship anywhere
+            if (true/*(spawn->expect_land == 0 && sea_static_->is_water(spawn_pos))
+                || spawn->expect_land == 1 && sea_static_->is_land(spawn_pos)*/) {
                 int id = sea_->spawn(spawn->expected_db_id, spawn->x, spawn->y, 1, 1, spawn->expect_land);
                 udp_server_->gold_used(static_cast<int>(spawn->x), static_cast<int>(spawn->y), 1000);
                 reply.db_id = id;
