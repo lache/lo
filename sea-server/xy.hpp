@@ -44,13 +44,22 @@ struct xy32i {
     size_t i;
 };
 
-enum XYIB_ENTER_EXIT {
+enum XYIBB_ENTER_EXIT {
     XEE_ENTER,
     XEE_EXIT,
 };
 
-struct xy32ib {
+enum XYIBB_NEIGHBOR_COVERAGE {
+    XNC_NO_COVERAGE = 0,
+    XNC_COVER_NEAREST = 1 << 0,
+    XNC_COVER_TO_FIRST = 1 << 1,
+    XNC_COVER_TO_LAST = 1 << 2,
+    XNC_COVER_ALL = XNC_COVER_NEAREST | XNC_COVER_TO_FIRST | XNC_COVER_TO_LAST,
+};
+
+struct xy32ibb {
     xy32 p;
     size_t i;
-    XYIB_ENTER_EXIT ee;
+    XYIBB_ENTER_EXIT ee;
+    int nc;
 };
