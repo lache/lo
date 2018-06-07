@@ -21,12 +21,16 @@ namespace ss {
         long long query_ts(const int xc0, const int yc0, const int view_scale) const;
         long long query_ts(const LWTTLCHUNKKEY& chunk_key) const;
         unsigned int query_single_cell(int xc0, int yc0) const;
+        void update_single_chunk_key_ts(const LWTTLCHUNKKEY& chunk_key, long long monotonic_uptime);
+        void transform_single_cell_water_to_land(int xc0, int yc0);
+        void transform_single_cell_land_to_water(int xc0, int yc0);
     private:
         std::vector<sea_static_object::value> query_tree_ex(int xc, int yc, int half_lng_ex, int half_lat_ex) const;
         std::vector<sea_static_object::value> query_tree(int xc0, int yc0, int xc1, int yc1) const;
         std::vector<sea_static_object::value> query_tree_water(int xc0, int yc0, int xc1, int yc1) const;
         void mark_sea_water(sea_static_object::rtree* rtree);
         void update_chunk_key_ts(int xc0, int yc0);
+        void transform_single_cell(int xc0, int yc0, int to);
         bi::managed_mapped_file land_file;
         sea_static_object::allocator land_alloc;
         sea_static_object::rtree* land_rtree_ptr;

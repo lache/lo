@@ -101,7 +101,7 @@ namespace ss {
 #define __FILENAME__ (strrchr("/" __FILE__, '/') + 1)
 #endif
 
-#if 0
+#if 1
 #define LOGI(...) ss::XXLOGI(__VA_ARGS__)
 #define LOGE(...) ss::XXLOGE(__VA_ARGS__)
 #define LOGIx(...) ss::XXLOGIx(__VA_ARGS__)

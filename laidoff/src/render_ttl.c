@@ -1583,13 +1583,6 @@ static void render_world(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp) {
     //render_waves(pLwc, view, proj, ship_y);
 }
 
-static void degrees_to_dms(int* d, int* m, float* s, const float degrees) {
-    *d = (int)degrees;
-    const float minutes = (degrees - *d) * 60;
-    *m = (int)minutes;
-    *s = (minutes - *m) * 60;
-}
-
 static void render_coords(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp) {
     LWTEXTBLOCK test_text_block;
     test_text_block.text_block_width = 999.0f;
@@ -1628,12 +1621,10 @@ static void render_coords_dms(const LWCONTEXT* pLwc, const LWTTLLNGLAT* lng_lat_
     SET_COLOR_RGBA_FLOAT(test_text_block.color_emp_glyph, 1, 1, 0, 1);
     SET_COLOR_RGBA_FLOAT(test_text_block.color_emp_outline, 0, 0, 0, 1);
     char coords[256];
-    int lng_d, lng_m;
-    float lng_s;
-    int lat_d, lat_m;
-    float lat_s;
-    degrees_to_dms(&lng_d, &lng_m, &lng_s, lng_lat_center->lng);
-    degrees_to_dms(&lat_d, &lat_m, &lat_s, lng_lat_center->lat);
+    int lng_d, lng_m; float lng_s;
+    int lat_d, lat_m; float lat_s;
+    lwttl_degrees_to_dms(&lng_d, &lng_m, &lng_s, lng_lat_center->lng);
+    lwttl_degrees_to_dms(&lat_d, &lat_m, &lat_s, lng_lat_center->lat);
     snprintf(coords,
              ARRAY_SIZE(coords),
              "LNG\n%dD\n%dM\n%.3fS\nLAT\n%dD\n%dM\n%.3fS",

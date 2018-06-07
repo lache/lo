@@ -28,6 +28,7 @@ extern "C" void lwimgui_init(GLFWwindow* window) {
     {
         0x0020, 0x00FF, // ASCII
         0x1100, 0x11FF, // Korean (Jamo)
+        0x2032, 0x2033, // Minutes, Seconds (for DMS representation)
         0x3130, 0x318F, // Korean (Jamo; compatability)
         0xAC00, 0xD7AF, // Korean
         0,
@@ -138,6 +139,23 @@ extern "C" void lwimgui_render(GLFWwindow* window) {
         ImGui::SetNextWindowSize(ImVec2(500, 60), ImGuiSetCond_FirstUseEver);
         ImGui::Begin("Admin", &show_another_window);
         {
+            LWTTLLNGLAT selected_lnglat;
+            if (lwttl_selected(pLwc->ttl, &selected_lnglat)) {
+                ImGui::Text("Selected Cell LNG %f, LAT %f", selected_lnglat.lng, selected_lnglat.lat);
+                int lng_d, lng_m; float lng_s;
+                int lat_d, lat_m; float lat_s;
+                lwttl_degrees_to_dms(&lng_d, &lng_m, &lng_s, selected_lnglat.lng);
+                lwttl_degrees_to_dms(&lat_d, &lat_m, &lat_s, selected_lnglat.lat);
+                ImGui::Text("LNG %d%s%d%s%f%s, LAT %d%s%d%s%f%s",
+                            lng_d, u8"°", lng_m, u8"′", lng_s, u8"″",
+                            lat_d, u8"°", lat_m, u8"′", lat_s, u8"″");
+                int xc0, yc0;
+                lwttl_selected_int(pLwc->ttl, &xc0, &yc0);
+                const LWPTTLSINGLECELL* p = lwttl_single_cell(pLwc->ttl);
+                ImGui::Text("XC %d YC %d [attr 0x%08X]", xc0, yc0, p->attr);
+            } else {
+                ImGui::Text("Not selected");
+            }
             vec3 cam_eye;
             lwttl_cam_eye(pLwc->ttl, cam_eye);
             bool eye_changed = false;

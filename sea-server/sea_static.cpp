@@ -68,19 +68,20 @@ sea_static::sea_static()
     }*/
 
     // TESTING-----------------
-    //sea_static_object::box origin_land_cell{ {-32,-32},{32,32} };
-    sea_static_object::box origin_land_cell{ { 0,0 },{ 1,1 } };
-    sea_static_object::box test_land_cell{ { 0,0 },{ 15,15 } };
-    std::vector<sea_static_object::value> to_be_removed;
-    land_rtree_ptr->query(bgi::contains(origin_land_cell), std::back_inserter(to_be_removed));
-    land_rtree_ptr->query(bgi::contains(test_land_cell), std::back_inserter(to_be_removed));
-    for (auto it : to_be_removed) {
-        land_rtree_ptr->remove(it);
-    }
-    land_rtree_ptr->insert(std::make_pair(test_land_cell, -1));
+    //sea_static_object::box origin_land_cell{ { 0,0 },{ 1,1 } };
+    //sea_static_object::box test_land_cell{ { 0,0 },{ 15,15 } };
+    //std::vector<sea_static_object::value> to_be_removed;
+    //// remove previous test land cell
+    //land_rtree_ptr->query(bgi::contains(origin_land_cell), std::back_inserter(to_be_removed));
+    //land_rtree_ptr->query(bgi::contains(test_land_cell), std::back_inserter(to_be_removed));
+    //for (auto it : to_be_removed) {
+    //    land_rtree_ptr->remove(it);
+    //}
+    // insert new test land cell
+    //land_rtree_ptr->insert(std::make_pair(test_land_cell, -1));
     // TESTING-----------------
 
-    calculate_waypoints(xy32{ 63405 ,42055 }, xy32{ 47800,48936 }, 0);
+    //calculate_waypoints(xy32{ 63405 ,42055 }, xy32{ 47800,48936 }, 0);
 }
 
 int sea_static::lng_to_xc(float lng) const {
@@ -205,7 +206,7 @@ std::vector<xy32> sea_static::calculate_waypoints(const xy32 & from, const xy32 
     auto from_box = astarrtree::box_t_from_xy(from);
     std::vector<astarrtree::value> from_result_s;
     auto& rtree_ptr = expect_land == 0 ? water_rtree_ptr : land_rtree_ptr;
-    auto check_cell = expect_land == 0 ? &sea_static::is_sea_water : &sea_static::is_land;
+    auto check_cell = expect_land == 0 ? &sea_static::is_water : &sea_static::is_land;
     rtree_ptr->query(bgi::contains(from_box), std::back_inserter(from_result_s));
     xy32 new_from = from;
     bool new_from_sea_water = false;
@@ -243,7 +244,7 @@ std::vector<xy32> sea_static::calculate_waypoints(const xy32 & from, const xy32 
     }
 
     if (new_from_sea_water && new_to_sea_water) {
-        return astarrtree::astar_rtree_memory(rtree_ptr, land_rtree_ptr, new_from, new_to);
+        return astarrtree::astar_rtree_memory(rtree_ptr, new_from, new_to);
     } else {
         LOGE("ERROR: Both 'From' and 'To' should be in sea water to generate waypoints!");
         return std::vector<xy32>();
@@ -321,4 +322,131 @@ unsigned int sea_static::query_single_cell(int xc0, int yc0) const {
     attr |= is_sea_water(xy32pos) ? (1 << 2) : 0;
 
     return attr;
+}
+
+void sea_static::update_single_chunk_key_ts(const LWTTLCHUNKKEY& chunk_key, long long monotonic_uptime) {
+    chunk_key_ts[chunk_key.v] = monotonic_uptime;
+    /*auto it = chunk_key_ts.find(chunk_key.v);
+    if (it != chunk_key_ts.end()) {
+    it->second++;
+    } else {
+    chunk_key_ts[chunk_key.v] = monotonic_uptime;
+    }*/
+}
+
+static bool check_not_zero_size(const xy32xy32& cell) {
+    return (cell.xy1.x - cell.xy0.x) > 0
+        && (cell.xy1.y - cell.xy0.y) > 0;
+}
+
+static void divide_cell_by_single_cell(const xy32xy32& cell, int xc0, int yc0, std::vector<xy32xy32>& result) {
+    // [xc0, yc0] is not inside cell: no cuts
+    if (cell.xy0.x > xc0 || cell.xy1.x <= xc0 || cell.xy0.y > yc0 || cell.xy1.y <= yc0) {
+        LOGEP("Division should be made inside cell");
+        abort();
+        return;
+    }
+    xy32xy32 c{ { xc0, yc0 },{ xc0 + 1, yc0 + 1 } };
+    int divided_count = 0;
+    xy32xy32 r;
+    r.xy0 = cell.xy0;
+    r.xy1 = xy32{ c.xy0.x, c.xy1.y };
+    if (check_not_zero_size(r)) {
+        result.push_back(r);
+        divided_count++;
+    }
+    r.xy0 = xy32{ c.xy0.x, cell.xy0.y };
+    r.xy1 = xy32{ cell.xy1.x, c.xy0.y };
+    if (check_not_zero_size(r)) {
+        result.push_back(r);
+        divided_count++;
+    }
+    r.xy0 = xy32{ c.xy1.x, c.xy0.y };
+    r.xy1 = cell.xy1;
+    if (check_not_zero_size(r)) {
+        result.push_back(r);
+        divided_count++;
+    }
+    r.xy0 = xy32{ cell.xy0.x, c.xy1.y };
+    r.xy1 = xy32{ c.xy1.x, cell.xy1.y };
+    if (check_not_zero_size(r)) {
+        result.push_back(r);
+        divided_count++;
+    }
+    // no cuts. only one possibility: cell === c
+    if (divided_count == 0) {
+        if (cell.xy0.x == c.xy0.x
+            && cell.xy0.y == c.xy0.y
+            && cell.xy1.x - cell.xy0.x == 1
+            && cell.xy1.y - cell.xy0.y == 1) {
+            return;
+        } else {
+            LOGE("Logic error");
+            abort();
+            return;
+        }
+    }
+}
+
+void sea_static::transform_single_cell(int xc0, int yc0, int to) {
+    sea_static_object::rtree* from_rtree = to == 0 ? water_rtree_ptr : land_rtree_ptr;
+    sea_static_object::rtree* to_rtree = to == 0 ? land_rtree_ptr : water_rtree_ptr;
+    const char* from_str = to == 0 ? "water" : "land";
+    const char* to_str = to == 0 ? "land" : "water";
+    if (xc0 < 0 || xc0 >= LNGLAT_RES_WIDTH || yc0 < 0 || yc0 >= LNGLAT_RES_HEIGHT) {
+        printf("Cell [%d,%d] is out of range.\n", xc0, yc0);
+        return;
+    }
+    sea_static_object::box transform_target_cell{ { xc0,yc0 },{ xc0 + 1,yc0 + 1 } };
+    std::vector<sea_static_object::value> prev_land_cells;
+    to_rtree->query(bgi::contains(transform_target_cell), std::back_inserter(prev_land_cells));
+    if (prev_land_cells.size() > 0) {
+        printf("Cell [%d,%d] is land already. Cannot transform it to %s again.\n", xc0, yc0, to_str);
+        return;
+    }
+    std::vector<sea_static_object::value> prev_water_cells;
+    from_rtree->query(bgi::contains(transform_target_cell), std::back_inserter(prev_water_cells));
+    if (prev_water_cells.size() == 0) {
+        printf("Cell [%d,%d] is should be %s, but it is not found on water R-tree?!?!? Aborting...\n", xc0, yc0, from_str);
+        abort();
+        return;
+    }
+    if (prev_water_cells.size() > 1) {
+        printf("Cell [%d,%d] is %s, but there are overlapping cells exists?!?!? Aborting...\n", xc0, yc0, from_str);
+        abort();
+        return;
+    }
+    // [1] Divide the overlapped water cell into subcells with cut by [xc0, yc0]. (up to four subcells created)
+    auto prev_water_cell = astarrtree::xyxy_from_box_t(prev_water_cells[0].first);
+    std::vector<xy32xy32> divided;
+    divide_cell_by_single_cell(prev_water_cell, xc0, yc0, divided);
+    // [2] Insert divided cells and remove the overlapped water cell. (insert/remove order matters)
+    size_t from_rect_count = from_rtree->size();
+    for (const auto& d : divided) {
+        from_rect_count++;
+        from_rtree->insert(std::make_pair(astarrtree::box_t_from_xyxy(d),
+                                          static_cast<int>(from_rect_count)));
+    }
+    from_rtree->remove(prev_water_cells[0]);
+    // [3] Insert single cell to land cell
+    size_t to_rect_count = to_rtree->size();
+    to_rect_count++;
+    to_rtree->insert(std::make_pair(transform_target_cell,
+                                    static_cast<int>(to_rect_count)));
+    // [4] Update timestamp for affected chunks (xc0, yc0 only? entire affected area?)
+    update_chunk_key_ts(xc0, yc0);
+    /*for (int y = prev_water_cell.xy0.y; y < prev_water_cell.xy1.y; y++) {
+        for (int x = prev_water_cell.xy0.x; x < prev_water_cell.xy1.x; x++) {
+            update_chunk_key_ts(x, y);
+        }
+    }*/
+    printf("Cell [%d,%d] successfully transformed from %s to %s.\n", xc0, yc0, from_str, to_str);
+}
+
+void sea_static::transform_single_cell_water_to_land(int xc0, int yc0) {
+    transform_single_cell(xc0, yc0, 0);
+}
+
+void sea_static::transform_single_cell_land_to_water(int xc0, int yc0) {
+    transform_single_cell(xc0, yc0, 1);
 }

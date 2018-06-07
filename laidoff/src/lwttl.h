@@ -193,6 +193,8 @@ void lwttl_send_ping_now(LWTTL* ttl);
 void lwttl_prerender_mutable_context(LWTTL* ttl, LWCONTEXT* pLwc, LWHTMLUI* htmlui);
 int lwttl_selected(const LWTTL* ttl, LWTTLLNGLAT* pos);
 int lwttl_selected_int(const LWTTL* ttl, int* xc0, int* yc0);
+int lwttl_selected_int_x(const LWTTL* ttl);
+int lwttl_selected_int_y(const LWTTL* ttl);
 void lwttl_on_press(LWTTL* ttl, const LWCONTEXT* pLwc, float nx, float ny);
 void lwttl_on_move(LWTTL* ttl, const LWCONTEXT* pLwc, float nx, float ny);
 void lwttl_on_release(LWTTL* ttl, LWCONTEXT* pLwc, float nx, float ny);
@@ -281,6 +283,7 @@ float cell_fx_to_render_coords_vp(float fx, const LWTTLFIELDVIEWPORT* vp);
 float cell_fy_to_render_coords_vp(float fy, const LWTTLFIELDVIEWPORT* vp);
 void lwttl_udp_send_ttlchat(const LWTTL* ttl, LWUDP* udp, const char* line);
 void lwttl_udp_send_ttlping(const LWTTL* ttl, LWUDP* udp, int ping_seq);
+void lwttl_udp_send_ttltransformsinglecell(const LWTTL* ttl, LWUDP* udp, int xc0, int yc0, int to);
 int lwttl_add_field_viewport(LWTTL* ttl, const LWTTLFIELDVIEWPORT* vp);
 void lwttl_remove_field_viewport(LWTTL* ttl, int viewport_index);
 const LWTTLFIELDVIEWPORT* lwttl_viewport(const LWTTL* ttl, int viewport_index);
@@ -337,6 +340,7 @@ void lwttl_set_viewport_view_scale(LWTTL* ttl, int viewport_index, int view_scal
 void lwttl_set_window_size(LWTTL* ttl, int w, int h, float aspect_ratio);
 int lwttl_viewport_render_flags(const LWTTLFIELDVIEWPORT* vp);
 const LWTTLLNGLAT* lwttl_viewport_view_center(const LWTTLFIELDVIEWPORT* vp);
+void lwttl_degrees_to_dms(int* d, int* m, float* s, const float degrees);
 #ifdef __cplusplus
 }
 #endif

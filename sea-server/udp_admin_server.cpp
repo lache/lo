@@ -158,7 +158,7 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
             reply.port1_id = -1;
             reply.port2_id = -1;
             reply.reply_id = spawn->reply_id;
-            if ((spawn->expect_land == 0 && sea_static_->is_sea_water(spawn_pos))
+            if ((spawn->expect_land == 0 && sea_static_->is_water(spawn_pos))
                 || spawn->expect_land == 1 && sea_static_->is_land(spawn_pos)) {
                 int id = sea_->spawn(spawn->expected_db_id, spawn->x, spawn->y, 1, 1, spawn->expect_land);
                 udp_server_->gold_used(static_cast<int>(spawn->x), static_cast<int>(spawn->y), 1000);
@@ -173,11 +173,11 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
                     LOGEP("Route endpoints not specified! port1_id=%1%, port2_id=%2%", id1, id2);
                 }
             } else {
-                LOGEP("Ship spawn at (%||, %||) criteria not fulfilled! expect_land=%||, is_sea_water=%||, is_land=%||",
+                LOGEP("Ship spawn at (%||, %||) criteria not fulfilled! expect_land=%||, is_water=%||, is_land=%||",
                       spawn_pos.x,
                       spawn_pos.y,
                       spawn->expect_land,
-                      sea_static_->is_sea_water(spawn_pos),
+                      sea_static_->is_water(spawn_pos),
                       sea_static_->is_land(spawn_pos));
             }   
             socket_.async_send_to(boost::asio::buffer(&reply, sizeof(spawn_ship_command_reply)), remote_endpoint_,
@@ -207,7 +207,7 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
             bool check_type = false;
             if (spawn->expect_land == 0) {
                 // Seaport
-                if (sea_static_->is_sea_water(spawn_pos)) {
+                if (sea_static_->is_water(spawn_pos)) {
                     check_type = true;
                 }
             } else if (spawn->expect_land == 1) {

@@ -188,7 +188,7 @@ void udp_server::send_land_cell_aligned(int xc0_aligned, int yc0_aligned, float 
     std::shared_ptr<LWPTTLSTATICSTATE2> reply(new LWPTTLSTATICSTATE2);
     memset(reply.get(), 0, sizeof(LWPTTLSTATICSTATE2));
     reply->type = LPGP_LWPTTLSTATICSTATE2;
-    reply->ts = 1;
+    reply->ts = sea_static_->query_ts(xc0_aligned, yc0_aligned, view_scale);
     reply->xc0 = xc0_aligned;
     reply->yc0 = yc0_aligned;
     reply->view_scale = view_scale;
@@ -603,12 +603,29 @@ void udp_server::handle_receive(const boost::system::error_code& error, std::siz
             const float ex_lng = LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS;
             const float ex_lat = LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS;
             if (p->static_object == LTSOT_LAND_CELL) {
-                send_land_cell_aligned(xc0_aligned, yc0_aligned, ex_lng, ex_lat, clamped_view_scale);
-                //send_land_cell_aligned_bitmap(xc0_aligned, yc0_aligned, ex_lng, ex_lat, clamped_view_scale);
-                LOGIx("Land cells Chunk key (%1%,%2%,%3%) Sent!",
-                      static_cast<int>(chunk_key.bf.xcc0),
-                      static_cast<int>(chunk_key.bf.ycc0),
-                      static_cast<int>(chunk_key.bf.view_scale_msb));
+                auto ts = sea_static_->query_ts(chunk_key);
+                if (ts == 0) {
+                    // In this case, client requested 'first' query on 'empty' chunk
+                    // since server startup. We should update this chunk timestamp properly
+                    // to invalidate client cache data if needed.
+                    const auto monotonic_uptime = get_monotonic_uptime();
+                    sea_static_->update_single_chunk_key_ts(chunk_key, monotonic_uptime);
+                    ts = monotonic_uptime;
+                }
+                if (ts > p->ts) {
+                    send_land_cell_aligned(xc0_aligned, yc0_aligned, ex_lng, ex_lat, clamped_view_scale);
+                    LOGIx("Land cells chunk key (%1%,%2%,%3%) Sent! (latest ts %4%)",
+                          static_cast<int>(chunk_key.bf.xcc0),
+                          static_cast<int>(chunk_key.bf.ycc0),
+                          static_cast<int>(chunk_key.bf.view_scale_msb),
+                          ts);
+                } else {
+                    LOGIx("Land cells chunk key (%1%,%2%,%3%) Not Sent! (latest ts %4%)",
+                          static_cast<int>(chunk_key.bf.xcc0),
+                          static_cast<int>(chunk_key.bf.ycc0),
+                          static_cast<int>(chunk_key.bf.view_scale_msb),
+                          ts);
+                }
             } else if (p->static_object == LTSOT_SEAPORT) {
                 auto ts = seaport_->query_ts(chunk_key);
                 if (ts == 0) {
@@ -683,6 +700,16 @@ void udp_server::handle_receive(const boost::system::error_code& error, std::siz
             strncpy(reply->line, p->line, boost::size(reply->line) - 1);
             reply->line[boost::size(reply->line) - 1] = 0;
             notify_to_all_clients(reply);
+        } else if (type == LPGP_LWPTTLTRANSFORMSINGLECELL) {
+            LOGIx("TRANSFORMSINGLECELL received.");
+            auto p = reinterpret_cast<LWPTTLTRANSFORMSINGLECELL*>(recv_buffer_.data());
+            if (p->to == 0) {
+                sea_static_->transform_single_cell_water_to_land(p->xc0, p->yc0);
+            } else if (p->to == 1) {
+                sea_static_->transform_single_cell_land_to_water(p->xc0, p->yc0);
+            } else {
+                LOGEP("Invalid message parameter p->to=%||", p);
+            }
         } else {
             LOGIP("Unknown UDP request of type %1%", static_cast<int>(type));
         }

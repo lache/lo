@@ -960,7 +960,7 @@ void lwttl_udp_send_ttlping(const LWTTL* ttl, LWUDP* udp, int ping_seq) {
                 const unsigned char static_object;
                 const int compare_ts;
             } cache_list[] = {
-                { &ttl->object_cache.land_cache, LTSOT_LAND_CELL, 0 },
+                { &ttl->object_cache.land_cache, LTSOT_LAND_CELL, 1 },
                 { &ttl->object_cache.seaport_cache, LTSOT_SEAPORT, 1 },
                 { &ttl->object_cache.city_cache, LTSOT_CITY, 1 },
                 { &ttl->object_cache.salvage_cache, LTSOT_SALVAGE, 1 },
@@ -993,6 +993,16 @@ void lwttl_udp_send_ttlchat(const LWTTL* ttl, LWUDP* udp, const char* line) {
     p.type = LPGP_LWPTTLCHAT;
     memcpy(p.line, line, sizeof(p.line));
     udp_send(udp, (const char*)&p, sizeof(LWPTTLCHAT));
+}
+
+void lwttl_udp_send_ttltransformsinglecell(const LWTTL* ttl, LWUDP* udp, int xc0, int yc0, int to) {
+    LWPTTLTRANSFORMSINGLECELL p;
+    memset(&p, 0, sizeof(LWPTTLTRANSFORMSINGLECELL));
+    p.type = LPGP_LWPTTLTRANSFORMSINGLECELL;
+    p.xc0 = xc0;
+    p.yc0 = yc0;
+    p.to = to;
+    udp_send(udp, (const char*)&p, sizeof(LWPTTLTRANSFORMSINGLECELL));
 }
 
 void lwttl_udp_send_request_waypoints(const LWTTL* ttl, LWUDP* sea_udp, int ship_id) {
@@ -1653,9 +1663,17 @@ int lwttl_selected(const LWTTL* ttl, LWTTLLNGLAT* pos) {
 }
 
 int lwttl_selected_int(const LWTTL* ttl, int* xc0, int* yc0) {
-    *xc0 = ttl->viewports[0].selected.pos_xc;
-    *yc0 = ttl->viewports[0].selected.pos_yc;
+    *xc0 = lwttl_selected_int_x(ttl);
+    *yc0 = lwttl_selected_int_y(ttl);
     return ttl->viewports[0].selected.selected;
+}
+
+int lwttl_selected_int_x(const LWTTL* ttl) {
+    return ttl->viewports[0].selected.pos_xc;
+}
+
+int lwttl_selected_int_y(const LWTTL* ttl) {
+    return ttl->viewports[0].selected.pos_yc;
 }
 
 static float inner_product(const float a[3], const float b[3]) {
@@ -2910,4 +2928,11 @@ int lwttl_viewport_render_flags(const LWTTLFIELDVIEWPORT* vp) {
 
 const LWTTLLNGLAT* lwttl_viewport_view_center(const LWTTLFIELDVIEWPORT* vp) {
     return &vp->view_center;
+}
+
+void lwttl_degrees_to_dms(int* d, int* m, float* s, const float degrees) {
+    *d = (int)degrees;
+    const float minutes = (degrees - *d) * 60;
+    *m = (int)minutes;
+    *s = (minutes - *m) * 60;
 }

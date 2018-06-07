@@ -10,13 +10,12 @@ struct PathfindContext {
     xy32xy32 to_rect; // 1x1 rect version of to-point
     xy32xy32 from_box; // cell which contains from-point
     xy32xy32 to_box; // cell which contains to-point
-    rtree* rtree_water;
-    rtree* rtree_land;
+    const rtree* rtree_ptr;
     std::unordered_map<void*, std::pair<size_t, size_t> > neighbor_cache_map;
     std::vector<std::pair<xy32xy32xy32, float> > neighbor_cache;
 };
 
-xy32xy32 xyxy_from_box_t(const box& v) {
+xy32xy32 astarrtree::xyxy_from_box_t(const box& v) {
     xy32xy32 r;
     r.xy0.x = v.min_corner().get<0>();
     r.xy0.y = v.min_corner().get<1>();
@@ -25,13 +24,26 @@ xy32xy32 xyxy_from_box_t(const box& v) {
     return r;
 }
 
-box box_t_from_xyxy(const xy32xy32& v) {
+box astarrtree::box_t_from_xyxy(const xy32xy32& v) {
     box r;
     r.min_corner().set<0>(v.xy0.x);
     r.min_corner().set<1>(v.xy0.y);
     r.max_corner().set<0>(v.xy1.x);
     r.max_corner().set<1>(v.xy1.y);
     return r;
+}
+
+static int xy32_comparator(const xy32& p1, const xy32& p2) {
+    const auto v1 = (static_cast<int64_t>(p1.y) << 32) | static_cast<int64_t>(p1.x);
+    const auto v2 = (static_cast<int64_t>(p2.y) << 32) | static_cast<int64_t>(p2.x);
+    const auto d = v1 - v2;
+    if (d == 0) {
+        return 0;
+    } else if (d > 0) {
+        return 1;
+    } else {
+        return -1;
+    }
 }
 
 void RTreePathNodeNeighbors(ASNeighborList neighbors, void *node, void *context) {
@@ -46,10 +58,10 @@ void RTreePathNodeNeighbors(ASNeighborList neighbors, void *node, void *context)
     } else {
         // neighbor cache no hit
         auto n = reinterpret_cast<const xy32xy32xy32*>(node);
-        rtree* rtree_water_ptr = pathfind_context->rtree_water;
+        const rtree* rtree_ptr = pathfind_context->rtree_ptr;
         box query_box = box_t_from_xyxy(n->box);
         std::vector<value> result_s;
-        rtree_water_ptr->query(bgi::intersects(query_box), std::back_inserter(result_s));
+        rtree_ptr->query(bgi::intersects(query_box), std::back_inserter(result_s));
         const size_t begin_index = pathfind_context->neighbor_cache.size();
         for (const auto& v : result_s) {
             // skip 'node' itself from neighbor
@@ -65,14 +77,22 @@ void RTreePathNodeNeighbors(ASNeighborList neighbors, void *node, void *context)
             xy32xy32xy32 n2 = { xyxy, enter_point };
             const long long dx = enter_point.x - n->point.x;
             const long long dy = enter_point.y - n->point.y;
-            const double edge_cost = sqrt(static_cast<double>(dx * dx + dy * dy));
+            const double edge_cost_cell_to_cell = sqrt(static_cast<double>(dx * dx + dy * dy));
+            double edge_cost_cell_to_goal = 0;
+            // if this neighbor('v') is goal node, we should add edge_cost_cell_to_goal factor
+            if (xy32_comparator(xyxy.xy0, pathfind_context->to_box.xy0) == 0) {
+                const long long dx2 = pathfind_context->to_rect.xy0.x - enter_point.x;
+                const long long dy2 = pathfind_context->to_rect.xy0.y - enter_point.y;
+                edge_cost_cell_to_goal = sqrt(static_cast<double>(dx2 * dx2 + dy2 * dy2));
+            }
+            const double edge_cost = edge_cost_cell_to_cell + edge_cost_cell_to_goal;
             ASNeighborListAdd(neighbors, &n2, static_cast<float>(edge_cost));
             pathfind_context->neighbor_cache.push_back(std::make_pair(n2, static_cast<float>(edge_cost)));
         }
         const size_t end_index = pathfind_context->neighbor_cache.size();
         pathfind_context->neighbor_cache_map[node] = std::make_pair(begin_index, end_index);
     }
-    
+
 }
 
 int RectDistance(const xy32xy32* a, const xy32xy32* b) {
@@ -211,7 +231,7 @@ float RTreePathNodeHeuristic(void *fromNode, void *toNode, void *context) {
     const int d1 = from->box.xy1.x <= to->point.x ? (1 + to->point.x - from->box.xy1.x) : from->box.xy0.x > to->point.x ? (from->box.xy0.x - to->point.x) : 0;
     const int d2 = from->box.xy1.y <= to->point.y ? (1 + to->point.y - from->box.xy1.y) : from->box.xy0.y > to->point.y ? (from->box.xy0.y - to->point.y) : 0;
     return sqrtf((float)d1 * d1 + d2 * d2);
-    
+
 
     // [1] Cell Midpoint Distance Method
     // TOO SLOW; illogical on very big cells
@@ -365,32 +385,19 @@ float RTreePathNodeHeuristic(void *fromNode, void *toNode, void *context) {
     //return 0;
 }
 
-static int xy32Comparator(const xy32& p1, const xy32& p2) {
-    const auto v1 = (static_cast<int64_t>(p1.y) << 32) | static_cast<int64_t>(p1.x);
-    const auto v2 = (static_cast<int64_t>(p2.y) << 32) | static_cast<int64_t>(p2.x);
-    const auto d = v1 - v2;
-    if (d == 0) {
-        return 0;
-    } else if (d > 0) {
-        return 1;
-    } else {
-        return -1;
-    }
-}
-
 int RTreePathNodeComparator(void *node1, void *node2, void *context) {
     const auto pathfind_context = reinterpret_cast<PathfindContext*>(context);
     const auto n1 = reinterpret_cast<const xy32xy32xy32*>(node1);
     const auto n2 = reinterpret_cast<const xy32xy32xy32*>(node2);
     // compare 'box.xy0' and then 'point'
-    const auto box_xy0_compare_result = xy32Comparator(n1->box.xy0, n2->box.xy0);
+    const auto box_xy0_compare_result = xy32_comparator(n1->box.xy0, n2->box.xy0);
     if (box_xy0_compare_result != 0) {
         return box_xy0_compare_result;
     } else {
         // if node1 and node2 have the same 'box.xy0' -- which means that they are the same cell
         // check 'point' if they are not 'goal' node ('to' rect)
-        if (xy32Comparator(n1->box.xy0, pathfind_context->to_box.xy0) != 0) {
-            return xy32Comparator(n1->point, n2->point);
+        if (xy32_comparator(n1->box.xy0, pathfind_context->to_box.xy0) != 0) {
+            return xy32_comparator(n1->point, n2->point);
         } else {
             return 0;
         }
@@ -398,9 +405,9 @@ int RTreePathNodeComparator(void *node1, void *node2, void *context) {
 }
 
 float xyib_distance(const xy32ibb& a, const xy32ibb& b) {
-    const int dx = a.p.x - b.p.x;
-    const int dy = a.p.y - b.p.y;
-    return sqrtf(static_cast<float>(dx * dx + dy * dy));
+    const long long dx = a.p.x - b.p.x;
+    const long long dy = a.p.y - b.p.y;
+    return static_cast<float>(sqrt(static_cast<double>(dx * dx + dy * dy)));
 }
 
 struct pixel_waypoint_search {
@@ -848,24 +855,24 @@ std::vector<xy32> calculate_pixel_waypoints(xy32 from, xy32 to, ASPath cell_path
     return waypoints;
 }
 
-void astarrtree::astar_rtree(const char* water_rtree_filename,
-                             size_t water_output_max_size,
-                             const char* land_rtree_filename,
-                             size_t land_output_max_size,
-                             xy32 from,
-                             xy32 to) {
-    bi::managed_mapped_file water_file(bi::open_or_create, water_rtree_filename, water_output_max_size);
-    allocator water_alloc(water_file.get_segment_manager());
-    rtree* rtree_water_ptr = water_file.find_or_construct<rtree>("rtree")(params(), indexable(), equal_to(), water_alloc);
+//void astarrtree::astar_rtree(const char* water_rtree_filename,
+//                             size_t water_output_max_size,
+//                             const char* land_rtree_filename,
+//                             size_t land_output_max_size,
+//                             xy32 from,
+//                             xy32 to) {
+//    bi::managed_mapped_file water_file(bi::open_or_create, water_rtree_filename, water_output_max_size);
+//    allocator water_alloc(water_file.get_segment_manager());
+//    rtree* rtree_ptr = water_file.find_or_construct<rtree>("rtree")(params(), indexable(), equal_to(), water_alloc);
+//
+//    bi::managed_mapped_file land_file(bi::open_or_create, land_rtree_filename, land_output_max_size);
+//    allocator land_alloc(land_file.get_segment_manager());
+//    rtree* rtree_land_ptr = land_file.find_or_construct<rtree>("rtree")(params(), indexable(), equal_to(), land_alloc);
+//
+//    astar_rtree_memory(rtree_ptr, from, to);
+//}
 
-    bi::managed_mapped_file land_file(bi::open_or_create, land_rtree_filename, land_output_max_size);
-    allocator land_alloc(land_file.get_segment_manager());
-    rtree* rtree_land_ptr = land_file.find_or_construct<rtree>("rtree")(params(), indexable(), equal_to(), land_alloc);
-
-    astar_rtree_memory(rtree_water_ptr, rtree_land_ptr, from, to);
-}
-
-bool astarrtree::find_nearest_point_if_empty(rtree* rtree_ptr, xy32& from, box& from_box, std::vector<value>& from_result_s) {
+bool astarrtree::find_nearest_point_if_empty(const rtree* rtree_ptr, xy32& from, box& from_box, std::vector<value>& from_result_s) {
     if (from_result_s.size() == 0) {
         auto nearest_it = rtree_ptr->qbegin(bgi::nearest(from_box, 1));
         if (nearest_it == rtree_ptr->qend()) {
@@ -953,40 +960,38 @@ static int RTreePathNodeEarlyExit(size_t visitedCount, void *visitingNode, void 
     return 0;
 }
 
-std::vector<xy32> astarrtree::astar_rtree_memory(rtree* rtree_water_ptr, rtree* rtree_land_ptr, xy32 from, xy32 to) {
+std::vector<xy32> astarrtree::astar_rtree_memory(const rtree* rtree_ptr, const xy32& from, const xy32& to) {
     float distance = static_cast<float>(abs(from.x - to.x) + abs(from.y - to.y));
     LOGI("Pathfinding from (%1%,%2%) -> (%3%,%4%) [Manhattan distance = %5%]",
-             from.x,
-             from.y,
-             to.x,
-             to.y,
-             distance);
+         from.x,
+         from.y,
+         to.x,
+         to.y,
+         distance);
 
     std::vector<xy32> waypoints;
-    LOGI("R Tree water size: %1%", rtree_water_ptr->size());
-    if (rtree_water_ptr->size() == 0) {
+    LOGI("R Tree size: %1%", rtree_ptr->size());
+    if (rtree_ptr->size() == 0) {
         return waypoints;
     }
 
-    LOGI("R Tree land size: %1%", rtree_land_ptr->size());
-
     auto from_box = box_t_from_xy(from);
     std::vector<value> from_result_s;
-    rtree_water_ptr->query(bgi::contains(from_box), std::back_inserter(from_result_s));
-    if (astarrtree::find_nearest_point_if_empty(rtree_water_ptr, from, from_box, from_result_s)) {
-        LOGI("  'From' point changed to (%1%,%2%)",
-                 from.x,
-                 from.y);
-    }
+    rtree_ptr->query(bgi::contains(from_box), std::back_inserter(from_result_s));
+    //if (astarrtree::find_nearest_point_if_empty(rtree_ptr, from, from_box, from_result_s)) {
+    //    LOGI("  'From' point changed to (%1%,%2%)",
+    //         from.x,
+    //         from.y);
+    //}
 
     auto to_box = box_t_from_xy(to);
     std::vector<value> to_result_s;
-    rtree_water_ptr->query(bgi::contains(to_box), std::back_inserter(to_result_s));
-    if (astarrtree::find_nearest_point_if_empty(rtree_water_ptr, to, to_box, to_result_s)) {
-        LOGI("  'To' point changed to (%1%,%2%)",
-                 to.x,
-                 to.y);
-    }
+    rtree_ptr->query(bgi::contains(to_box), std::back_inserter(to_result_s));
+    //if (astarrtree::find_nearest_point_if_empty(rtree_ptr, to, to_box, to_result_s)) {
+    //    LOGI("  'To' point changed to (%1%,%2%)",
+    //         to.x,
+    //         to.y);
+    //}
 
     if (from_result_s.size() == 1 && to_result_s.size() == 1) {
         // Phase 1 - R Tree rectangular node searching
@@ -1007,8 +1012,7 @@ std::vector<xy32> astarrtree::astar_rtree_memory(rtree* rtree_water_ptr, rtree* 
             { { to.x,to.y },{ to.x + 1, to.y + 1 } },
             from_box,
             to_box,
-            rtree_water_ptr,
-            rtree_land_ptr,
+            rtree_ptr,
         };
         ASPath path = ASPathCreate(&PathNodeSource, &context, &from_rect, &to_rect);
         size_t pathCount = ASPathGetCount(path);
@@ -1020,15 +1024,15 @@ std::vector<xy32> astarrtree::astar_rtree_memory(rtree* rtree_water_ptr, rtree* 
             {
                 for (size_t i = 0; i < pathCount; i++) {
                     xy32xy32* node = reinterpret_cast<xy32xy32*>(ASPathGetNode(path, i));
-                    LOGIx("Cell Path %1%: (%2%, %3%)-(%4%, %5%) [%6% x %7% = %8%]",
-                          i,
-                          node->xy0.x,
-                          node->xy0.y,
-                          node->xy1.x,
-                          node->xy1.y,
-                          node->xy1.x - node->xy0.x,
-                          node->xy1.y - node->xy0.y,
-                          (node->xy1.x - node->xy0.x) * (node->xy1.y - node->xy0.y));
+                    LOGI("Cell Path %1%: (%2%, %3%)-(%4%, %5%) [%6% x %7% = %8%]",
+                         i,
+                         node->xy0.x,
+                         node->xy0.y,
+                         node->xy1.x,
+                         node->xy1.y,
+                         node->xy1.x - node->xy0.x,
+                         node->xy1.y - node->xy0.y,
+                         (node->xy1.x - node->xy0.x) * (node->xy1.y - node->xy0.y));
                 }
             }
             // Phase 2 - per-pixel node searching
