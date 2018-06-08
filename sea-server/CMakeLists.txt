@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 
 project(sea-server)
 set(Boost_USE_STATIC_LIBS ON)
-find_package(Boost 1.58 COMPONENTS system date_time regex filesystem atomic REQUIRED)
+find_package(Boost 1.58 COMPONENTS system date_time regex filesystem atomic context coroutine REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 if (MSVC)
   add_definitions(

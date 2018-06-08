@@ -34,6 +34,16 @@ int main(int argc, char* argv[]) {
         LOGI("Current path: %s", boost::filesystem::current_path());
 
         boost::asio::io_service io_service;
+
+        boost::asio::spawn([&io_service](boost::asio::yield_context yield) {
+            boost::asio::deadline_timer timer(io_service);
+            while (true) {
+                std::cout << "Hello?";
+                timer.expires_from_now(boost::posix_time::seconds(5));
+                timer.async_wait(yield);
+            }
+        });
+
         std::shared_ptr<sea> sea_instance(new sea(io_service));
         std::shared_ptr<sea_static> sea_static_instance(new sea_static());
         std::shared_ptr<seaport> seaport_instance(new seaport(io_service));
@@ -62,7 +72,11 @@ int main(int argc, char* argv[]) {
         sea_instance->set_udp_admin_server(udp_admin_server_instance);
         udp_admin_server_instance->send_recover_all_ships();
         LOGI("Start to server.");
-        io_service.run();
+        boost::thread_group workers;
+        for (int i = 0; i < 4; i++) {
+            workers.create_thread([&io_service] { io_service.run(); });
+        }
+        workers.join_all();
     } catch (std::exception& e) {
         LOGE(e.what());
     }

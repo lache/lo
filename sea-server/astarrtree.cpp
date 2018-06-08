@@ -1024,15 +1024,15 @@ std::vector<xy32> astarrtree::astar_rtree_memory(const rtree* rtree_ptr, const x
             {
                 for (size_t i = 0; i < pathCount; i++) {
                     xy32xy32* node = reinterpret_cast<xy32xy32*>(ASPathGetNode(path, i));
-                    LOGI("Cell Path %1%: (%2%, %3%)-(%4%, %5%) [%6% x %7% = %8%]",
-                         i,
-                         node->xy0.x,
-                         node->xy0.y,
-                         node->xy1.x,
-                         node->xy1.y,
-                         node->xy1.x - node->xy0.x,
-                         node->xy1.y - node->xy0.y,
-                         (node->xy1.x - node->xy0.x) * (node->xy1.y - node->xy0.y));
+                    LOGIx("Cell Path %1%: (%2%, %3%)-(%4%, %5%) [%6% x %7% = %8%]",
+                          i,
+                          node->xy0.x,
+                          node->xy0.y,
+                          node->xy1.x,
+                          node->xy1.y,
+                          node->xy1.x - node->xy0.x,
+                          node->xy1.y - node->xy0.y,
+                          (node->xy1.x - node->xy0.x) * (node->xy1.y - node->xy0.y));
                 }
             }
             // Phase 2 - per-pixel node searching

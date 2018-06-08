@@ -8,6 +8,8 @@
 #include <chrono>
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
+#include <boost/asio/spawn.hpp>
+#include <boost/thread.hpp>
 #include <boost/geometry.hpp>
 #include <boost/geometry/geometries/point.hpp>
 #include <boost/geometry/geometries/box.hpp>
