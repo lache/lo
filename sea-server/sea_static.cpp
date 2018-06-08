@@ -61,27 +61,8 @@ sea_static::sea_static()
     load_from_dump_if_empty(water_rtree_ptr, "rtree/water_raw_xy32xy32.bin");
     mark_sea_water(water_rtree_ptr);
 
-    /*const auto land_bounds = land_rtree_ptr->bounds();
-    size_t c = 0;
-    for (auto it = land_rtree_ptr->begin(); it != land_rtree_ptr->end(); it++) {
-    c++;
-    }*/
-
-    // TESTING-----------------
-    //sea_static_object::box origin_land_cell{ { 0,0 },{ 1,1 } };
-    //sea_static_object::box test_land_cell{ { 0,0 },{ 15,15 } };
-    //std::vector<sea_static_object::value> to_be_removed;
-    //// remove previous test land cell
-    //land_rtree_ptr->query(bgi::contains(origin_land_cell), std::back_inserter(to_be_removed));
-    //land_rtree_ptr->query(bgi::contains(test_land_cell), std::back_inserter(to_be_removed));
-    //for (auto it : to_be_removed) {
-    //    land_rtree_ptr->remove(it);
-    //}
-    // insert new test land cell
-    //land_rtree_ptr->insert(std::make_pair(test_land_cell, -1));
-    // TESTING-----------------
-
-    //calculate_waypoints(xy32{ 63405 ,42055 }, xy32{ 47800,48936 }, 0);
+    //astarrtree::astar_rtree_memory(water_rtree_ptr, { 148858,26779 }, { 149726,27639 }, std::shared_ptr<astarrtree::coro_context>());
+    astarrtree::astar_rtree_memory(land_rtree_ptr, { 0, 0}, { 3, 3 }, std::shared_ptr<astarrtree::coro_context>());
 }
 
 int sea_static::lng_to_xc(float lng) const {
@@ -202,7 +183,7 @@ void sea_static::mark_sea_water(sea_static_object::rtree* rtree) {
     }
 }
 
-std::vector<xy32> sea_static::calculate_waypoints(const xy32 & from, const xy32 & to, int expect_land) const {
+std::vector<xy32> sea_static::calculate_waypoints(const xy32 & from, const xy32 & to, int expect_land, boost::asio::io_service& io_service, boost::asio::yield_context yield) const {
     auto from_box = astarrtree::box_t_from_xy(from);
     std::vector<astarrtree::value> from_result_s;
     auto& rtree_ptr = expect_land == 0 ? water_rtree_ptr : land_rtree_ptr;
@@ -244,21 +225,22 @@ std::vector<xy32> sea_static::calculate_waypoints(const xy32 & from, const xy32 
     }
 
     if (new_from_sea_water && new_to_sea_water) {
-        return astarrtree::astar_rtree_memory(rtree_ptr, new_from, new_to);
+        std::shared_ptr<astarrtree::coro_context> coro(new astarrtree::coro_context{ io_service, yield });
+        return astarrtree::astar_rtree_memory(rtree_ptr, new_from, new_to, coro);
     } else {
         LOGE("ERROR: Both 'From' and 'To' should be in sea water to generate waypoints!");
         return std::vector<xy32>();
     }
 }
 
-std::vector<xy32> sea_static::calculate_waypoints(const sea_static_object::point & from, const sea_static_object::point & to, int expect_land) const {
+std::vector<xy32> sea_static::calculate_waypoints(const sea_static_object::point & from, const sea_static_object::point & to, int expect_land, boost::asio::io_service& io_service, boost::asio::yield_context yield) const {
     xy32 fromxy;
     xy32 toxy;
     fromxy.x = from.get<0>();
     fromxy.y = from.get<1>();
     toxy.x = to.get<0>();
     toxy.y = to.get<1>();
-    return calculate_waypoints(fromxy, toxy, expect_land);
+    return calculate_waypoints(fromxy, toxy, expect_land, io_service, yield);
 }
 
 bool sea_static::is_water(const xy32& cell) const {

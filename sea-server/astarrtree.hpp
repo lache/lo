@@ -17,13 +17,12 @@ namespace astarrtree {
     typedef bi::allocator<value, bi::managed_mapped_file::segment_manager> allocator;
     typedef bgi::rtree<value, params, indexable, equal_to, allocator> rtree;
 
-    /*void astar_rtree(const char* water_rtree_filename,
-                     size_t water_output_max_size,
-                     const char* land_rtree_filename,
-                     size_t land_output_max_size,
-                     xy32 from,
-                     xy32 to);*/
-    std::vector<xy32> astar_rtree_memory(const rtree* rtree_ptr, const xy32& from, const xy32& to);
+    struct coro_context {
+        boost::asio::io_service& io_service;
+        boost::asio::yield_context yield;
+    };
+
+    std::vector<xy32> astar_rtree_memory(const rtree* rtree_ptr, const xy32& from, const xy32& to, std::shared_ptr<coro_context> coro);
     box box_t_from_xy(xy32 v);
     bool find_nearest_point_if_empty(const rtree* rtree_ptr, xy32& from, box& from_box, std::vector<value>& from_result_s);
     xy32xy32 xyxy_from_box_t(const box& v);

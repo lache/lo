@@ -72,11 +72,7 @@ int main(int argc, char* argv[]) {
         sea_instance->set_udp_admin_server(udp_admin_server_instance);
         udp_admin_server_instance->send_recover_all_ships();
         LOGI("Start to server.");
-        boost::thread_group workers;
-        for (int i = 0; i < 4; i++) {
-            workers.create_thread([&io_service] { io_service.run(); });
-        }
-        workers.join_all();
+        io_service.run();
     } catch (std::exception& e) {
         LOGE(e.what());
     }

@@ -29,7 +29,8 @@ udp_admin_server::udp_admin_server(boost::asio::io_service& io_service,
     , resolver_(io_service)
     , web_server_query_(udp::v4(), "localhost", "3003")
     , web_server_endpoint_(*resolver_.resolve(web_server_query_))
-    , web_server_socket_(io_service) {
+    , web_server_socket_(io_service)
+    , io_service_(io_service) {
     start_receive();
     web_server_socket_.open(udp::v4());
 }
@@ -151,40 +152,31 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
             assert(bytes_transferred == sizeof(spawn_ship_command));
             LOGIx("Spawn Ship type: %1%", static_cast<int>(cp->type));
             const spawn_ship_command* spawn = reinterpret_cast<spawn_ship_command*>(recv_buffer_.data());
+            int reply_id = spawn->reply_id;
+            int expect_land = spawn->expect_land;
             xy32 spawn_pos = { static_cast<int>(spawn->x), static_cast<int>(spawn->y) };
-            spawn_ship_command_reply reply;
-            memset(&reply, 0, sizeof(spawn_ship_command_reply));
-            reply._.type = 1;
-            reply.port1_id = -1;
-            reply.port2_id = -1;
-            reply.reply_id = spawn->reply_id;
-            // spawn ship anywhere
-            if (true/*(spawn->expect_land == 0 && sea_static_->is_water(spawn_pos))
-                || spawn->expect_land == 1 && sea_static_->is_land(spawn_pos)*/) {
-                int id = sea_->spawn(spawn->expected_db_id, spawn->x, spawn->y, 1, 1, spawn->expect_land);
-                udp_server_->gold_used(static_cast<int>(spawn->x), static_cast<int>(spawn->y), 1000);
+            int id = sea_->spawn(spawn->expected_db_id, spawn->x, spawn->y, 1, 1, spawn->expect_land);
+            udp_server_->gold_used(static_cast<int>(spawn->x), static_cast<int>(spawn->y), 1000);
+            int id1 = spawn->port1_id;
+            int id2 = spawn->port2_id;
+            boost::asio::spawn([this, reply_id, expect_land, id, id1, id2](boost::asio::yield_context yield) {
+                spawn_ship_command_reply reply;
+                memset(&reply, 0, sizeof(spawn_ship_command_reply));
+                reply._.type = 1;
+                reply.reply_id = reply_id;
                 reply.db_id = id;
-                int id1 = spawn->port1_id;
-                int id2 = spawn->port2_id;
                 reply.port1_id = id1;
                 reply.port2_id = id2;
-                if (id1 > 0 && id2 > 0 && udp_server_->set_route(id, id1, id2, spawn->expect_land)) {
-                    reply.routed = 1;
+                if (id1 > 0 && id2 > 0) {
+                    reply.routed = udp_server_->set_route(id, id1, id2, expect_land, io_service_, yield);
                 } else {
                     LOGEP("Route endpoints not specified! port1_id=%1%, port2_id=%2%", id1, id2);
                 }
-            } else {
-                LOGEP("Ship spawn at (%||, %||) criteria not fulfilled! expect_land=%||, is_water=%||, is_land=%||",
-                      spawn_pos.x,
-                      spawn_pos.y,
-                      spawn->expect_land,
-                      sea_static_->is_water(spawn_pos),
-                      sea_static_->is_land(spawn_pos));
-            }   
-            socket_.async_send_to(boost::asio::buffer(&reply, sizeof(spawn_ship_command_reply)), remote_endpoint_,
-                                  boost::bind(&udp_admin_server::handle_send, this,
-                                              boost::asio::placeholders::error,
-                                              boost::asio::placeholders::bytes_transferred));
+                socket_.async_send_to(boost::asio::buffer(&reply, sizeof(spawn_ship_command_reply)), remote_endpoint_,
+                                      boost::bind(&udp_admin_server::handle_send, this,
+                                                  boost::asio::placeholders::error,
+                                                  boost::asio::placeholders::bytes_transferred));
+            });
             break;
         }
         case 5: // Delete Ship

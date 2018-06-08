@@ -45,8 +45,8 @@ struct xy32i {
 };
 
 enum XYIBB_ENTER_EXIT {
-    XEE_ENTER,
-    XEE_EXIT,
+    XEE_ENTER = 0,
+    XEE_EXIT = 1,
 };
 
 enum XYIBB_NEIGHBOR_COVERAGE {

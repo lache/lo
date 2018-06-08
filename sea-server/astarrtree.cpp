@@ -11,6 +11,8 @@ struct PathfindContext {
     xy32xy32 from_box; // cell which contains from-point
     xy32xy32 to_box; // cell which contains to-point
     const rtree* rtree_ptr;
+    std::shared_ptr<coro_context> coro;
+    int early_exit_call_count;
     std::unordered_map<void*, std::pair<size_t, size_t> > neighbor_cache_map;
     std::vector<std::pair<xy32xy32xy32, float> > neighbor_cache;
 };
@@ -414,6 +416,8 @@ struct pixel_waypoint_search {
     xy32 from;
     xy32 to;
     ASPath cell_path;
+    std::shared_ptr<coro_context> coro;
+    int early_exit_call_count;
 };
 
 void RTreePixelPathNodeNeighbors(ASNeighborList neighbors, void *node, void *context);
@@ -429,12 +433,12 @@ void AddNeighborWithLog(ASNeighborList neighbors, xy32ibb* n, pixel_waypoint_sea
     } else {
         ASNeighborListAdd(neighbors, &neighbor, xyib_distance(*n, neighbor));
         LOGIx("Neighbor of (%5d,%5d)[%5d] : (%5d,%5d)[%5d]",
-              n->p.x,
-              n->p.y,
-              n->i,
-              x,
-              y,
-              i);
+             n->p.x,
+             n->p.y,
+             n->i,
+             x,
+             y,
+             i);
     }
 }
 
@@ -499,6 +503,7 @@ RECT_RELATION rect_relation(const xy32xy32* n1c, const xy32xy32* n2c) {
         return RR_LEFT;
     } else {
         LOGE("Unknown rect relation...");
+        abort();
         return RR_UNKNOWN;
     }
 }
@@ -578,6 +583,8 @@ void AddNeighborByRectRelation(xy32xy32* n1c,
                                XYIBB_ENTER_EXIT next_ee,
                                bool add_nearest_only,
                                AStarNodeNeighborsCallback cb) {
+    // insert pixel points "inside n2c" where points contact with one of n1c sides.
+    LOGIx("AddNeighborByRectRelation Begin (%||,%||)[%||] ee=%|| -> next_i=%||, next_ee=%||", n->p.x, n->p.y, n->i, n->ee, next_i, next_ee);
     switch (rect_neighbor_relation(n1c, n2c)) {
     case RR_DOWN_RIGHT:
         AddNeighborWithLog(neighbors, n, pws, n2c->xy0.x, n2c->xy0.y, next_i, next_ee, XNC_COVER_ALL, cb);
@@ -690,6 +697,7 @@ void AddNeighborByRectRelation(xy32xy32* n1c,
         abort();
         break;
     }
+    LOGIx("AddNeighborByRectRelation End (%||,%||)[%||] ee=%|| -> next_i=%||, next_ee=%||", n->p.x, n->p.y, n->i, n->ee, next_i, next_ee);
 }
 
 void RTreePixelPathNodeNeighbors(ASNeighborList neighbors, void *node, void *context) {
@@ -742,6 +750,7 @@ void RTreePixelPathNodeNeighborsSuboptimal(ASNeighborList neighbors, void *node,
     pixel_waypoint_search* pws = reinterpret_cast<pixel_waypoint_search*>(context);
     ASPath cell_path = pws->cell_path;
     size_t cell_path_count = ASPathGetCount(cell_path);
+    printf("Finding pixel neighbors on cell index %lld...\n", n->i);
     if (n->p.x == pws->to.x && n->p.y == pws->to.y) {
         // 'n' equals to 'to': reached endpoint (to-pixel)
         // no neighbors on endpoint
@@ -756,15 +765,15 @@ void RTreePixelPathNodeNeighborsSuboptimal(ASNeighborList neighbors, void *node,
     XYIBB_ENTER_EXIT next_ee = XEE_ENTER;
     size_t next_i = 0;
     if (n->ee == XEE_ENTER) {
-        // Get exit nodes at the same cell node
+        // Get exit nodes at the same cell node (cell n->i)
         n1c = reinterpret_cast<xy32xy32*>(ASPathGetNode(cell_path, n->i + 1)); // Next Cell node
-        n2c = reinterpret_cast<xy32xy32*>(ASPathGetNode(cell_path, n->i + 0)); // Cell node containing 'n'
+        n2c = reinterpret_cast<xy32xy32*>(ASPathGetNode(cell_path, n->i + 0)); // Cell node containing 'n' (neighbors are inside this cell)
         next_ee = XEE_EXIT;
         next_i = n->i; // the same cell node
     } else if (n->ee == XEE_EXIT) {
-        // Get enter nodes at the next cell node
+        // Get enter nodes at the next cell node (cell n->i + 1)
         n1c = reinterpret_cast<xy32xy32*>(ASPathGetNode(cell_path, n->i + 0)); // Cell node containing 'n'
-        n2c = reinterpret_cast<xy32xy32*>(ASPathGetNode(cell_path, n->i + 1)); // Next Cell node
+        n2c = reinterpret_cast<xy32xy32*>(ASPathGetNode(cell_path, n->i + 1)); // Next Cell node (neighbors are inside this cell)
         next_ee = XEE_ENTER;
         next_i = n->i + 1; // the next cell node
     } else {
@@ -779,7 +788,7 @@ void RTreePixelPathNodeNeighborsSuboptimal(ASNeighborList neighbors, void *node,
                               pws,
                               next_i,
                               next_ee,
-                              add_nearest_only,
+                              true,
                               RTreePixelPathNodeNeighborsSuboptimal);
 }
 
@@ -790,10 +799,15 @@ float RTreePixelPathNodeHeuristic(void *fromNode, void *toNode, void *context) {
 }
 
 int RTreePixelPathNodeComparator(void *node1, void *node2, void *context) {
+    pixel_waypoint_search* pws = reinterpret_cast<pixel_waypoint_search*>(context);
     xy32ibb* n1 = reinterpret_cast<xy32ibb*>(node1);
-    int64_t n1v = static_cast<int64_t>(n1->p.y) << 32 | n1->p.x;
     xy32ibb* n2 = reinterpret_cast<xy32ibb*>(node2);
-    int64_t n2v = static_cast<int64_t>(n2->p.y) << 32 | n2->p.x;
+    // no comparison on 'ee'-bit when it is goal node
+    if (n1->p.x == n2->p.x && n2->p.x == pws->to.x && n1->p.y == n2->p.y && n2->p.y == pws->to.y) {
+        return 0;
+    }
+    int64_t n1v = static_cast<int64_t>(n1->p.y) << (32+1) | n1->p.x << 1 | static_cast<int64_t>(n1->ee);
+    int64_t n2v = static_cast<int64_t>(n2->p.y) << (32+1) | n2->p.x << 1 | static_cast<int64_t>(n2->ee);
     int64_t d = n1v - n2v;
     if (d == 0) {
         return 0;
@@ -812,14 +826,81 @@ xy32xy32 xyxy_from_xy(xy32 v) {
     return xy32xy32{ { v.x, v.y },{ v.x + 1, v.y + 1 } };
 }
 
-std::vector<xy32> calculate_pixel_waypoints(xy32 from, xy32 to, ASPath cell_path) {
+static int RTreePathNodeEarlyExit(size_t visitedCount, void *visitingNode, void *goalNode, void *context) {
+    auto pathfind_context = reinterpret_cast<PathfindContext*>(context);
+    pathfind_context->early_exit_call_count++;
+    if (visitedCount >= 100000) {
+        LOGE("Too many visits! (%1% visits) Pathfinding aborted.", visitedCount);
+        return -1;
+    } else {
+        if (pathfind_context->coro && pathfind_context->early_exit_call_count % 1000 == 0) {
+            boost::asio::deadline_timer timer(pathfind_context->coro->io_service);
+            timer.expires_from_now(boost::posix_time::milliseconds(10));
+            timer.async_wait(pathfind_context->coro->yield);
+        }
+        const auto visiting = reinterpret_cast<const xy32xy32xy32*>(visitingNode);
+        const auto goal = reinterpret_cast<const xy32xy32xy32*>(goalNode);
+        //printf("%d\n", (int)visitedCount);
+        /*LOGI("%|| visits so far... visiting:%||,%||[%||,%||-%||,%||] / goal:%||,%||[%||,%||-%||,%||]",
+        visitedCount,
+        visiting->point.x,
+        visiting->point.y,
+        visiting->box.xy0.x,
+        visiting->box.xy0.y,
+        visiting->box.xy1.x,
+        visiting->box.xy1.y,
+        goal->point.x,
+        goal->point.y,
+        goal->box.xy0.x,
+        goal->box.xy0.y,
+        goal->box.xy1.x,
+        goal->box.xy1.y);*/
+    }
+    return 0;
+}
+
+static int RTreePixelPathNodeEarlyExit(size_t visitedCount, void *visitingNode, void *goalNode, void *context) {
+    pixel_waypoint_search* pws = reinterpret_cast<pixel_waypoint_search*>(context);
+
+    if (visitedCount >= 100000) {
+        LOGE("Too many pixel visits! (%1% visits) Pixel-level pathfinding aborted.", visitedCount);
+        return -1;
+    } else {
+        if (pws->coro && pws->early_exit_call_count % 1000 == 0) {
+            boost::asio::deadline_timer timer(pws->coro->io_service);
+            timer.expires_from_now(boost::posix_time::milliseconds(10));
+            timer.async_wait(pws->coro->yield);
+        }
+        const auto visiting = reinterpret_cast<const xy32xy32xy32*>(visitingNode);
+        const auto goal = reinterpret_cast<const xy32xy32xy32*>(goalNode);
+        //printf("pixel-level visit count = %lld\n", visitedCount);
+        //printf("%d\n", (int)visitedCount);
+        /*LOGI("%|| visits so far... visiting:%||,%||[%||,%||-%||,%||] / goal:%||,%||[%||,%||-%||,%||]",
+        visitedCount,
+        visiting->point.x,
+        visiting->point.y,
+        visiting->box.xy0.x,
+        visiting->box.xy0.y,
+        visiting->box.xy1.x,
+        visiting->box.xy1.y,
+        goal->point.x,
+        goal->point.y,
+        goal->box.xy0.x,
+        goal->box.xy0.y,
+        goal->box.xy1.x,
+        goal->box.xy1.y);*/
+    }
+    return 0;
+}
+
+std::vector<xy32> calculate_pixel_waypoints(xy32 from, xy32 to, ASPath cell_path, std::shared_ptr<coro_context> coro) {
     std::vector<xy32> waypoints;
     ASPathNodeSource PathNodeSource =
     {
         sizeof(xy32ibb),
-        RTreePixelPathNodeNeighborsSuboptimal,
+        RTreePixelPathNodeNeighbors,
         RTreePixelPathNodeHeuristic,
-        NULL,
+        RTreePixelPathNodeEarlyExit,
         RTreePixelPathNodeComparator
     };
     size_t cell_path_count = ASPathGetCount(cell_path);
@@ -829,7 +910,13 @@ std::vector<xy32> calculate_pixel_waypoints(xy32 from, xy32 to, ASPath cell_path
     }
     xy32ibb from_rect = { from, 0, XEE_ENTER, XNC_COVER_ALL };
     xy32ibb to_rect = { to, cell_path_count - 1, XEE_EXIT, XNC_NO_COVERAGE };
-    pixel_waypoint_search pws = { from, to, cell_path };
+    pixel_waypoint_search pws = {
+        from,
+        to,
+        cell_path,
+        coro,
+        0,
+    };
     ASPath pixel_path = ASPathCreate(&PathNodeSource, &pws, &from_rect, &to_rect);
     size_t pixel_path_count = ASPathGetCount(pixel_path);
     if (pixel_path_count > 0) {
@@ -854,23 +941,6 @@ std::vector<xy32> calculate_pixel_waypoints(xy32 from, xy32 to, ASPath cell_path
     ASPathDestroy(pixel_path);
     return waypoints;
 }
-
-//void astarrtree::astar_rtree(const char* water_rtree_filename,
-//                             size_t water_output_max_size,
-//                             const char* land_rtree_filename,
-//                             size_t land_output_max_size,
-//                             xy32 from,
-//                             xy32 to) {
-//    bi::managed_mapped_file water_file(bi::open_or_create, water_rtree_filename, water_output_max_size);
-//    allocator water_alloc(water_file.get_segment_manager());
-//    rtree* rtree_ptr = water_file.find_or_construct<rtree>("rtree")(params(), indexable(), equal_to(), water_alloc);
-//
-//    bi::managed_mapped_file land_file(bi::open_or_create, land_rtree_filename, land_output_max_size);
-//    allocator land_alloc(land_file.get_segment_manager());
-//    rtree* rtree_land_ptr = land_file.find_or_construct<rtree>("rtree")(params(), indexable(), equal_to(), land_alloc);
-//
-//    astar_rtree_memory(rtree_ptr, from, to);
-//}
 
 bool astarrtree::find_nearest_point_if_empty(const rtree* rtree_ptr, xy32& from, box& from_box, std::vector<value>& from_result_s) {
     if (from_result_s.size() == 0) {
@@ -934,33 +1004,7 @@ bool astarrtree::find_nearest_point_if_empty(const rtree* rtree_ptr, xy32& from,
     }
 }
 
-static int RTreePathNodeEarlyExit(size_t visitedCount, void *visitingNode, void *goalNode, void *context) {
-    if (visitedCount >= 100000) {
-        LOGE("Too many visits! (%1% visits) Pathfinding aborted.", visitedCount);
-        return -1;
-    } else {
-        const auto visiting = reinterpret_cast<const xy32xy32xy32*>(visitingNode);
-        const auto goal = reinterpret_cast<const xy32xy32xy32*>(goalNode);
-        //printf("%d\n", (int)visitedCount);
-        /*LOGI("%|| visits so far... visiting:%||,%||[%||,%||-%||,%||] / goal:%||,%||[%||,%||-%||,%||]",
-             visitedCount,
-             visiting->point.x,
-             visiting->point.y,
-             visiting->box.xy0.x,
-             visiting->box.xy0.y,
-             visiting->box.xy1.x,
-             visiting->box.xy1.y,
-             goal->point.x,
-             goal->point.y,
-             goal->box.xy0.x,
-             goal->box.xy0.y,
-             goal->box.xy1.x,
-             goal->box.xy1.y);*/
-    }
-    return 0;
-}
-
-std::vector<xy32> astarrtree::astar_rtree_memory(const rtree* rtree_ptr, const xy32& from, const xy32& to) {
+std::vector<xy32> astarrtree::astar_rtree_memory(const rtree* rtree_ptr, const xy32& from, const xy32& to, std::shared_ptr<coro_context> coro) {
     float distance = static_cast<float>(abs(from.x - to.x) + abs(from.y - to.y));
     LOGI("Pathfinding from (%1%,%2%) -> (%3%,%4%) [Manhattan distance = %5%]",
          from.x,
@@ -1013,6 +1057,8 @@ std::vector<xy32> astarrtree::astar_rtree_memory(const rtree* rtree_ptr, const x
             from_box,
             to_box,
             rtree_ptr,
+            coro,
+            0,
         };
         ASPath path = ASPathCreate(&PathNodeSource, &context, &from_rect, &to_rect);
         size_t pathCount = ASPathGetCount(path);
@@ -1025,18 +1071,18 @@ std::vector<xy32> astarrtree::astar_rtree_memory(const rtree* rtree_ptr, const x
                 for (size_t i = 0; i < pathCount; i++) {
                     xy32xy32* node = reinterpret_cast<xy32xy32*>(ASPathGetNode(path, i));
                     LOGIx("Cell Path %1%: (%2%, %3%)-(%4%, %5%) [%6% x %7% = %8%]",
-                          i,
-                          node->xy0.x,
-                          node->xy0.y,
-                          node->xy1.x,
-                          node->xy1.y,
-                          node->xy1.x - node->xy0.x,
-                          node->xy1.y - node->xy0.y,
-                          (node->xy1.x - node->xy0.x) * (node->xy1.y - node->xy0.y));
+                         i,
+                         node->xy0.x,
+                         node->xy0.y,
+                         node->xy1.x,
+                         node->xy1.y,
+                         node->xy1.x - node->xy0.x,
+                         node->xy1.y - node->xy0.y,
+                         (node->xy1.x - node->xy0.x) * (node->xy1.y - node->xy0.y));
                 }
             }
             // Phase 2 - per-pixel node searching
-            waypoints = calculate_pixel_waypoints(from, to, path);
+            waypoints = calculate_pixel_waypoints(from, to, path, coro);
         } else {
             LOGE("No path found.");
         }
