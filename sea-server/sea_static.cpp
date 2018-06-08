@@ -291,18 +291,31 @@ void sea_static::update_chunk_key_ts(int xc0, int yc0) {
     }
 }
 
-unsigned int sea_static::query_single_cell(int xc0, int yc0) const {
+unsigned int sea_static::query_single_cell(int xc0,
+                                           int yc0,
+                                           bool& land_box_valid,
+                                           sea_static_object::box& land_box,
+                                           bool& water_box_valid,
+                                           sea_static_object::box& water_box) const {
     unsigned int attr = 0;
     const auto xy32pos = xy32{ xc0, yc0 };
     const auto box = astarrtree::box_t_from_xy(xy32pos);
+    // land info
     const auto land_it = land_rtree_ptr->qbegin(bgi::contains(box));
-    attr |= land_it != land_rtree_ptr->qend() ? (1 << 0) : 0;
-
+    land_box_valid = land_it != land_rtree_ptr->qend();
+    attr |= land_box_valid ? (1 << 0) : 0;
+    if (land_box_valid) {
+        land_box = land_it->first;
+    }
+    // water info
     const auto water_it = water_rtree_ptr->qbegin(bgi::contains(box));
-    attr |= water_it != water_rtree_ptr->qend() ? (1 << 1) : 0;
-
+    water_box_valid = water_it != water_rtree_ptr->qend();
+    attr |= water_box_valid ? (1 << 1) : 0;
+    if (water_box_valid) {
+        water_box = water_it->first;
+    }
+    // seawater info
     attr |= is_sea_water(xy32pos) ? (1 << 2) : 0;
-
     return attr;
 }
 

@@ -764,7 +764,30 @@ void udp_server::send_single_cell(int xc0, int yc0) {
     reply->type = LPGP_LWPTTLSINGLECELL;
     reply->xc0 = xc0;
     reply->yc0 = yc0;
-    reply->attr = sea_static_->query_single_cell(xc0, yc0);
+    bool land_box_valid = false;
+    bool water_box_valid = false;
+    sea_static_object::box land_box;
+    sea_static_object::box water_box;
+    reply->attr = sea_static_->query_single_cell(xc0,
+                                                 yc0,
+                                                 land_box_valid,
+                                                 land_box,
+                                                 water_box_valid,
+                                                 water_box);
+    if (land_box_valid) {
+        reply->land_box_valid = 1;
+        reply->land_box[0] = land_box.min_corner().get<0>();
+        reply->land_box[1] = land_box.min_corner().get<1>();
+        reply->land_box[2] = land_box.max_corner().get<0>();
+        reply->land_box[3] = land_box.max_corner().get<1>();
+    }
+    if (water_box_valid) {
+        reply->water_box_valid = 1;
+        reply->water_box[0] = water_box.min_corner().get<0>();
+        reply->water_box[1] = water_box.min_corner().get<1>();
+        reply->water_box[2] = water_box.max_corner().get<0>();
+        reply->water_box[3] = water_box.max_corner().get<1>();
+    }
     // seaport details
     int seaport_id = -1;
     int seaport_cargo = 0;

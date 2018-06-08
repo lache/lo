@@ -488,6 +488,10 @@ typedef struct _LWPTTLSINGLECELL {
     int cargo_loaded;
     int cargo_unloaded;
     int population;
+    int land_box_valid;
+    int land_box[4];
+    int water_box_valid;
+    int water_box[4];
 } LWPTTLSINGLECELL;
 
 // UDP
