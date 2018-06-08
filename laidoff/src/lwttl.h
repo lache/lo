@@ -47,6 +47,7 @@ typedef enum _LW_TTL_FIELD_VIEWPORT_RENDER_FLAG {
     LTFVRF_SINGLE_CELL_INFO = 1 << 11,
     LTFVRF_WORLD_TEXT = 1 << 12,
     LTFVRF_REGION_NAME = 1 << 13,
+    LTFVRF_CELL_BOX_BOUNDARY = 1 << 14,
 
     LTFVRF_ALL = -1,
 } LW_TTL_FIELD_VIEWPORT_RENDER_FLAG;
@@ -341,6 +342,8 @@ void lwttl_set_window_size(LWTTL* ttl, int w, int h, float aspect_ratio);
 int lwttl_viewport_render_flags(const LWTTLFIELDVIEWPORT* vp);
 const LWTTLLNGLAT* lwttl_viewport_view_center(const LWTTLFIELDVIEWPORT* vp);
 void lwttl_degrees_to_dms(int* d, int* m, float* s, const float degrees);
+int lwttl_cell_box_count(const LWTTL* ttl);
+void lwttl_cell_box(const LWTTL* ttl, int index, int* xc0, int* yc0, int* xc1, int* yc1);
 #ifdef __cplusplus
 }
 #endif

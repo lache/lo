@@ -35,6 +35,12 @@ box astarrtree::box_t_from_xyxy(const xy32xy32& v) {
     return r;
 }
 
+double astarrtree::xy32_distance(const xy32& a, const xy32& b) {
+    const long long dx = b.x - a.x;
+    const long long dy = b.y - a.y;
+    return sqrt(static_cast<double>(dx*dx + dy * dy));
+}
+
 static int xy32_comparator(const xy32& p1, const xy32& p2) {
     const auto v1 = (static_cast<int64_t>(p1.y) << 32) | static_cast<int64_t>(p1.x);
     const auto v2 = (static_cast<int64_t>(p2.y) << 32) | static_cast<int64_t>(p2.x);
@@ -48,18 +54,41 @@ static int xy32_comparator(const xy32& p1, const xy32& p2) {
     }
 }
 
+void AddNeighborWithLog(ASNeighborList neighbors, const xy32xy32xy32* n, xy32xy32xy32* n2, float edge_cost) {
+    ASNeighborListAdd(neighbors, n2, edge_cost);
+    LOGIx("Cell (%||,%||)-(%||,%||)[%||x%||] Point (%||,%||) neighbor Cell (%||,%||)-(%||,%||)[%||x%||] Point (%||,%||) added. Edge cost = %||",
+         n->box.xy0.x,
+         n->box.xy0.y,
+         n->box.xy1.x,
+         n->box.xy1.y,
+         n->box.xy1.x - n->box.xy0.x,
+         n->box.xy1.y - n->box.xy0.y,
+         n->point.x,
+         n->point.y,
+         n2->box.xy0.x,
+         n2->box.xy0.y,
+         n2->box.xy1.x,
+         n2->box.xy1.y,
+         n2->box.xy1.x - n2->box.xy0.x,
+         n2->box.xy1.y - n2->box.xy0.y,
+         n2->point.x,
+         n2->point.y,
+         edge_cost);
+
+}
+
 void RTreePathNodeNeighbors(ASNeighborList neighbors, void *node, void *context) {
     auto pathfind_context = reinterpret_cast<PathfindContext*>(context);
-    auto cache_it = pathfind_context->neighbor_cache_map.find(node);
-    if (cache_it != pathfind_context->neighbor_cache_map.end()) {
-        // neighbor cache hit
-        for (size_t i = cache_it->second.first; i < cache_it->second.second; i++) {
-            auto& nc = pathfind_context->neighbor_cache[i];
-            ASNeighborListAdd(neighbors, &nc.first, nc.second);
-        }
-    } else {
+    auto n = reinterpret_cast<const xy32xy32xy32*>(node);
+    /*auto cache_it = pathfind_context->neighbor_cache_map.find(node);
+    //if (cache_it != pathfind_context->neighbor_cache_map.end()) {
+    //    // neighbor cache hit
+    //    for (size_t i = cache_it->second.first; i < cache_it->second.second; i++) {
+    //        auto& nc = pathfind_context->neighbor_cache[i];
+    //        AddNeighborWithLog(neighbors, n, &nc.first, nc.second);
+    //    }
+    //} else */{
         // neighbor cache no hit
-        auto n = reinterpret_cast<const xy32xy32xy32*>(node);
         const rtree* rtree_ptr = pathfind_context->rtree_ptr;
         box query_box = box_t_from_xyxy(n->box);
         std::vector<value> result_s;
@@ -83,12 +112,10 @@ void RTreePathNodeNeighbors(ASNeighborList neighbors, void *node, void *context)
             double edge_cost_cell_to_goal = 0;
             // if this neighbor('v') is goal node, we should add edge_cost_cell_to_goal factor
             if (xy32_comparator(xyxy.xy0, pathfind_context->to_box.xy0) == 0) {
-                const long long dx2 = pathfind_context->to_rect.xy0.x - enter_point.x;
-                const long long dy2 = pathfind_context->to_rect.xy0.y - enter_point.y;
-                edge_cost_cell_to_goal = sqrt(static_cast<double>(dx2 * dx2 + dy2 * dy2));
+                edge_cost_cell_to_goal = xy32_distance(pathfind_context->to_rect.xy0, enter_point);
             }
             const double edge_cost = edge_cost_cell_to_cell + edge_cost_cell_to_goal;
-            ASNeighborListAdd(neighbors, &n2, static_cast<float>(edge_cost));
+            AddNeighborWithLog(neighbors, n, &n2, static_cast<float>(edge_cost));
             pathfind_context->neighbor_cache.push_back(std::make_pair(n2, static_cast<float>(edge_cost)));
         }
         const size_t end_index = pathfind_context->neighbor_cache.size();
@@ -232,7 +259,7 @@ float RTreePathNodeHeuristic(void *fromNode, void *toNode, void *context) {
 
     const int d1 = from->box.xy1.x <= to->point.x ? (1 + to->point.x - from->box.xy1.x) : from->box.xy0.x > to->point.x ? (from->box.xy0.x - to->point.x) : 0;
     const int d2 = from->box.xy1.y <= to->point.y ? (1 + to->point.y - from->box.xy1.y) : from->box.xy0.y > to->point.y ? (from->box.xy0.y - to->point.y) : 0;
-    return sqrtf((float)d1 * d1 + d2 * d2);
+    return 0;// sqrtf((float)d1 * d1 + d2 * d2);
 
 
     // [1] Cell Midpoint Distance Method
@@ -396,6 +423,7 @@ int RTreePathNodeComparator(void *node1, void *node2, void *context) {
     if (box_xy0_compare_result != 0) {
         return box_xy0_compare_result;
     } else {
+        // n1->box === n2->box case:
         // if node1 and node2 have the same 'box.xy0' -- which means that they are the same cell
         // check 'point' if they are not 'goal' node ('to' rect)
         if (xy32_comparator(n1->box.xy0, pathfind_context->to_box.xy0) != 0) {
@@ -423,7 +451,7 @@ struct pixel_waypoint_search {
 void RTreePixelPathNodeNeighbors(ASNeighborList neighbors, void *node, void *context);
 typedef void(*AStarNodeNeighborsCallback)(ASNeighborList neighbors, void *node, void *context);
 
-void AddNeighborWithLog(ASNeighborList neighbors, xy32ibb* n, pixel_waypoint_search* pws, int x, int y, size_t i, XYIBB_ENTER_EXIT ee, int nc, AStarNodeNeighborsCallback cb) {
+void AddPixelNeighborWithLog(ASNeighborList neighbors, xy32ibb* n, pixel_waypoint_search* pws, int x, int y, size_t i, XYIBB_ENTER_EXIT ee, int nc, AStarNodeNeighborsCallback cb) {
     xy32ibb neighbor = { { x, y }, i, ee, nc };
     if (n->p.x == x && n->p.y == y && n->ee == XEE_ENTER && ee == XEE_EXIT && n->i == i) {
         // if 'n' and 'neighbor' have the same coordinates...
@@ -433,12 +461,12 @@ void AddNeighborWithLog(ASNeighborList neighbors, xy32ibb* n, pixel_waypoint_sea
     } else {
         ASNeighborListAdd(neighbors, &neighbor, xyib_distance(*n, neighbor));
         LOGIx("Neighbor of (%5d,%5d)[%5d] : (%5d,%5d)[%5d]",
-             n->p.x,
-             n->p.y,
-             n->i,
-             x,
-             y,
-             i);
+              n->p.x,
+              n->p.y,
+              n->i,
+              x,
+              y,
+              i);
     }
 }
 
@@ -587,16 +615,16 @@ void AddNeighborByRectRelation(xy32xy32* n1c,
     LOGIx("AddNeighborByRectRelation Begin (%||,%||)[%||] ee=%|| -> next_i=%||, next_ee=%||", n->p.x, n->p.y, n->i, n->ee, next_i, next_ee);
     switch (rect_neighbor_relation(n1c, n2c)) {
     case RR_DOWN_RIGHT:
-        AddNeighborWithLog(neighbors, n, pws, n2c->xy0.x, n2c->xy0.y, next_i, next_ee, XNC_COVER_ALL, cb);
+        AddPixelNeighborWithLog(neighbors, n, pws, n2c->xy0.x, n2c->xy0.y, next_i, next_ee, XNC_COVER_ALL, cb);
         break;
     case RR_UP_RIGHT:
-        AddNeighborWithLog(neighbors, n, pws, n2c->xy0.x, n2c->xy1.y - 1, next_i, next_ee, XNC_COVER_ALL, cb);
+        AddPixelNeighborWithLog(neighbors, n, pws, n2c->xy0.x, n2c->xy1.y - 1, next_i, next_ee, XNC_COVER_ALL, cb);
         break;
     case RR_UP_LEFT:
-        AddNeighborWithLog(neighbors, n, pws, n2c->xy1.x - 1, n2c->xy1.y - 1, next_i, next_ee, XNC_COVER_ALL, cb);
+        AddPixelNeighborWithLog(neighbors, n, pws, n2c->xy1.x - 1, n2c->xy1.y - 1, next_i, next_ee, XNC_COVER_ALL, cb);
         break;
     case RR_DOWN_LEFT:
-        AddNeighborWithLog(neighbors, n, pws, n2c->xy1.x - 1, n2c->xy0.y, next_i, next_ee, XNC_COVER_ALL, cb);
+        AddPixelNeighborWithLog(neighbors, n, pws, n2c->xy1.x - 1, n2c->xy0.y, next_i, next_ee, XNC_COVER_ALL, cb);
         break;
     case RR_DOWN:
     {
@@ -607,16 +635,16 @@ void AddNeighborByRectRelation(xy32xy32* n1c,
             for (int x = xbeg; x < xend; x++) {
                 const int next_nc = XNC_COVER_NEAREST | ((x == xbeg) ? XNC_COVER_TO_FIRST : 0) | ((x == xend - 1) ? XNC_COVER_TO_LAST : 0);
                 if (n->nc & XNC_COVER_TO_FIRST && x < x_nearest) {
-                    AddNeighborWithLog(neighbors, n, pws, x, n2c->xy0.y, next_i, next_ee, next_nc, cb);
+                    AddPixelNeighborWithLog(neighbors, n, pws, x, n2c->xy0.y, next_i, next_ee, next_nc, cb);
                 } else if (n->nc & XNC_COVER_NEAREST && x == x_nearest) {
-                    AddNeighborWithLog(neighbors, n, pws, x, n2c->xy0.y, next_i, next_ee, next_nc, cb);
+                    AddPixelNeighborWithLog(neighbors, n, pws, x, n2c->xy0.y, next_i, next_ee, next_nc, cb);
                 } else if (n->nc & XNC_COVER_TO_LAST && x > x_nearest) {
-                    AddNeighborWithLog(neighbors, n, pws, x, n2c->xy0.y, next_i, next_ee, next_nc, cb);
+                    AddPixelNeighborWithLog(neighbors, n, pws, x, n2c->xy0.y, next_i, next_ee, next_nc, cb);
                 }
             }
         } else {
             for (int x = xbeg; x < xend; x++) {
-                AddNeighborWithLog(neighbors, n, pws, x, n2c->xy0.y, next_i, next_ee, XNC_COVER_ALL, cb);
+                AddPixelNeighborWithLog(neighbors, n, pws, x, n2c->xy0.y, next_i, next_ee, XNC_COVER_ALL, cb);
             }
         }
         break;
@@ -630,16 +658,16 @@ void AddNeighborByRectRelation(xy32xy32* n1c,
             for (int x = xbeg; x < xend; x++) {
                 const int next_nc = XNC_COVER_NEAREST | ((x == xbeg) ? XNC_COVER_TO_FIRST : 0) | ((x == xend - 1) ? XNC_COVER_TO_LAST : 0);
                 if (n->nc & XNC_COVER_TO_FIRST && x < x_nearest) {
-                    AddNeighborWithLog(neighbors, n, pws, x, n2c->xy1.y - 1, next_i, next_ee, next_nc, cb);
+                    AddPixelNeighborWithLog(neighbors, n, pws, x, n2c->xy1.y - 1, next_i, next_ee, next_nc, cb);
                 } else if (n->nc & XNC_COVER_NEAREST && x == x_nearest) {
-                    AddNeighborWithLog(neighbors, n, pws, x, n2c->xy1.y - 1, next_i, next_ee, next_nc, cb);
+                    AddPixelNeighborWithLog(neighbors, n, pws, x, n2c->xy1.y - 1, next_i, next_ee, next_nc, cb);
                 } else if (n->nc & XNC_COVER_TO_LAST && x > x_nearest) {
-                    AddNeighborWithLog(neighbors, n, pws, x, n2c->xy1.y - 1, next_i, next_ee, next_nc, cb);
+                    AddPixelNeighborWithLog(neighbors, n, pws, x, n2c->xy1.y - 1, next_i, next_ee, next_nc, cb);
                 }
             }
         } else {
             for (int x = xbeg; x < xend; x++) {
-                AddNeighborWithLog(neighbors, n, pws, x, n2c->xy1.y - 1, next_i, next_ee, XNC_COVER_ALL, cb);
+                AddPixelNeighborWithLog(neighbors, n, pws, x, n2c->xy1.y - 1, next_i, next_ee, XNC_COVER_ALL, cb);
             }
         }
         break;
@@ -653,16 +681,16 @@ void AddNeighborByRectRelation(xy32xy32* n1c,
             for (int y = ybeg; y < yend; y++) {
                 const int next_nc = XNC_COVER_NEAREST | ((y == ybeg) ? XNC_COVER_TO_FIRST : 0) | ((y == yend - 1) ? XNC_COVER_TO_LAST : 0);
                 if (n->nc & XNC_COVER_TO_FIRST && y < y_nearest) {
-                    AddNeighborWithLog(neighbors, n, pws, n2c->xy0.x, y, next_i, next_ee, next_nc, cb);
+                    AddPixelNeighborWithLog(neighbors, n, pws, n2c->xy0.x, y, next_i, next_ee, next_nc, cb);
                 } else if (n->nc & XNC_COVER_NEAREST && y == y_nearest) {
-                    AddNeighborWithLog(neighbors, n, pws, n2c->xy0.x, y, next_i, next_ee, next_nc, cb);
+                    AddPixelNeighborWithLog(neighbors, n, pws, n2c->xy0.x, y, next_i, next_ee, next_nc, cb);
                 } else if (n->nc & XNC_COVER_TO_LAST && y > y_nearest) {
-                    AddNeighborWithLog(neighbors, n, pws, n2c->xy0.x, y, next_i, next_ee, next_nc, cb);
+                    AddPixelNeighborWithLog(neighbors, n, pws, n2c->xy0.x, y, next_i, next_ee, next_nc, cb);
                 }
             }
         } else {
             for (int y = ybeg; y < yend; y++) {
-                AddNeighborWithLog(neighbors, n, pws, n2c->xy0.x, y, next_i, next_ee, XNC_COVER_ALL, cb);
+                AddPixelNeighborWithLog(neighbors, n, pws, n2c->xy0.x, y, next_i, next_ee, XNC_COVER_ALL, cb);
             }
         }
         break;
@@ -677,16 +705,16 @@ void AddNeighborByRectRelation(xy32xy32* n1c,
             for (int y = ybeg; y < yend; y++) {
                 const int next_nc = XNC_COVER_NEAREST | ((y == ybeg) ? XNC_COVER_TO_FIRST : 0) | ((y == yend - 1) ? XNC_COVER_TO_LAST : 0);
                 if (n->nc & XNC_COVER_TO_FIRST && y < y_nearest) {
-                    AddNeighborWithLog(neighbors, n, pws, n2c->xy1.x - 1, y, next_i, next_ee, next_nc, cb);
+                    AddPixelNeighborWithLog(neighbors, n, pws, n2c->xy1.x - 1, y, next_i, next_ee, next_nc, cb);
                 } else if (n->nc & XNC_COVER_NEAREST && y == y_nearest) {
-                    AddNeighborWithLog(neighbors, n, pws, n2c->xy1.x - 1, y, next_i, next_ee, next_nc, cb);
+                    AddPixelNeighborWithLog(neighbors, n, pws, n2c->xy1.x - 1, y, next_i, next_ee, next_nc, cb);
                 } else if (n->nc & XNC_COVER_TO_LAST && y > y_nearest) {
-                    AddNeighborWithLog(neighbors, n, pws, n2c->xy1.x - 1, y, next_i, next_ee, next_nc, cb);
+                    AddPixelNeighborWithLog(neighbors, n, pws, n2c->xy1.x - 1, y, next_i, next_ee, next_nc, cb);
                 }
             }
         } else {
             for (int y = ybeg; y < yend; y++) {
-                AddNeighborWithLog(neighbors, n, pws, n2c->xy1.x - 1, y, next_i, next_ee, XNC_COVER_ALL, cb);
+                AddPixelNeighborWithLog(neighbors, n, pws, n2c->xy1.x - 1, y, next_i, next_ee, XNC_COVER_ALL, cb);
             }
         }
         break;
@@ -711,7 +739,7 @@ void RTreePixelPathNodeNeighbors(ASNeighborList neighbors, void *node, void *con
         return;
     } else if (n->i == cell_path_count - 1 && n->ee == XEE_ENTER) {
         // all last cells' pixels (except endpoint pixel) always have the only neighbor: endpoint pixel
-        AddNeighborWithLog(neighbors, n, pws, pws->to.x, pws->to.y, cell_path_count - 1, XEE_EXIT, XNC_NO_COVERAGE, RTreePixelPathNodeNeighbors);
+        AddPixelNeighborWithLog(neighbors, n, pws, pws->to.x, pws->to.y, cell_path_count - 1, XEE_EXIT, XNC_NO_COVERAGE, RTreePixelPathNodeNeighbors);
         return;
     }
     xy32xy32* n1c;
@@ -757,7 +785,7 @@ void RTreePixelPathNodeNeighborsSuboptimal(ASNeighborList neighbors, void *node,
         return;
     } else if (n->i == cell_path_count - 1 && n->ee == XEE_ENTER) {
         // all last cells' pixels (except endpoint pixel) always have the only neighbor: endpoint pixel
-        AddNeighborWithLog(neighbors, n, pws, pws->to.x, pws->to.y, cell_path_count - 1, XEE_EXIT, XNC_NO_COVERAGE, RTreePixelPathNodeNeighborsSuboptimal);
+        AddPixelNeighborWithLog(neighbors, n, pws, pws->to.x, pws->to.y, cell_path_count - 1, XEE_EXIT, XNC_NO_COVERAGE, RTreePixelPathNodeNeighborsSuboptimal);
         return;
     }
     xy32xy32* n1c;
@@ -806,8 +834,8 @@ int RTreePixelPathNodeComparator(void *node1, void *node2, void *context) {
     if (n1->p.x == n2->p.x && n2->p.x == pws->to.x && n1->p.y == n2->p.y && n2->p.y == pws->to.y) {
         return 0;
     }
-    int64_t n1v = static_cast<int64_t>(n1->p.y) << (32+1) | n1->p.x << 1 | static_cast<int64_t>(n1->ee);
-    int64_t n2v = static_cast<int64_t>(n2->p.y) << (32+1) | n2->p.x << 1 | static_cast<int64_t>(n2->ee);
+    int64_t n1v = static_cast<int64_t>(n1->p.y) << (32 + 1) | n1->p.x << 1 | static_cast<int64_t>(n1->ee);
+    int64_t n2v = static_cast<int64_t>(n2->p.y) << (32 + 1) | n2->p.x << 1 | static_cast<int64_t>(n2->ee);
     int64_t d = n1v - n2v;
     if (d == 0) {
         return 0;
@@ -1005,8 +1033,8 @@ bool astarrtree::find_nearest_point_if_empty(const rtree* rtree_ptr, xy32& from,
 }
 
 std::vector<xy32> astarrtree::astar_rtree_memory(const rtree* rtree_ptr, const xy32& from, const xy32& to, std::shared_ptr<coro_context> coro) {
-    float distance = static_cast<float>(abs(from.x - to.x) + abs(from.y - to.y));
-    LOGI("Pathfinding from (%1%,%2%) -> (%3%,%4%) [Manhattan distance = %5%]",
+    const double distance = xy32_distance(from, to);
+    LOGI("Pathfinding from (%1%,%2%) -> (%3%,%4%) [distance = %5%]",
          from.x,
          from.y,
          to.x,
@@ -1070,7 +1098,7 @@ std::vector<xy32> astarrtree::astar_rtree_memory(const rtree* rtree_ptr, const x
             {
                 for (size_t i = 0; i < pathCount; i++) {
                     xy32xy32* node = reinterpret_cast<xy32xy32*>(ASPathGetNode(path, i));
-                    LOGIx("Cell Path %1%: (%2%, %3%)-(%4%, %5%) [%6% x %7% = %8%]",
+                    LOGI("Cell Path %1%: (%2%, %3%)-(%4%, %5%) [%6% x %7% = %8%]",
                          i,
                          node->xy0.x,
                          node->xy0.y,

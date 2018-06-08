@@ -27,4 +27,5 @@ namespace astarrtree {
     bool find_nearest_point_if_empty(const rtree* rtree_ptr, xy32& from, box& from_box, std::vector<value>& from_result_s);
     xy32xy32 xyxy_from_box_t(const box& v);
     box box_t_from_xyxy(const xy32xy32& v);
+    double xy32_distance(const xy32& a, const xy32& b);
 }

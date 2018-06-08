@@ -62,7 +62,9 @@ sea_static::sea_static()
     mark_sea_water(water_rtree_ptr);
 
     //astarrtree::astar_rtree_memory(water_rtree_ptr, { 148858,26779 }, { 149726,27639 }, std::shared_ptr<astarrtree::coro_context>());
-    astarrtree::astar_rtree_memory(land_rtree_ptr, { 0, 0}, { 3, 3 }, std::shared_ptr<astarrtree::coro_context>());
+    //astarrtree::astar_rtree_memory(land_rtree_ptr, { 0, 0}, { 3, 3 }, std::shared_ptr<astarrtree::coro_context>());
+
+    //astarrtree::astar_rtree_memory(water_rtree_ptr, { 148138, 26988 }, { 147850, 26546 }, std::shared_ptr<astarrtree::coro_context>());
 }
 
 int sea_static::lng_to_xc(float lng) const {

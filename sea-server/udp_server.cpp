@@ -86,7 +86,7 @@ void udp_server::salvage_update() {
         const auto& aoi_box = e.second.first;
         auto salvage_existing = false;
         auto salvage_id = salvage_->spawn_random("Random", aoi_box, salvage_existing);
-        LOGI("Salvage spawned: ID=%1% (existing=%2%)", salvage_id, salvage_existing);
+        LOGIx("Salvage spawned: ID=%1% (existing=%2%)", salvage_id, salvage_existing);
     }
 }
 

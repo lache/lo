@@ -38,7 +38,7 @@ int main(int argc, char* argv[]) {
         boost::asio::spawn([&io_service](boost::asio::yield_context yield) {
             boost::asio::deadline_timer timer(io_service);
             while (true) {
-                std::cout << "Hello?";
+                //std::cout << "Hello?";
                 timer.expires_from_now(boost::posix_time::seconds(5));
                 timer.async_wait(yield);
             }

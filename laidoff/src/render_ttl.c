@@ -40,6 +40,10 @@
 #define CELL_DRAGGING_LINE_COLOR_G (0.9f)
 #define CELL_DRAGGING_LINE_COLOR_B (0.7f)
 
+#define CELL_BOX_BOUNDARY_COLOR_R (0.1f)
+#define CELL_BOX_BOUNDARY_COLOR_G (0.2f)
+#define CELL_BOX_BOUNDARY_COLOR_B (0.1f)
+
 #define UI_SCREEN_EDGE_MARGIN (0.01f)
 
 typedef struct _LWTTLFIELDVIEWPORT LWTTLFIELDVIEWPORT;
@@ -1057,23 +1061,24 @@ static void render_sea_objects(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* 
     }
 }
 
-static void render_waypoint_line_segment(const LWTTL* ttl,
-                                         const LWCONTEXT* pLwc,
-                                         const LWTTLFIELDVIEWPORT* vp,
-                                         const int x0,
-                                         const int y0,
-                                         const int x1,
-                                         const int y1,
-                                         const float over_r,
-                                         const float over_g,
-                                         const float over_b) {
+static void render_waypoint_line_segment_offset(const LWTTL* ttl,
+                                                const LWCONTEXT* pLwc,
+                                                const LWTTLFIELDVIEWPORT* vp,
+                                                const int x0,
+                                                const int y0,
+                                                const int x1,
+                                                const int y1,
+                                                const float over_r,
+                                                const float over_g,
+                                                const float over_b,
+                                                const float offset) {
     if (x0 == x1 && y0 == y1) {
         return;
     }
-    const float lng0_not_clamped = cell_fx_to_lng(x0 + 0.5f);
-    const float lat0_not_clamped = cell_fy_to_lat(y0 + 0.5f);
-    const float lng1_not_clamped = cell_fx_to_lng(x1 + 0.5f);
-    const float lat1_not_clamped = cell_fy_to_lat(y1 + 0.5f);
+    const float lng0_not_clamped = cell_fx_to_lng(x0 + offset);
+    const float lat0_not_clamped = cell_fy_to_lat(y0 + offset);
+    const float lng1_not_clamped = cell_fx_to_lng(x1 + offset);
+    const float lat1_not_clamped = cell_fy_to_lat(y1 + offset);
 
     const float cell_x0 = lng_to_render_coords(lng0_not_clamped, vp);
     const float cell_y0 = lat_to_render_coords(lat0_not_clamped, vp);
@@ -1105,6 +1110,19 @@ static void render_waypoint_line_segment(const LWTTL* ttl,
                                                rot_z,
                                                lwttl_viewport_view(vp),
                                                lwttl_viewport_proj(vp));
+}
+
+static void render_waypoint_line_segment(const LWTTL* ttl,
+                                         const LWCONTEXT* pLwc,
+                                         const LWTTLFIELDVIEWPORT* vp,
+                                         const int x0,
+                                         const int y0,
+                                         const int x1,
+                                         const int y1,
+                                         const float over_r,
+                                         const float over_g,
+                                         const float over_b) {
+    render_waypoint_line_segment_offset(ttl, pLwc, vp, x0, y0, x1, y1, over_r, over_g, over_b, 0.5f);
 }
 
 static void render_waypoints(const LWTTL* ttl, const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp) {
@@ -1366,6 +1384,19 @@ static void render_salvages(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp)
                                     icon_height);
             }
         }
+    }
+}
+
+static void render_cell_box_boundary(const LWCONTEXT* pLwc,
+                                     const LWTTLFIELDVIEWPORT* vp) {
+    const int cell_box_count = lwttl_cell_box_count(pLwc->ttl);
+    for (int i = 0; i < cell_box_count; i++) {
+        int xc0, yc0, xc1, yc1;
+        lwttl_cell_box(pLwc->ttl, i, &xc0, &yc0, &xc1, &yc1);
+        render_waypoint_line_segment_offset(pLwc->ttl, pLwc, vp, xc0, yc0, xc1, yc0, CELL_BOX_BOUNDARY_COLOR_R, CELL_BOX_BOUNDARY_COLOR_G, CELL_BOX_BOUNDARY_COLOR_B, 0);
+        render_waypoint_line_segment_offset(pLwc->ttl, pLwc, vp, xc1, yc0, xc1, yc1, CELL_BOX_BOUNDARY_COLOR_R, CELL_BOX_BOUNDARY_COLOR_G, CELL_BOX_BOUNDARY_COLOR_B, 0);
+        render_waypoint_line_segment_offset(pLwc->ttl, pLwc, vp, xc1, yc1, xc0, yc1, CELL_BOX_BOUNDARY_COLOR_R, CELL_BOX_BOUNDARY_COLOR_G, CELL_BOX_BOUNDARY_COLOR_B, 0);
+        render_waypoint_line_segment_offset(pLwc->ttl, pLwc, vp, xc0, yc1, xc0, yc0, CELL_BOX_BOUNDARY_COLOR_R, CELL_BOX_BOUNDARY_COLOR_G, CELL_BOX_BOUNDARY_COLOR_B, 0);
     }
 }
 
@@ -1700,6 +1731,9 @@ static void lwc_render_ttl_field_viewport(const LWCONTEXT* pLwc, const LWTTLFIEL
         if (view_scale < 4096) {
             render_sea_static_objects(pLwc, vp);
         }
+    }
+    if (render_flags & LTFVRF_CELL_BOX_BOUNDARY) {
+        render_cell_box_boundary(pLwc, vp);
     }
     if (render_flags & LTFVRF_WAYPOINT_LINE_SEGMENT) {
         if (view_scale < 16) {

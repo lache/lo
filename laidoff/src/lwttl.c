@@ -20,6 +20,7 @@
 #include "logic.h"
 #include "pcg_basic.h"
 #include "lwmath.h"
+#include <assert.h>
 
 #define LOCAL_SAVE_FILE_MAGIC (0x19850506)
 #define LOCAL_SAVE_FILE_LATEST_VERSION (2)
@@ -170,6 +171,10 @@ typedef struct _LWTTLWORLDTEXT {
     LW_TTL_WORLD_TEXT_ANIM_TYPE anim_type;
 } LWTTLWORLDTEXT;
 
+typedef struct _LWTTLCELLBOX {
+    int xc0, yc0, xc1, yc1;
+} LWTTLCELLBOX;
+
 typedef struct _LWTTL {
     int version;
     int track_object_id;
@@ -193,6 +198,8 @@ typedef struct _LWTTL {
     int ports;
     int ships;
     LWTTLFIELDVIEWPORT viewports[4];
+    int cell_box_count;
+    LWTTLCELLBOX cell_box[512];
 } LWTTL;
 
 static const LWTTLSELECTED* lwttl_main_viewport_selected(const LWTTL* ttl) {
@@ -2335,6 +2342,20 @@ void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc) {
                       p->port_id,
                       p->port_name);
                 memcpy(&ttl->ttl_single_cell, p, sizeof(LWPTTLSINGLECELL));
+                assert((p->land_box_valid && p->water_box_valid) == 0);
+                if (p->land_box_valid) {
+                    ttl->cell_box[ttl->cell_box_count].xc0 = p->land_box[0];
+                    ttl->cell_box[ttl->cell_box_count].yc0 = p->land_box[1];
+                    ttl->cell_box[ttl->cell_box_count].xc1 = p->land_box[2];
+                    ttl->cell_box[ttl->cell_box_count].yc1 = p->land_box[3];
+                    ttl->cell_box_count++;
+                } else if (p->water_box_valid) {
+                    ttl->cell_box[ttl->cell_box_count].xc0 = p->water_box[0];
+                    ttl->cell_box[ttl->cell_box_count].yc0 = p->water_box[1];
+                    ttl->cell_box[ttl->cell_box_count].xc1 = p->water_box[2];
+                    ttl->cell_box[ttl->cell_box_count].yc1 = p->water_box[3];
+                    ttl->cell_box_count++;
+                }
                 break;
             }
             case LPGP_LWPTTLGOLDEARNED:
@@ -2935,4 +2956,15 @@ void lwttl_degrees_to_dms(int* d, int* m, float* s, const float degrees) {
     const float minutes = (degrees - *d) * 60;
     *m = (int)minutes;
     *s = (minutes - *m) * 60;
+}
+
+int lwttl_cell_box_count(const LWTTL* ttl) {
+    return ttl->cell_box_count;
+}
+
+void lwttl_cell_box(const LWTTL* ttl, int index, int* xc0, int* yc0, int* xc1, int* yc1) {
+    *xc0 = ttl->cell_box[index].xc0;
+    *yc0 = ttl->cell_box[index].yc0;
+    *xc1 = ttl->cell_box[index].xc1;
+    *yc1 = ttl->cell_box[index].yc1;
 }
