@@ -3,6 +3,9 @@
 #include "sea_static_object.hpp"
 
 typedef struct _xy32 xy32;
+namespace astarrtree {
+    struct coro_context;
+}
 namespace ss {
     class sea_static {
     public:
@@ -11,8 +14,8 @@ namespace ss {
         std::vector<sea_static_object> query_near_to_packet(int xc, int yc, float ex_lng, float ex_lat) const;
         std::vector<sea_static_object> query_near_to_packet(int xc0, int yc0, int xc1, int yc1) const;
         std::vector<sea_static_object> query_near_to_packet_water(int xc0, int yc0, int xc1, int yc1) const;
-        std::vector<xy32> calculate_waypoints(const xy32& from, const xy32& to, int expect_land, boost::asio::io_service& io_service, boost::asio::yield_context yield) const;
-        std::vector<xy32> calculate_waypoints(const sea_static_object::point& from, const sea_static_object::point& to, int expect_land, boost::asio::io_service& io_service, boost::asio::yield_context yield) const;
+        std::vector<xy32> calculate_waypoints(const xy32& from, const xy32& to, int expect_land, std::shared_ptr<astarrtree::coro_context> coro) const;
+        std::vector<xy32> calculate_waypoints(const sea_static_object::point& from, const sea_static_object::point& to, int expect_land, std::shared_ptr<astarrtree::coro_context> coro) const;
         bool is_water(const xy32& cell) const;
         bool is_sea_water(const xy32& cell) const;
         bool is_land(const xy32& cell) const;

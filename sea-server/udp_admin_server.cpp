@@ -159,7 +159,7 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
             udp_server_->gold_used(static_cast<int>(spawn->x), static_cast<int>(spawn->y), 1000);
             int id1 = spawn->port1_id;
             int id2 = spawn->port2_id;
-            boost::asio::spawn([this, reply_id, expect_land, id, id1, id2](boost::asio::yield_context yield) {
+            //boost::asio::spawn([this, reply_id, expect_land, id, id1, id2](boost::asio::yield_context yield) {
                 spawn_ship_command_reply reply;
                 memset(&reply, 0, sizeof(spawn_ship_command_reply));
                 reply._.type = 1;
@@ -168,7 +168,7 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
                 reply.port1_id = id1;
                 reply.port2_id = id2;
                 if (id1 > 0 && id2 > 0) {
-                    reply.routed = udp_server_->set_route(id, id1, id2, expect_land, io_service_, yield);
+                    reply.routed = udp_server_->set_route(id, id1, id2, expect_land, std::shared_ptr<astarrtree::coro_context>());
                 } else {
                     LOGEP("Route endpoints not specified! port1_id=%1%, port2_id=%2%", id1, id2);
                 }
@@ -176,7 +176,7 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
                                       boost::bind(&udp_admin_server::handle_send, this,
                                                   boost::asio::placeholders::error,
                                                   boost::asio::placeholders::bytes_transferred));
-            });
+            //});
             break;
         }
         case 5: // Delete Ship
