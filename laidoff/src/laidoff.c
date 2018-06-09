@@ -1578,6 +1578,7 @@ void lw_set_window_size(LWCONTEXT* pLwc, int w, int h) {
     pLwc->window_height = h;
     if (pLwc->window_width > 0 && pLwc->window_height > 0) {
         pLwc->window_aspect_ratio = (float)pLwc->window_width / pLwc->window_height;
+        lwcontext_rt_corner(pLwc->window_aspect_ratio, &pLwc->window_rt_x, &pLwc->window_rt_y);
 
         get_left_dir_pad_original_center(pLwc->window_aspect_ratio,
                                          &pLwc->left_dir_pad.origin_x,
@@ -1592,8 +1593,6 @@ void lw_set_window_size(LWCONTEXT* pLwc, int w, int h) {
         // Reset dir pad input state
         reset_dir_pad_position(&pLwc->left_dir_pad);
         reset_dir_pad_position(&pLwc->right_dir_pad);
-
-        puck_game_reset_view_proj(pLwc, pLwc->puck_game);
 
         lwttl_set_window_size(pLwc->ttl,
                               pLwc->window_width,
@@ -1624,10 +1623,9 @@ void lw_set_window_size(LWCONTEXT* pLwc, int w, int h) {
             pLwc->window_height = 1;
         }
         pLwc->window_aspect_ratio = (float)pLwc->window_width / pLwc->window_height;
+        lwcontext_rt_corner(pLwc->window_aspect_ratio, &pLwc->window_rt_x, &pLwc->window_rt_y);
     }
     LOGIP("New window size (%d, %d) [aspect ratio %f]", pLwc->window_width, pLwc->window_height, pLwc->window_aspect_ratio);
-
-    lwcontext_rt_corner(pLwc->window_aspect_ratio, &pLwc->window_rt_x, &pLwc->window_rt_y);
 }
 
 void lw_set_viewport_size(LWCONTEXT* pLwc, int w, int h) {
@@ -1635,6 +1633,7 @@ void lw_set_viewport_size(LWCONTEXT* pLwc, int w, int h) {
     pLwc->viewport_height = h;
     if (pLwc->viewport_width > 0 && pLwc->viewport_height > 0) {
         pLwc->viewport_aspect_ratio = (float)pLwc->viewport_width / pLwc->viewport_height;
+        lwcontext_rt_corner(pLwc->viewport_aspect_ratio, &pLwc->viewport_rt_x, &pLwc->viewport_rt_y);
 
         // Update default UI projection matrix (pLwc->proj)
         logic_update_default_ui_proj(pLwc->viewport_width, pLwc->viewport_height, pLwc->proj);
@@ -1653,9 +1652,8 @@ void lw_set_viewport_size(LWCONTEXT* pLwc, int w, int h) {
             pLwc->viewport_height = 1;
         }
         pLwc->viewport_aspect_ratio = (float)pLwc->viewport_width / pLwc->viewport_height;
+        lwcontext_rt_corner(pLwc->viewport_aspect_ratio, &pLwc->viewport_rt_x, &pLwc->viewport_rt_y);
     }
-
-    lwcontext_rt_corner(pLwc->viewport_aspect_ratio, &pLwc->viewport_rt_x, &pLwc->viewport_rt_y);
 }
 
 void lw_set_window(LWCONTEXT* pLwc, struct GLFWwindow *window) {

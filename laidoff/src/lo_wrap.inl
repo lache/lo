@@ -48568,25 +48568,28 @@ fail:
 
 static int _wrap_mult_world_roll(lua_State* L) {
   int SWIG_arg = 0;
-  vec4 *arg1 ;
-  int arg2 ;
+  float arg1 ;
+  vec4 *arg2 ;
   int arg3 ;
-  float arg4 ;
+  int arg4 ;
+  float arg5 ;
   
-  SWIG_check_num_args("mult_world_roll",4,4)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("mult_world_roll",1,"mat4x4");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("mult_world_roll",2,"int");
+  SWIG_check_num_args("mult_world_roll",5,5)
+  if(!lua_isnumber(L,1)) SWIG_fail_arg("mult_world_roll",1,"float");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("mult_world_roll",2,"mat4x4");
   if(!lua_isnumber(L,3)) SWIG_fail_arg("mult_world_roll",3,"int");
-  if(!lua_isnumber(L,4)) SWIG_fail_arg("mult_world_roll",4,"float");
+  if(!lua_isnumber(L,4)) SWIG_fail_arg("mult_world_roll",4,"int");
+  if(!lua_isnumber(L,5)) SWIG_fail_arg("mult_world_roll",5,"float");
+  arg1 = (float)lua_tonumber(L, 1);
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_a_4__float,0))){
-    SWIG_fail_ptr("mult_world_roll",1,SWIGTYPE_p_a_4__float);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_a_4__float,0))){
+    SWIG_fail_ptr("mult_world_roll",2,SWIGTYPE_p_a_4__float);
   }
   
-  arg2 = (int)lua_tonumber(L, 2);
   arg3 = (int)lua_tonumber(L, 3);
-  arg4 = (float)lua_tonumber(L, 4);
-  mult_world_roll((float (*)[4])arg1,arg2,arg3,arg4);
+  arg4 = (int)lua_tonumber(L, 4);
+  arg5 = (float)lua_tonumber(L, 5);
+  mult_world_roll(arg1,(float (*)[4])arg2,arg3,arg4,arg5);
   
   return SWIG_arg;
   
@@ -86840,6 +86843,222 @@ fail:
 }
 
 
+static int _wrap_LWPTTLSINGLECELL_land_box_valid_set(lua_State* L) {
+  int SWIG_arg = 0;
+  struct _LWPTTLSINGLECELL *arg1 = (struct _LWPTTLSINGLECELL *) 0 ;
+  int arg2 ;
+  
+  SWIG_check_num_args("_LWPTTLSINGLECELL::land_box_valid",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWPTTLSINGLECELL::land_box_valid",1,"struct _LWPTTLSINGLECELL *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWPTTLSINGLECELL::land_box_valid",2,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWPTTLSINGLECELL,0))){
+    SWIG_fail_ptr("LWPTTLSINGLECELL_land_box_valid_set",1,SWIGTYPE_p__LWPTTLSINGLECELL);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  if (arg1) (arg1)->land_box_valid = arg2;
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_LWPTTLSINGLECELL_land_box_valid_get(lua_State* L) {
+  int SWIG_arg = 0;
+  struct _LWPTTLSINGLECELL *arg1 = (struct _LWPTTLSINGLECELL *) 0 ;
+  int result;
+  
+  SWIG_check_num_args("_LWPTTLSINGLECELL::land_box_valid",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWPTTLSINGLECELL::land_box_valid",1,"struct _LWPTTLSINGLECELL *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWPTTLSINGLECELL,0))){
+    SWIG_fail_ptr("LWPTTLSINGLECELL_land_box_valid_get",1,SWIGTYPE_p__LWPTTLSINGLECELL);
+  }
+  
+  result = (int) ((arg1)->land_box_valid);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_LWPTTLSINGLECELL_land_box_set(lua_State* L) {
+  int SWIG_arg = 0;
+  struct _LWPTTLSINGLECELL *arg1 = (struct _LWPTTLSINGLECELL *) 0 ;
+  int *arg2 ;
+  
+  SWIG_check_num_args("_LWPTTLSINGLECELL::land_box",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWPTTLSINGLECELL::land_box",1,"struct _LWPTTLSINGLECELL *");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("_LWPTTLSINGLECELL::land_box",2,"int [4]");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWPTTLSINGLECELL,0))){
+    SWIG_fail_ptr("LWPTTLSINGLECELL_land_box_set",1,SWIGTYPE_p__LWPTTLSINGLECELL);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_int,0))){
+    SWIG_fail_ptr("LWPTTLSINGLECELL_land_box_set",2,SWIGTYPE_p_int);
+  }
+  
+  {
+    size_t ii;
+    int *b = (int *) arg1->land_box;
+    for (ii = 0; ii < (size_t)4; ii++) b[ii] = *((int *) arg2 + ii);
+  }
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_LWPTTLSINGLECELL_land_box_get(lua_State* L) {
+  int SWIG_arg = 0;
+  struct _LWPTTLSINGLECELL *arg1 = (struct _LWPTTLSINGLECELL *) 0 ;
+  int *result = 0 ;
+  
+  SWIG_check_num_args("_LWPTTLSINGLECELL::land_box",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWPTTLSINGLECELL::land_box",1,"struct _LWPTTLSINGLECELL *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWPTTLSINGLECELL,0))){
+    SWIG_fail_ptr("LWPTTLSINGLECELL_land_box_get",1,SWIGTYPE_p__LWPTTLSINGLECELL);
+  }
+  
+  result = (int *)(int *) ((arg1)->land_box);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_int,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_LWPTTLSINGLECELL_water_box_valid_set(lua_State* L) {
+  int SWIG_arg = 0;
+  struct _LWPTTLSINGLECELL *arg1 = (struct _LWPTTLSINGLECELL *) 0 ;
+  int arg2 ;
+  
+  SWIG_check_num_args("_LWPTTLSINGLECELL::water_box_valid",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWPTTLSINGLECELL::water_box_valid",1,"struct _LWPTTLSINGLECELL *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWPTTLSINGLECELL::water_box_valid",2,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWPTTLSINGLECELL,0))){
+    SWIG_fail_ptr("LWPTTLSINGLECELL_water_box_valid_set",1,SWIGTYPE_p__LWPTTLSINGLECELL);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  if (arg1) (arg1)->water_box_valid = arg2;
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_LWPTTLSINGLECELL_water_box_valid_get(lua_State* L) {
+  int SWIG_arg = 0;
+  struct _LWPTTLSINGLECELL *arg1 = (struct _LWPTTLSINGLECELL *) 0 ;
+  int result;
+  
+  SWIG_check_num_args("_LWPTTLSINGLECELL::water_box_valid",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWPTTLSINGLECELL::water_box_valid",1,"struct _LWPTTLSINGLECELL *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWPTTLSINGLECELL,0))){
+    SWIG_fail_ptr("LWPTTLSINGLECELL_water_box_valid_get",1,SWIGTYPE_p__LWPTTLSINGLECELL);
+  }
+  
+  result = (int) ((arg1)->water_box_valid);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_LWPTTLSINGLECELL_water_box_set(lua_State* L) {
+  int SWIG_arg = 0;
+  struct _LWPTTLSINGLECELL *arg1 = (struct _LWPTTLSINGLECELL *) 0 ;
+  int *arg2 ;
+  
+  SWIG_check_num_args("_LWPTTLSINGLECELL::water_box",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWPTTLSINGLECELL::water_box",1,"struct _LWPTTLSINGLECELL *");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("_LWPTTLSINGLECELL::water_box",2,"int [4]");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWPTTLSINGLECELL,0))){
+    SWIG_fail_ptr("LWPTTLSINGLECELL_water_box_set",1,SWIGTYPE_p__LWPTTLSINGLECELL);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_int,0))){
+    SWIG_fail_ptr("LWPTTLSINGLECELL_water_box_set",2,SWIGTYPE_p_int);
+  }
+  
+  {
+    size_t ii;
+    int *b = (int *) arg1->water_box;
+    for (ii = 0; ii < (size_t)4; ii++) b[ii] = *((int *) arg2 + ii);
+  }
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_LWPTTLSINGLECELL_water_box_get(lua_State* L) {
+  int SWIG_arg = 0;
+  struct _LWPTTLSINGLECELL *arg1 = (struct _LWPTTLSINGLECELL *) 0 ;
+  int *result = 0 ;
+  
+  SWIG_check_num_args("_LWPTTLSINGLECELL::water_box",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWPTTLSINGLECELL::water_box",1,"struct _LWPTTLSINGLECELL *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWPTTLSINGLECELL,0))){
+    SWIG_fail_ptr("LWPTTLSINGLECELL_water_box_get",1,SWIGTYPE_p__LWPTTLSINGLECELL);
+  }
+  
+  result = (int *)(int *) ((arg1)->water_box);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_int,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_new_LWPTTLSINGLECELL(lua_State* L) {
   int SWIG_arg = 0;
   struct _LWPTTLSINGLECELL *result = 0 ;
@@ -86885,6 +87104,10 @@ static swig_lua_attribute swig_LWPTTLSINGLECELL_attributes[] = {
     { "cargo_loaded", _wrap_LWPTTLSINGLECELL_cargo_loaded_get, _wrap_LWPTTLSINGLECELL_cargo_loaded_set },
     { "cargo_unloaded", _wrap_LWPTTLSINGLECELL_cargo_unloaded_get, _wrap_LWPTTLSINGLECELL_cargo_unloaded_set },
     { "population", _wrap_LWPTTLSINGLECELL_population_get, _wrap_LWPTTLSINGLECELL_population_set },
+    { "land_box_valid", _wrap_LWPTTLSINGLECELL_land_box_valid_get, _wrap_LWPTTLSINGLECELL_land_box_valid_set },
+    { "land_box", _wrap_LWPTTLSINGLECELL_land_box_get, _wrap_LWPTTLSINGLECELL_land_box_set },
+    { "water_box_valid", _wrap_LWPTTLSINGLECELL_water_box_valid_get, _wrap_LWPTTLSINGLECELL_water_box_valid_set },
+    { "water_box", _wrap_LWPTTLSINGLECELL_water_box_get, _wrap_LWPTTLSINGLECELL_water_box_set },
     {0,0,0}
 };
 static swig_lua_method swig_LWPTTLSINGLECELL_methods[]= {
@@ -106770,6 +106993,84 @@ fail:
 }
 
 
+static int _wrap_lwttl_cell_box_count(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTL *arg1 = (LWTTL *) 0 ;
+  int result;
+  
+  SWIG_check_num_args("lwttl_cell_box_count",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_cell_box_count",1,"LWTTL const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTL,0))){
+    SWIG_fail_ptr("lwttl_cell_box_count",1,SWIGTYPE_p__LWTTL);
+  }
+  
+  result = (int)lwttl_cell_box_count((struct _LWTTL const *)arg1);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_cell_box(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTL *arg1 = (LWTTL *) 0 ;
+  int arg2 ;
+  int *arg3 = (int *) 0 ;
+  int *arg4 = (int *) 0 ;
+  int *arg5 = (int *) 0 ;
+  int *arg6 = (int *) 0 ;
+  
+  SWIG_check_num_args("lwttl_cell_box",6,6)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_cell_box",1,"LWTTL const *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("lwttl_cell_box",2,"int");
+  if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("lwttl_cell_box",3,"int *");
+  if(!SWIG_isptrtype(L,4)) SWIG_fail_arg("lwttl_cell_box",4,"int *");
+  if(!SWIG_isptrtype(L,5)) SWIG_fail_arg("lwttl_cell_box",5,"int *");
+  if(!SWIG_isptrtype(L,6)) SWIG_fail_arg("lwttl_cell_box",6,"int *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTL,0))){
+    SWIG_fail_ptr("lwttl_cell_box",1,SWIGTYPE_p__LWTTL);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_int,0))){
+    SWIG_fail_ptr("lwttl_cell_box",3,SWIGTYPE_p_int);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,4,(void**)&arg4,SWIGTYPE_p_int,0))){
+    SWIG_fail_ptr("lwttl_cell_box",4,SWIGTYPE_p_int);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,5,(void**)&arg5,SWIGTYPE_p_int,0))){
+    SWIG_fail_ptr("lwttl_cell_box",5,SWIGTYPE_p_int);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,6,(void**)&arg6,SWIGTYPE_p_int,0))){
+    SWIG_fail_ptr("lwttl_cell_box",6,SWIGTYPE_p_int);
+  }
+  
+  lwttl_cell_box((struct _LWTTL const *)arg1,arg2,arg3,arg4,arg5,arg6);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_LWTTLCHUNKKEY_v_set(lua_State* L) {
   int SWIG_arg = 0;
   union _LWTTLCHUNKKEY *arg1 = (union _LWTTLCHUNKKEY *) 0 ;
@@ -108345,6 +108646,7 @@ static swig_lua_const_info swig_SwigModule_constants[]= {
     {SWIG_LUA_CONSTTAB_INT("LTFVRF_SINGLE_CELL_INFO", LTFVRF_SINGLE_CELL_INFO)},
     {SWIG_LUA_CONSTTAB_INT("LTFVRF_WORLD_TEXT", LTFVRF_WORLD_TEXT)},
     {SWIG_LUA_CONSTTAB_INT("LTFVRF_REGION_NAME", LTFVRF_REGION_NAME)},
+    {SWIG_LUA_CONSTTAB_INT("LTFVRF_CELL_BOX_BOUNDARY", LTFVRF_CELL_BOX_BOUNDARY)},
     {SWIG_LUA_CONSTTAB_INT("LTFVRF_ALL", LTFVRF_ALL)},
     {SWIG_LUA_CONSTTAB_INT("LNGLAT_RES_WIDTH", (172824))},
     {SWIG_LUA_CONSTTAB_INT("LNGLAT_RES_HEIGHT", (86412))},
@@ -109161,6 +109463,8 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "lwttl_viewport_render_flags", _wrap_lwttl_viewport_render_flags},
     { "lwttl_viewport_view_center", _wrap_lwttl_viewport_view_center},
     { "lwttl_degrees_to_dms", _wrap_lwttl_degrees_to_dms},
+    { "lwttl_cell_box_count", _wrap_lwttl_cell_box_count},
+    { "lwttl_cell_box", _wrap_lwttl_cell_box},
     { "msb_index", _wrap_msb_index},
     { "make_chunk_key", _wrap_make_chunk_key},
     { "aligned_chunk_index", _wrap_aligned_chunk_index},

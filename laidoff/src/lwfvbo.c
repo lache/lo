@@ -92,7 +92,7 @@ void render_fvbo(const LWCONTEXT* pLwc, const LWPUCKGAME* puck_game, const mat4x
         mat4x4_scale_aniso(model, model, sx, sy, sz);
         mat4x4_mul(model, model_translate, model);
         mat4x4_rotate_Z_2(model, model, z_rot_angle);
-        mult_world_roll(model, puck_game->world_roll_axis, puck_game->world_roll_dir, puck_game->world_roll);
+        mult_world_roll(pLwc->viewport_aspect_ratio, model, puck_game->world_roll_axis, puck_game->world_roll_dir, puck_game->world_roll);
         mat4x4 proj_view_model;
         mat4x4_mul(proj_view_model, proj_view, model);
         glUniformMatrix4fv(shader->mvp_location, 1, GL_FALSE, (const GLfloat*)proj_view_model);

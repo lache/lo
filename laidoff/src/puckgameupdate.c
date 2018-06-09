@@ -40,11 +40,13 @@ void puck_game_update_world_roll(LWPUCKGAME* puck_game) {
     puck_game->main_menu_ui_alpha = LWMAX(0.0f, 1.0f - fabsf((float)LWDEG2RAD(180) - puck_game->world_roll));
     LWCONTEXT* pLwc = (LWCONTEXT*)puck_game->pLwc;
     if (pLwc->game_scene == LGS_PUCK_GAME) {
-        vec2 world_right_top_end_ui_point;
-        calculate_world_right_top_end_ui_point(pLwc, puck_game, world_right_top_end_ui_point);
-        const float width_ratio_of_world = fabsf(world_right_top_end_ui_point[0]) / pLwc->viewport_aspect_ratio;
-        pLwc->viewport_x = (int)(puck_game->main_menu_ui_alpha * pLwc->viewport_width * width_ratio_of_world / 2);
-        pLwc->viewport_y = 0;
+        if (pLwc->viewport_aspect_ratio > 1) {
+            pLwc->viewport_x = (int)(puck_game->main_menu_ui_alpha * pLwc->viewport_width / 4.0f);
+            pLwc->viewport_y = 0;
+        } else {
+            pLwc->viewport_x = 0;
+            pLwc->viewport_y = -(int)(puck_game->main_menu_ui_alpha * pLwc->viewport_height / 4.0f);
+        }
     } else {
         pLwc->viewport_x = 0;
         pLwc->viewport_y = 0;
@@ -423,10 +425,10 @@ void puck_game_reset_view_proj(LWCONTEXT* pLwc, LWPUCKGAME* puck_game) {
     // Setup puck game view, proj matrices
     if (pLwc->viewport_aspect_ratio > 1) {
         // landscape
-        mat4x4_perspective(pLwc->puck_game_proj, (float)(LWDEG2RAD(49.1343) / pLwc->viewport_rt_y), pLwc->viewport_aspect_ratio, 1.0f, 500.0f);
+        mat4x4_perspective(pLwc->puck_game_proj, (float)(LWDEG2RAD(49.1343) / pLwc->viewport_aspect_ratio), pLwc->viewport_aspect_ratio, 1.0f, 500.0f);
     } else {
         // portrait
-        mat4x4_perspective(pLwc->puck_game_proj, (float)(1.7 * LWDEG2RAD(49.1343) / pLwc->viewport_rt_y), pLwc->viewport_aspect_ratio, 1.0f, 500.0f);
+        mat4x4_perspective(pLwc->puck_game_proj, (float)(2.0 * LWDEG2RAD(49.1343) / (1.0 / pLwc->viewport_aspect_ratio)), pLwc->viewport_aspect_ratio, 1.0f, 500.0f);
     }
     vec3 eye = { 0.0f, 0.0f, 10.0f /*12.0f*/ };
     vec3 center = { 0, 0, 0 };

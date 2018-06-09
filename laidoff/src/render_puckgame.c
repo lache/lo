@@ -38,16 +38,26 @@ typedef struct _LWTOWERRENDERDATA {
     float b;
 } LWTOWERRENDERDATA;
 
-void mult_world_roll(mat4x4 model, int axis, int dir, float angle) {
+void mult_world_roll(float aspect_ratio, mat4x4 model, int axis, int dir, float angle) {
     // world roll
     mat4x4 world_roll_rot;
     mat4x4_identity(world_roll_rot);
-    if (axis == 0) {
-        mat4x4_rotate_X(world_roll_rot, world_roll_rot, dir ? -angle : angle);
-    } else if (axis == 1) {
-        mat4x4_rotate_Y(world_roll_rot, world_roll_rot, dir ? -angle : angle);
+    if (aspect_ratio > 1) {
+        if (axis == 0) {
+            mat4x4_rotate_X(world_roll_rot, world_roll_rot, dir ? -angle : angle);
+        } else if (axis == 1) {
+            mat4x4_rotate_Y(world_roll_rot, world_roll_rot, dir ? -angle : angle);
+        } else {
+            mat4x4_rotate_Z(world_roll_rot, world_roll_rot, dir ? -angle : angle);
+        }
     } else {
-        mat4x4_rotate_Z(world_roll_rot, world_roll_rot, dir ? -angle : angle);
+        if (axis == 0) {
+            mat4x4_rotate_Y(world_roll_rot, world_roll_rot, dir ? angle : -angle);
+        } else if (axis == 1) {
+            mat4x4_rotate_X(world_roll_rot, world_roll_rot, dir ? angle : -angle);
+        } else {
+            mat4x4_rotate_Z(world_roll_rot, world_roll_rot, dir ? angle : -angle);
+        }
     }
     mat4x4_mul(model, world_roll_rot, model);
 }
@@ -103,7 +113,7 @@ static void render_tower_normal_2(const LWCONTEXT* pLwc, const mat4x4 view, cons
 
         mat4x4_mul(model, model_translate, model);
 
-        mult_world_roll(model, puck_game->world_roll_axis, puck_game->world_roll_dir, puck_game->world_roll);
+        mult_world_roll(pLwc->viewport_aspect_ratio, model, puck_game->world_roll_axis, puck_game->world_roll_dir, puck_game->world_roll);
 
         mat4x4 view_model;
         mat4x4_mul(view_model, view, model);
@@ -256,7 +266,7 @@ static void render_go(const LWCONTEXT* pLwc,
     mat4x4_mul(model, remote ? remote_rot : go->rot, model);
     mat4x4_mul(model, model_translate, model);
 
-    mult_world_roll(model, puck_game->world_roll_axis, puck_game->world_roll_dir, puck_game->world_roll);
+    mult_world_roll(pLwc->viewport_aspect_ratio, model, puck_game->world_roll_axis, puck_game->world_roll_dir, puck_game->world_roll);
 
     mat4x4 view_model;
     mat4x4_mul(view_model, view, model);
@@ -322,7 +332,7 @@ static void render_radial_wave(const LWCONTEXT* pLwc,
     mat4x4_scale_aniso(model, model, scale, scale, scale);
     mat4x4_translate(model_translate, x, y, z);
     mat4x4_mul(model, model_translate, model);
-    mult_world_roll(model, puck_game->world_roll_axis, puck_game->world_roll_dir, puck_game->world_roll);
+    mult_world_roll(pLwc->viewport_aspect_ratio, model, puck_game->world_roll_axis, puck_game->world_roll_dir, puck_game->world_roll);
     mat4x4_mul(view_model, view, model);
     mat4x4_identity(proj_view_model);
     mat4x4_mul(proj_view_model, proj, view_model);
@@ -636,7 +646,7 @@ static void render_wall(const LWCONTEXT* pLwc,
     mat4x4_translate(model_translate, x, y, z);
     mat4x4_mul(model, model_translate, model);
 
-    mult_world_roll(model, puck_game->world_roll_axis, puck_game->world_roll_dir, puck_game->world_roll);
+    mult_world_roll(pLwc->viewport_aspect_ratio, model, puck_game->world_roll_axis, puck_game->world_roll_dir, puck_game->world_roll);
 
     mat4x4 view_model;
     mat4x4_mul(view_model, view, model);
@@ -712,7 +722,7 @@ static void render_puck_game_menu(const LWCONTEXT *pLwc, const mat4x4 proj, cons
     mat4x4_translate(model_translate, x, y, z);
     mat4x4_mul(model, model_translate, model);
 
-    mult_world_roll(model, puck_game->world_roll_axis, puck_game->world_roll_dir, puck_game->world_roll);
+    mult_world_roll(pLwc->viewport_aspect_ratio, model, puck_game->world_roll_axis, puck_game->world_roll_dir, puck_game->world_roll);
 
     mat4x4 view_model;
     mat4x4_mul(view_model, view, model);
@@ -769,7 +779,7 @@ static void render_custom_stage(const LWCONTEXT* pLwc,
     mat4x4 model_translate;
     mat4x4_translate(model_translate, 0, 0, 0);
     mat4x4_mul(model, model_translate, model);
-    mult_world_roll(model, puck_game->world_roll_axis, puck_game->world_roll_dir, puck_game->world_roll);
+    mult_world_roll(pLwc->viewport_aspect_ratio, model, puck_game->world_roll_axis, puck_game->world_roll_dir, puck_game->world_roll);
     mat4x4 view_model;
     mat4x4_mul(view_model, view, model);
     mat4x4 proj_view_model;
@@ -844,7 +854,7 @@ static void render_floor(const LWCONTEXT *pLwc,
     mat4x4_translate(model_translate, x, y, z);
     mat4x4_mul(model, model_translate, model);
 
-    mult_world_roll(model, puck_game->world_roll_axis, puck_game->world_roll_dir, puck_game->world_roll);
+    mult_world_roll(pLwc->viewport_aspect_ratio, model, puck_game->world_roll_axis, puck_game->world_roll_dir, puck_game->world_roll);
 
     mat4x4 view_model;
     mat4x4_mul(view_model, view, model);
@@ -1685,7 +1695,7 @@ static void render_dash_ring_gauge_player_pos(const LWCONTEXT* pLwc, const LWPUC
     vec4 player_controlled_pos_vec4_world_roll;
     mat4x4 world_roll_mat;
     mat4x4_identity(world_roll_mat);
-    mult_world_roll(world_roll_mat, puck_game->world_roll_axis, puck_game->world_roll_dir, puck_game->world_roll);
+    mult_world_roll(pLwc->viewport_aspect_ratio, world_roll_mat, puck_game->world_roll_axis, puck_game->world_roll_dir, puck_game->world_roll);
     mat4x4_mul_vec4(player_controlled_pos_vec4_world_roll, world_roll_mat, player_controlled_pos_vec4);
     render_dash_ring_gauge(pLwc, player_controlled_pos_vec4_world_roll, ui_alpha);
 }
