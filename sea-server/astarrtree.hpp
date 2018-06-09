@@ -18,8 +18,8 @@ namespace astarrtree {
     typedef bgi::rtree<value, params, indexable, equal_to, allocator> rtree;
 
     struct coro_context {
-        boost::asio::io_service& io_service;
-        boost::asio::yield_context yield;
+        //boost::asio::io_service& io_service;
+        //boost::asio::yield_context yield;
     };
 
     std::vector<xy32> astar_rtree_memory(const rtree* rtree_ptr, const xy32& from, const xy32& to, std::shared_ptr<coro_context> coro);
