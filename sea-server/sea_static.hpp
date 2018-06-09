@@ -23,12 +23,12 @@ namespace ss {
         int lat_to_yc(float lat) const;
         long long query_ts(const int xc0, const int yc0, const int view_scale) const;
         long long query_ts(const LWTTLCHUNKKEY& chunk_key) const;
-        unsigned int sea_static::query_single_cell(int xc0,
-                                                   int yc0,
-                                                   bool& land_box_valid,
-                                                   sea_static_object::box& land_box,
-                                                   bool& water_box_valid,
-                                                   sea_static_object::box& water_box) const;
+        unsigned int query_single_cell(int xc0,
+                                       int yc0,
+                                       bool& land_box_valid,
+                                       sea_static_object::box& land_box,
+                                       bool& water_box_valid,
+                                       sea_static_object::box& water_box) const;
         void update_single_chunk_key_ts(const LWTTLCHUNKKEY& chunk_key, long long monotonic_uptime);
         void transform_single_cell_water_to_land(int xc0, int yc0);
         void transform_single_cell_land_to_water(int xc0, int yc0);
