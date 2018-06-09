@@ -1736,12 +1736,16 @@ static void lwc_render_ttl_field_viewport(const LWCONTEXT* pLwc, const LWTTLFIEL
         render_cell_box_boundary(pLwc, vp);
     }
     if (render_flags & LTFVRF_WAYPOINT_LINE_SEGMENT) {
+#if LW_PLATFORM_WIN32
         if (view_scale < 16) {
+#endif
             render_waypoints(pLwc->ttl, pLwc, vp);
             render_waypoints_cache(pLwc->ttl, pLwc, vp);
+#if LW_PLATFORM_WIN32
         } else {
             render_waypoints_cache_all(pLwc->ttl, pLwc, vp);
         }
+#endif
     }
     glEnable(GL_DEPTH_TEST);
     // render sea objects(ships)
