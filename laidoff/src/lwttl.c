@@ -325,7 +325,11 @@ LWTTL* lwttl_new(float aspect_ratio) {
     vp.cam_look_at[1] = 0;
     vp.cam_look_at[2] = 0;
     vp.cell_grid = 1;
-    vp.render_flags = LTFVRF_ALL & ~LTFVRF_COORDINATES;
+    vp.render_flags = LTFVRF_ALL;
+    vp.render_flags &= ~LTFVRF_COORDINATES;
+#if !LW_PLATFORM_WIN32
+    vp.render_flags &= ~LTFVRF_CELL_BOX_BOUNDARY;
+#endif
     lwttl_add_field_viewport(ttl, &vp);
     lwttl_update_view_proj(&ttl->viewports[0],
                            &ttl->viewports[0], // main viewport ref
