@@ -16,19 +16,22 @@ cd ..
 
 # br-server (all-in-one server binary)
 TMP_GOPATH="/tmp/gopath"
-rm -rf "$(TMP_GOPATH)"
-GITHUB_PATH="$(git remote -v | grep "$(cat ../.author)" | head -n1 | cut -d"@" -f2 | cut -d"." -f1-2 | tr ":" "/")"
+rm -rf "${TMP_GOPATH}"
+GITHUB_PATH="$(git remote -v | grep "$(cat ../.author)" | head -n1 | cut -d"@" -f2 | cut -d"." -f1-2 | cut -d" " -f1 | tr ":" "/")"
 TMP_PROJECT_PATH="${TMP_GOPATH}/src/${GITHUB_PATH}"
 TMP_USER_ROOT="$(dirname "${TMP_PROJECT_PATH}")"
 
 BUILD_PATH="$(pwd)"
 PROJECT_PATH="$(dirname "${BUILD_PATH}")"
+SYMLINK_SOURCE_PATH="$(dirname "${PROJECT_PATH}")" # go up one level more
 if [ ! -d "${TMP_PROJECT_PATH}" ]; then
+  echo "Creating '${TMP_USER_ROOT}'..."
   mkdir -p "${TMP_USER_ROOT}"
-  ln -s "${PROJECT_PATH}" "${TMP_PROJECT_PATH}"
+  echo "Symbolic linking '${SYMLINK_SOURCE_PATH}' to '${TMP_PROJECT_PATH}'..."
+  ln -s "${SYMLINK_SOURCE_PATH}" "${TMP_PROJECT_PATH}"
 fi
 
-cd "${TMP_PROJECT_PATH}"
+cd "${TMP_PROJECT_PATH}/laidoff"
 GOPATH="${TMP_GOPATH}" go get ./br-server
 if [ "$?" -ne 0 ]; then
   echo "Your go is broken!"
