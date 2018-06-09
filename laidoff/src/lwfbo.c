@@ -1,6 +1,8 @@
 #include "lwgl.h"
 #include "lwfbo.h"
 #include "lwlog.h"
+#include "logic.h"
+#include "lwcontext.h"
 
 // https://stackoverflow.com/questions/466204/rounding-up-to-next-power-of-2
 static unsigned long upper_power_of_two(unsigned long v) {
@@ -75,7 +77,7 @@ void lwfbo_delete(LWFBO* fbo) {
     }
 }
 
-int lwfbo_prerender(const LWFBO* fbo) {
+int lwfbo_prerender(const LWCONTEXT* pLwc, const LWFBO* fbo) {
     if (fbo->fbo) {
         glBindFramebuffer(GL_FRAMEBUFFER, fbo->fbo);
         glDisable(GL_DEPTH_TEST);
@@ -84,6 +86,8 @@ int lwfbo_prerender(const LWFBO* fbo) {
         glClearColor(0, 0, 0, 0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+        // overwrite ui projection matrix
+        logic_update_default_ui_proj_for_htmlui(fbo->width, fbo->height, ((LWCONTEXT*)pLwc)->proj);
         return 0;
     } else {
         // might awoke from sleep mode?
@@ -92,7 +96,9 @@ int lwfbo_prerender(const LWFBO* fbo) {
     }
 }
 
-void lwfbo_postrender(const LWFBO* fbo) {
+void lwfbo_postrender(const LWCONTEXT* pLwc, const LWFBO* fbo) {
+    // revert ui projection matrix
+    logic_update_default_ui_proj(pLwc->window_width, pLwc->window_height, ((LWCONTEXT*)pLwc)->proj);
     glEnable(GL_DEPTH_TEST);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

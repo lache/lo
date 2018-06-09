@@ -94,9 +94,9 @@ public:
         container.clear_remtex_name_hash_set();
         doc = litehtml::document::createFromString(last_html_str.c_str(), &container, &browser_context);
         render_page();
-        if (lwfbo_prerender(&pLwc->shared_fbo) == 0) {
+        if (lwfbo_prerender(pLwc, &pLwc->shared_fbo) == 0) {
             draw();
-            lwfbo_postrender(&pLwc->shared_fbo);
+            lwfbo_postrender(pLwc, &pLwc->shared_fbo);
         }
         unlock();
     }

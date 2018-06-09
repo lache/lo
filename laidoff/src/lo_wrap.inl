@@ -10510,6 +10510,35 @@ fail:
 }
 
 
+static int _wrap_logic_update_default_ui_proj_for_htmlui(lua_State* L) {
+  int SWIG_arg = 0;
+  int arg1 ;
+  int arg2 ;
+  vec4 *arg3 ;
+  
+  SWIG_check_num_args("logic_update_default_ui_proj_for_htmlui",3,3)
+  if(!lua_isnumber(L,1)) SWIG_fail_arg("logic_update_default_ui_proj_for_htmlui",1,"int const");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("logic_update_default_ui_proj_for_htmlui",2,"int const");
+  if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("logic_update_default_ui_proj_for_htmlui",3,"mat4x4");
+  arg1 = (int const)lua_tonumber(L, 1);
+  arg2 = (int const)lua_tonumber(L, 2);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_a_4__float,0))){
+    SWIG_fail_ptr("logic_update_default_ui_proj_for_htmlui",3,SWIGTYPE_p_a_4__float);
+  }
+  
+  logic_update_default_ui_proj_for_htmlui(arg1,arg2,(float (*)[4])arg3);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_reset_runtime_context_async(lua_State* L) {
   int SWIG_arg = 0;
   LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
@@ -30937,17 +30966,24 @@ fail:
 
 static int _wrap_lwfbo_prerender(lua_State* L) {
   int SWIG_arg = 0;
-  LWFBO *arg1 = (LWFBO *) 0 ;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  LWFBO *arg2 = (LWFBO *) 0 ;
   int result;
   
-  SWIG_check_num_args("lwfbo_prerender",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwfbo_prerender",1,"LWFBO const *");
+  SWIG_check_num_args("lwfbo_prerender",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwfbo_prerender",1,"LWCONTEXT const *");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("lwfbo_prerender",2,"LWFBO const *");
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWFBO,0))){
-    SWIG_fail_ptr("lwfbo_prerender",1,SWIGTYPE_p__LWFBO);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("lwfbo_prerender",1,SWIGTYPE_p__LWCONTEXT);
   }
   
-  result = (int)lwfbo_prerender((struct _LWFBO const *)arg1);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWFBO,0))){
+    SWIG_fail_ptr("lwfbo_prerender",2,SWIGTYPE_p__LWFBO);
+  }
+  
+  result = (int)lwfbo_prerender((struct _LWCONTEXT const *)arg1,(struct _LWFBO const *)arg2);
   lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
   return SWIG_arg;
   
@@ -30961,16 +30997,23 @@ fail:
 
 static int _wrap_lwfbo_postrender(lua_State* L) {
   int SWIG_arg = 0;
-  LWFBO *arg1 = (LWFBO *) 0 ;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  LWFBO *arg2 = (LWFBO *) 0 ;
   
-  SWIG_check_num_args("lwfbo_postrender",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwfbo_postrender",1,"LWFBO const *");
+  SWIG_check_num_args("lwfbo_postrender",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwfbo_postrender",1,"LWCONTEXT const *");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("lwfbo_postrender",2,"LWFBO const *");
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWFBO,0))){
-    SWIG_fail_ptr("lwfbo_postrender",1,SWIGTYPE_p__LWFBO);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("lwfbo_postrender",1,SWIGTYPE_p__LWCONTEXT);
   }
   
-  lwfbo_postrender((struct _LWFBO const *)arg1);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWFBO,0))){
+    SWIG_fail_ptr("lwfbo_postrender",2,SWIGTYPE_p__LWFBO);
+  }
+  
+  lwfbo_postrender((struct _LWCONTEXT const *)arg1,(struct _LWFBO const *)arg2);
   
   return SWIG_arg;
   
@@ -108910,6 +108953,7 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "reset_time", _wrap_reset_time},
     { "logic_server_addr", _wrap_logic_server_addr},
     { "logic_update_default_ui_proj", _wrap_logic_update_default_ui_proj},
+    { "logic_update_default_ui_proj_for_htmlui", _wrap_logic_update_default_ui_proj_for_htmlui},
     { "reset_runtime_context_async", _wrap_reset_runtime_context_async},
     { "logic_start_logic_update_job", _wrap_logic_start_logic_update_job},
     { "logic_stop_logic_update_job", _wrap_logic_stop_logic_update_job},

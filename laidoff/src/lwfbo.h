@@ -15,8 +15,8 @@ extern "C" {;
 #endif
 void lwfbo_init(LWFBO* fbo, int width, int height);
 void lwfbo_delete(LWFBO* fbo);
-int lwfbo_prerender(const LWFBO* fbo);
-void lwfbo_postrender(const LWFBO* fbo);
+int lwfbo_prerender(const LWCONTEXT* pLwc, const LWFBO* fbo);
+void lwfbo_postrender(const LWCONTEXT* pLwc, const LWFBO* fbo);
 #ifdef __cplusplus
 }
 #endif

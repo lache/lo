@@ -19,6 +19,7 @@ void reset_runtime_context(LWCONTEXT* pLwc);
 void reset_time(LWCONTEXT* pLwc);
 const char* logic_server_addr(int idx);
 void logic_update_default_ui_proj(const int width, const int height, mat4x4 proj);
+void logic_update_default_ui_proj_for_htmlui(const int width, const int height, mat4x4 proj);
 void reset_runtime_context(LWCONTEXT* pLwc);
 void reset_runtime_context_async(LWCONTEXT* pLwc);
 void logic_start_logic_update_job(LWCONTEXT* pLwc);

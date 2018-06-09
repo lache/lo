@@ -49,23 +49,16 @@
 typedef struct _LWTTLFIELDVIEWPORT LWTTLFIELDVIEWPORT;
 
 void lwc_render_ttl_fbo_body(const LWCONTEXT* pLwc, const char* html_body) {
-    glBindFramebuffer(GL_FRAMEBUFFER, pLwc->shared_fbo.fbo);
-    glDisable(GL_DEPTH_TEST);
-
-    glViewport(0, 0, pLwc->shared_fbo.width, pLwc->shared_fbo.height);
-    glClearColor(0, 0, 0, 0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-    htmlui_load_render_draw_body(pLwc->htmlui, html_body);
-
-    glEnable(GL_DEPTH_TEST);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    if (lwfbo_prerender(pLwc, &pLwc->shared_fbo) == 0) {
+        htmlui_load_render_draw_body(pLwc->htmlui, html_body);
+        lwfbo_postrender(pLwc, &pLwc->shared_fbo);
+    }
 }
 
 void lwc_render_ttl_fbo(const LWCONTEXT* pLwc, const char* html_path) {
-    if (lwfbo_prerender(&pLwc->shared_fbo) == 0) {
+    if (lwfbo_prerender(pLwc, &pLwc->shared_fbo) == 0) {
         htmlui_load_render_draw(pLwc->htmlui, html_path);
-        lwfbo_postrender(&pLwc->shared_fbo);
+        lwfbo_postrender(pLwc, &pLwc->shared_fbo);
     }
 }
 

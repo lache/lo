@@ -748,7 +748,7 @@ static void update_battle_wall(LWCONTEXT* pLwc) {
 
 void logic_update_default_ui_proj(const int width, const int height, mat4x4 proj) {
     float aspect_ratio = (float)width / height;
-    LOGIx("Update(): width: %d height: %d ratio: %f", width, height, aspect_ratio);
+    LOGIx("logic_update_default_ui_proj(): width: %d height: %d ratio: %f", width, height, aspect_ratio);
     if (aspect_ratio == 0) {
         LOGEP("Aspect ratio is zero! Set to 1.0f.");
         aspect_ratio = 1.0f;
@@ -758,6 +758,11 @@ void logic_update_default_ui_proj(const int width, const int height, mat4x4 proj
     } else {
         mat4x4_ortho(proj, -1.0f, 1.0f, -1.0f / aspect_ratio, 1.0f / aspect_ratio, 1.0f, -1.0f);
     }
+}
+
+void logic_update_default_ui_proj_for_htmlui(const int width, const int height, mat4x4 proj) {
+    LOGIx("logic_update_default_ui_proj_for_htmlui(): width: %d height: %d", width, height);
+    mat4x4_ortho(proj, 0, (float)width, 0, (float)height, 1.0f, -1.0f);
 }
 
 int lw_write_tcp_addr(LWCONTEXT* pLwc, const char* tcp_addr) {

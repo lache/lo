@@ -17,7 +17,7 @@
 
 litehtml::text_container::text_container(LWCONTEXT* pLwc, int w, int h)
     : pLwc(pLwc)
-    , default_font_size(36) {
+    , default_font_size(72) {
     set_client_size(w, h);
 }
 
@@ -28,8 +28,16 @@ litehtml::uint_ptr litehtml::text_container::create_font(const litehtml::tchar_t
     LOGIx("create_font: faceName=%s, size=%d, weight=%d\n", faceName, size, weight);
     size_t font_idx = font_sizes.size();
     font_sizes.push_back(size);
-    fm->height = static_cast<int>(roundf(size * 0.8f * client_height / 720.f));
-    fm->descent = static_cast<int>(roundf(size * 0.1f * client_height / 720.f));
+    if (client_aspect_ratio > 1) {
+        //fm->height = static_cast<int>(roundf(size * 0.8f * client_height / 720.0f));
+        //fm->descent = static_cast<int>(roundf(size * 0.1f * client_height / 720.0f));
+    } else {
+        //fm->height = static_cast<int>(roundf(size * 0.8f * client_width / 1280.0f));
+        //fm->descent = static_cast<int>(roundf(size * 0.1f * client_width / 1280.0f));
+    }
+    fm->height = static_cast<int>(size / 5.5f);// static_cast<int>(roundf(size * 0.8f * client_height / 720.0f));
+    fm->descent = static_cast<int>(fm->height / 4.5f);
+    //fm->ascent = fm->height / 4;
     return litehtml::uint_ptr(font_idx);// litehtml::uint_ptr();
 }
 
@@ -39,8 +47,8 @@ void litehtml::text_container::delete_font(litehtml::uint_ptr hFont) {
 void litehtml::text_container::fill_text_block(LWTEXTBLOCK* text_block, int x, int y, const char* text, int size, const litehtml::web_color& color) {
     text_block->text_block_width = 999.0f;
     LOGIx("font size: %d", size);
-    text_block->text_block_line_height = size / 72.0f;
-    text_block->size = size / 72.0f;
+    text_block->text_block_line_height = static_cast<float>(size);
+    text_block->size = static_cast<float>(size);
     SET_COLOR_RGBA_FLOAT(text_block->color_normal_glyph, color.red / 255.0f, color.green / 255.0f, color.blue / 255.0f, 1);
     SET_COLOR_RGBA_FLOAT(text_block->color_normal_outline, (255 - color.red) / 255.0f, (255 - color.green) / 255.0f, (255 - color.blue) / 255.0f, 1);
     SET_COLOR_RGBA_FLOAT(text_block->color_emp_glyph, 1, 1, 0, 1);
@@ -62,7 +70,8 @@ int litehtml::text_container::text_width(const litehtml::tchar_t * text, litehtm
     litehtml::web_color c;
     fill_text_block(&text_block, 0, 0, text, size, c);
     render_query_only_text_block(pLwc, &text_block, &query_result);
-    return static_cast<int>(query_result.total_glyph_width / (2 * client_rt_x) * client_width);
+    //return static_cast<int>(query_result.total_glyph_width / (2 * client_rt_x) * client_width);
+    return static_cast<int>(query_result.total_glyph_width);
 }
 
 void litehtml::text_container::draw_text(litehtml::uint_ptr hdc, const litehtml::tchar_t * text, litehtml::uint_ptr hFont, litehtml::web_color color, const litehtml::position & pos) {
@@ -70,11 +79,13 @@ void litehtml::text_container::draw_text(litehtml::uint_ptr hdc, const litehtml:
     int size = font_sizes[(int)(size_t)hFont];
     LWTEXTBLOCK text_block;
     fill_text_block(&text_block, pos.x, pos.y, text, size, color);
-    render_text_block(pLwc, &text_block);
+    //render_text_block(pLwc, &text_block);
+    render_text_block_two_pass(pLwc, &text_block);
 }
 
 int litehtml::text_container::pt_to_px(int pt) {
-    return static_cast<int>(roundf(pt * 3.6f * client_width / 640.0f));
+    //return static_cast<int>(roundf(pt * 3.6f * client_width / 640.0f));
+    return pt * 3;
 }
 
 int litehtml::text_container::get_default_font_size() const {
@@ -502,5 +513,6 @@ void litehtml::text_container::get_language(litehtml::tstring & language, liteht
 void litehtml::text_container::set_client_size(int client_width, int client_height) {
     this->client_width = client_width;
     this->client_height = client_height;
-    lwcontext_rt_corner((float)client_width / client_height, &client_rt_x, &client_rt_y);
+    this->client_aspect_ratio = (float)client_width / client_height;
+    lwcontext_rt_corner(this->client_aspect_ratio, &client_rt_x, &client_rt_y);
 }
