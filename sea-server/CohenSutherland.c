@@ -12,12 +12,12 @@ const int RIGHT = 2;  // 0010
 const int BOTTOM = 4; // 0100
 const int TOP = 8;    // 1000
 
-static OutCode ComputeOutCode(float xmin,
-                              float ymin,
-                              float xmax,
-                              float ymax,
-                              float x,
-                              float y) {
+static OutCode ComputeOutCode(double xmin,
+                              double ymin,
+                              double xmax,
+                              double ymax,
+                              double x,
+                              double y) {
     OutCode code;
 
     code = INSIDE;          // initialised as being inside of [[clip window]]
@@ -37,18 +37,18 @@ static OutCode ComputeOutCode(float xmin,
 // Cohen–Sutherland clipping algorithm clips a line from
 // P0 = (x0, y0) to P1 = (x1, y1) against a rectangle with 
 // diagonal from (xmin, ymin) to (xmax, ymax).
-int CohenSutherlandLineClip(float xmin,
-                            float ymin,
-                            float xmax,
-                            float ymax,
-                            float x0,
-                            float y0,
-                            float x1,
-                            float y1,
-                            float* x0_clipped,
-                            float* y0_clipped,
-                            float* x1_clipped,
-                            float* y1_clipped) {
+int CohenSutherlandLineClip(double xmin,
+                            double ymin,
+                            double xmax,
+                            double ymax,
+                            double x0,
+                            double y0,
+                            double x1,
+                            double y1,
+                            double* x0_clipped,
+                            double* y0_clipped,
+                            double* x1_clipped,
+                            double* y1_clipped) {
     // compute outcodes for P0, P1, and whatever point lies outside the clip rectangle
     OutCode outcode0 = ComputeOutCode(xmin,
                                       ymin,
@@ -75,7 +75,7 @@ int CohenSutherlandLineClip(float xmin,
         } else {
             // failed both tests, so calculate the line segment to clip
             // from an outside point to an intersection with clip edge
-            float x, y;
+            double x, y;
 
             // At least one endpoint is outside the clip rectangle; pick it.
             OutCode outcodeOut = outcode0 ? outcode0 : outcode1;

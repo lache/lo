@@ -2,18 +2,18 @@
 #if __cplusplus
 extern "C" {
 #endif
-int CohenSutherlandLineClip(float xmin,
-                            float ymin,
-                            float xmax,
-                            float ymax,
-                            float x0,
-                            float y0,
-                            float x1,
-                            float y1,
-                            float* x0_clipped,
-                            float* y0_clipped,
-                            float* x1_clipped,
-                            float* y1_clipped);
+int CohenSutherlandLineClip(double xmin,
+                            double ymin,
+                            double xmax,
+                            double ymax,
+                            double x0,
+                            double y0,
+                            double x1,
+                            double y1,
+                            double* x0_clipped,
+                            double* y0_clipped,
+                            double* x1_clipped,
+                            double* y1_clipped);
 #if __cplusplus
 };
 #endif

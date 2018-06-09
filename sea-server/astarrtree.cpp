@@ -57,43 +57,60 @@ static int xy32_comparator(const xy32& p1, const xy32& p2) {
 void AddNeighborWithLog(ASNeighborList neighbors, const xy32xy32xy32* n, xy32xy32xy32* n2, float edge_cost) {
     ASNeighborListAdd(neighbors, n2, edge_cost);
     LOGIx("Cell (%||,%||)-(%||,%||)[%||x%||] Point (%||,%||) neighbor Cell (%||,%||)-(%||,%||)[%||x%||] Point (%||,%||) added. Edge cost = %||",
-         n->box.xy0.x,
-         n->box.xy0.y,
-         n->box.xy1.x,
-         n->box.xy1.y,
-         n->box.xy1.x - n->box.xy0.x,
-         n->box.xy1.y - n->box.xy0.y,
-         n->point.x,
-         n->point.y,
-         n2->box.xy0.x,
-         n2->box.xy0.y,
-         n2->box.xy1.x,
-         n2->box.xy1.y,
-         n2->box.xy1.x - n2->box.xy0.x,
-         n2->box.xy1.y - n2->box.xy0.y,
-         n2->point.x,
-         n2->point.y,
-         edge_cost);
+          n->box.xy0.x,
+          n->box.xy0.y,
+          n->box.xy1.x,
+          n->box.xy1.y,
+          n->box.xy1.x - n->box.xy0.x,
+          n->box.xy1.y - n->box.xy0.y,
+          n->point.x,
+          n->point.y,
+          n2->box.xy0.x,
+          n2->box.xy0.y,
+          n2->box.xy1.x,
+          n2->box.xy1.y,
+          n2->box.xy1.x - n2->box.xy0.x,
+          n2->box.xy1.y - n2->box.xy0.y,
+          n2->point.x,
+          n2->point.y,
+          edge_cost);
 
 }
 
 void RTreePathNodeNeighbors(ASNeighborList neighbors, void *node, void *context) {
     auto pathfind_context = reinterpret_cast<PathfindContext*>(context);
     auto n = reinterpret_cast<const xy32xy32xy32*>(node);
-    /*auto cache_it = pathfind_context->neighbor_cache_map.find(node);
-    //if (cache_it != pathfind_context->neighbor_cache_map.end()) {
-    //    // neighbor cache hit
-    //    for (size_t i = cache_it->second.first; i < cache_it->second.second; i++) {
-    //        auto& nc = pathfind_context->neighbor_cache[i];
-    //        AddNeighborWithLog(neighbors, n, &nc.first, nc.second);
-    //    }
-    //} else */{
+    auto cache_it = pathfind_context->neighbor_cache_map.find(node);
+    if (cache_it != pathfind_context->neighbor_cache_map.end()) {
+        // neighbor cache hit
+        for (size_t i = cache_it->second.first; i < cache_it->second.second; i++) {
+            auto& nc = pathfind_context->neighbor_cache[i];
+            AddNeighborWithLog(neighbors, n, &nc.first, nc.second);
+        }
+    } else {
         // neighbor cache no hit
         const rtree* rtree_ptr = pathfind_context->rtree_ptr;
         box query_box = box_t_from_xyxy(n->box);
         std::vector<value> result_s;
         rtree_ptr->query(bgi::intersects(query_box), std::back_inserter(result_s));
         const size_t begin_index = pathfind_context->neighbor_cache.size();
+        double npx_clipped, npy_clipped, closest_to_goal_x, closest_to_goal_y;
+        int accept = CohenSutherlandLineClip(static_cast<double>(n->box.xy0.x),
+                                             static_cast<double>(n->box.xy0.y),
+                                             static_cast<double>(n->box.xy1.x),
+                                             static_cast<double>(n->box.xy1.y),
+                                             static_cast<double>(n->point.x) + 0.5,
+                                             static_cast<double>(n->point.y) + 0.5,
+                                             static_cast<double>(pathfind_context->to_rect.xy0.x) + 0.5,
+                                             static_cast<double>(pathfind_context->to_rect.xy0.y) + 0.5,
+                                             &npx_clipped,
+                                             &npy_clipped,
+                                             &closest_to_goal_x,
+                                             &closest_to_goal_y);
+        if (accept == 0) {
+            LOGE("Not clipped");
+            abort();
+        }
         for (const auto& v : result_s) {
             // skip 'node' itself from neighbor
             if (query_box.min_corner().get<0>() == v.first.min_corner().get<0>()
@@ -102,8 +119,8 @@ void RTreePathNodeNeighbors(ASNeighborList neighbors, void *node, void *context)
             }
             auto xyxy = xyxy_from_box_t(v.first);
             const xy32 enter_point{
-                boost::algorithm::clamp(n->point.x, xyxy.xy0.x, xyxy.xy1.x - 1),
-                boost::algorithm::clamp(n->point.y, xyxy.xy0.y, xyxy.xy1.y - 1),
+                boost::algorithm::clamp(static_cast<int>(closest_to_goal_x), xyxy.xy0.x, xyxy.xy1.x - 1),
+                boost::algorithm::clamp(static_cast<int>(closest_to_goal_y), xyxy.xy0.y, xyxy.xy1.y - 1),
             };
             xy32xy32xy32 n2 = { xyxy, enter_point };
             const long long dx = enter_point.x - n->point.x;
@@ -112,7 +129,7 @@ void RTreePathNodeNeighbors(ASNeighborList neighbors, void *node, void *context)
             double edge_cost_cell_to_goal = 0;
             // if this neighbor('v') is goal node, we should add edge_cost_cell_to_goal factor
             if (xy32_comparator(xyxy.xy0, pathfind_context->to_box.xy0) == 0) {
-                edge_cost_cell_to_goal = xy32_distance(pathfind_context->to_rect.xy0, enter_point);
+                edge_cost_cell_to_goal = xy32_distance(enter_point, pathfind_context->to_rect.xy0);
             }
             const double edge_cost = edge_cost_cell_to_cell + edge_cost_cell_to_goal;
             AddNeighborWithLog(neighbors, n, &n2, static_cast<float>(edge_cost));
@@ -257,9 +274,11 @@ float RTreePathNodeHeuristic(void *fromNode, void *toNode, void *context) {
     const auto from = reinterpret_cast<const xy32xy32xy32*>(fromNode);
     const auto to = reinterpret_cast<const xy32xy32xy32*>(toNode);
 
-    const int d1 = from->box.xy1.x <= to->point.x ? (1 + to->point.x - from->box.xy1.x) : from->box.xy0.x > to->point.x ? (from->box.xy0.x - to->point.x) : 0;
-    const int d2 = from->box.xy1.y <= to->point.y ? (1 + to->point.y - from->box.xy1.y) : from->box.xy0.y > to->point.y ? (from->box.xy0.y - to->point.y) : 0;
-    return 0;// sqrtf((float)d1 * d1 + d2 * d2);
+    //const int d1 = from->box.xy1.x <= to->point.x ? (1 + to->point.x - from->box.xy1.x) : from->box.xy0.x > to->point.x ? (from->box.xy0.x - to->point.x) : 0;
+    //const int d2 = from->box.xy1.y <= to->point.y ? (1 + to->point.y - from->box.xy1.y) : from->box.xy0.y > to->point.y ? (from->box.xy0.y - to->point.y) : 0;
+    //return sqrtf((float)d1 * d1 + d2 * d2);
+
+    return static_cast<float>(xy32_distance(from->point, to->point));
 
 
     // [1] Cell Midpoint Distance Method
@@ -857,14 +876,14 @@ xy32xy32 xyxy_from_xy(xy32 v) {
 static int RTreePathNodeEarlyExit(size_t visitedCount, void *visitingNode, void *goalNode, void *context) {
     auto pathfind_context = reinterpret_cast<PathfindContext*>(context);
     pathfind_context->early_exit_call_count++;
-    if (visitedCount >= 100000) {
+    if (visitedCount >= 200000) {
         LOGE("Too many visits! (%1% visits) Pathfinding aborted.", visitedCount);
         return -1;
     } else {
         if (pathfind_context->coro && pathfind_context->early_exit_call_count % 1000 == 0) {
-            boost::asio::deadline_timer timer(pathfind_context->coro->io_service);
+            /*boost::asio::deadline_timer timer(pathfind_context->coro->io_service);
             timer.expires_from_now(boost::posix_time::milliseconds(10));
-            timer.async_wait(pathfind_context->coro->yield);
+            timer.async_wait(pathfind_context->coro->yield);*/
         }
         const auto visiting = reinterpret_cast<const xy32xy32xy32*>(visitingNode);
         const auto goal = reinterpret_cast<const xy32xy32xy32*>(goalNode);
@@ -895,9 +914,9 @@ static int RTreePixelPathNodeEarlyExit(size_t visitedCount, void *visitingNode, 
         return -1;
     } else {
         if (pws->coro && pws->early_exit_call_count % 1000 == 0) {
-            boost::asio::deadline_timer timer(pws->coro->io_service);
+            /*boost::asio::deadline_timer timer(pws->coro->io_service);
             timer.expires_from_now(boost::posix_time::milliseconds(10));
-            timer.async_wait(pws->coro->yield);
+            timer.async_wait(pws->coro->yield);*/
         }
         const auto visiting = reinterpret_cast<const xy32xy32xy32*>(visitingNode);
         const auto goal = reinterpret_cast<const xy32xy32xy32*>(goalNode);
@@ -1094,6 +1113,9 @@ std::vector<xy32> astarrtree::astar_rtree_memory(const rtree* rtree_ptr, const x
             LOGI("Cell Path Count: %1%", pathCount);
             float pathCost = ASPathGetCost(path);
             LOGI("Cell Path Cost: %f", pathCost);
+            if (distance > pathCost) {
+                LOGEP("Path cost %f is less than distance %f!!! LOGIC ERROR", pathCost, distance);
+            }
             /*if (pathCost < 6000)*/
             {
                 for (size_t i = 0; i < pathCount; i++) {
