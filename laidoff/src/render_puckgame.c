@@ -83,8 +83,8 @@ static void render_tower_normal_2(const LWCONTEXT* pLwc, const mat4x4 view, cons
         if (tower->shake_remain_time > 0) {
             const float ratio = tower->shake_remain_time / pLwc->puck_game->tower_shake_time;
             const float shake_magnitude = 0.03f;
-            x += ratio * (2 * rand() / (float)RAND_MAX - 1.0f) * shake_magnitude * pLwc->viewport_aspect_ratio;
-            y += ratio * (2 * rand() / (float)RAND_MAX - 1.0f) * shake_magnitude;
+            x += ratio * (2 * rand() / (float)RAND_MAX - 1.0f) * shake_magnitude * pLwc->viewport_rt_x;
+            y += ratio * (2 * rand() / (float)RAND_MAX - 1.0f) * shake_magnitude * pLwc->viewport_rt_y;
             float ratio4 = ratio * ratio;
             ratio4 *= ratio4;
             glUniform1f(shader->overlay_color_ratio_location, ratio4);
@@ -371,14 +371,14 @@ static void render_hp_star(const LWCONTEXT* pLwc,
                            float hp_shake_remain_time,
                            const vec2 world_right_top_end_ui_point) {
     // render at the center of margins
-    float x = (world_right_top_end_ui_point[0] + pLwc->viewport_aspect_ratio) / 2 * (left ? -1 : +1);
-    float y = 0.575f;
+    float x = (world_right_top_end_ui_point[0] + pLwc->viewport_rt_x) / 2 * (left ? -1 : +1);
+    float y = pLwc->viewport_rt_y - 0.425f;
     float size = 0.5f;
     if (hp_shake_remain_time > 0) {
         const float ratio = hp_shake_remain_time / pLwc->puck_game->hp_shake_time;
         const float shake_magnitude = 0.02f;
-        x += ratio * (2 * rand() / (float)RAND_MAX - 1.0f) * shake_magnitude * pLwc->viewport_aspect_ratio;
-        y += ratio * (2 * rand() / (float)RAND_MAX - 1.0f) * shake_magnitude;
+        x += ratio * (2 * rand() / (float)RAND_MAX - 1.0f) * shake_magnitude * pLwc->viewport_rt_x;
+        y += ratio * (2 * rand() / (float)RAND_MAX - 1.0f) * shake_magnitude * pLwc->viewport_rt_y;
     }
     lw_load_tex(pLwc, LAE_HP_STAR_0 + 2 * hp);
     lw_load_tex(pLwc, LAE_HP_STAR_0 + 2 * hp + 1);
@@ -422,7 +422,7 @@ static void render_timer(const LWCONTEXT* pLwc, float remain_sec, float total_se
         remain_ratio = remain_sec / total_sec;
     }
     float x = 0.0f;
-    float y = 0.925f;
+    float y = pLwc->viewport_rt_y - 0.075f;
     text_block.text = str;
     text_block.text_bytelen = (int)strlen(text_block.text);
     text_block.begin_index = 0;
@@ -548,7 +548,8 @@ static void render_nickname_score(const LWCONTEXT* pLwc,
                                   const char* score,
                                   const vec2 world_right_top_end_ui_point) {
     // render at the center of margins
-    float x = (world_right_top_end_ui_point[0] + pLwc->viewport_aspect_ratio) / 2 * (left ? -1 : +1);
+    float x = (world_right_top_end_ui_point[0] + pLwc->viewport_rt_x) / 2 * (left ? -1 : +1);
+    float y = pLwc->viewport_rt_y - 0.675f;
     // Render text
     LWTEXTBLOCK text_block;
     //text_block.align = left ? LTBA_LEFT_TOP : LTBA_RIGHT_TOP;
@@ -567,7 +568,7 @@ static void render_nickname_score(const LWCONTEXT* pLwc,
     text_block.begin_index = 0;
     text_block.end_index = text_block.text_bytelen;
     text_block.text_block_x = x;
-    text_block.text_block_y = 0.325f;
+    text_block.text_block_y = y;
     render_text_block(pLwc, &text_block);
     // score
     text_block.text = score;
@@ -575,7 +576,7 @@ static void render_nickname_score(const LWCONTEXT* pLwc,
     text_block.begin_index = 0;
     text_block.end_index = text_block.text_bytelen;
     text_block.text_block_x = x;
-    text_block.text_block_y = 0.225f;
+    text_block.text_block_y = y - 0.1f;
     render_text_block(pLwc, &text_block);
 }
 
@@ -1460,8 +1461,8 @@ static void render_main_menu_ui_layer(const LWCONTEXT* pLwc,
     ((LWCONTEXT*)pLwc)->viewport_y = 0;
     LW_GL_VIEWPORT();
     // leaderboard
-    float leaderboard_x = -pLwc->viewport_aspect_ratio + 0.1f;
-    float leaderboard_y = 0.85f;
+    float leaderboard_x = -pLwc->viewport_rt_x + 0.1f;
+    float leaderboard_y = pLwc->viewport_rt_y - 0.15f;
     render_leaderboard_table(pLwc, leaderboard_x, leaderboard_y, puck_game->main_menu_ui_alpha);
     // render buttons appended so far while temporary viewport configuration valid
     render_lwbutton(pLwc, &pLwc->button_list);
@@ -1555,8 +1556,8 @@ static void render_main_menu_ui_layer(const LWCONTEXT* pLwc,
         render_solid_box_ui_lvt_flip_y_uv(pLwc,
                                           0,
                                           0,
-                                          2 * pLwc->viewport_aspect_ratio,
-                                          2,
+                                          2 * pLwc->viewport_rt_x,
+                                          2 * pLwc->viewport_rt_y,
                                           pLwc->shared_fbo.color_tex,
                                           LVT_CENTER_CENTER_ANCHORED_SQUARE,
                                           1);
@@ -1870,8 +1871,8 @@ static void render_battle_ui_layer(const LWCONTEXT* pLwc,
         lwbutton_lae_append(pLwc,
                             &(((LWCONTEXT*)pLwc)->button_list),
                             "back_button",
-                            -pLwc->viewport_aspect_ratio,
-                            1.0f,//0.8f,
+                            -pLwc->viewport_rt_x,
+                            +pLwc->viewport_rt_y,
                             button_size * 1.5f,
                             button_size * 1.5f,
                             LAE_UI_BACK_BUTTON,

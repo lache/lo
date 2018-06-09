@@ -421,8 +421,13 @@ void puck_game_clear_match_data(LWCONTEXT* pLwc, LWPUCKGAME* puck_game) {
 
 void puck_game_reset_view_proj(LWCONTEXT* pLwc, LWPUCKGAME* puck_game) {
     // Setup puck game view, proj matrices
-    
-    mat4x4_perspective(pLwc->puck_game_proj, (float)(LWDEG2RAD(49.1343) / pLwc->viewport_aspect_ratio), pLwc->viewport_aspect_ratio, 1.0f, 500.0f);
+    if (pLwc->viewport_aspect_ratio > 1) {
+        // landscape
+        mat4x4_perspective(pLwc->puck_game_proj, (float)(LWDEG2RAD(49.1343) / pLwc->viewport_rt_y), pLwc->viewport_aspect_ratio, 1.0f, 500.0f);
+    } else {
+        // portrait
+        mat4x4_perspective(pLwc->puck_game_proj, (float)(1.7 * LWDEG2RAD(49.1343) / pLwc->viewport_rt_y), pLwc->viewport_aspect_ratio, 1.0f, 500.0f);
+    }
     vec3 eye = { 0.0f, 0.0f, 10.0f /*12.0f*/ };
     vec3 center = { 0, 0, 0 };
     vec3 up = { 0, 1, 0 };
