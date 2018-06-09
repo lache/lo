@@ -1168,3 +1168,11 @@ void puck_game_set_show_top_level_main_menu(LWPUCKGAME* puck_game, int show) {
 void puck_game_set_show_htmlui(LWPUCKGAME* puck_game, int show) {
     puck_game->show_html_ui = show;
 }
+
+int puck_game_leaderboard_items_in_page(float aspect_ratio) {
+    if (aspect_ratio > 1) {
+        return LW_LEADERBOARD_ITEMS_IN_PAGE;
+    } else {
+        return LW_LEADERBOARD_ITEMS_IN_PAGE - 3;
+    }
+}

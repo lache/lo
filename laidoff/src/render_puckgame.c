@@ -43,6 +43,7 @@ void mult_world_roll(float aspect_ratio, mat4x4 model, int axis, int dir, float 
     mat4x4 world_roll_rot;
     mat4x4_identity(world_roll_rot);
     if (aspect_ratio > 1) {
+        // roll left to right
         if (axis == 0) {
             mat4x4_rotate_X(world_roll_rot, world_roll_rot, dir ? -angle : angle);
         } else if (axis == 1) {
@@ -51,6 +52,7 @@ void mult_world_roll(float aspect_ratio, mat4x4 model, int axis, int dir, float 
             mat4x4_rotate_Z(world_roll_rot, world_roll_rot, dir ? -angle : angle);
         }
     } else {
+        // roll down to up
         if (axis == 0) {
             mat4x4_rotate_Y(world_roll_rot, world_roll_rot, dir ? angle : -angle);
         } else if (axis == 1) {
@@ -373,6 +375,14 @@ void calculate_world_right_top_end_ui_point(const LWCONTEXT* pLwc, const LWPUCKG
     world_right_top_end_ui_point[1] = fabsf(world_right_top_end_ui_point[1]);
 }
 
+static float hp_star_nickname_score_x(const LWCONTEXT* pLwc, int left, const vec2 world_right_top_end_ui_point) {
+    if (pLwc->viewport_aspect_ratio > 1) {
+        return (world_right_top_end_ui_point[0] + pLwc->viewport_rt_x) / 2 * (left ? -1 : +1);
+    } else {
+        return pLwc->viewport_rt_x / 2 * (left ? -1 : +1);
+    }
+}
+
 static void render_hp_star(const LWCONTEXT* pLwc,
                            const LWPUCKGAME* puck_game,
                            float ui_alpha,
@@ -381,7 +391,7 @@ static void render_hp_star(const LWCONTEXT* pLwc,
                            float hp_shake_remain_time,
                            const vec2 world_right_top_end_ui_point) {
     // render at the center of margins
-    float x = (world_right_top_end_ui_point[0] + pLwc->viewport_rt_x) / 2 * (left ? -1 : +1);
+    float x = hp_star_nickname_score_x(pLwc, left, world_right_top_end_ui_point);
     float y = pLwc->viewport_rt_y - 0.425f;
     float size = 0.5f;
     if (hp_shake_remain_time > 0) {
@@ -558,7 +568,7 @@ static void render_nickname_score(const LWCONTEXT* pLwc,
                                   const char* score,
                                   const vec2 world_right_top_end_ui_point) {
     // render at the center of margins
-    float x = (world_right_top_end_ui_point[0] + pLwc->viewport_rt_x) / 2 * (left ? -1 : +1);
+    float x = hp_star_nickname_score_x(pLwc, left, world_right_top_end_ui_point);
     float y = pLwc->viewport_rt_y - 0.675f;
     // Render text
     LWTEXTBLOCK text_block;

@@ -322,3 +322,4 @@ LWPUCKGAMEPLAYER* puck_game_player(LWPUCKGAME* puck_game, int index);
 LWPUCKGAMEPLAYER* puck_game_target(LWPUCKGAME* puck_game, int index);
 void puck_game_set_show_top_level_main_menu(LWPUCKGAME* puck_game, int show);
 void puck_game_set_show_htmlui(LWPUCKGAME* puck_game, int show);
+int puck_game_leaderboard_items_in_page(float aspect_ratio);

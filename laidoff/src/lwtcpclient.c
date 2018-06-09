@@ -23,7 +23,7 @@ void tcp_on_connect(LWTCP* tcp, const char* path_prefix) {
         // Request a new user to be created
         tcp_send_newuser(tcp);
     }
-    request_player_reveal_leaderboard(tcp);
+    request_player_reveal_leaderboard(tcp, puck_game_leaderboard_items_in_page(tcp->pLwc->viewport_aspect_ratio));
 }
 
 void tcp_request_landing_page(LWTCP* tcp, const char* path_prefix, LWTTL* ttl) {

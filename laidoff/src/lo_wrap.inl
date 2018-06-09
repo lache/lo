@@ -10835,29 +10835,6 @@ fail:
 }
 
 
-static int _wrap_show_leaderboard(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  
-  SWIG_check_num_args("show_leaderboard",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("show_leaderboard",1,"LWCONTEXT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("show_leaderboard",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  show_leaderboard(arg1);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
 static int _wrap_change_to_field(lua_State* L) {
   int SWIG_arg = 0;
   LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
@@ -11160,15 +11137,18 @@ fail:
 static int _wrap_request_player_reveal_leaderboard(lua_State* L) {
   int SWIG_arg = 0;
   LWTCP *arg1 = (LWTCP *) 0 ;
+  int arg2 ;
   
-  SWIG_check_num_args("request_player_reveal_leaderboard",1,1)
+  SWIG_check_num_args("request_player_reveal_leaderboard",2,2)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("request_player_reveal_leaderboard",1,"LWTCP *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("request_player_reveal_leaderboard",2,"int");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTCP,0))){
     SWIG_fail_ptr("request_player_reveal_leaderboard",1,SWIGTYPE_p__LWTCP);
   }
   
-  request_player_reveal_leaderboard(arg1);
+  arg2 = (int)lua_tonumber(L, 2);
+  request_player_reveal_leaderboard(arg1,arg2);
   
   return SWIG_arg;
   
@@ -11184,17 +11164,20 @@ static int _wrap_request_leaderboard(lua_State* L) {
   int SWIG_arg = 0;
   LWTCP *arg1 = (LWTCP *) 0 ;
   int arg2 ;
+  int arg3 ;
   
-  SWIG_check_num_args("request_leaderboard",2,2)
+  SWIG_check_num_args("request_leaderboard",3,3)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("request_leaderboard",1,"LWTCP *");
   if(!lua_isnumber(L,2)) SWIG_fail_arg("request_leaderboard",2,"int");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("request_leaderboard",3,"int");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTCP,0))){
     SWIG_fail_ptr("request_leaderboard",1,SWIGTYPE_p__LWTCP);
   }
   
   arg2 = (int)lua_tonumber(L, 2);
-  request_leaderboard(arg1,arg2);
+  arg3 = (int)lua_tonumber(L, 3);
+  request_leaderboard(arg1,arg2,arg3);
   
   return SWIG_arg;
   
@@ -71529,6 +71512,26 @@ fail:
 }
 
 
+static int _wrap_puck_game_leaderboard_items_in_page(lua_State* L) {
+  int SWIG_arg = 0;
+  float arg1 ;
+  int result;
+  
+  SWIG_check_num_args("puck_game_leaderboard_items_in_page",1,1)
+  if(!lua_isnumber(L,1)) SWIG_fail_arg("puck_game_leaderboard_items_in_page",1,"float");
+  arg1 = (float)lua_tonumber(L, 1);
+  result = (int)puck_game_leaderboard_items_in_page(arg1);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_LWTCP_connect_socket_set(lua_State* L) {
   int SWIG_arg = 0;
   struct _LWTCP *arg1 = (struct _LWTCP *) 0 ;
@@ -108920,7 +108923,6 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "load_field_3_init_runtime_data", _wrap_load_field_3_init_runtime_data},
     { "load_field_4_init_runtime_data", _wrap_load_field_4_init_runtime_data},
     { "load_field_5_init_runtime_data", _wrap_load_field_5_init_runtime_data},
-    { "show_leaderboard", _wrap_show_leaderboard},
     { "change_to_field", _wrap_change_to_field},
     { "change_to_dialog", _wrap_change_to_dialog},
     { "change_to_battle", _wrap_change_to_battle},
@@ -109281,6 +109283,7 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "puck_game_target", _wrap_puck_game_target},
     { "puck_game_set_show_top_level_main_menu", _wrap_puck_game_set_show_top_level_main_menu},
     { "puck_game_set_show_htmlui", _wrap_puck_game_set_show_htmlui},
+    { "puck_game_leaderboard_items_in_page", _wrap_puck_game_leaderboard_items_in_page},
     { "new_tcp", _wrap_new_tcp},
     { "destroy_tcp", _wrap_destroy_tcp},
     { "tcp_update", _wrap_tcp_update},

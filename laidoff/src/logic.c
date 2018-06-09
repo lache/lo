@@ -648,24 +648,19 @@ void start_tcp_addr_text_input_activity(LWCONTEXT* pLwc) {
     lw_start_text_input_activity(pLwc, LITI_SERVER_ADDR);
 }
 
-void show_leaderboard(LWCONTEXT* pLwc) {
-    tcp_send_get_leaderboard(pLwc->tcp,
-                             300,
-                             0,
-                             LW_LEADERBOARD_ITEMS_IN_PAGE,
-                             change_to_leaderboard);
-}
-
-void request_leaderboard(LWTCP* tcp, int one_based_page) {
+void request_leaderboard(LWTCP* tcp, int items_in_page, int one_based_page) {
     tcp_send_get_leaderboard(tcp,
                              300,
-                             (one_based_page - 1) * LW_LEADERBOARD_ITEMS_IN_PAGE,
-                             LW_LEADERBOARD_ITEMS_IN_PAGE,
+                             (one_based_page - 1) * items_in_page,
+                             items_in_page,
                              0);
 }
 
-void request_player_reveal_leaderboard(LWTCP* tcp) {
-    tcp_send_get_leaderboard_reveal_player(tcp, 300, &tcp->user_id, LW_LEADERBOARD_ITEMS_IN_PAGE);
+void request_player_reveal_leaderboard(LWTCP* tcp, int items_in_page) {
+    tcp_send_get_leaderboard_reveal_player(tcp,
+                                           300,
+                                           &tcp->user_id,
+                                           items_in_page);
 }
 
 void start_request_push_token(LWCONTEXT* pLwc) {
@@ -723,7 +718,6 @@ void reset_runtime_context(LWCONTEXT* pLwc) {
         { LWU("Nickname"), start_nickname_text_input_activity },
         { LWU("Push Token"), start_request_push_token },
         { LWU("TCP Address"), start_tcp_addr_text_input_activity },
-        { LWU("Leaderboard"), show_leaderboard },
         { LWU("Stat Toggle"), toggle_stat },
         { LWU("Reward Video"), start_reward_video },
         { LWU("Sign In"), start_sign_in },
