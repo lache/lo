@@ -468,8 +468,8 @@ static void recreate_surface(engine* engine) {
             if (w > 0 && w < 5000 && h > 0 && h < 5000) {
                 engine->width = w;
                 engine->height = h;
+				lw_set_viewport_size(engine->pLwc, w, h);
                 lw_set_window_size(engine->pLwc, w, h);
-                lw_set_viewport_size(engine->pLwc, w, h);
                 LOGI("Change surface (width x height) to (%d x %d)", w, h);
             } else {
                 LOGE("Surface recreated but size query result is not valid: w=%d, h=%d", w, h);
@@ -810,16 +810,16 @@ void android_main(struct android_app* state) {
             engine.pLwc = lw_init_initial_size(engine.width, engine.height);
             engine.pLwc->internal_data_path = state->activity->internalDataPath;
             engine.pLwc->user_data_path = state->activity->internalDataPath;
+			lw_set_viewport_size(engine.pLwc, engine.width, engine.height);
             lw_set_window_size(engine.pLwc, engine.width, engine.height);
-            lw_set_viewport_size(engine.pLwc, engine.width, engine.height);
             engine.inited = true;
             lwc_start_logic_thread(engine.pLwc);
         }
         // update width & height on LWCONTEXT side if inconsistency with engine found
         if (engine.pLwc) {
             if (engine.width != engine.pLwc->window_width || engine.height != engine.pLwc->window_height) {
+				lw_set_viewport_size(engine.pLwc, engine.width, engine.height);
                 lw_set_window_size(engine.pLwc, engine.width, engine.height);
-                lw_set_viewport_size(engine.pLwc, engine.width, engine.height);
             }
         }
         // Read all pending events.
@@ -1055,8 +1055,8 @@ Java_com_popsongremix_laidoff_LaidoffNativeActivity_setWindowSize(JNIEnv* env, j
         shared_engine->height = h;
         LWCONTEXT* pLwc = pLwcLong ? (LWCONTEXT*) pLwcLong : shared_engine->pLwc;
         if (pLwc) {
+			lw_set_viewport_size(pLwc, w, h);
             lw_set_window_size(pLwc, w, h);
-            lw_set_viewport_size(pLwc, w, h);
         }
     }
 }

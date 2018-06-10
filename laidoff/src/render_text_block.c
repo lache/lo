@@ -16,10 +16,13 @@
 
 void render_query_text_block_alpha(const LWCONTEXT* pLwc, const LWTEXTBLOCK* text_block, float ui_alpha, LWTEXTBLOCKQUERYRESULT* query_result, int query_only);
 
-float get_proportional_font_size(int height, float font_size) {
-
-
-	return (float)height / (360.0f) * font_size;
+static float get_proportional_font_size(int width, int height, float font_size) {
+    if (width > height) {
+        return (float)height / (360.0f) * font_size;
+    } else {
+        return (float)width / (360.0f) * font_size;
+    }
+	
 	//return font_size;
 }
 
@@ -86,8 +89,8 @@ static void render_font_glyph(const LWCONTEXT* pLwc,
 
 	*size_scaled_xadvance_accum = 0;
 
-	align_offset_x = align_offset_x / pLwc->viewport_width * 2 * pLwc->viewport_aspect_ratio * prop_font_size;
-	align_offset_y = align_offset_y / pLwc->viewport_height * 2 * prop_font_size;
+	align_offset_x = align_offset_x / pLwc->viewport_width * 2 * pLwc->viewport_rt_x * prop_font_size;
+	align_offset_y = align_offset_y / pLwc->viewport_height * 2 * pLwc->viewport_rt_y * prop_font_size;
 
 	mat4x4 model_translate;
 	mat4x4 model;
@@ -111,8 +114,8 @@ static void render_font_glyph(const LWCONTEXT* pLwc,
 
 		const BMF_CHAR* bci = bc[i];
 		if (bci) {
-			float ui_scale_x = prop_font_size * (float)bci->width / pLwc->viewport_width * pLwc->viewport_aspect_ratio;
-			float ui_scale_y = prop_font_size * (float)bci->height / pLwc->viewport_height;
+			float ui_scale_x = prop_font_size * (float)bci->width / pLwc->viewport_width * pLwc->viewport_rt_x;
+			float ui_scale_y = prop_font_size * (float)bci->height / pLwc->viewport_height * pLwc->viewport_rt_y;
 
 			mat4x4_identity(model_scale);
 			mat4x4_scale_aniso(model_scale, model_scale, ui_scale_x, ui_scale_y, 1.0f);
@@ -136,8 +139,8 @@ static void render_font_glyph(const LWCONTEXT* pLwc,
 				xoffset = ((float)bci->xoffset + (float)bci->width + *size_scaled_xadvance_accum) / pLwc->viewport_width * 2;
 			}
 
-			const float x = align_offset_x + text_block->text_block_x + prop_font_size * xoffset * pLwc->viewport_aspect_ratio;
-			const float y = align_offset_y + text_block->text_block_y + prop_font_size * yoffset + (line * -text_block->text_block_line_height);
+			const float x = align_offset_x + text_block->text_block_x + prop_font_size * xoffset * pLwc->viewport_rt_x;
+			const float y = align_offset_y + text_block->text_block_y + prop_font_size * yoffset * pLwc->viewport_rt_y + (line * -text_block->text_block_line_height);
 
 			last_x = x;
 
@@ -205,7 +208,7 @@ static void render_font_glyph(const LWCONTEXT* pLwc,
 			}
 			*size_scaled_xadvance_accum += last_size_scaled_xadvance;
 
-			if (prop_font_size * *size_scaled_xadvance_accum / pLwc->viewport_width * 2 * pLwc->viewport_aspect_ratio > text_block->text_block_width) {
+			if (prop_font_size * *size_scaled_xadvance_accum / pLwc->viewport_width * 2 * pLwc->viewport_rt_x > text_block->text_block_width) {
 				*size_scaled_xadvance_accum = 0;
 				line++;
 			}
@@ -294,7 +297,7 @@ void render_query_text_block_alpha(const LWCONTEXT* pLwc, const LWTEXTBLOCK* tex
 	}
 	bc[unicode_strlen] = 0;
 
-	const float prop_font_size = get_proportional_font_size(pLwc->viewport_height, text_block->size);
+	const float prop_font_size = get_proportional_font_size(pLwc->viewport_width, pLwc->viewport_height, text_block->size);
 	float size_scaled_xadvance_accum = 0;
 	float color_normal_outline_null[4];
 	float color_emp_outline_null[4];
@@ -343,8 +346,8 @@ void render_query_text_block_alpha(const LWCONTEXT* pLwc, const LWTEXTBLOCK* tex
 
 		// Render text block debug indicator
 		if (pLwc->font_texture_texture_mode) {
-			const float width_pixels = (float)(2 * pLwc->viewport_aspect_ratio) / pLwc->viewport_width;
-			const float height_pixels = (float)(2) / pLwc->viewport_height;
+			const float width_pixels = (float)(2 * pLwc->viewport_rt_x) / pLwc->viewport_width;
+			const float height_pixels = (float)(2 * pLwc->viewport_rt_y) / pLwc->viewport_height;
 
 			//const float w = 2 * width_pixels;
 			const float h = 2 * height_pixels;
@@ -354,7 +357,7 @@ void render_query_text_block_alpha(const LWCONTEXT* pLwc, const LWTEXTBLOCK* tex
 				pLwc,
 				text_block->text_block_x,
 				text_block->text_block_y,
-				prop_font_size * size_scaled_xadvance_accum * pLwc->viewport_aspect_ratio / pLwc->viewport_width * 2,
+				prop_font_size * size_scaled_xadvance_accum * pLwc->viewport_rt_x / pLwc->viewport_width * 2,
 				h,
 				pLwc->tex_programmed[LPT_SOLID_RED],
 				lvt,
@@ -387,7 +390,7 @@ void render_query_text_block_alpha(const LWCONTEXT* pLwc, const LWTEXTBLOCK* tex
 	}
 
 	if (query_result) {
-		query_result->total_glyph_width = prop_font_size * size_scaled_xadvance_accum * pLwc->viewport_aspect_ratio / pLwc->viewport_width * 2;
+		query_result->total_glyph_width = prop_font_size * size_scaled_xadvance_accum * pLwc->viewport_rt_x / pLwc->viewport_width * 2;
 		query_result->glyph_height = text_block->text_block_line_height;
 	}
 }

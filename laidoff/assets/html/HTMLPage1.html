@@ -144,11 +144,19 @@
         .price {
             font-size: 1.2em;
         }
+		#go-online-button {
+			position:absolute;
+			right:0px;
+			bottom:0px;
+			display:inline-block;
+			background-color:rgba(255, 0, 0, 0.5);
+			padding:5pt;
+		}
     </style>
 </head>
 <body>
-<a style="position:absolute;right:0px;bottom:0px;display:inline-block;background-color:rgba(255, 0, 0, 0.5);padding:5pt"
-   href="script:go_online()">온라인으로</a>
+<a id="go-online-button" href="script:go_online()">온라인으로</a>
+
 <div class="ship-button-header">
     메인 메뉴<br/>풀린 메뉴
 </div>

@@ -16,8 +16,7 @@
 #include "remtex.h"
 
 litehtml::text_container::text_container(LWCONTEXT* pLwc, int w, int h)
-    : pLwc(pLwc)
-    , default_font_size(72) {
+    : pLwc(pLwc) {
     set_client_size(w, h);
 }
 
@@ -515,4 +514,5 @@ void litehtml::text_container::set_client_size(int client_width, int client_heig
     this->client_height = client_height;
     this->client_aspect_ratio = (float)client_width / client_height;
     lwcontext_rt_corner(this->client_aspect_ratio, &client_rt_x, &client_rt_y);
+    default_font_size = static_cast<int>((72.0f*2) * client_height / 800);
 }

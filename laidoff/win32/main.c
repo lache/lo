@@ -65,8 +65,8 @@ static BOOL directory_exists(const char* szPath) {
 void window_size_callback(GLFWwindow* window, int width, int height) {
     LWCONTEXT* pLwc = (LWCONTEXT*)glfwGetWindowUserPointer(window);
 
-    lw_set_window_size(pLwc, width, height);
     lw_set_viewport_size(pLwc, width, height);
+    lw_set_window_size(pLwc, width, height);
 }
 
 static GLFWwindow* create_glfw_window() {
@@ -261,9 +261,9 @@ int main(int argc, char* argv[]) {
 
     lw_set_window(pLwc, window);
 
-    lw_set_window_size(pLwc, width, height);
     lw_set_viewport_size(pLwc, width, height);
-
+    lw_set_window_size(pLwc, width, height);
+    
     glfwSetWindowUserPointer(window, pLwc);
 
     lwc_start_logic_thread(pLwc);

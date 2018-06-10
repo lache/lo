@@ -57,8 +57,8 @@ char internal_data_path[1024];
     NSString* bundleVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
     set_package_version([bundleVersion UTF8String]);
     lw_set_device_model(self.pLwc, [platformString UTF8String]);
+	lw_set_viewport_size(self.pLwc, (int)screenWidth, (int)screenHeight);
     lw_set_window_size(self.pLwc, (int)screenWidth, (int)screenHeight);
-    lw_set_viewport_size(self.pLwc, (int)screenWidth, (int)screenHeight);
 
     self.pLwc->internal_data_path = internal_data_path;
     self.pLwc->user_data_path = internal_data_path;

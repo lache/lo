@@ -93,3 +93,17 @@ function transform_single_cell_land_to_water()
 		print('No selection')
 	end
 end
+
+local cam_iso_top_mode = 0
+function toggle_cam_iso_top_mode()
+	cam_iso_top_mode = ~cam_iso_top_mode
+	local eye
+	if cam_iso_top_mode == 0 then
+		eye = lo.new_vec3(0, 0, 10)
+	else
+		eye = lo.new_vec3(10, -10, 10)
+	end
+	lo.lwttl_set_cam_eye(c.ttl, eye)
+	lo.lwttl_update_aspect_ratio(c.ttl, c.viewport_width, c.viewport_height)
+	lo.delete_vec3(eye)
+end
