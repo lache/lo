@@ -514,5 +514,9 @@ void litehtml::text_container::set_client_size(int client_width, int client_heig
     this->client_height = client_height;
     this->client_aspect_ratio = (float)client_width / client_height;
     lwcontext_rt_corner(this->client_aspect_ratio, &client_rt_x, &client_rt_y);
-    default_font_size = static_cast<int>((72.0f*2) * client_height / 800);
+    //if (client_width > client_height) {
+        //default_font_size = static_cast<int>((72.0f * 2) * client_width / 450);
+    //} else {
+        default_font_size = static_cast<int>((72.0f * 2) * client_height / 800);
+    //}
 }

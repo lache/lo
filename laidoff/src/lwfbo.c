@@ -20,20 +20,23 @@ void lwfbo_init(LWFBO* fbo, int width, int height) {
     // Delete GL resources before init
     lwfbo_delete(fbo);
     // Start init
-#if LW_PLATFORM_IOS
-    // iOS does not support arbitrary size of FBOs
-    width = (int)upper_power_of_two((unsigned long)width);
-    height = (int)upper_power_of_two((unsigned long)height);
-#endif
     fbo->width = width;
     fbo->height = height;
+    // iOS does not support arbitrary size of FBOs
+#if LW_PLATFORM_IOS
+    fbo->tex_width = (int)upper_power_of_two((unsigned long)width);
+    fbo->tex_height = (int)upper_power_of_two((unsigned long)height);
+#else
+    fbo->tex_width = fbo->width;
+    fbo->tex_height = fbo->height;
+#endif
 
     glGenFramebuffers(1, &fbo->fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo->fbo);
 
     glGenRenderbuffers(1, &fbo->depth_render_buffer);
     glBindRenderbuffer(GL_RENDERBUFFER, fbo->depth_render_buffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, fbo->width, fbo->height);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, fbo->tex_width, fbo->tex_height);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_COMPONENT, GL_RENDERBUFFER, fbo->depth_render_buffer);
 
     glGenTextures(1, &fbo->color_tex);
@@ -42,8 +45,8 @@ void lwfbo_init(LWFBO* fbo, int width, int height) {
     glTexImage2D(GL_TEXTURE_2D,
                  0,
                  GL_RGBA,
-                 fbo->width,
-                 fbo->height,
+                 fbo->tex_width,
+                 fbo->tex_height,
                  0,
                  GL_RGBA,
                  GL_UNSIGNED_BYTE,

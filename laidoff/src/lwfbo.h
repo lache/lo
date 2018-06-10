@@ -4,8 +4,14 @@
 
 typedef struct _LWFBO {
 	GLuint fbo;
-	int width;
-	int height;
+    // FBO texture width resolution
+    int tex_width;
+    // FBO texture height resolution
+    int tex_height;
+    // FBO visible(rendered) width resolution
+    int width;
+    // FBO visible(rendered) height resolution
+    int height;
 	GLuint depth_render_buffer;
 	GLuint color_tex;
 	int dirty;
