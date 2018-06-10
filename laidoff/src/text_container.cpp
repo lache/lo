@@ -430,6 +430,12 @@ void litehtml::text_container::link(const std::shared_ptr<litehtml::document>& d
 
 void litehtml::text_container::on_anchor_click(const litehtml::tchar_t * url, const litehtml::element::ptr & el) {
     LOGIx("on_anchor_click: %s", url);
+    litehtml::position button_position;
+    el->get_redraw_box(button_position);
+    LOGI("%s: x=%d,y=%d,w=%d,h=%d", __func__, button_position.x, button_position.y, button_position.width, button_position.height);
+    LOGI("%s: top=%d,bottom=%d,left=%d,right=%d", __func__, el->border_top(), el->border_bottom(), el->border_left(), el->border_right());
+    const auto& ep = el->get_position();
+    LOGI("%s: ep x=%d,y=%d,w=%d,h=%d", __func__, ep.x, ep.y, ep.width, ep.height);
     if (strncmp(url, "script:", strlen("script:")) == 0) {
         script_evaluate_with_name_async(pLwc,
                                         url + strlen("script:"), // remove 'script:' prefix
