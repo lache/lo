@@ -676,6 +676,7 @@ static void engine_handle_cmd(struct android_app* app, int32_t cmd) {
             //eglMakeCurrent(engine->display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
             //glFlush();
             //engine_term_display(engine);
+            lw_on_destroy(engine->pLwc);
             engine->window_ready = 0;
             break;
         case APP_CMD_GAINED_FOCUS:
@@ -713,16 +714,66 @@ static void engine_handle_cmd(struct android_app* app, int32_t cmd) {
             engine_draw_frame(engine);
              */
             break;
-        case APP_CMD_WINDOW_RESIZED:
+        case APP_CMD_WINDOW_RESIZED: {
             // This callback will not be called because of Android bug.
             // https://issuetracker.google.com/issues/37054453
             // https://stackoverflow.com/questions/32587572/app-cmd-window-resized-is-not-called-but-native-window-is-resized
             LOGI("APP_CMD_WINDOW_RESIZED");
+            if (app) {
+                int w = ANativeWindow_getWidth(app->window);
+                int h = ANativeWindow_getHeight(app->window);
+                LOGI("APP_CMD_WINDOW_RESIZED status: width %d, height %d", w, h);
+            }
             break;
-        case APP_CMD_CONFIG_CHANGED:
+        }
+        case APP_CMD_CONFIG_CHANGED: {
             LOGI("APP_CMD_CONFIG_CHANGED");
-            recreate_surface(engine);
+            if (app) {
+                char lang[2], country[2];
+                AConfiguration_getLanguage(app->config, lang);
+                AConfiguration_getCountry(app->config, country);
+
+                int orientation = AConfiguration_getOrientation(app->config);
+
+                        LOGI("APP_CMD_CONFIG_CHANGED status: mcc=%d mnc=%d lang=%c%c cnt=%c%c orien=%d touch=%d dens=%d "
+                             "keys=%d nav=%d keysHid=%d navHid=%d sdk=%d size=%d long=%d "
+                             "modetype=%d modenight=%d",
+                     AConfiguration_getMcc(app->config),
+                     AConfiguration_getMnc(app->config),
+                     lang[0], lang[1], country[0], country[1],
+                     AConfiguration_getOrientation(app->config),
+                     AConfiguration_getTouchscreen(app->config),
+                     AConfiguration_getDensity(app->config),
+                     AConfiguration_getKeyboard(app->config),
+                     AConfiguration_getNavigation(app->config),
+                     AConfiguration_getKeysHidden(app->config),
+                     AConfiguration_getNavHidden(app->config),
+                     AConfiguration_getSdkVersion(app->config),
+                     AConfiguration_getScreenSize(app->config),
+                     AConfiguration_getScreenLong(app->config),
+                     AConfiguration_getUiModeType(app->config),
+                     AConfiguration_getUiModeNight(app->config));
+
+                if (engine && engine->pLwc) {
+                    int old_width = engine->width;
+                    int old_height = engine->height;
+                    int new_width = old_width;
+                    int new_height = old_height;
+                    if (orientation == ACONFIGURATION_ORIENTATION_ANY || orientation == ACONFIGURATION_ORIENTATION_PORT) {
+                        new_width = LWMIN(old_width, old_height);
+                        new_height = LWMAX(old_width, old_height);
+                    } else if (orientation == ACONFIGURATION_ORIENTATION_LAND) {
+                        new_width = LWMAX(old_width, old_height);
+                        new_height = LWMIN(old_width, old_height);
+                    } else {
+                        LOGEP("Unknown orientation: %d", orientation);
+                    }
+                    lw_set_viewport_size(engine->pLwc, new_width, new_height);
+                    lw_set_window_size(engine->pLwc, new_width, new_height);
+                }
+            }
             break;
+        }
         case APP_CMD_LOW_MEMORY:
             LOGI("APP_CMD_LOW_MEMORY");
             break;
@@ -1057,16 +1108,6 @@ Java_com_popsongremix_laidoff_LaidoffNativeActivity_setWindowSize(JNIEnv* env, j
         if (pLwc) {
 			lw_set_viewport_size(pLwc, w, h);
             lw_set_window_size(pLwc, w, h);
-        }
-    }
-}
-
-extern "C" JNIEXPORT void JNICALL
-Java_com_popsongremix_laidoff_LaidoffNativeActivity_lw_on_destroy(JNIEnv* env, jclass cls, jlong pLwcLong) {
-    if (shared_engine) {
-        LWCONTEXT* pLwc = pLwcLong ? (LWCONTEXT*) pLwcLong : shared_engine->pLwc;
-        if (pLwc) {
-            lw_on_destroy(pLwc);
         }
     }
 }
