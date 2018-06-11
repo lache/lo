@@ -1060,3 +1060,13 @@ Java_com_popsongremix_laidoff_LaidoffNativeActivity_setWindowSize(JNIEnv* env, j
         }
     }
 }
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_popsongremix_laidoff_LaidoffNativeActivity_lw_on_destroy(JNIEnv* env, jclass cls, jlong pLwcLong) {
+    if (shared_engine) {
+        LWCONTEXT* pLwc = pLwcLong ? (LWCONTEXT*) pLwcLong : shared_engine->pLwc;
+        if (pLwc) {
+            lw_on_destroy(pLwc);
+        }
+    }
+}

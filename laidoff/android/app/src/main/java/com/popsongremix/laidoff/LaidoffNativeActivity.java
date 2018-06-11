@@ -53,6 +53,8 @@ public class LaidoffNativeActivity extends NativeActivity {
 
     public static native void sendInputText(String text);
 
+    public static native void lw_on_destroy(long pLwcLong);
+
     private static LaidoffNativeActivity INSTANCE;
     public static final String LOG_TAG = "and9";
     private SoundPool mSoundPool;
@@ -304,7 +306,7 @@ public class LaidoffNativeActivity extends NativeActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-
+        lw_on_destroy(0);
         Log.d(LOG_TAG, "onDestroy()");
     }
 
