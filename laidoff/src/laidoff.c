@@ -1770,6 +1770,7 @@ void lw_deinit(LWCONTEXT* pLwc) {
 }
 
 void lw_on_destroy(LWCONTEXT* pLwc) {
+    LOGI("%s", __func__);
     lwttl_write_last_state(pLwc->ttl, pLwc);
     release_font(pLwc->pFnt);
     release_string(pLwc->dialog);

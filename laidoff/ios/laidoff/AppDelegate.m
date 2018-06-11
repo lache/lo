@@ -11,6 +11,7 @@
 
 void set_app_delegate(id ad);
 void lw_set_push_token(LWCONTEXT* pLwc, int domain, const char* token);
+void lw_on_destroy(LWCONTEXT* pLwc);
 
 @interface AppDelegate ()
 
@@ -154,6 +155,7 @@ didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSe
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    lw_on_destroy(self.pLwc);
 }
 
 - (void) alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {

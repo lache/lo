@@ -956,6 +956,7 @@ static int loop_pipe_reader(zloop_t* loop, zsock_t* pipe, void* args) {
     zmsg_t* msg = zmsg_recv(pipe);
     LOGIPx(LWLOGPOS "Message received through pipe");
     zframe_t* f = zmsg_first(msg);
+    int rc = 0;
     while (f) {
         byte* d = zframe_data(f);
         size_t s = zframe_size(f);
@@ -1013,13 +1014,16 @@ static int loop_pipe_reader(zloop_t* loop, zsock_t* pipe, void* args) {
             byte* name = zframe_data(f);
             //size_t code_len = zframe_size(f);
             script_evaluate_with_name(pLwc->L, code, code_len, name);
+        } else if (strncmp((const char*)d, "$TERM", 5) == 0) {
+            // ZFRAME spec?
+            rc = -1;
         } else {
             abort();
         }
         f = zmsg_next(msg);
     }
     zmsg_destroy(&msg);
-    return 0;
+    return rc;
 }
 
 static int jsoneq(const char *json, jsmntok_t *tok, const char *s) {
