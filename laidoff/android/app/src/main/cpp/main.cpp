@@ -79,6 +79,7 @@ static int s_download_assets;
 extern "C" int lw_get_text_input_seq();
 extern "C" const char* lw_get_text_input();
 extern "C" void lw_set_push_token(LWCONTEXT* pLwc, int domain, const char* token);
+extern "C" int lw_request_current_orientation();
 
 const char* egl_get_error_string(EGLint error) {
     switch (error) {
@@ -733,7 +734,7 @@ static void engine_handle_cmd(struct android_app* app, int32_t cmd) {
                 AConfiguration_getLanguage(app->config, lang);
                 AConfiguration_getCountry(app->config, country);
 
-                int orientation = AConfiguration_getOrientation(app->config);
+                int orientation = lw_request_current_orientation();//AConfiguration_getOrientation(app->config);
 
                         LOGI("APP_CMD_CONFIG_CHANGED status: mcc=%d mnc=%d lang=%c%c cnt=%c%c orien=%d touch=%d dens=%d "
                              "keys=%d nav=%d keysHid=%d navHid=%d sdk=%d size=%d long=%d "
@@ -869,8 +870,10 @@ void android_main(struct android_app* state) {
         // update width & height on LWCONTEXT side if inconsistency with engine found
         if (engine.pLwc) {
             if (engine.width != engine.pLwc->window_width || engine.height != engine.pLwc->window_height) {
-				lw_set_viewport_size(engine.pLwc, engine.width, engine.height);
-                lw_set_window_size(engine.pLwc, engine.width, engine.height);
+                engine.width = engine.pLwc->window_width;
+                engine.height = engine.pLwc->window_height;
+				//lw_set_viewport_size(engine.pLwc, engine.width, engine.height);
+                //lw_set_window_size(engine.pLwc, engine.width, engine.height);
             }
         }
         // Read all pending events.
@@ -1064,6 +1067,10 @@ extern "C" void lw_request_remote_notification_device_token(LWCONTEXT* pLwc) {
     request_void_long_command("requestPushToken", (jlong) pLwc);
 
     //lw_set_push_token(pLwc, 2, push_token);
+}
+
+extern "C" int lw_request_current_orientation() {
+    return request_int_string_command("getCurrentOrientation", "");
 }
 
 extern "C" JNIEXPORT void JNICALL

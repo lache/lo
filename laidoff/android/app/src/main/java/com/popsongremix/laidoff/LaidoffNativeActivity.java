@@ -442,8 +442,8 @@ public class LaidoffNativeActivity extends NativeActivity {
     }
 
     @SuppressWarnings("unused")
-    public int getCurrentOrientation() {
-        return getResources().getConfiguration().orientation;
+    public static int getCurrentOrientation(String dummy) {
+        return INSTANCE.getResources().getConfiguration().orientation;
     }
 
     public static String getPackageVersion() {
