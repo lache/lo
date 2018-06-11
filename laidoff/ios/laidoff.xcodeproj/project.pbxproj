@@ -468,10 +468,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0E38E11C6E337B7525B05C1D /* lwfbo.c */ = {isa = PBXFileReference; includeInIndex = 1; name = lwfbo.c; path = ../src/lwfbo.c; sourceTree = "<group>"; };
-		153809DC50A3E01320158089 /* render_ttl.c */ = {isa = PBXFileReference; includeInIndex = 1; name = render_ttl.c; path = ../src/render_ttl.c; sourceTree = "<group>"; };
+		0E38E11C6E337B7525B05C1D /* lwfbo.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = lwfbo.c; path = ../src/lwfbo.c; sourceTree = "<group>"; };
+		153809DC50A3E01320158089 /* render_ttl.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = render_ttl.c; path = ../src/render_ttl.c; sourceTree = "<group>"; };
 		2601AFFC1EE1549700989AA6 /* platform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = platform.h; path = ../build/include/platform.h; sourceTree = "<group>"; };
-		3EF18865C9E87623A8107AC5 /* render_morph.c */ = {isa = PBXFileReference; includeInIndex = 1; name = render_morph.c; path = ../src/render_morph.c; sourceTree = "<group>"; };
+		3EF18865C9E87623A8107AC5 /* render_morph.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = render_morph.c; path = ../src/render_morph.c; sourceTree = "<group>"; };
 		5633AC311EADDF98003F1549 /* net.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = net.c; sourceTree = "<group>"; };
 		566372651EBA52D3001DA3F4 /* collision.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = collision.h; sourceTree = "<group>"; };
 		566372661EBA52D3001DA3F4 /* collision_space.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = collision_space.h; sourceTree = "<group>"; };
@@ -1433,8 +1433,8 @@
 		6CF70E4020597A2B00F782C8 /* xxhash.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = xxhash.h; path = ../../../../lz4/lib/xxhash.h; sourceTree = "<group>"; };
 		6CFC5017206012360077E1B7 /* lwttl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lwttl.h; sourceTree = "<group>"; };
 		6CFC5018206012360077E1B7 /* lwttl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lwttl.c; sourceTree = "<group>"; };
-		EA30351E6C793142A9AC7BD3 /* lwchatringbuffer.c */ = {isa = PBXFileReference; includeInIndex = 1; name = lwchatringbuffer.c; path = ../src/lwchatringbuffer.c; sourceTree = "<group>"; };
-		FE6E8484ADBCBB3A0251BB37 /* render_puckgame.c */ = {isa = PBXFileReference; includeInIndex = 1; name = render_puckgame.c; path = ../src/render_puckgame.c; sourceTree = "<group>"; };
+		EA30351E6C793142A9AC7BD3 /* lwchatringbuffer.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = lwchatringbuffer.c; path = ../src/lwchatringbuffer.c; sourceTree = "<group>"; };
+		FE6E8484ADBCBB3A0251BB37 /* render_puckgame.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = render_puckgame.c; path = ../src/render_puckgame.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */

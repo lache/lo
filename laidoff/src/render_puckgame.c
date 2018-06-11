@@ -1574,12 +1574,12 @@ static void render_main_menu_ui_layer(const LWCONTEXT* pLwc,
         LW_GL_VIEWPORT();
         // render FBO (HTML UI)
         render_solid_box_ui_lvt_flip_y_uv(pLwc,
-                                          0,
-                                          0,
-                                          2 * pLwc->viewport_rt_x,
-                                          2 * pLwc->viewport_rt_y,
+                                          -pLwc->viewport_rt_x,
+                                          -pLwc->viewport_rt_y,
+                                          2 * pLwc->viewport_rt_x * pLwc->shared_fbo.tex_width / pLwc->shared_fbo.width,
+                                          2 * pLwc->viewport_rt_y * pLwc->shared_fbo.tex_height / pLwc->shared_fbo.height,
                                           pLwc->shared_fbo.color_tex,
-                                          LVT_CENTER_CENTER_ANCHORED_SQUARE,
+                                          LVT_LEFT_BOTTOM_ANCHORED_SQUARE,
                                           1);
         // revert to default viewport
         ((LWCONTEXT*)pLwc)->viewport_x = viewport_x;

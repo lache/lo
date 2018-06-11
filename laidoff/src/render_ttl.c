@@ -1,4 +1,4 @@
-﻿#include <string.h>
+#include <string.h>
 #include "render_ttl.h"
 #include "lwcontext.h"
 #include "render_text_block.h"
@@ -1876,12 +1876,12 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     // render FBO (HTML UI)
     render_solid_box_ui_lvt_flip_y_uv(pLwc,
-                                      0,
-                                      0,
-                                      2 * pLwc->viewport_rt_x,
-                                      2 * pLwc->viewport_rt_y,
+                                      -pLwc->viewport_rt_x,
+                                      -pLwc->viewport_rt_y,
+                                      2 * pLwc->viewport_rt_x * pLwc->shared_fbo.tex_width / pLwc->shared_fbo.width,
+                                      2 * pLwc->viewport_rt_y * pLwc->shared_fbo.tex_height / pLwc->shared_fbo.height,
                                       pLwc->shared_fbo.color_tex,
-                                      LVT_CENTER_CENTER_ANCHORED_SQUARE,
+                                      LVT_LEFT_BOTTOM_ANCHORED_SQUARE,
                                       1);
     // render joystick
     if (0) {
