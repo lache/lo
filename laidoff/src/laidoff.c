@@ -1574,6 +1574,10 @@ void lw_set_window_size(LWCONTEXT* pLwc, int w, int h) {
           pLwc->window_height,
           w,
           h);
+    if (pLwc->window_width == w && pLwc->window_height == h) {
+        LOGIP("Skipping to set window size (already set)");
+        return;
+    }
     pLwc->window_width = w;
     pLwc->window_height = h;
     if (pLwc->window_width > 0 && pLwc->window_height > 0) {
@@ -1629,6 +1633,7 @@ void lw_set_window_size(LWCONTEXT* pLwc, int w, int h) {
 }
 
 void lw_set_viewport_size(LWCONTEXT* pLwc, int w, int h) {
+    // this function may called in every frame
     pLwc->viewport_width = w;
     pLwc->viewport_height = h;
     if (pLwc->viewport_width > 0 && pLwc->viewport_height > 0) {

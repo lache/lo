@@ -52,7 +52,43 @@ void lw_set_push_token(LWCONTEXT* pLwc, int domain, const char* token);
             // error while checking latest version
         }
     }
+    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+    [[NSNotificationCenter defaultCenter]
+     addObserver:self selector:@selector(orientationChanged:)
+     name:UIDeviceOrientationDidChangeNotification
+     object:[UIDevice currentDevice]];
     return YES;
+}
+
+- (void)orientationChanged:(NSNotification *)note
+{
+    CGRect screenRect = [[UIScreen mainScreen] bounds];
+    CGFloat screenScale = [[UIScreen mainScreen] nativeScale];
+    CGFloat screenWidth = screenScale * screenRect.size.width;
+    CGFloat screenHeight = screenScale * screenRect.size.height;
+    lw_set_viewport_size(self.pLwc, (int)screenWidth, (int)screenHeight);
+    lw_set_window_size(self.pLwc, (int)screenWidth, (int)screenHeight);
+    
+    UIDevice * device = note.object;
+    switch(device.orientation)
+    {
+        case UIDeviceOrientationPortrait:
+            break;
+        case UIDeviceOrientationPortraitUpsideDown:
+            break;
+        case UIDeviceOrientationFaceUp:
+            break;
+        case UIDeviceOrientationUnknown:
+            break;
+        case UIDeviceOrientationFaceDown:
+            break;
+        case UIDeviceOrientationLandscapeLeft:
+            break;
+        case UIDeviceOrientationLandscapeRight:
+            break;
+        default:
+            break;
+    };
 }
 
 - (void)application:(UIApplication *)application
