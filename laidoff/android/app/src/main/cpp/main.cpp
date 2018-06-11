@@ -444,12 +444,22 @@ static void recreate_surface(engine* engine) {
         return;
     }
 
+    if (engine->pLwc == nullptr) {
+        LOGEP("Recreating surface failed since pLwc is null.");
+        return;
+    }
+
+    LOGI("Recreating surface since size changed from %d x %d --> %d x %d",
+         engine->pLwc->window_width, engine->pLwc->window_height, w, h);
+
     engine->surface_ready = 0;
     if (engine->display && engine->config && engine->app && engine->app->window) {
         if (engine->surface != EGL_NO_SURFACE) {
+            // *******
             // eglDestroySurface() call below makes
             // infinite 'Emulator: Draw context is NULL' errors
             // on emulators... comment it for now
+            // *******
             eglDestroySurface(engine->display, engine->surface);
         }
 
@@ -654,6 +664,8 @@ static void engine_handle_cmd(struct android_app* app, int32_t cmd) {
         case APP_CMD_DESTROY:
             LOGI("APP_CMD_DESTROY");
             app->destroyRequested = 1;
+            lw_on_destroy(engine->pLwc);
+            engine->pLwc = 0;
             break;
         case APP_CMD_SAVE_STATE:
             LOGI("APP_CMD_SAVE_STATE");
@@ -673,11 +685,11 @@ static void engine_handle_cmd(struct android_app* app, int32_t cmd) {
             break;
         case APP_CMD_TERM_WINDOW:
             LOGI("APP_CMD_TERM_WINDOW");
+            // Also called when 'home' button pressed
             // The window is being hidden or closed, clean it up.
             //eglMakeCurrent(engine->display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
             //glFlush();
             //engine_term_display(engine);
-            lw_on_destroy(engine->pLwc);
             engine->window_ready = 0;
             break;
         case APP_CMD_GAINED_FOCUS:
