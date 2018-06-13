@@ -19,6 +19,7 @@
 #if LW_PLATFORM_IOS
 #include <alloca.h>
 #endif
+#include "iconchar.h"
 
 #define WATER_COLOR_R (0 / 255.f)
 #define WATER_COLOR_G (94 / 255.f)
@@ -974,34 +975,19 @@ static void render_sea_objects_nameplate(const LWCONTEXT* pLwc, const LWTTLFIELD
         const char* route_state = lwttl_route_state(&ttl_dynamic_state->obj[i]);
         if (view_scale <= 4) {
             if (ttl_dynamic_state->obj[i].route_flags.breakdown) {
-                sprintf(obj_nameplate,
-                        "%s%s",
-                        u8"⊠",
-                        route_state);
+                sprintf(obj_nameplate, "%s%s", LW_UTF8_TTL_CHAR_ICON_BREAKDOWN, route_state);
             } else if (ttl_dynamic_state->obj[i].route_flags.sailing) {
-                sprintf(obj_nameplate,
-                        "%s%.0f",
-                        u8"⏅",
-                        ttl_dynamic_state->obj[i].route_param);
+                sprintf(obj_nameplate, "%s%.0f", LW_UTF8_TTL_CHAR_ICON_SHIP, ttl_dynamic_state->obj[i].route_param);
             } else {
-                sprintf(obj_nameplate,
-                        "%s%s",
-                        u8"⏅",
-                        route_state);
+                sprintf(obj_nameplate, "%s%s", LW_UTF8_TTL_CHAR_ICON_SHIP, route_state);
             }
         } else if (view_scale <= 32) {
             if (ttl_dynamic_state->obj[i].route_flags.breakdown) {
-                sprintf(obj_nameplate,
-                        "%s",
-                        u8"⊠");
+                sprintf(obj_nameplate, "%s", LW_UTF8_TTL_CHAR_ICON_BREAKDOWN);
             } else if (ttl_dynamic_state->obj[i].route_flags.sailing) {
-                sprintf(obj_nameplate,
-                        "%s",
-                        u8"⏅");
+                sprintf(obj_nameplate, "%s", LW_UTF8_TTL_CHAR_ICON_SHIP);
             } else {
-                sprintf(obj_nameplate,
-                        "%s",
-                        u8"⏅");
+                sprintf(obj_nameplate, "%s", LW_UTF8_TTL_CHAR_ICON_SHIP);
             }
         }
 
@@ -1501,20 +1487,20 @@ static void render_single_cell_info(const LWCONTEXT* pLwc,
     if (p->city_id >= 0 && p->city_name[0]) {
         sprintf(info,
                 "%s%s%s%d",
-                u8"★",
+                LW_UTF8_TTL_CHAR_ICON_CITY,
                 p->city_name,
-                u8"❖",
+                LW_UTF8_TTL_CHAR_ICON_POPULATION,
                 p->population >> 16);
     } else if (p->port_id >= 0 && p->port_name[0]) {
         sprintf(info,
                 "%s%s\n%s%d%s%d%s%d",
-                u8"♦",
+                LW_UTF8_TTL_CHAR_ICON_SEAPORT,
                 p->port_name,
-                u8"☗",
+                LW_UTF8_TTL_CHAR_ICON_CARGO,
                 p->cargo,
-                u8"⬆",
+                LW_UTF8_TTL_CHAR_ICON_CARGO_LOADED,
                 p->cargo_loaded,
-                u8"⬇",
+                LW_UTF8_TTL_CHAR_ICON_CARGO_UNLOADED,
                 p->cargo_unloaded);
     } else {
         /*sprintf(info,
@@ -1695,11 +1681,11 @@ static void render_ttl_stat(const LWTTL* ttl, const LWCONTEXT* pLwc) {
     snprintf(gold_text,
              ARRAY_SIZE(gold_text) - 1,
              "%s%d\n%s%d\n%s%d",
-             u8"◊",
+             LW_UTF8_TTL_CHAR_ICON_GOLD,
              lwttl_gold(pLwc->ttl),
-             u8"♦",
+             LW_UTF8_TTL_CHAR_ICON_SEAPORT,
              lwttl_ports(pLwc->ttl),
-             u8"⏅",
+             LW_UTF8_TTL_CHAR_ICON_SHIP,
              lwttl_ships(pLwc->ttl));
     gold_text[ARRAY_SIZE(gold_text) - 1] = 0;
     test_text_block.text = gold_text;

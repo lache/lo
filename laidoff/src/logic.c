@@ -529,7 +529,7 @@ void reset_battle_context(LWCONTEXT* pLwc) {
 
     set_creature_data(
         &pLwc->player[1],
-        u8"Screenwriter",
+        "Screenwriter",
         2,
         25,
         50,
@@ -545,7 +545,7 @@ void reset_battle_context(LWCONTEXT* pLwc) {
 
     set_creature_data(
         &pLwc->player[2],
-        u8"Nail Clipper",
+        "Nail Clipper",
         3,
         46,
         46,
@@ -561,7 +561,7 @@ void reset_battle_context(LWCONTEXT* pLwc) {
 
     set_creature_data(
         &pLwc->player[3],
-        u8"Great Writer",
+        "Great Writer",
         8,
         105,
         105,

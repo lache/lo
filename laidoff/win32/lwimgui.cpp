@@ -6,7 +6,7 @@
 #include "lwttl.h"
 #include "lwlog.h"
 #include <stdio.h>
-
+#include "iconchar.h"
 static bool show_test_window = false;
 static bool show_chat_window = false;
 static bool show_another_window = true;
@@ -82,7 +82,7 @@ extern "C" void lwimgui_render(GLFWwindow* window) {
     // 2. Show another simple window, this time using an explicit Begin/End pair
     if (show_another_window) {
         if (show_chat_window) {
-            static char buf[256] = u8"";
+            static char buf[256] = "";
             static bool focus_here = false;
             const int chat_window_height = 250;
             ImGui::SetNextWindowPos(ImVec2(0, (float)pLwc->window_height - chat_window_height));
@@ -147,8 +147,8 @@ extern "C" void lwimgui_render(GLFWwindow* window) {
                 lwttl_degrees_to_dms(&lng_d, &lng_m, &lng_s, selected_lnglat.lng);
                 lwttl_degrees_to_dms(&lat_d, &lat_m, &lat_s, selected_lnglat.lat);
                 ImGui::Text("LNG %d%s%d%s%f%s, LAT %d%s%d%s%f%s",
-                            lng_d, u8"°", lng_m, u8"′", lng_s, u8"″",
-                            lat_d, u8"°", lat_m, u8"′", lat_s, u8"″");
+                            lng_d, LW_UTF8_DEGREES, lng_m, LW_UTF8_MINUTES, lng_s, LW_UTF8_SECONDS,
+                            lat_d, LW_UTF8_DEGREES, lat_m, LW_UTF8_MINUTES, lat_s, LW_UTF8_SECONDS);
                 int xc0, yc0;
                 lwttl_selected_int(pLwc->ttl, &xc0, &yc0);
                 const LWPTTLSINGLECELL* p = lwttl_single_cell(pLwc->ttl);

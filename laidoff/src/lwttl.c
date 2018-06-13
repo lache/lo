@@ -21,6 +21,7 @@
 #include "pcg_basic.h"
 #include "lwmath.h"
 #include <assert.h>
+#include "iconchar.h"
 
 #define LOCAL_SAVE_FILE_MAGIC (0x19850506)
 #define LOCAL_SAVE_FILE_LATEST_VERSION (2)
@@ -2375,7 +2376,7 @@ void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc) {
                 snprintf(text,
                          ARRAY_SIZE(text) - 1,
                          "%s%d",
-                         u8"◊",
+                         LW_UTF8_TTL_CHAR_ICON_GOLD,
                          p->amount);
                 text[ARRAY_SIZE(text) - 1] = 0;
                 spawn_world_text(ttl, text, p->xc0, p->yc0);
@@ -2394,7 +2395,7 @@ void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc) {
                 snprintf(text,
                          ARRAY_SIZE(text) - 1,
                          "%s%d",
-                         u8"☗",
+                         LW_UTF8_TTL_CHAR_ICON_CARGO,
                          p->amount);
                 text[ARRAY_SIZE(text) - 1] = 0;
                 LW_TTL_WORLD_TEXT_ANIM_TYPE anim_type = LTWTAT_STOP;
@@ -2445,7 +2446,7 @@ void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc) {
                 snprintf(text,
                          ARRAY_SIZE(text) - 1,
                          "%s%d",
-                         u8"◊",
+                         LW_UTF8_TTL_CHAR_ICON_GOLD,
                          -p->amount);
                 text[ARRAY_SIZE(text) - 1] = 0;
                 spawn_world_text(ttl, text, p->xc0, p->yc0);
