@@ -1365,8 +1365,8 @@ void lwc_start_logic_thread(LWCONTEXT* pLwc) {
     // [2] Ball Rumble Scene
     // [3] TTL Scene
     /*[1]*///load_field_2_init_runtime_data_async(pLwc, pLwc->logic_actor);
-    /*[2]*/load_scene_async(pLwc, pLwc->logic_actor, change_to_puck_game);
-    /*[3]*///load_scene_async(pLwc, pLwc->logic_actor, change_to_ttl);
+    /*[2]*///load_scene_async(pLwc, pLwc->logic_actor, change_to_puck_game);
+    /*[3]*/load_scene_async(pLwc, pLwc->logic_actor, change_to_ttl);
 }
 
 const char* logic_server_addr(int idx) {

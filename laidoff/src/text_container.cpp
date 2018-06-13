@@ -199,32 +199,32 @@ void litehtml::text_container::draw_background(litehtml::uint_ptr hdc, const lit
         // 1x1 transparent dummy image used for CSS image slicing method
         return;
     }
-    
+
     int lae = LAE_TTL_TITLE;
     int lae_alpha = LAE_TTL_TITLE_ALPHA;
 
     int show_test_image = 0;
-    
+
     if (bg.image.length()) {
         LOGIx("draw_background [IMAGE]: x=%d,y=%d,w=%d,h=%d,clipbox=%d/%d/%d/%d,position_xy=%d/%d,image_size=%d/%d,color=0x%02X%02X%02X|%02X,image=%s,baseurl=%s",
-             bg.border_box.x,
-             bg.border_box.y,
-             bg.border_box.width,
-             bg.border_box.height,
-             bg.clip_box.x,
-             bg.clip_box.y,
-             bg.clip_box.width,
-             bg.clip_box.height,
-             bg.position_x,
-             bg.position_y,
-             bg.image_size.width,
-             bg.image_size.height,
-             bg.color.red,
-             bg.color.green,
-             bg.color.blue,
-             bg.color.alpha,
-             bg.image.c_str(),
-             bg.baseurl.c_str());
+              bg.border_box.x,
+              bg.border_box.y,
+              bg.border_box.width,
+              bg.border_box.height,
+              bg.clip_box.x,
+              bg.clip_box.y,
+              bg.clip_box.width,
+              bg.clip_box.height,
+              bg.position_x,
+              bg.position_y,
+              bg.image_size.width,
+              bg.image_size.height,
+              bg.color.red,
+              bg.color.green,
+              bg.color.blue,
+              bg.color.alpha,
+              bg.image.c_str(),
+              bg.baseurl.c_str());
         show_test_image = 1;
 
         if (bg.image == "slice-test.png") {
@@ -430,12 +430,18 @@ void litehtml::text_container::link(const std::shared_ptr<litehtml::document>& d
 
 void litehtml::text_container::on_anchor_click(const litehtml::tchar_t * url, const litehtml::element::ptr & el) {
     LOGIx("on_anchor_click: %s", url);
-    litehtml::position button_position;
-    el->get_redraw_box(button_position);
-    LOGI("%s: x=%d,y=%d,w=%d,h=%d", __func__, button_position.x, button_position.y, button_position.width, button_position.height);
-    LOGI("%s: top=%d,bottom=%d,left=%d,right=%d", __func__, el->border_top(), el->border_bottom(), el->border_left(), el->border_right());
-    const auto& ep = el->get_position();
-    LOGI("%s: ep x=%d,y=%d,w=%d,h=%d", __func__, ep.x, ep.y, ep.width, ep.height);
+    auto global_position = el->get_position();
+    litehtml::element::ptr el_recursive = el;
+    while (el_recursive->have_parent()) {
+        el_recursive = el_recursive->parent();
+        const auto& parent_position = el_recursive->get_position();
+        global_position.x += parent_position.x;
+        global_position.y += parent_position.y;
+    }
+    global_position += el->get_paddings();
+    global_position += el->get_borders();
+    LOGIx("%s: global position x=%d,y=%d,w=%d,h=%d", __func__, global_position.x, global_position.y, global_position.width, global_position.height);
+    htmlui_add_touch_rect(pLwc->htmlui, global_position.x, global_position.y, global_position.width, global_position.height);
     if (strncmp(url, "script:", strlen("script:")) == 0) {
         script_evaluate_with_name_async(pLwc,
                                         url + strlen("script:"), // remove 'script:' prefix
@@ -523,6 +529,6 @@ void litehtml::text_container::set_client_size(int client_width, int client_heig
     //if (client_width > client_height) {
         //default_font_size = static_cast<int>((72.0f * 2) * client_width / 450);
     //} else {
-        default_font_size = static_cast<int>((72.0f * 2) * client_height / 800);
+    default_font_size = static_cast<int>((72.0f * 2) * client_height / 800);
     //}
 }

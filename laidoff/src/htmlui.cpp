@@ -13,6 +13,7 @@
 #include "lwmutex.h"
 #include "logic.h"
 #include "lwlog.h"
+#include "lwtimepoint.h"
 
 class LWHTMLUI {
 public:
@@ -21,7 +22,8 @@ public:
         , container(_pLwc, w, h)
         , client_width(w)
         , client_height(h)
-        , refresh_html_body(0) {
+        , refresh_html_body(0)
+        , touch_rect(4) {
         LWMUTEX_INIT(parsing_mutex);
         std::shared_ptr<char> master_css_str(create_string_from_file(ASSETS_BASE_PATH "css" PATH_SEPARATOR "master.css"), free);
         browser_context.load_master_stylesheet(master_css_str.get());
@@ -176,6 +178,30 @@ public:
     void execute_anchor_click(const char* url) {
         container.on_anchor_click(url, doc->root());
     }
+    void add_touch_rect(int x, int y, int width, int height) {
+        double start = lwtimepoint_now_seconds();
+        for (size_t i = 0; i < touch_rect.size(); i++) {
+            if (start - touch_rect[i].start > 1.0) {
+                touch_rect[i].start = start;
+                touch_rect[i].x = x;
+                touch_rect[i].y = y;
+                touch_rect[i].width = width;
+                touch_rect[i].height = height;
+                return;
+            }
+        }
+        LOGE("touch_rect capacity exceeded.");
+    }
+    int get_touch_rect_count() const {
+        return static_cast<int>(touch_rect.size());
+    }
+    void get_touch_rect(int index, double* start, int* x, int* y, int* width, int* height) const {
+        *start = touch_rect[index].start;
+        *x = touch_rect[index].x;
+        *y = touch_rect[index].y;
+        *width = touch_rect[index].width;
+        *height = touch_rect[index].height;
+    }
 private:
     LWHTMLUI();
     LWHTMLUI(const LWHTMLUI&);
@@ -190,6 +216,12 @@ private:
     int refresh_html_body;
     LWMUTEX parsing_mutex;
     std::string last_html_str;
+    struct TOUCHRECT {
+        double start;
+        int x, y, width, height;
+        TOUCHRECT() : start(0), x(0), y(0), width(0), height(0) {}
+    };
+    std::vector<TOUCHRECT> touch_rect;
 };
 
 void* htmlui_new(LWCONTEXT* pLwc) {
@@ -347,4 +379,19 @@ int htmlui_get_refresh_html_body(void* c) {
 void htmlui_execute_anchor_click(void* c, const char* url) {
     LWHTMLUI* htmlui = (LWHTMLUI*)c;
     htmlui->execute_anchor_click(url);
+}
+
+void htmlui_add_touch_rect(void* c, int x, int y, int width, int height) {
+    LWHTMLUI* htmlui = (LWHTMLUI*)c;
+    htmlui->add_touch_rect(x, y, width, height);
+}
+
+int htmlui_get_touch_rect_count(void* c) {
+    LWHTMLUI* htmlui = (LWHTMLUI*)c;
+    return htmlui->get_touch_rect_count();
+}
+
+void htmlui_get_touch_rect(void* c, int index, double* start, int* x, int* y, int* width, int* height) {
+    LWHTMLUI* htmlui = (LWHTMLUI*)c;
+    htmlui->get_touch_rect(index, start, x, y, width, height);
 }

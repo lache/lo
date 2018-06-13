@@ -328,9 +328,10 @@ LWTTL* lwttl_new(float aspect_ratio) {
     vp.cell_grid = 1;
     vp.render_flags = LTFVRF_ALL;
     vp.render_flags &= ~LTFVRF_COORDINATES;
-#if !LW_PLATFORM_WIN32
+#if 1 || !LW_PLATFORM_WIN32
     vp.render_flags &= ~LTFVRF_CELL_BOX_BOUNDARY;
 #endif
+    vp.show = 1;
     lwttl_add_field_viewport(ttl, &vp);
     lwttl_update_view_proj(&ttl->viewports[0],
                            &ttl->viewports[0], // main viewport ref
@@ -362,6 +363,7 @@ LWTTL* lwttl_new(float aspect_ratio) {
     vp.render_flags = LTFVRF_LAND_CELL | LTFVRF_CELL_PIXEL_SELECTOR | LTFVRF_SEAPORT | LTFVRF_CITY | LTFVRF_SALVAGE;
     // fix cell selector height to maximum on aux1 viewport
     vp.selected.selected_cell_height = vp.selected.selected_cell_max_height;
+    vp.show = 0;
     lwttl_add_field_viewport(ttl, &vp);
     lwttl_update_view_proj(&ttl->viewports[1],
                            &ttl->viewports[0], // main viewport ref
@@ -2972,4 +2974,8 @@ void lwttl_cell_box(const LWTTL* ttl, int index, int* xc0, int* yc0, int* xc1, i
     *yc0 = ttl->cell_box[index].yc0;
     *xc1 = ttl->cell_box[index].xc1;
     *yc1 = ttl->cell_box[index].yc1;
+}
+
+int lwttl_viewport_show(const LWTTLFIELDVIEWPORT* vp) {
+    return vp->show;
 }

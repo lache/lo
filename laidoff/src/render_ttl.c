@@ -20,6 +20,8 @@
 #include <alloca.h>
 #endif
 #include "iconchar.h"
+#include "logic.h"
+#include "lwtimepoint.h"
 
 #define WATER_COLOR_R (0 / 255.f)
 #define WATER_COLOR_G (94 / 255.f)
@@ -653,7 +655,7 @@ static void render_land_cell_bitmap(const LWTTL* ttl,
                                                     sz,
                                                     pLwc->tex_atlas[tile_lae],
                                                     lvt,
-                                                    0.5f,
+                                                    1.0f,
                                                     0,
                                                     0,
                                                     0,
@@ -1799,6 +1801,52 @@ static void lwc_render_ttl_field_viewport(const LWCONTEXT* pLwc, const LWTTLFIEL
     }
 }
 
+static void render_htmlui_touch_rect(const LWCONTEXT* pLwc) {
+    // overwrite ui projection matrix
+    logic_update_default_ui_proj_for_htmlui(pLwc->shared_fbo.width, pLwc->shared_fbo.height, ((LWCONTEXT*)pLwc)->proj);
+    const int touch_rect_count = htmlui_get_touch_rect_count(pLwc->htmlui);
+    const double now = lwtimepoint_now_seconds();
+    for (int i = 0; i < touch_rect_count; i++) {
+        double start;
+        int sx, sy, swidth, sheight;
+        htmlui_get_touch_rect(pLwc->htmlui, i, &start, &sx, &sy, &swidth, &sheight);
+        float x = sx + swidth / 2.0f;
+        float y = pLwc->shared_fbo.height - (sy + sheight / 2.0f);
+        double progress = now - start;
+        if (progress < 0.2) {
+            render_solid_vb_ui_flip_y_uv(pLwc,
+                                         x,
+                                         y,
+                                         (float)(swidth + (10 * progress / 0.2)),
+                                         (float)(sheight + (10 * progress / 0.2)),
+                                         pLwc->tex_atlas[LAE_ZERO_FOR_BLACK],
+                                         LVT_CENTER_CENTER_ANCHORED_SQUARE,
+                                         (float)(progress),
+                                         0.6f,
+                                         0.3f,
+                                         0.8f,
+                                         1.0f,
+                                         1);
+            render_solid_vb_ui_flip_y_uv(pLwc,
+                                         x,
+                                         y,
+                                         (float)(swidth + (16 * progress / 0.2)),
+                                         (float)(sheight + (16 * progress / 0.2)),
+                                         pLwc->tex_atlas[LAE_ZERO_FOR_BLACK],
+                                         LVT_CENTER_CENTER_ANCHORED_SQUARE,
+                                         (float)(progress),
+                                         0.0f,
+                                         0.0f,
+                                         0.5f,
+                                         1.0f,
+                                         1);
+
+        }
+    }
+    // revert ui projection matrix
+    logic_update_default_ui_proj(pLwc->window_width, pLwc->window_height, ((LWCONTEXT*)pLwc)->proj);
+}
+
 void lwc_render_ttl(const LWCONTEXT* pLwc) {
     LW_GL_VIEWPORT();
     lw_clear_color();
@@ -1809,6 +1857,9 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
     for (int i = 0; i < viewport_max_count; i++) {
         LWTTLFIELDVIEWPORT* vp_copy = alloca((size_t)lwttl_sizeof_viewport());
         if (lwttl_copy_viewport_data(pLwc->ttl, i, vp_copy)) {
+            if (lwttl_viewport_show(vp_copy) == 0) {
+                continue;
+            }
             int viewport_x, viewport_y, viewport_width, viewport_height;
             lwttl_viewport_range(vp_copy,
                                  &viewport_x,
@@ -1869,6 +1920,7 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
                                       pLwc->shared_fbo.color_tex,
                                       LVT_LEFT_BOTTOM_ANCHORED_SQUARE,
                                       1);
+    render_htmlui_touch_rect(pLwc);
     // render joystick
     if (0) {
         render_dir_pad_with_start_joystick(pLwc, &pLwc->left_dir_pad, 1.0f);
