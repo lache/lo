@@ -1381,6 +1381,51 @@ static void render_cell_box_boundary(const LWCONTEXT* pLwc,
     }
 }
 
+static void render_sea_static_objects_boundary(const LWCONTEXT* pLwc,
+                                               const LWTTLFIELDVIEWPORT* vp) {
+    LW_ATLAS_ENUM tile_lae = LAE_ZERO_FOR_BLACK;
+    LW_VBO_TYPE lvt = LVT_LEFT_TOP_ANCHORED_SQUARE;
+    const int clip_range = 7;
+    const int xc0a = -clip_range;
+    const int yc0a = -clip_range;
+    const float cell_x0a = -0.5f + xc0a, cell_y0a = +0.5f + yc0a, cell_z0 = 0;
+    const int xc0b = clip_range;
+    const int yc0b = clip_range;
+    const float cell_x0b = -0.5f + xc0b, cell_y0b = +0.5f + yc0b;
+    const float cell_w = 2.0f * clip_range + 1, cell_h = 5;
+    const float sx = cell_w / 2;
+    const float sy = cell_h / 2;
+    const float sz = 0;
+    const float xysxsy[4][4] = {
+        { +cell_x0a, +cell_y0a, sx, sy },
+        { +cell_x0a, -cell_y0a + cell_h, sx, sy },
+        { +cell_x0b, +cell_y0b, sy, sx },
+        { -cell_x0b - cell_h, +cell_y0b, sy, sx },
+    };
+    for (int i = 0; i < ARRAY_SIZE(xysxsy); i++) {
+        render_solid_vb_uv_shader_rot_view_proj(pLwc,
+                                                xysxsy[i][0],
+                                                xysxsy[i][1],
+                                                cell_z0,
+                                                xysxsy[i][2],
+                                                xysxsy[i][3],
+                                                sz,
+                                                pLwc->tex_atlas[tile_lae],
+                                                lvt,
+                                                1.0f,
+                                                0.15f,
+                                                0.35f,
+                                                0.65f,
+                                                1.0f,
+                                                default_uv_offset,
+                                                default_uv_scale,
+                                                LWST_DEFAULT,
+                                                0,
+                                                lwttl_viewport_view(vp),
+                                                lwttl_viewport_proj(vp));
+    }
+}
+
 static void render_sea_static_objects(const LWCONTEXT* pLwc,
                                       const LWTTLFIELDVIEWPORT* vp) {
     int chunk_index_array[LNGLAT_RENDER_EXTENT_MULTIPLIER_LNG_WITH_MARGIN*LNGLAT_RENDER_EXTENT_MULTIPLIER_LAT_WITH_MARGIN];
@@ -1780,6 +1825,7 @@ static void lwc_render_ttl_field_viewport(const LWCONTEXT* pLwc, const LWTTLFIEL
     if (render_flags & LTFVRF_COORDINATES) {
         render_coords(pLwc, vp);
     }
+    render_sea_static_objects_boundary(pLwc, vp);
     // UI (hud)
     if (render_flags & LTFVRF_SEA_OBJECT_NAMEPLATE) {
         render_sea_objects_nameplate(pLwc, vp);
