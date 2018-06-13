@@ -551,7 +551,7 @@ static int bitmap_land(const unsigned char bitmap[LNGLAT_RENDER_EXTENT_MULTIPLIE
     return bitmap[by][bx];
 }
 
-#define TILEMAP_GAP (0) //(0.005f)
+#define TILEMAP_GAP (0.005f) //(0.005f)
 #define TILEMAP_TILE_COUNT (4)
 
 static const float tilemap_uv_offset[16][2] = {
@@ -574,8 +574,8 @@ static const float tilemap_uv_offset[16][2] = {
 };
 
 static const float tilemap_uv_scale[] = {
-    (1.0f - 2 * TILEMAP_TILE_COUNT * TILEMAP_GAP) / TILEMAP_TILE_COUNT,
-    (1.0f - 2 * TILEMAP_TILE_COUNT * TILEMAP_GAP) / TILEMAP_TILE_COUNT
+    1.0f / TILEMAP_TILE_COUNT - 2 * TILEMAP_GAP,
+    1.0f / TILEMAP_TILE_COUNT - 2 * TILEMAP_GAP,
 };
 
 static void render_land_cell_bitmap(const LWTTL* ttl,
