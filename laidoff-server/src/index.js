@@ -169,7 +169,8 @@ app.get('/idle', (req, res) => {
   return res.render('idle', {
     user: u,
     resultMsg: req.query.resultMsg,
-    errMsg: req.query.errMsg
+    errMsg: req.query.errMsg,
+    menuToggle: req.query.mt === 'false'
   })
 })
 

@@ -1787,7 +1787,10 @@ void lwttl_change_selected_cell_to(LWTTL* ttl,
             && selected->pos_yc == yc) {
             // selected the same cell
             //selected->selected = 0;
+            // show cell popup animation again
             selected->selected_cell_height = -selected->selected_cell_max_height;
+            // set main viewport center
+            lwttl_set_center(ttl, cell_fx_to_lng(xc + 0.5f), cell_fy_to_lat(yc + 0.5f));
         } else {
             // select a new cell
             memset(&ttl->ttl_single_cell, 0, sizeof(LWPTTLSINGLECELL));
