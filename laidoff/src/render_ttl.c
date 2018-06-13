@@ -1810,15 +1810,15 @@ static void render_htmlui_touch_rect(const LWCONTEXT* pLwc) {
         double start;
         int sx, sy, swidth, sheight;
         htmlui_get_touch_rect(pLwc->htmlui, i, &start, &sx, &sy, &swidth, &sheight);
-        float x = sx + swidth / 2.0f;
-        float y = pLwc->shared_fbo.height - (sy + sheight / 2.0f);
-        double progress = now - start;
+        const double progress = now - start;
         if (progress < 0.2) {
+            const float x = sx + swidth / 2.0f;
+            const float y = pLwc->shared_fbo.height - (sy + sheight / 2.0f);
             render_solid_vb_ui_flip_y_uv(pLwc,
                                          x,
                                          y,
-                                         (float)(swidth + (10 * progress / 0.2)),
-                                         (float)(sheight + (10 * progress / 0.2)),
+                                         (float)(swidth + (pLwc->shared_fbo.width / 450.0f * 10 * progress / 0.2)),
+                                         (float)(sheight + (pLwc->shared_fbo.width / 450.0f * 10 * progress / 0.2)),
                                          pLwc->tex_atlas[LAE_ZERO_FOR_BLACK],
                                          LVT_CENTER_CENTER_ANCHORED_SQUARE,
                                          (float)(progress),
@@ -1830,8 +1830,8 @@ static void render_htmlui_touch_rect(const LWCONTEXT* pLwc) {
             render_solid_vb_ui_flip_y_uv(pLwc,
                                          x,
                                          y,
-                                         (float)(swidth + (16 * progress / 0.2)),
-                                         (float)(sheight + (16 * progress / 0.2)),
+                                         (float)(swidth + (pLwc->shared_fbo.width / 450.0f * 16 * progress / 0.2)),
+                                         (float)(sheight + (pLwc->shared_fbo.width / 450.0f * 16 * progress / 0.2)),
                                          pLwc->tex_atlas[LAE_ZERO_FOR_BLACK],
                                          LVT_CENTER_CENTER_ANCHORED_SQUARE,
                                          (float)(progress),

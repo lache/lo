@@ -429,7 +429,11 @@ void litehtml::text_container::link(const std::shared_ptr<litehtml::document>& d
 }
 
 void litehtml::text_container::on_anchor_click(const litehtml::tchar_t * url, const litehtml::element::ptr & el) {
-    LOGIx("on_anchor_click: %s", url);
+    on_anchor_click_ex(url, el, true);
+}
+
+void litehtml::text_container::on_anchor_click_ex(const litehtml::tchar_t * url, const litehtml::element::ptr & el, bool add_touch_rect) {
+    LOGIx("on_anchor_click_ex: %s", url);
     auto global_position = el->get_position();
     litehtml::element::ptr el_recursive = el;
     while (el_recursive->have_parent()) {
@@ -441,7 +445,9 @@ void litehtml::text_container::on_anchor_click(const litehtml::tchar_t * url, co
     global_position += el->get_paddings();
     global_position += el->get_borders();
     LOGIx("%s: global position x=%d,y=%d,w=%d,h=%d", __func__, global_position.x, global_position.y, global_position.width, global_position.height);
-    htmlui_add_touch_rect(pLwc->htmlui, global_position.x, global_position.y, global_position.width, global_position.height);
+    if (add_touch_rect) {
+        htmlui_add_touch_rect(pLwc->htmlui, global_position.x, global_position.y, global_position.width, global_position.height);
+    }
     if (strncmp(url, "script:", strlen("script:")) == 0) {
         script_evaluate_with_name_async(pLwc,
                                         url + strlen("script:"), // remove 'script:' prefix

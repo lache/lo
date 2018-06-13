@@ -176,7 +176,7 @@ public:
         return false;
     }
     void execute_anchor_click(const char* url) {
-        container.on_anchor_click(url, doc->root());
+        container.on_anchor_click_ex(url, doc->root(), false);
     }
     void add_touch_rect(int x, int y, int width, int height) {
         double start = lwtimepoint_now_seconds();
