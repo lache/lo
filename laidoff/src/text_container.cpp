@@ -14,6 +14,7 @@
 #include "lwatlassprite.h"
 #include "lwttl.h"
 #include "remtex.h"
+#include "logic.h"
 
 litehtml::text_container::text_container(LWCONTEXT* pLwc, int w, int h)
     : pLwc(pLwc) {
@@ -446,7 +447,22 @@ void litehtml::text_container::on_anchor_click_ex(const litehtml::tchar_t * url,
     global_position += el->get_borders();
     LOGIx("%s: global position x=%d,y=%d,w=%d,h=%d", __func__, global_position.x, global_position.y, global_position.width, global_position.height);
     if (add_touch_rect) {
-        htmlui_add_touch_rect(pLwc->htmlui, global_position.x, global_position.y, global_position.width, global_position.height);
+        mat4x4 view, proj;
+        mat4x4_identity(view);
+        logic_update_default_ui_proj_for_htmlui(client_width, client_height, proj);
+        const float touch_rect_x = global_position.x + global_position.width / 2.0f;
+        const float touch_rect_y = client_height - (global_position.y + global_position.height / 2.0f);
+        const float extend = client_width / 450.0f * 10.0f; // 10 pixel extension when touching (reference height 450 px)
+        htmlui_add_touch_rect(pLwc->htmlui,
+                              touch_rect_x,
+                              touch_rect_y,
+                              0,
+                              static_cast<float>(global_position.width),
+                              static_cast<float>(global_position.height),
+                              extend,
+                              extend,
+                              view,
+                              proj);
     }
     if (strncmp(url, "script:", strlen("script:")) == 0) {
         script_evaluate_with_name_async(pLwc,

@@ -1775,6 +1775,7 @@ static void nx_ny_to_lng_lat(const LWTTL* ttl,
 }
 
 void lwttl_change_selected_cell_to(LWTTL* ttl,
+                                   LWCONTEXT* pLwc,
                                    int xc,
                                    int yc,
                                    const LWTTLLNGLAT* lnglat) {
@@ -1795,16 +1796,20 @@ void lwttl_change_selected_cell_to(LWTTL* ttl,
             selected->cell_menu = 1;
         } else {
             // select a new cell
+            int render_touch_rect = 0;
             do {
                 if (selected->cell_menu) {
                     if (selected->pos_xc - 2 == xc && selected->pos_yc - 0 == yc) {
                         LOGI("Cell Menu Button 1");
+                        render_touch_rect = 1;
                         break;
                     } else if (selected->pos_xc - 2 == xc && selected->pos_yc - 2 == yc) {
                         LOGI("Cell Menu Button 2");
+                        render_touch_rect = 1;
                         break;
                     } else if (selected->pos_xc - 0 == xc && selected->pos_yc - 2 == yc) {
                         LOGI("Cell Menu Button 3");
+                        render_touch_rect = 1;
                         break;
                     }
                 }
@@ -1832,6 +1837,20 @@ void lwttl_change_selected_cell_to(LWTTL* ttl,
                                            ttl->viewports[1].half_lat_extent_in_deg);
                 selected->cell_menu = 0;
             } while (0);
+            if (render_touch_rect) {
+                const float extend = 0.1f;
+                const LWTTLFIELDVIEWPORT* vp = lwttl_viewport(ttl, 0);
+                htmlui_add_touch_rect(pLwc->htmlui,
+                                      cell_fx_to_render_coords(xc + 0.5f, lwttl_center(ttl), lwttl_viewport_view_scale(vp)),
+                                      cell_fy_to_render_coords(yc + 0.5f, lwttl_center(ttl), lwttl_viewport_view_scale(vp)),
+                                      lwttl_cell_menu_popup_max_height(ttl, vp),
+                                      1,
+                                      1,
+                                      extend,
+                                      extend,
+                                      vp->view,
+                                      vp->proj);
+            }
         }
     }
 }
@@ -1886,6 +1905,7 @@ void lwttl_on_release(LWTTL* ttl, LWCONTEXT* pLwc, float nx, float ny) {
                          &yc,
                          &lnglat);
         lwttl_change_selected_cell_to(ttl,
+                                      pLwc,
                                       xc,
                                       yc,
                                       &lnglat);
@@ -2557,6 +2577,7 @@ void lwttl_update(LWTTL* ttl, LWCONTEXT* pLwc, float delta_time) {
                 lnglat.lng = cell_x_to_lng(selected->press_pos_xc);
                 lnglat.lat = cell_y_to_lat(selected->press_pos_yc);
                 lwttl_change_selected_cell_to(ttl,
+                                              pLwc,
                                               selected->press_pos_xc,
                                               selected->press_pos_yc,
                                               &lnglat);

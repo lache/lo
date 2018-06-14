@@ -1,5 +1,5 @@
 #pragma once
-
+#include "linmath.h"
 #ifdef __cplusplus
 extern "C" {;
 #endif
@@ -26,9 +26,9 @@ void htmlui_set_client_size(void* c, int client_width, int client_height);
 int htmlui_over_element(void* c, float nx, float ny);
 int htmlui_get_refresh_html_body(void* c);
 void htmlui_execute_anchor_click(void* c, const char* url);
-void htmlui_add_touch_rect(void* c, int x, int y, int width, int height);
+void htmlui_add_touch_rect(void* c, float x, float y, float z, float width, float height, float extend_width, float extend_height, const mat4x4 view, const mat4x4 proj);
 int htmlui_get_touch_rect_count(void* c);
-void htmlui_get_touch_rect(void* c, int index, double* start, int* x, int* y, int* width, int* height);
+void htmlui_get_touch_rect(void* c, int index, double* start, float* x, float* y, float* z, float* width, float* height, float* extend_width, float* extend_height, mat4x4 view, mat4x4 proj);
 #ifdef __cplusplus
 }
 #endif

@@ -2038,49 +2038,64 @@ static void lwc_render_ttl_field_viewport(const LWCONTEXT* pLwc, const LWTTLFIEL
 }
 
 static void render_htmlui_touch_rect(const LWCONTEXT* pLwc) {
-    // overwrite ui projection matrix
-    logic_update_default_ui_proj_for_htmlui(pLwc->shared_fbo.width, pLwc->shared_fbo.height, ((LWCONTEXT*)pLwc)->proj);
     const int touch_rect_count = htmlui_get_touch_rect_count(pLwc->htmlui);
     const double now = lwtimepoint_now_seconds();
     for (int i = 0; i < touch_rect_count; i++) {
         double start;
-        int sx, sy, swidth, sheight;
-        htmlui_get_touch_rect(pLwc->htmlui, i, &start, &sx, &sy, &swidth, &sheight);
+        float x, y, z, width, height, extend_width, extend_height;
+        mat4x4 view, proj;
+        htmlui_get_touch_rect(pLwc->htmlui, i, &start, &x, &y, &z, &width, &height, &extend_width, &extend_height, view, proj);
         const double progress = now - start;
         if (progress < 0.2) {
-            const float x = sx + swidth / 2.0f;
-            const float y = pLwc->shared_fbo.height - (sy + sheight / 2.0f);
-            render_solid_vb_ui_flip_y_uv(pLwc,
-                                         x,
-                                         y,
-                                         (float)(swidth + (pLwc->shared_fbo.width / 450.0f * 10 * progress / 0.2)),
-                                         (float)(sheight + (pLwc->shared_fbo.width / 450.0f * 10 * progress / 0.2)),
-                                         pLwc->tex_atlas[LAE_ZERO_FOR_BLACK],
-                                         LVT_CENTER_CENTER_ANCHORED_SQUARE,
-                                         (float)(progress),
-                                         0.6f,
-                                         0.3f,
-                                         0.8f,
-                                         1.0f,
-                                         1);
-            render_solid_vb_ui_flip_y_uv(pLwc,
-                                         x,
-                                         y,
-                                         (float)(swidth + (pLwc->shared_fbo.width / 450.0f * 16 * progress / 0.2)),
-                                         (float)(sheight + (pLwc->shared_fbo.width / 450.0f * 16 * progress / 0.2)),
-                                         pLwc->tex_atlas[LAE_ZERO_FOR_BLACK],
-                                         LVT_CENTER_CENTER_ANCHORED_SQUARE,
-                                         (float)(progress),
-                                         0.0f,
-                                         0.0f,
-                                         0.5f,
-                                         1.0f,
-                                         1);
-
+            mat4x4 identity_view; mat4x4_identity(identity_view);
+            const float sx1 = (float)(width + extend_width * 1.0f * progress / 0.2) / 2;
+            const float sy1 = (float)(height + extend_height * 1.0f * progress / 0.2) / 2;
+            const float sz1 = 1.0f;
+            render_solid_vb_uv_shader_rot_view_proj(pLwc,
+                                                    x,
+                                                    y,
+                                                    z,
+                                                    sx1,
+                                                    sy1,
+                                                    sz1,
+                                                    pLwc->tex_atlas[LAE_ZERO_FOR_BLACK],
+                                                    LVT_CENTER_CENTER_ANCHORED_SQUARE,
+                                                    (float)(progress),
+                                                    0.6f,
+                                                    0.3f,
+                                                    0.8f,
+                                                    1.0f,
+                                                    default_uv_offset,
+                                                    default_flip_y_uv_scale,
+                                                    LWST_DEFAULT,
+                                                    0,
+                                                    view,
+                                                    proj);
+            const float sx2 = (float)(width + extend_width * 1.6f * progress / 0.2) / 2;
+            const float sy2 = (float)(height + extend_height * 1.6f * progress / 0.2) / 2;
+            const float sz2 = 1.0f;
+            render_solid_vb_uv_shader_rot_view_proj(pLwc,
+                                                    x,
+                                                    y,
+                                                    z,
+                                                    sx2,
+                                                    sy2,
+                                                    sz2,
+                                                    pLwc->tex_atlas[LAE_ZERO_FOR_BLACK],
+                                                    LVT_CENTER_CENTER_ANCHORED_SQUARE,
+                                                    (float)(progress),
+                                                    0.0f,
+                                                    0.0f,
+                                                    0.5f,
+                                                    1.0f,
+                                                    default_uv_offset,
+                                                    default_flip_y_uv_scale,
+                                                    LWST_DEFAULT,
+                                                    0,
+                                                    view,
+                                                    proj);
         }
     }
-    // revert ui projection matrix
-    logic_update_default_ui_proj(pLwc->window_width, pLwc->window_height, ((LWCONTEXT*)pLwc)->proj);
 }
 
 void lwc_render_ttl(const LWCONTEXT* pLwc) {

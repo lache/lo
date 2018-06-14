@@ -178,15 +178,20 @@ public:
     void execute_anchor_click(const char* url) {
         container.on_anchor_click_ex(url, doc->root(), false);
     }
-    void add_touch_rect(int x, int y, int width, int height) {
+    void add_touch_rect(float x, float y, float z, float width, float height, float extend_width, float extend_height, const mat4x4 view, const mat4x4 proj) {
         double start = lwtimepoint_now_seconds();
         for (size_t i = 0; i < touch_rect.size(); i++) {
             if (start - touch_rect[i].start > 1.0) {
                 touch_rect[i].start = start;
                 touch_rect[i].x = x;
                 touch_rect[i].y = y;
+                touch_rect[i].z = z;
                 touch_rect[i].width = width;
                 touch_rect[i].height = height;
+                touch_rect[i].extend_width = extend_width;
+                touch_rect[i].extend_height = extend_height;
+                mat4x4_dup(touch_rect[i].view, view);
+                mat4x4_dup(touch_rect[i].proj, proj);
                 return;
             }
         }
@@ -195,12 +200,17 @@ public:
     int get_touch_rect_count() const {
         return static_cast<int>(touch_rect.size());
     }
-    void get_touch_rect(int index, double* start, int* x, int* y, int* width, int* height) const {
+    void get_touch_rect(int index, double* start, float* x, float* y, float* z, float* width, float* height, float* extend_width, float* extend_height, mat4x4 view, mat4x4 proj) const {
         *start = touch_rect[index].start;
         *x = touch_rect[index].x;
         *y = touch_rect[index].y;
+        *z = touch_rect[index].z;
         *width = touch_rect[index].width;
         *height = touch_rect[index].height;
+        *extend_width = touch_rect[index].extend_width;
+        *extend_height = touch_rect[index].extend_height;
+        mat4x4_dup(view, touch_rect[index].view);
+        mat4x4_dup(proj, touch_rect[index].proj);
     }
 private:
     LWHTMLUI();
@@ -218,8 +228,12 @@ private:
     std::string last_html_str;
     struct TOUCHRECT {
         double start;
-        int x, y, width, height;
-        TOUCHRECT() : start(0), x(0), y(0), width(0), height(0) {}
+        float x, y, z, width, height, extend_width, extend_height;
+        mat4x4 view, proj;
+        TOUCHRECT() : start(0), x(0), y(0), z(0), width(0), height(0), extend_width(0), extend_height(0) {
+            mat4x4_identity(view);
+            mat4x4_identity(proj);
+        }
     };
     std::vector<TOUCHRECT> touch_rect;
 };
@@ -381,9 +395,9 @@ void htmlui_execute_anchor_click(void* c, const char* url) {
     htmlui->execute_anchor_click(url);
 }
 
-void htmlui_add_touch_rect(void* c, int x, int y, int width, int height) {
+void htmlui_add_touch_rect(void* c, float x, float y, float z, float width, float height, float extend_width, float extend_height, const mat4x4 view, const mat4x4 proj) {
     LWHTMLUI* htmlui = (LWHTMLUI*)c;
-    htmlui->add_touch_rect(x, y, width, height);
+    htmlui->add_touch_rect(x, y, z, width, height, extend_width, extend_height, view, proj);
 }
 
 int htmlui_get_touch_rect_count(void* c) {
@@ -391,7 +405,7 @@ int htmlui_get_touch_rect_count(void* c) {
     return htmlui->get_touch_rect_count();
 }
 
-void htmlui_get_touch_rect(void* c, int index, double* start, int* x, int* y, int* width, int* height) {
+void htmlui_get_touch_rect(void* c, int index, double* start, float* x, float* y, float* z, float* width, float* height, float* extend_width, float* extend_height, mat4x4 view, mat4x4 proj) {
     LWHTMLUI* htmlui = (LWHTMLUI*)c;
-    htmlui->get_touch_rect(index, start, x, y, width, height);
+    htmlui->get_touch_rect(index, start, x, y, z, width, height, extend_width, extend_height, view, proj);
 }

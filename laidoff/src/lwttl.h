@@ -217,6 +217,7 @@ int lwttl_press_menu_info(const LWTTL* ttl,
                           float* press_menu_gauge_appear_delay,
                           float* press_at);
 void lwttl_change_selected_cell_to(LWTTL* ttl,
+                                   LWCONTEXT* pLwc,
                                    int xc,
                                    int yc,
                                    const LWTTLLNGLAT* lnglat);
