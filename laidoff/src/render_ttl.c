@@ -578,6 +578,90 @@ static const float tilemap_uv_scale[] = {
     1.0f / TILEMAP_TILE_COUNT - 2 * TILEMAP_GAP,
 };
 
+static LW_VBO_TYPE get_cell_vbo_and_height(const LWTTL* ttl, const LWTTLFIELDVIEWPORT* vp, int x0, int y0, float* sz) {
+    int dx0, dy0;
+    LW_VBO_TYPE lvt = LVT_LEFT_TOP_ANCHORED_SQUARE;
+    if (lwttl_is_selected_cell_diff(ttl, x0, y0, &dx0, &dy0)) {
+        int set_height = 0;
+        if (dx0 == 0 && dy0 == -1) {
+            lvt = LVT_TILE_SEL_0_1;
+            set_height = 1;
+        } else if (dx0 == -1 && dy0 == 0) {
+            lvt = LVT_TILE_SEL_1_0;
+            set_height = 1;
+        } else if (dx0 == -1 && dy0 == -1) {
+            lvt = LVT_TILE_SEL_1_1;
+            set_height = 1;
+        } else if (dx0 == 0 && dy0 == 0) {
+            lvt = LVT_TILE_SEL_0_0;
+            set_height = 1;
+        }
+        if (set_height) {
+            *sz = lwttl_selected_cell_popup_height(ttl, vp);
+        }
+    }
+    if (0 && lwttl_cell_menu(ttl)) {
+        if (lwttl_is_selected_cell_diff(ttl, x0, y0 + 2, &dx0, &dy0)) {
+            int set_height = 0;
+            if (dx0 == 0 && dy0 == -1) {
+                lvt = LVT_TILE_SEL_0_1;
+                set_height = 1;
+            } else if (dx0 == -1 && dy0 == 0) {
+                lvt = LVT_TILE_SEL_1_0;
+                set_height = 1;
+            } else if (dx0 == -1 && dy0 == -1) {
+                lvt = LVT_TILE_SEL_1_1;
+                set_height = 1;
+            } else if (dx0 == 0 && dy0 == 0) {
+                lvt = LVT_TILE_SEL_0_0;
+                set_height = 1;
+            }
+            if (set_height) {
+                *sz = lwttl_cell_menu_popup_height(ttl, vp);
+            }
+        }
+        if (lwttl_is_selected_cell_diff(ttl, x0 + 2, y0 + 2, &dx0, &dy0)) {
+            int set_height = 0;
+            if (dx0 == 0 && dy0 == -1) {
+                lvt = LVT_TILE_SEL_0_1;
+                set_height = 1;
+            } else if (dx0 == -1 && dy0 == 0) {
+                lvt = LVT_TILE_SEL_1_0;
+                set_height = 1;
+            } else if (dx0 == -1 && dy0 == -1) {
+                lvt = LVT_TILE_SEL_1_1;
+                set_height = 1;
+            } else if (dx0 == 0 && dy0 == 0) {
+                lvt = LVT_TILE_SEL_0_0;
+                set_height = 1;
+            }
+            if (set_height) {
+                *sz = lwttl_cell_menu_popup_height(ttl, vp);
+            }
+        }
+        if (lwttl_is_selected_cell_diff(ttl, x0 + 2, y0, &dx0, &dy0)) {
+            int set_height = 0;
+            if (dx0 == 0 && dy0 == -1) {
+                lvt = LVT_TILE_SEL_0_1;
+                set_height = 1;
+            } else if (dx0 == -1 && dy0 == 0) {
+                lvt = LVT_TILE_SEL_1_0;
+                set_height = 1;
+            } else if (dx0 == -1 && dy0 == -1) {
+                lvt = LVT_TILE_SEL_1_1;
+                set_height = 1;
+            } else if (dx0 == 0 && dy0 == 0) {
+                lvt = LVT_TILE_SEL_0_0;
+                set_height = 1;
+            }
+            if (set_height) {
+                *sz = lwttl_cell_menu_popup_height(ttl, vp);
+            }
+        }
+    }
+    return lvt;
+}
+
 static void render_land_cell_bitmap(const LWTTL* ttl,
                                     const LWCONTEXT* pLwc,
                                     const LWTTLFIELDVIEWPORT* vp,
@@ -625,19 +709,9 @@ static void render_land_cell_bitmap(const LWTTL* ttl,
                                                 &cell_h) != 0) {
                 continue;
             }
-            int dx0, dy0;
-            LW_VBO_TYPE lvt = LVT_LEFT_TOP_ANCHORED_SQUARE;
-            if (lwttl_is_selected_cell_diff(ttl, (int)x0, (int)y0, &dx0, &dy0)) {
-                if (dx0 == 0 && dy0 == -1) {
-                    lvt = LVT_TILE_SEL_0_1;
-                } else if (dx0 == -1 && dy0 == 0) {
-                    lvt = LVT_TILE_SEL_1_0;
-                } else if (dx0 == -1 && dy0 == -1) {
-                    lvt = LVT_TILE_SEL_1_1;
-                } else if (dx0 == 0 && dy0 == 0) {
-                    lvt = LVT_TILE_SEL_0_0;
-                }
-            }
+            // render popped-up VBO instead of flat VBO on the selected cell
+            float sz;
+            LW_VBO_TYPE lvt = get_cell_vbo_and_height(ttl, vp, (int)x0, (int)y0, &sz);
             const int uv_offset_index =
                 bitmap_land(bitmap, bx - 1, by - 1) << 3
                 | bitmap_land(bitmap, bx - 0, by - 1) << 2
@@ -645,14 +719,13 @@ static void render_land_cell_bitmap(const LWTTL* ttl,
                 | bitmap_land(bitmap, bx - 0, by - 0) << 0;
             const float sx = cell_w / 2;
             const float sy = cell_h / 2;
-            const float sz = lwttl_selected_cell_popup_height(pLwc->ttl, vp) / clamped_view_scale;
             render_solid_vb_uv_shader_rot_view_proj(pLwc,
                                                     cell_x0,
                                                     cell_y0,
                                                     cell_z0,
                                                     sx,
                                                     sy,
-                                                    sz,
+                                                    sz / clamped_view_scale,
                                                     pLwc->tex_atlas[tile_lae],
                                                     lvt,
                                                     1.0f,
@@ -1396,7 +1469,7 @@ static void render_sea_static_objects_boundary(const LWCONTEXT* pLwc,
     const float sx = cell_w / 2;
     const float sy = cell_h / 2;
     const float sz = 0;
-    const float xysxsy[4][4] = {
+    const float xysxsy[][4] = {
         { +cell_x0a, +cell_y0a, sx, sy },
         { +cell_x0a, -cell_y0a + cell_h, sx, sy },
         { +cell_x0b, +cell_y0b, sy, sx },
@@ -1423,6 +1496,109 @@ static void render_sea_static_objects_boundary(const LWCONTEXT* pLwc,
                                                 0,
                                                 lwttl_viewport_view(vp),
                                                 lwttl_viewport_proj(vp));
+    }
+}
+
+static void render_single_cell_text(const LWCONTEXT* pLwc,
+                                    const LWTTLFIELDVIEWPORT* vp,
+                                    const float x,
+                                    const float y,
+                                    const float z,
+                                    const LW_UI_ALIGN align,
+                                    const int newline,
+                                    const char* text) {
+    const LWPTTLSINGLECELL* p = lwttl_single_cell(pLwc->ttl);
+    if (lwttl_is_selected_cell(pLwc->ttl, p->xc0, p->yc0) == 0) {
+        return;
+    }
+    mat4x4 proj_view;
+    mat4x4_identity(proj_view);
+    mat4x4_mul(proj_view,
+               lwttl_viewport_proj(vp),
+               lwttl_viewport_view(vp));
+    vec4 obj_pos_vec4 = {
+        x,
+        y,
+        z,
+        1,
+    };
+    vec2 ui_point;
+    calculate_ui_point_from_world_point(pLwc->viewport_aspect_ratio, proj_view, obj_pos_vec4, ui_point);
+    LWTEXTBLOCK tb;
+    tb.text_block_width = 999.0f;
+    tb.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_F;
+    tb.size = DEFAULT_TEXT_BLOCK_SIZE_E;
+    tb.text = text;
+    tb.text_bytelen = (int)strlen(tb.text);
+    tb.begin_index = 0;
+    tb.end_index = tb.text_bytelen;
+    tb.multiline = 1;
+    tb.text_block_x = ui_point[0];
+    tb.text_block_y = ui_point[1];// +0.05f / lwttl_viewport_view_scale(vp);
+    tb.align = align;
+    render_text_block_two_pass(pLwc, &tb);
+}
+
+static void render_cell_menu(const LWCONTEXT* pLwc,
+                             const LWTTLFIELDVIEWPORT* vp) {
+    LW_ATLAS_ENUM tile_lae = LAE_ZERO_FOR_BLACK;
+    LW_VBO_TYPE lvt = LVT_LEFT_TOP_ANCHORED_SQUARE;
+    const float sz = 0;
+    const float xysxsy[][4] = {
+        { cell_x_to_render_coords(lwttl_selected_int_x(pLwc->ttl) - 2, vp), cell_y_to_render_coords(lwttl_selected_int_y(pLwc->ttl) + 0, vp), 0.5f, 0.5f },
+        { cell_x_to_render_coords(lwttl_selected_int_x(pLwc->ttl) - 2, vp), cell_y_to_render_coords(lwttl_selected_int_y(pLwc->ttl) - 2, vp), 0.5f, 0.5f },
+        { cell_x_to_render_coords(lwttl_selected_int_x(pLwc->ttl) + 0, vp), cell_y_to_render_coords(lwttl_selected_int_y(pLwc->ttl) - 2, vp), 0.5f, 0.5f },
+    };
+    const float z = lwttl_cell_menu_popup_height(pLwc->ttl, vp) / lwttl_viewport_clamped_view_scale(vp);
+    for (int i = 0; i < ARRAY_SIZE(xysxsy); i++) {
+        render_solid_vb_uv_shader_rot_view_proj(pLwc,
+                                                xysxsy[i][0],
+                                                xysxsy[i][1],
+                                                z,
+                                                xysxsy[i][2] * 1.1f,
+                                                xysxsy[i][3] * 1.1f,
+                                                sz,
+                                                pLwc->tex_atlas[tile_lae],
+                                                lvt,
+                                                0.5f,
+                                                0.85f,
+                                                0.90f,
+                                                0.95f,
+                                                1.0f,
+                                                default_uv_offset,
+                                                default_uv_scale,
+                                                LWST_DEFAULT,
+                                                0,
+                                                lwttl_viewport_view(vp),
+                                                lwttl_viewport_proj(vp));
+        render_solid_vb_uv_shader_rot_view_proj(pLwc,
+                                                xysxsy[i][0],
+                                                xysxsy[i][1],
+                                                z,
+                                                xysxsy[i][2],
+                                                xysxsy[i][3],
+                                                sz,
+                                                pLwc->tex_atlas[tile_lae],
+                                                lvt,
+                                                0.9f,
+                                                0.55f,
+                                                0.55f,
+                                                0.85f,
+                                                1.0f,
+                                                default_uv_offset,
+                                                default_uv_scale,
+                                                LWST_DEFAULT,
+                                                0,
+                                                lwttl_viewport_view(vp),
+                                                lwttl_viewport_proj(vp));
+        render_single_cell_text(pLwc,
+                                vp,
+                                xysxsy[i][0] + 0.5f,
+                                xysxsy[i][1] - 0.5f,
+                                z,
+                                LTBA_CENTER_CENTER,
+                                0,
+                                "MENU");
     }
 }
 
@@ -1497,28 +1673,13 @@ static void render_sea_static_objects(const LWCONTEXT* pLwc,
 static void render_single_cell_info(const LWCONTEXT* pLwc,
                                     const LWTTLFIELDVIEWPORT* vp,
                                     const float x,
-                                    const float y) {
+                                    const float y,
+                                    const LW_UI_ALIGN align,
+                                    const int newline) {
     const LWPTTLSINGLECELL* p = lwttl_single_cell(pLwc->ttl);
     if (lwttl_is_selected_cell(pLwc->ttl, p->xc0, p->yc0) == 0) {
         return;
     }
-    mat4x4 proj_view;
-    mat4x4_identity(proj_view);
-    mat4x4_mul(proj_view,
-               lwttl_viewport_proj(vp),
-               lwttl_viewport_view(vp));
-    vec4 obj_pos_vec4 = {
-        x,
-        y,
-        0,
-        1,
-    };
-    vec2 ui_point;
-    calculate_ui_point_from_world_point(pLwc->viewport_aspect_ratio, proj_view, obj_pos_vec4, ui_point);
-    LWTEXTBLOCK tb;
-    tb.text_block_width = 999.0f;
-    tb.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_F;
-    tb.size = DEFAULT_TEXT_BLOCK_SIZE_E;
     char info[512];
     const char* cell_type = 0;
     // fill cell type
@@ -1540,9 +1701,10 @@ static void render_single_cell_info(const LWCONTEXT* pLwc,
                 p->population >> 16);
     } else if (p->port_id >= 0 && p->port_name[0]) {
         sprintf(info,
-                "%s%s\n%s%d%s%d%s%d",
+                "%s%s%s%s%d%s%d%s%d",
                 LW_UTF8_TTL_CHAR_ICON_SEAPORT,
                 p->port_name,
+                newline ? "\n" : "",
                 LW_UTF8_TTL_CHAR_ICON_CARGO,
                 p->cargo,
                 LW_UTF8_TTL_CHAR_ICON_CARGO_LOADED,
@@ -1551,19 +1713,12 @@ static void render_single_cell_info(const LWCONTEXT* pLwc,
                 p->cargo_unloaded);
     } else {
         /*sprintf(info,
-                "%s",
-                cell_type);*/
+        "%s",
+        cell_type);*/
         info[0] = 0;
     }
-    tb.text = info;
-    tb.text_bytelen = (int)strlen(tb.text);
-    tb.begin_index = 0;
-    tb.end_index = tb.text_bytelen;
-    tb.multiline = 1;
-    tb.text_block_x = ui_point[0];
-    tb.text_block_y = ui_point[1] + 0.05f / lwttl_viewport_view_scale(vp);
-    tb.align = LTBA_LEFT_BOTTOM;
-    render_text_block_two_pass(pLwc, &tb);
+    render_single_cell_text(pLwc, vp, x, y, 0, align, newline, info);
+
 }
 
 static void render_cell_pixel_selector_lng_lat(const LWTTL* ttl,
@@ -1590,12 +1745,25 @@ static void render_single_cell_info_lng_lat(const LWTTL* ttl,
                                             const LWTTLFIELDVIEWPORT* vp,
                                             const int xc0,
                                             const int yc0) {
-    const float selector_rx = cell_x_to_render_coords(xc0, vp);
-    const float selector_ry = cell_y_to_render_coords(yc0, vp);
-    render_single_cell_info(pLwc,
-                            vp,
-                            selector_rx,
-                            selector_ry);
+    if (lwttl_cell_menu(ttl)) {
+        const float selector_rx = cell_fx_to_render_coords(xc0 - 2.5f, lwttl_center(ttl), lwttl_viewport_view_scale(vp));
+        const float selector_ry = cell_fy_to_render_coords(yc0 - 2.5f, lwttl_center(ttl), lwttl_viewport_view_scale(vp));
+        render_single_cell_info(pLwc,
+                                vp,
+                                selector_rx,
+                                selector_ry,
+                                LTBA_CENTER_BOTTOM,
+                                0);
+    } else {
+        const float selector_rx = cell_x_to_render_coords(xc0, vp);
+        const float selector_ry = cell_y_to_render_coords(yc0, vp);
+        render_single_cell_info(pLwc,
+                                vp,
+                                selector_rx,
+                                selector_ry,
+                                LTBA_LEFT_BOTTOM,
+                                1);
+    }
 }
 
 static void render_world_text(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp) {
@@ -1791,6 +1959,23 @@ static void lwc_render_ttl_field_viewport(const LWCONTEXT* pLwc, const LWTTLFIEL
                                                vp,
                                                selected_xc0,
                                                selected_yc0);
+            if (0 && lwttl_cell_menu(pLwc->ttl)) {
+                render_cell_pixel_selector_lng_lat(pLwc->ttl,
+                                                   pLwc,
+                                                   vp,
+                                                   selected_xc0 - 2,
+                                                   selected_yc0 + 0);
+                render_cell_pixel_selector_lng_lat(pLwc->ttl,
+                                                   pLwc,
+                                                   vp,
+                                                   selected_xc0 - 2,
+                                                   selected_yc0 - 2);
+                render_cell_pixel_selector_lng_lat(pLwc->ttl,
+                                                   pLwc,
+                                                   vp,
+                                                   selected_xc0 + 0,
+                                                   selected_yc0 - 2);
+            }
         }
     }
     int dragging_xc0;
@@ -1843,6 +2028,9 @@ static void lwc_render_ttl_field_viewport(const LWCONTEXT* pLwc, const LWTTLFIEL
     }
     if (render_flags & LTFVRF_WORLD_TEXT) {
         render_world_text(pLwc, vp);
+    }
+    if (lwttl_cell_menu(pLwc->ttl)) {
+        render_cell_menu(pLwc, vp);
     }
     if (render_flags & LTFVRF_REGION_NAME) {
         render_region_name(pLwc, vp);

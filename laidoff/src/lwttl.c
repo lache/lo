@@ -108,6 +108,7 @@ typedef struct _LWTTLSELECTED {
     float selected_cell_height;
     float selected_cell_max_height;
     float selected_cell_height_speed;
+    int cell_menu;
 } LWTTLSELECTED;
 
 typedef struct _LWTTLFIELDVIEWPORT {
@@ -1791,30 +1792,46 @@ void lwttl_change_selected_cell_to(LWTTL* ttl,
             selected->selected_cell_height = -selected->selected_cell_max_height;
             // set main viewport center
             lwttl_set_center(ttl, cell_fx_to_lng(xc + 0.5f), cell_fy_to_lat(yc + 0.5f));
+            selected->cell_menu = 1;
         } else {
             // select a new cell
-            memset(&ttl->ttl_single_cell, 0, sizeof(LWPTTLSINGLECELL));
-            selected->selected = 1;
-            selected->pos = *lnglat;
-            selected->pos_xc = xc;
-            selected->pos_yc = yc;
-            selected->selected_cell_height = -selected->selected_cell_max_height;
-            send_ttlpingsinglecell(ttl, ttl->sea_udp, xc, yc);
+            do {
+                if (selected->cell_menu) {
+                    if (selected->pos_xc - 2 == xc && selected->pos_yc - 0 == yc) {
+                        LOGI("Cell Menu Button 1");
+                        break;
+                    } else if (selected->pos_xc - 2 == xc && selected->pos_yc - 2 == yc) {
+                        LOGI("Cell Menu Button 2");
+                        break;
+                    } else if (selected->pos_xc - 0 == xc && selected->pos_yc - 2 == yc) {
+                        LOGI("Cell Menu Button 3");
+                        break;
+                    }
+                }
+                memset(&ttl->ttl_single_cell, 0, sizeof(LWPTTLSINGLECELL));
+                selected->selected = 1;
+                selected->pos = *lnglat;
+                selected->pos_xc = xc;
+                selected->pos_yc = yc;
+                selected->selected_cell_height = -selected->selected_cell_max_height;
+                send_ttlpingsinglecell(ttl, ttl->sea_udp, xc, yc);
 
-            // set aux1 viewport center
-            LWTTLLNGLAT selected_center_cell;
-            selected_center_cell.lng = cell_fx_to_lng(xc + 0.5f);
-            selected_center_cell.lat = cell_fy_to_lat(yc + 0.5f);
-            lwttl_update_viewport_data(ttl,
-                                       &ttl->viewports[1],
-                                       ttl->viewports[1].field_viewport_x,
-                                       ttl->viewports[1].field_viewport_y,
-                                       ttl->viewports[1].field_viewport_width,
-                                       ttl->viewports[1].field_viewport_height,
-                                       ttl->viewports[1].view_scale,
-                                       &selected_center_cell,
-                                       ttl->viewports[1].half_lng_extent_in_deg,
-                                       ttl->viewports[1].half_lat_extent_in_deg);
+                // set aux1 viewport center
+                LWTTLLNGLAT selected_center_cell;
+                selected_center_cell.lng = cell_fx_to_lng(xc + 0.5f);
+                selected_center_cell.lat = cell_fy_to_lat(yc + 0.5f);
+                lwttl_update_viewport_data(ttl,
+                                           &ttl->viewports[1],
+                                           ttl->viewports[1].field_viewport_x,
+                                           ttl->viewports[1].field_viewport_y,
+                                           ttl->viewports[1].field_viewport_width,
+                                           ttl->viewports[1].field_viewport_height,
+                                           ttl->viewports[1].view_scale,
+                                           &selected_center_cell,
+                                           ttl->viewports[1].half_lng_extent_in_deg,
+                                           ttl->viewports[1].half_lat_extent_in_deg);
+                selected->cell_menu = 0;
+            } while (0);
         }
     }
 }
@@ -2525,6 +2542,7 @@ void lwttl_update(LWTTL* ttl, LWCONTEXT* pLwc, float delta_time) {
         lwttl_clear_selected_pressed_pos(ttl);
         // send ping persistently while map panning
         ttl->panning = 1;
+        selected->cell_menu = 0;
     } else {
         ttl->panning = 0;
     }
@@ -2546,6 +2564,7 @@ void lwttl_update(LWTTL* ttl, LWCONTEXT* pLwc, float delta_time) {
                        && app_time > selected->press_at + selected->press_menu_gauge_total) {
                 // change to selection-dragging mode
                 selected->dragging = 1;
+                selected->cell_menu = 0;
                 selected->dragging_pos_xc = selected->pos_xc;
                 selected->dragging_pos_yc = selected->pos_yc;
             }
@@ -2598,8 +2617,20 @@ int lwttl_is_selected_cell_diff(const LWTTL* ttl, int x0, int y0, int* dx0, int*
     return selected->selected;
 }
 
+int lwttl_cell_menu(const LWTTL* ttl) {
+    return ttl->viewports[0].view_scale == 1 && ttl->viewports[0].selected.cell_menu;
+}
+
 float lwttl_selected_cell_popup_height(const LWTTL* ttl, const LWTTLFIELDVIEWPORT* vp) {
     return vp->selected.selected_cell_height;
+}
+
+float lwttl_cell_menu_popup_height(const LWTTL* ttl, const LWTTLFIELDVIEWPORT* vp) {
+    return vp->selected.selected_cell_height * 1;
+}
+
+float lwttl_cell_menu_popup_max_height(const LWTTL* ttl, const LWTTLFIELDVIEWPORT* vp) {
+    return vp->selected.selected_cell_max_height * 1;
 }
 
 const char* lwttl_route_state(const LWPTTLROUTEOBJECT* obj) {
