@@ -54,6 +54,8 @@ typedef enum _LW_TTL_FIELD_VIEWPORT_RENDER_FLAG {
 
 LWTTL* lwttl_new(float aspect_ratio);
 void lwttl_destroy(LWTTL** _ttl);
+void lwttl_worldmap_smooth_scroll_to(LWTTLFIELDVIEWPORT* vp, float lng, float lat, LWUDP* sea_udp, int cancellable);
+void lwttl_worldmap_smooth_scroll_to_cell_center(LWTTLFIELDVIEWPORT* vp, int xc, int yc, LWUDP* sea_udp, int cancellable);
 void lwttl_worldmap_scroll_to(LWTTL* ttl, float lng, float lat, LWUDP* sea_udp);
 void lwttl_worldmap_scroll_to_cell_center(LWTTL* ttl, int xc, int yc, LWUDP* sea_udp);
 void lwttl_update_aspect_ratio(LWTTL* ttl, int width, int height);
@@ -355,6 +357,7 @@ void lwttl_add_cell_menu(LWTTL* ttl, const char* text);
 int lwttl_cell_menu_count(const LWTTL* ttl);
 const char* lwttl_cell_menu_text(const LWTTL* ttl, int index);
 void lwttl_cell_menu_offset(const LWTTL* ttl, int index, int* xc_offset, int* yc_offset);
+float lwttl_viewport_icon_size_ratio(const LWTTLFIELDVIEWPORT* vp);
 #ifdef __cplusplus
 }
 #endif

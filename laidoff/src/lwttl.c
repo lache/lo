@@ -125,6 +125,9 @@ typedef struct _LWTTLFIELDVIEWPORT {
     mat4x4 proj;
     mat4x4 ui_proj;
     LWTTLLNGLAT view_center;
+    LWTTLLNGLAT view_center_smooth_scroll_target;
+    int smooth_scrolling;
+    int smooth_scroll_cancellable;
     int view_scale;
     int view_scale_msb;
     int clamped_view_scale;
@@ -290,8 +293,8 @@ static void lwttl_update_viewport_data(const LWTTL* ttl,
     vp->lng_max = vp->view_center.lng + vp->half_lng_extent_in_deg;
     vp->lat_min = vp->view_center.lat - vp->half_lat_extent_in_deg;
     vp->lat_max = vp->view_center.lat + vp->half_lat_extent_in_deg;
-    vp->cell_render_width = cell_x_to_render_coords(1, vp) - cell_x_to_render_coords(0, vp);
-    vp->cell_render_height = cell_y_to_render_coords(0, vp) - cell_y_to_render_coords(1, vp);
+    vp->cell_render_width = 1.0f / vp->view_scale; // cell_x_to_render_coords(1, vp) - cell_x_to_render_coords(0, vp);
+    vp->cell_render_height = 1.0f / vp->view_scale; // cell_y_to_render_coords(0, vp) - cell_y_to_render_coords(1, vp);
     lwttl_get_cell_bound(vp->lng_min,
                          vp->lat_min,
                          vp->lng_max,
@@ -388,6 +391,25 @@ void lwttl_destroy(LWTTL** __ttl) {
     LWMUTEX_DESTROY(ttl->rendering_mutex);
     free(*__ttl);
     *__ttl = 0;
+}
+
+void lwttl_worldmap_smooth_scroll_to(LWTTLFIELDVIEWPORT* vp, float lng, float lat, LWUDP* sea_udp, int cancellable) {
+    if (vp->smooth_scrolling && vp->smooth_scroll_cancellable == 0) {
+        LOGEP("%s() cannot be called if not cancellable smooth scroll is ongoing", __func__);
+        return;
+    }
+    vp->view_center_smooth_scroll_target.lng = lng;
+    vp->view_center_smooth_scroll_target.lat = lat;
+    vp->smooth_scrolling = 1;
+    vp->smooth_scroll_cancellable = cancellable;
+}
+
+void lwttl_worldmap_smooth_scroll_to_cell_center(LWTTLFIELDVIEWPORT* vp, int xc, int yc, LWUDP* sea_udp, int cancellable) {
+    lwttl_worldmap_smooth_scroll_to(vp,
+                                    cell_fx_to_lng(xc + 0.5f),
+                                    cell_fy_to_lat(yc + 0.5f),
+                                    sea_udp,
+                                    cancellable);
 }
 
 void lwttl_worldmap_scroll_to(LWTTL* ttl, float lng, float lat, LWUDP* sea_udp) {
@@ -1798,7 +1820,8 @@ void lwttl_change_selected_cell_to(LWTTL* ttl,
             // show cell popup animation again
             selected->selected_cell_height = -selected->selected_cell_max_height;
             // set main viewport center
-            lwttl_set_center(ttl, cell_fx_to_lng(xc + 0.5f), cell_fy_to_lat(yc + 0.5f));
+            //lwttl_worldmap_scroll_to_cell_center(ttl, xc, yc, ttl->sea_udp);
+            lwttl_worldmap_smooth_scroll_to_cell_center(&ttl->viewports[0], xc, yc, ttl->sea_udp, 1);
             if (ttl->ttl_single_cell.xc0 == xc && ttl->ttl_single_cell.yc0 == yc) {
                 selected->cell_menu = 1;
                 lwttl_clear_cell_menu(ttl);
@@ -2539,37 +2562,63 @@ void lwttl_update(LWTTL* ttl, LWCONTEXT* pLwc, float delta_time) {
         lwttl_udp_update(ttl, pLwc);
     }
 
-    LWTTLSELECTED* selected = &ttl->viewports[0].selected;
-    float dx = 0, dy = 0, dlen = 0;
-    if ((lw_pinch() == 0)
-        && (selected->dragging == 0)
-        && lw_get_normalized_dir_pad_input(pLwc, &pLwc->left_dir_pad, &dx, &dy, &dlen)
-        && (dx || dy)
-        && (dlen > 0.05f)) {
-        // dx, dy in world space coordinates
-        vec2 dworld;
-        lwttl_screen_to_world_pos(ttl, dx, dy, dworld);
+    LWTTLFIELDVIEWPORT* vp = &ttl->viewports[0];
 
-        const float dworld_len = sqrtf(dworld[0] * dworld[0] + dworld[1] * dworld[1]);
-        dworld[0] /= dworld_len;
-        dworld[1] /= dworld_len;
+    LWTTLSELECTED* selected = &vp->selected;
+    // not smooth scrolling or smooth scrolling is cancellable; then user panning is handled.
+    if (vp->smooth_scrolling == 0 || vp->smooth_scroll_cancellable == 1) {
+        float dx = 0, dy = 0, dlen = 0;
+        if ((lw_pinch() == 0)
+            && (selected->dragging == 0)
+            && lw_get_normalized_dir_pad_input(pLwc, &pLwc->left_dir_pad, &dx, &dy, &dlen)
+            && (dx || dy)
+            && (dlen > 0.05f)) {
+            // dx, dy in world space coordinates
+            vec2 dworld;
+            lwttl_screen_to_world_pos(ttl, dx, dy, dworld);
 
-        // cancel tracking if user want to scroll around
-        lwttl_set_track_object_ship_id(ttl, 0);
-        const int view_scale = lwttl_view_scale(ttl);
-        // direction inverted
-        lwttl_worldmap_scroll_to(ttl,
-                                 ttl->viewports[0].view_center.lng + (-dworld[0]) / 50.0f * delta_time * view_scale,
-                                 ttl->viewports[0].view_center.lat + (-dworld[1]) / 50.0f * delta_time * view_scale,
-                                 0);
-        // prevent unintentional change of cell selection
-        // while spanning the map
-        lwttl_clear_selected_pressed_pos(ttl);
-        // send ping persistently while map panning
-        ttl->panning = 1;
-        selected->cell_menu = 0;
-    } else {
-        ttl->panning = 0;
+            const float dworld_len = sqrtf(dworld[0] * dworld[0] + dworld[1] * dworld[1]);
+            dworld[0] /= dworld_len;
+            dworld[1] /= dworld_len;
+
+            // cancel tracking if user want to scroll around
+            lwttl_set_track_object_ship_id(ttl, 0);
+            const int view_scale = lwttl_view_scale(ttl);
+            // direction inverted
+            lwttl_worldmap_scroll_to(ttl,
+                                     vp->view_center.lng + (-dworld[0]) / 50.0f * delta_time * view_scale,
+                                     vp->view_center.lat + (-dworld[1]) / 50.0f * delta_time * view_scale,
+                                     0);
+            // prevent unintentional change of cell selection
+            // while spanning the map
+            lwttl_clear_selected_pressed_pos(ttl);
+            // send ping persistently while map panning
+            ttl->panning = 1;
+            selected->cell_menu = 0;
+            // user panning enabled; smooth scrolling should be turned off
+            vp->smooth_scrolling = 0;
+        } else {
+            ttl->panning = 0;
+        }
+    }
+
+    if (vp->smooth_scrolling) {
+        const float dlng = vp->view_center_smooth_scroll_target.lng - vp->view_center.lng;
+        const float dlat = vp->view_center_smooth_scroll_target.lat - vp->view_center.lat;
+        // near enough to target view center
+        if (fabsf(dlng) < 1e-4 && fabsf(dlat) < 1e-4) {
+            vp->view_center.lng = vp->view_center_smooth_scroll_target.lng;
+            vp->view_center.lat = vp->view_center_smooth_scroll_target.lat;
+            vp->smooth_scrolling = 0;
+            ttl->panning = 0;
+        } else {
+            const float r = 0.1f;
+            lwttl_worldmap_scroll_to(ttl,
+                                     vp->view_center.lng + r * dlng,
+                                     vp->view_center.lat + r * dlat,
+                                     0);
+            ttl->panning = 1;
+        }
     }
 
     if (selected->press_pos_xc >= 0 && selected->press_pos_yc >= 0) {
@@ -2917,8 +2966,8 @@ float lwttl_viewport_waypoint_line_segment_thickness(const LWTTLFIELDVIEWPORT* v
     return 0.1f / sqrtf((float)(vp->view_scale_msb + 1));
 }
 
-static float lwttl_viewport_icon_size_ratio(const LWTTLFIELDVIEWPORT* vp) {
-    return 2.0f / sqrtf((float)(vp->clamped_view_scale_msb + 1));
+float lwttl_viewport_icon_size_ratio(const LWTTLFIELDVIEWPORT* vp) {
+    return 1.0f / sqrtf((float)(vp->clamped_view_scale_msb + 1));
 }
 
 float lwttl_viewport_icon_width(const LWTTLFIELDVIEWPORT* vp) {
