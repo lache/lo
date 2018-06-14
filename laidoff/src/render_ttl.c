@@ -1773,6 +1773,9 @@ static void lwc_render_ttl_field_viewport(const LWCONTEXT* pLwc, const LWTTLFIEL
         }
 #endif
     }
+    // to hide cell popping artifact on the viewport boundary,
+    // render overlapped rectangle on each edge
+    render_sea_static_objects_boundary(pLwc, vp);
     glEnable(GL_DEPTH_TEST);
     // render sea objects(ships)
     if (render_flags & LTFVRF_SHIP) {
@@ -1825,7 +1828,6 @@ static void lwc_render_ttl_field_viewport(const LWCONTEXT* pLwc, const LWTTLFIEL
     if (render_flags & LTFVRF_COORDINATES) {
         render_coords(pLwc, vp);
     }
-    render_sea_static_objects_boundary(pLwc, vp);
     // UI (hud)
     if (render_flags & LTFVRF_SEA_OBJECT_NAMEPLATE) {
         render_sea_objects_nameplate(pLwc, vp);
