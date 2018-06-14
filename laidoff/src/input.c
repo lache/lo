@@ -70,16 +70,17 @@ void lw_trigger_mouse_press(LWCONTEXT* pLwc, float nx, float ny, int pointer_id)
         admin_pressed = 0;
     }
     
-    if (pLwc->game_scene == LGS_TTL
-        || (pLwc->game_scene == LGS_PUCK_GAME && pLwc->puck_game->game_state == LPGS_MAIN_MENU && pLwc->puck_game->show_html_ui && pLwc->puck_game->world_roll_dirty == 0)) {
-        const float nx = (x + pLwc->viewport_rt_x) / (2.0f * pLwc->viewport_rt_x);
-        const float ny = (pLwc->viewport_rt_y - y) / (2.0f * pLwc->viewport_rt_y);
-        htmlui_on_lbutton_down(pLwc->htmlui, nx, ny);
-        if (htmlui_over_element(pLwc->htmlui, nx, ny)) {
-            return;
+    if (pLwc->htmlui) {
+        if (pLwc->game_scene == LGS_TTL
+            || (pLwc->game_scene == LGS_PUCK_GAME && pLwc->puck_game->game_state == LPGS_MAIN_MENU && pLwc->puck_game->show_html_ui && pLwc->puck_game->world_roll_dirty == 0)) {
+            const float nx = (x + pLwc->viewport_rt_x) / (2.0f * pLwc->viewport_rt_x);
+            const float ny = (pLwc->viewport_rt_y - y) / (2.0f * pLwc->viewport_rt_y);
+            htmlui_on_lbutton_down(pLwc->htmlui, nx, ny);
+            if (htmlui_over_element(pLwc->htmlui, nx, ny)) {
+                return;
+            }
         }
     }
-
     int prev_pinch_zoom_count = pinch_zoom.count;
     if (pinch_zoom.count == 0 || pinch_zoom.count == 1) {
         pinch_zoom.p[pinch_zoom.count].id = pointer_id;
@@ -291,11 +292,13 @@ void lw_trigger_mouse_release(LWCONTEXT* pLwc, float nx, float ny, int pointer_i
 		  fabsf(x - pLwc->last_mouse_press_x),
 		  fabsf(y - pLwc->last_mouse_press_y));
 
-    if (pLwc->game_scene == LGS_TTL
-        || (pLwc->game_scene == LGS_PUCK_GAME && pLwc->puck_game->show_html_ui)) {
-        const float nx = (x + pLwc->viewport_rt_x) / (2.0f * pLwc->viewport_rt_x);
-        const float ny = (pLwc->viewport_rt_y - y) / (2.0f * pLwc->viewport_rt_y);
-        htmlui_on_lbutton_up(pLwc->htmlui, nx, ny);
+    if (pLwc->htmlui) {
+        if (pLwc->game_scene == LGS_TTL
+            || (pLwc->game_scene == LGS_PUCK_GAME && pLwc->puck_game->show_html_ui)) {
+            const float nx = (x + pLwc->viewport_rt_x) / (2.0f * pLwc->viewport_rt_x);
+            const float ny = (pLwc->viewport_rt_y - y) / (2.0f * pLwc->viewport_rt_y);
+            htmlui_on_lbutton_up(pLwc->htmlui, nx, ny);
+        }
     }
 
     int prev_pinch_zoom_count = pinch_zoom.count;
