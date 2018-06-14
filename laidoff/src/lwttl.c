@@ -177,6 +177,10 @@ typedef struct _LWTTLCELLBOX {
     int xc0, yc0, xc1, yc1;
 } LWTTLCELLBOX;
 
+typedef struct _LWTTLCELLMENU {
+    char text[128];
+} LWTTLCELLMENU;
+
 typedef struct _LWTTL {
     int version;
     int track_object_id;
@@ -202,6 +206,8 @@ typedef struct _LWTTL {
     LWTTLFIELDVIEWPORT viewports[4];
     int cell_box_count;
     LWTTLCELLBOX cell_box[512];
+    int cell_menu_count;
+    LWTTLCELLMENU cell_menu[3];
 } LWTTL;
 
 static const LWTTLSELECTED* lwttl_main_viewport_selected(const LWTTL* ttl) {
@@ -1793,14 +1799,22 @@ void lwttl_change_selected_cell_to(LWTTL* ttl,
             selected->selected_cell_height = -selected->selected_cell_max_height;
             // set main viewport center
             lwttl_set_center(ttl, cell_fx_to_lng(xc + 0.5f), cell_fy_to_lat(yc + 0.5f));
-            selected->cell_menu = 1;
+            if (ttl->ttl_single_cell.xc0 == xc && ttl->ttl_single_cell.yc0 == yc) {
+                selected->cell_menu = 1;
+                lwttl_clear_cell_menu(ttl);
+                lwttl_add_cell_menu(ttl, "MENU 1");
+                lwttl_add_cell_menu(ttl, "MENU 2");
+                lwttl_add_cell_menu(ttl, "MENU 3");
+            } else {
+                LOGEP("Cell menu cannot be shown since single cell packet is not available.");
+            }
         } else {
             // select a new cell
             int render_touch_rect = 0;
             do {
                 const int cell_menu_index = lwttl_selected_cell_menu_index(ttl, xc, yc);
                 if (cell_menu_index >= 0) {
-                    LOGI("Cell Menu Index %d", cell_menu_index);
+                    LOGI("Cell menu index %d", cell_menu_index);
                     render_touch_rect = 1;
                     break;
                 }
@@ -3039,4 +3053,31 @@ int lwttl_selected_cell_menu_index(const LWTTL* ttl, int xc, int yc) {
         }
     }
     return -1;
+}
+
+void lwttl_clear_cell_menu(LWTTL* ttl) {
+    memset(ttl->cell_menu, 0, sizeof(ttl->cell_menu));
+}
+
+void lwttl_add_cell_menu(LWTTL* ttl, const char* text) {
+    for (int i = 0; i < ARRAY_SIZE(ttl->cell_menu); i++) {
+        if (ttl->cell_menu[i].text[0] == 0) {
+            strncpy(ttl->cell_menu[i].text, text, ARRAY_SIZE(ttl->cell_menu[i].text) - 1);
+            ttl->cell_menu[i].text[ARRAY_SIZE(ttl->cell_menu[i].text) - 1] = 0;
+            return;
+        }
+    }
+    LOGEP("cell menu capacity exceeded");
+}
+
+int lwttl_cell_menu_count(const LWTTL* ttl) {
+    return ARRAY_SIZE(ttl->cell_menu);
+}
+
+const char* lwttl_cell_menu_text(const LWTTL* ttl, int index) {
+    return ttl->cell_menu[index].text;
+}
+
+int lwttl_cell_menu_offset(const LWTTL* ttl, int index, int* xc_offset, int* yc_offset) {
+    return 0;
 }

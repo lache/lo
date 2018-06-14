@@ -1545,9 +1545,9 @@ static void render_cell_menu(const LWCONTEXT* pLwc,
     LW_VBO_TYPE lvt = LVT_LEFT_TOP_ANCHORED_SQUARE;
     const float sz = 0;
     const float xysxsy[][4] = {
-        { cell_x_to_render_coords(lwttl_selected_int_x(pLwc->ttl) - 2, vp), cell_y_to_render_coords(lwttl_selected_int_y(pLwc->ttl) + 0, vp), 0.5f, 0.5f },
+        { cell_x_to_render_coords(lwttl_selected_int_x(pLwc->ttl) - 2, vp), cell_y_to_render_coords(lwttl_selected_int_y(pLwc->ttl) - 0, vp), 0.5f, 0.5f },
         { cell_x_to_render_coords(lwttl_selected_int_x(pLwc->ttl) - 2, vp), cell_y_to_render_coords(lwttl_selected_int_y(pLwc->ttl) - 2, vp), 0.5f, 0.5f },
-        { cell_x_to_render_coords(lwttl_selected_int_x(pLwc->ttl) + 0, vp), cell_y_to_render_coords(lwttl_selected_int_y(pLwc->ttl) - 2, vp), 0.5f, 0.5f },
+        { cell_x_to_render_coords(lwttl_selected_int_x(pLwc->ttl) - 0, vp), cell_y_to_render_coords(lwttl_selected_int_y(pLwc->ttl) - 2, vp), 0.5f, 0.5f },
     };
     const float z = lwttl_cell_menu_popup_height(pLwc->ttl, vp) / lwttl_viewport_clamped_view_scale(vp);
     for (int i = 0; i < ARRAY_SIZE(xysxsy); i++) {
