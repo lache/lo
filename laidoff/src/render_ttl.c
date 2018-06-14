@@ -1674,6 +1674,7 @@ static void render_single_cell_info(const LWCONTEXT* pLwc,
                                     const LWTTLFIELDVIEWPORT* vp,
                                     const float x,
                                     const float y,
+                                    const float z,
                                     const LW_UI_ALIGN align,
                                     const int newline) {
     const LWPTTLSINGLECELL* p = lwttl_single_cell(pLwc->ttl);
@@ -1717,7 +1718,7 @@ static void render_single_cell_info(const LWCONTEXT* pLwc,
         cell_type);*/
         info[0] = 0;
     }
-    render_single_cell_text(pLwc, vp, x, y, 0, align, newline, info);
+    render_single_cell_text(pLwc, vp, x, y, z, align, newline, info);
 
 }
 
@@ -1752,6 +1753,7 @@ static void render_single_cell_info_lng_lat(const LWTTL* ttl,
                                 vp,
                                 selector_rx,
                                 selector_ry,
+                                lwttl_selected_cell_popup_height(pLwc->ttl, vp),
                                 LTBA_CENTER_BOTTOM,
                                 0);
     } else {
@@ -1761,6 +1763,7 @@ static void render_single_cell_info_lng_lat(const LWTTL* ttl,
                                 vp,
                                 selector_rx,
                                 selector_ry,
+                                lwttl_selected_cell_popup_height(pLwc->ttl, vp),
                                 LTBA_LEFT_BOTTOM,
                                 1);
     }
