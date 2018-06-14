@@ -1798,20 +1798,11 @@ void lwttl_change_selected_cell_to(LWTTL* ttl,
             // select a new cell
             int render_touch_rect = 0;
             do {
-                if (selected->cell_menu) {
-                    if (selected->pos_xc - 2 == xc && selected->pos_yc - 0 == yc) {
-                        LOGI("Cell Menu Button 1");
-                        render_touch_rect = 1;
-                        break;
-                    } else if (selected->pos_xc - 2 == xc && selected->pos_yc - 2 == yc) {
-                        LOGI("Cell Menu Button 2");
-                        render_touch_rect = 1;
-                        break;
-                    } else if (selected->pos_xc - 0 == xc && selected->pos_yc - 2 == yc) {
-                        LOGI("Cell Menu Button 3");
-                        render_touch_rect = 1;
-                        break;
-                    }
+                const int cell_menu_index = lwttl_selected_cell_menu_index(ttl, xc, yc);
+                if (cell_menu_index >= 0) {
+                    LOGI("Cell Menu Index %d", cell_menu_index);
+                    render_touch_rect = 1;
+                    break;
                 }
                 memset(&ttl->ttl_single_cell, 0, sizeof(LWPTTLSINGLECELL));
                 selected->selected = 1;
@@ -2568,7 +2559,8 @@ void lwttl_update(LWTTL* ttl, LWCONTEXT* pLwc, float delta_time) {
     }
 
     if (selected->press_pos_xc >= 0 && selected->press_pos_yc >= 0) {
-        if (selected->pressing) {
+        if (selected->pressing
+            && (lwttl_selected_cell_menu_index(ttl, selected->press_pos_xc, selected->press_pos_yc) < 0)) {
             if (app_time > selected->press_at + selected->press_menu_gauge_appear_delay
                 && (selected->press_pos_xc != selected->pos_xc || selected->press_pos_yc != selected->pos_yc)) {
                 // change selection after 'press_menu_gauge_appear_delay'
@@ -3033,4 +3025,18 @@ void lwttl_cell_box(const LWTTL* ttl, int index, int* xc0, int* yc0, int* xc1, i
 
 int lwttl_viewport_show(const LWTTLFIELDVIEWPORT* vp) {
     return vp->show;
+}
+
+int lwttl_selected_cell_menu_index(const LWTTL* ttl, int xc, int yc) {
+    const LWTTLSELECTED* selected = &ttl->viewports[0].selected;
+    if (selected->cell_menu) {
+        if (selected->pos_xc - 2 == xc && selected->pos_yc - 0 == yc) {
+            return 0;
+        } else if (selected->pos_xc - 2 == xc && selected->pos_yc - 2 == yc) {
+            return 1;
+        } else if (selected->pos_xc - 0 == xc && selected->pos_yc - 2 == yc) {
+            return 2;
+        }
+    }
+    return -1;
 }

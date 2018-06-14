@@ -349,6 +349,7 @@ void lwttl_degrees_to_dms(int* d, int* m, float* s, const float degrees);
 int lwttl_cell_box_count(const LWTTL* ttl);
 void lwttl_cell_box(const LWTTL* ttl, int index, int* xc0, int* yc0, int* xc1, int* yc1);
 int lwttl_viewport_show(const LWTTLFIELDVIEWPORT* vp);
+int lwttl_selected_cell_menu_index(const LWTTL* ttl, int xc, int yc);
 #ifdef __cplusplus
 }
 #endif
