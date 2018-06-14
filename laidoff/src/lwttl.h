@@ -354,7 +354,7 @@ void lwttl_clear_cell_menu(LWTTL* ttl);
 void lwttl_add_cell_menu(LWTTL* ttl, const char* text);
 int lwttl_cell_menu_count(const LWTTL* ttl);
 const char* lwttl_cell_menu_text(const LWTTL* ttl, int index);
-int lwttl_cell_menu_offset(const LWTTL* ttl, int index, int* xc_offset, int* yc_offset);
+void lwttl_cell_menu_offset(const LWTTL* ttl, int index, int* xc_offset, int* yc_offset);
 #ifdef __cplusplus
 }
 #endif

@@ -3078,6 +3078,15 @@ const char* lwttl_cell_menu_text(const LWTTL* ttl, int index) {
     return ttl->cell_menu[index].text;
 }
 
-int lwttl_cell_menu_offset(const LWTTL* ttl, int index, int* xc_offset, int* yc_offset) {
-    return 0;
+void lwttl_cell_menu_offset(const LWTTL* ttl, int index, int* xc_offset, int* yc_offset) {
+    if (index == 0) {
+        *xc_offset = -2;
+        *yc_offset = -0;
+    } else if (index == 1) {
+        *xc_offset = -2;
+        *yc_offset = -2;
+    } else if (index == 2) {
+        *xc_offset = -0;
+        *yc_offset = -2;
+    }
 }

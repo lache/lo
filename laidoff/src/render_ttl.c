@@ -1543,62 +1543,68 @@ static void render_cell_menu(const LWCONTEXT* pLwc,
                              const LWTTLFIELDVIEWPORT* vp) {
     LW_ATLAS_ENUM tile_lae = LAE_ZERO_FOR_BLACK;
     LW_VBO_TYPE lvt = LVT_LEFT_TOP_ANCHORED_SQUARE;
-    const float sz = 0;
-    const float xysxsy[][4] = {
-        { cell_x_to_render_coords(lwttl_selected_int_x(pLwc->ttl) - 2, vp), cell_y_to_render_coords(lwttl_selected_int_y(pLwc->ttl) - 0, vp), 0.5f, 0.5f },
-        { cell_x_to_render_coords(lwttl_selected_int_x(pLwc->ttl) - 2, vp), cell_y_to_render_coords(lwttl_selected_int_y(pLwc->ttl) - 2, vp), 0.5f, 0.5f },
-        { cell_x_to_render_coords(lwttl_selected_int_x(pLwc->ttl) - 0, vp), cell_y_to_render_coords(lwttl_selected_int_y(pLwc->ttl) - 2, vp), 0.5f, 0.5f },
-    };
-    const float z = lwttl_cell_menu_popup_height(pLwc->ttl, vp) / lwttl_viewport_clamped_view_scale(vp);
-    for (int i = 0; i < ARRAY_SIZE(xysxsy); i++) {
-        render_solid_vb_uv_shader_rot_view_proj(pLwc,
-                                                xysxsy[i][0],
-                                                xysxsy[i][1],
-                                                z,
-                                                xysxsy[i][2] * 1.1f,
-                                                xysxsy[i][3] * 1.1f,
-                                                sz,
-                                                pLwc->tex_atlas[tile_lae],
-                                                lvt,
-                                                0.5f,
-                                                0.85f,
-                                                0.90f,
-                                                0.95f,
-                                                1.0f,
-                                                default_uv_offset,
-                                                default_uv_scale,
-                                                LWST_DEFAULT,
-                                                0,
-                                                lwttl_viewport_view(vp),
-                                                lwttl_viewport_proj(vp));
-        render_solid_vb_uv_shader_rot_view_proj(pLwc,
-                                                xysxsy[i][0],
-                                                xysxsy[i][1],
-                                                z,
-                                                xysxsy[i][2],
-                                                xysxsy[i][3],
-                                                sz,
-                                                pLwc->tex_atlas[tile_lae],
-                                                lvt,
-                                                0.9f,
-                                                0.55f,
-                                                0.55f,
-                                                0.85f,
-                                                1.0f,
-                                                default_uv_offset,
-                                                default_uv_scale,
-                                                LWST_DEFAULT,
-                                                0,
-                                                lwttl_viewport_view(vp),
-                                                lwttl_viewport_proj(vp));
-        render_single_cell_text(pLwc,
-                                vp,
-                                xysxsy[i][0] + 0.5f,
-                                xysxsy[i][1] - 0.5f,
-                                z,
-                                LTBA_CENTER_CENTER,
-                                0,
-                                "MENU");
+int valid_cell_menu_count = 0;
+    for (int i = 0; i < lwttl_cell_menu_count(pLwc->ttl); i++) {
+        const char* cell_menu_text = lwttl_cell_menu_text(pLwc->ttl, valid_cell_menu_count);
+        if (cell_menu_text[0]) {
+            int xc_offset, yc_offset;
+            lwttl_cell_menu_offset(pLwc->ttl, valid_cell_menu_count, &xc_offset, &yc_offset);
+            const float x = cell_x_to_render_coords(lwttl_selected_int_x(pLwc->ttl) + xc_offset, vp);
+            const float y = cell_y_to_render_coords(lwttl_selected_int_y(pLwc->ttl) + yc_offset, vp);
+            const float z = lwttl_cell_menu_popup_height(pLwc->ttl, vp) / lwttl_viewport_clamped_view_scale(vp);
+            const float sx = 0.5f;
+            const float sy = 0.5f;
+            const float sz = 1.0f;
+            render_solid_vb_uv_shader_rot_view_proj(pLwc,
+                                                    x,
+                                                    y,
+                                                    z,
+                                                    sx * 1.1f,
+                                                    sy * 1.1f,
+                                                    sz,
+                                                    pLwc->tex_atlas[tile_lae],
+                                                    lvt,
+                                                    0.5f,
+                                                    0.85f,
+                                                    0.90f,
+                                                    0.95f,
+                                                    1.0f,
+                                                    default_uv_offset,
+                                                    default_uv_scale,
+                                                    LWST_DEFAULT,
+                                                    0,
+                                                    lwttl_viewport_view(vp),
+                                                    lwttl_viewport_proj(vp));
+            render_solid_vb_uv_shader_rot_view_proj(pLwc,
+                                                    x,
+                                                    y,
+                                                    z,
+                                                    sx,
+                                                    sy,
+                                                    sz,
+                                                    pLwc->tex_atlas[tile_lae],
+                                                    lvt,
+                                                    0.9f,
+                                                    0.55f,
+                                                    0.55f,
+                                                    0.85f,
+                                                    1.0f,
+                                                    default_uv_offset,
+                                                    default_uv_scale,
+                                                    LWST_DEFAULT,
+                                                    0,
+                                                    lwttl_viewport_view(vp),
+                                                    lwttl_viewport_proj(vp));
+            render_single_cell_text(pLwc,
+                                    vp,
+                                    x + 0.5f,
+                                    y - 0.5f,
+                                    z,
+                                    LTBA_CENTER_CENTER,
+                                    0,
+                                    cell_menu_text);
+            valid_cell_menu_count++;
+        }
     }
 }
 
