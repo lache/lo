@@ -371,7 +371,7 @@ static void s_render_full_panel(const LWCONTEXT* pLwc, LWBUTTONLIST* button_list
     SET_COLOR_RGBA_FLOAT(text_block.color_emp_glyph, 1, 1, 0, 1);
     SET_COLOR_RGBA_FLOAT(text_block.color_emp_outline, 0, 0, 0, 0);
     char msg[128];
-    sprintf(msg, u8"[$] Research");
+    sprintf(msg, "[$] Research");
     text_block.text = msg;
     text_block.text_bytelen = (int)strlen(text_block.text);
     text_block.begin_index = 0;
@@ -406,7 +406,7 @@ static void s_render_full_panel(const LWCONTEXT* pLwc, LWBUTTONLIST* button_list
         text_block.text_block_y = prop_y;
         text_block.size = DEFAULT_TEXT_BLOCK_SIZE_D;
         char prop_msg[128];
-        sprintf(prop_msg, u8"%s", prop_str[i]);
+        sprintf(prop_msg, "%s", prop_str[i]);
         text_block.text = prop_msg;
         text_block.text_bytelen = (int)strlen(text_block.text);
         text_block.begin_index = 0;

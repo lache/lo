@@ -851,7 +851,7 @@ static void render_command_palette(const LWCONTEXT* pLwc) {
 			// MP consumption
 			if (skill[i]->consume_mp > 0) {
 				char str[64];
-				sprintf(str, u8"MP %d", skill[i]->consume_mp);
+				sprintf(str, "MP %d", skill[i]->consume_mp);
 				cmd_text_block.text = str;
 				cmd_text_block.text_bytelen = (int)strlen(cmd_text_block.text);
 				cmd_text_block.begin_index = 0;

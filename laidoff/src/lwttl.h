@@ -54,6 +54,8 @@ typedef enum _LW_TTL_FIELD_VIEWPORT_RENDER_FLAG {
 
 LWTTL* lwttl_new(float aspect_ratio);
 void lwttl_destroy(LWTTL** _ttl);
+void lwttl_worldmap_smooth_scroll_to(LWTTLFIELDVIEWPORT* vp, float lng, float lat, LWUDP* sea_udp, int cancellable);
+void lwttl_worldmap_smooth_scroll_to_cell_center(LWTTLFIELDVIEWPORT* vp, int xc, int yc, LWUDP* sea_udp, int cancellable);
 void lwttl_worldmap_scroll_to(LWTTL* ttl, float lng, float lat, LWUDP* sea_udp);
 void lwttl_worldmap_scroll_to_cell_center(LWTTL* ttl, int xc, int yc, LWUDP* sea_udp);
 void lwttl_update_aspect_ratio(LWTTL* ttl, int width, int height);
@@ -217,6 +219,7 @@ int lwttl_press_menu_info(const LWTTL* ttl,
                           float* press_menu_gauge_appear_delay,
                           float* press_at);
 void lwttl_change_selected_cell_to(LWTTL* ttl,
+                                   LWCONTEXT* pLwc,
                                    int xc,
                                    int yc,
                                    const LWTTLLNGLAT* lnglat);
@@ -266,7 +269,10 @@ int lwttl_ships(const LWTTL* ttl);
 int lwttl_is_selected_cell(const LWTTL* ttl, int x0, int y0);
 int lwttl_is_selected_cell_intersect(const LWTTL* ttl, int x0, int y0);
 int lwttl_is_selected_cell_diff(const LWTTL* ttl, int x0, int y0, int* dx0, int* dy0);
+int lwttl_cell_menu(const LWTTL* ttl);
 float lwttl_selected_cell_popup_height(const LWTTL* ttl, const LWTTLFIELDVIEWPORT* vp);
+float lwttl_cell_menu_popup_height(const LWTTL* ttl, const LWTTLFIELDVIEWPORT* vp);
+float lwttl_cell_menu_popup_max_height(const LWTTL* ttl, const LWTTLFIELDVIEWPORT* vp);
 const char* lwttl_route_state(const LWPTTLROUTEOBJECT* obj);
 void lwttl_cam_eye(const LWTTL* ttl, vec3 cam_eye);
 void lwttl_set_cam_eye(LWTTL* ttl, const vec3 cam_eye);
@@ -344,6 +350,14 @@ const LWTTLLNGLAT* lwttl_viewport_view_center(const LWTTLFIELDVIEWPORT* vp);
 void lwttl_degrees_to_dms(int* d, int* m, float* s, const float degrees);
 int lwttl_cell_box_count(const LWTTL* ttl);
 void lwttl_cell_box(const LWTTL* ttl, int index, int* xc0, int* yc0, int* xc1, int* yc1);
+int lwttl_viewport_show(const LWTTLFIELDVIEWPORT* vp);
+int lwttl_selected_cell_menu_index(const LWTTL* ttl, int xc, int yc);
+void lwttl_clear_cell_menu(LWTTL* ttl);
+void lwttl_add_cell_menu(LWTTL* ttl, const char* text);
+int lwttl_cell_menu_count(const LWTTL* ttl);
+const char* lwttl_cell_menu_text(const LWTTL* ttl, int index);
+void lwttl_cell_menu_offset(const LWTTL* ttl, int index, int* xc_offset, int* yc_offset);
+float lwttl_viewport_icon_size_ratio(const LWTTLFIELDVIEWPORT* vp);
 #ifdef __cplusplus
 }
 #endif

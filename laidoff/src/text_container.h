@@ -58,6 +58,7 @@ namespace litehtml {
                 .end();
         }
         void set_client_size(int client_width, int client_height);
+        void on_anchor_click_ex(const litehtml::tchar_t* url, const litehtml::element::ptr& el, bool add_touch_rect);
 	private:
         void draw_border_rect(const litehtml::border& border, int x, int y, int w, int h, LW_VBO_TYPE lvt, const litehtml::web_color& color) const;
         float conv_size_x(int x) const { return static_cast<float>(x); }// return 2 * ((float)x / client_width * client_rt_x); }
@@ -65,7 +66,7 @@ namespace litehtml {
         float conv_coord_x(int x) const { return static_cast<float>(x); }// return -client_rt_x + conv_size_x(x); }
         float conv_coord_y(int y) const { return client_height - static_cast<float>(y); }// return client_rt_y - conv_size_y(y); }
         void fill_text_block(LWTEXTBLOCK* text_block, int x, int y, const char* text, int size, const litehtml::web_color& color);
-		LWCONTEXT * pLwc;
+        LWCONTEXT * pLwc;
 		int client_width;
 		int client_height;
         float client_aspect_ratio;

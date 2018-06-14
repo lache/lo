@@ -21,6 +21,7 @@
 #include "pcg_basic.h"
 #include "lwmath.h"
 #include <assert.h>
+#include "iconchar.h"
 
 #define LOCAL_SAVE_FILE_MAGIC (0x19850506)
 #define LOCAL_SAVE_FILE_LATEST_VERSION (2)
@@ -107,6 +108,7 @@ typedef struct _LWTTLSELECTED {
     float selected_cell_height;
     float selected_cell_max_height;
     float selected_cell_height_speed;
+    int cell_menu;
 } LWTTLSELECTED;
 
 typedef struct _LWTTLFIELDVIEWPORT {
@@ -123,6 +125,9 @@ typedef struct _LWTTLFIELDVIEWPORT {
     mat4x4 proj;
     mat4x4 ui_proj;
     LWTTLLNGLAT view_center;
+    LWTTLLNGLAT view_center_smooth_scroll_target;
+    int smooth_scrolling;
+    int smooth_scroll_cancellable;
     int view_scale;
     int view_scale_msb;
     int clamped_view_scale;
@@ -175,6 +180,10 @@ typedef struct _LWTTLCELLBOX {
     int xc0, yc0, xc1, yc1;
 } LWTTLCELLBOX;
 
+typedef struct _LWTTLCELLMENU {
+    char text[128];
+} LWTTLCELLMENU;
+
 typedef struct _LWTTL {
     int version;
     int track_object_id;
@@ -200,6 +209,8 @@ typedef struct _LWTTL {
     LWTTLFIELDVIEWPORT viewports[4];
     int cell_box_count;
     LWTTLCELLBOX cell_box[512];
+    int cell_menu_count;
+    LWTTLCELLMENU cell_menu[3];
 } LWTTL;
 
 static const LWTTLSELECTED* lwttl_main_viewport_selected(const LWTTL* ttl) {
@@ -282,8 +293,8 @@ static void lwttl_update_viewport_data(const LWTTL* ttl,
     vp->lng_max = vp->view_center.lng + vp->half_lng_extent_in_deg;
     vp->lat_min = vp->view_center.lat - vp->half_lat_extent_in_deg;
     vp->lat_max = vp->view_center.lat + vp->half_lat_extent_in_deg;
-    vp->cell_render_width = cell_x_to_render_coords(1, vp) - cell_x_to_render_coords(0, vp);
-    vp->cell_render_height = cell_y_to_render_coords(0, vp) - cell_y_to_render_coords(1, vp);
+    vp->cell_render_width = 1.0f / vp->view_scale; // cell_x_to_render_coords(1, vp) - cell_x_to_render_coords(0, vp);
+    vp->cell_render_height = 1.0f / vp->view_scale; // cell_y_to_render_coords(0, vp) - cell_y_to_render_coords(1, vp);
     lwttl_get_cell_bound(vp->lng_min,
                          vp->lat_min,
                          vp->lng_max,
@@ -327,9 +338,10 @@ LWTTL* lwttl_new(float aspect_ratio) {
     vp.cell_grid = 1;
     vp.render_flags = LTFVRF_ALL;
     vp.render_flags &= ~LTFVRF_COORDINATES;
-#if !LW_PLATFORM_WIN32
+#if 1 || !LW_PLATFORM_WIN32
     vp.render_flags &= ~LTFVRF_CELL_BOX_BOUNDARY;
 #endif
+    vp.show = 1;
     lwttl_add_field_viewport(ttl, &vp);
     lwttl_update_view_proj(&ttl->viewports[0],
                            &ttl->viewports[0], // main viewport ref
@@ -361,6 +373,7 @@ LWTTL* lwttl_new(float aspect_ratio) {
     vp.render_flags = LTFVRF_LAND_CELL | LTFVRF_CELL_PIXEL_SELECTOR | LTFVRF_SEAPORT | LTFVRF_CITY | LTFVRF_SALVAGE;
     // fix cell selector height to maximum on aux1 viewport
     vp.selected.selected_cell_height = vp.selected.selected_cell_max_height;
+    vp.show = 0;
     lwttl_add_field_viewport(ttl, &vp);
     lwttl_update_view_proj(&ttl->viewports[1],
                            &ttl->viewports[0], // main viewport ref
@@ -378,6 +391,25 @@ void lwttl_destroy(LWTTL** __ttl) {
     LWMUTEX_DESTROY(ttl->rendering_mutex);
     free(*__ttl);
     *__ttl = 0;
+}
+
+void lwttl_worldmap_smooth_scroll_to(LWTTLFIELDVIEWPORT* vp, float lng, float lat, LWUDP* sea_udp, int cancellable) {
+    if (vp->smooth_scrolling && vp->smooth_scroll_cancellable == 0) {
+        LOGEP("%s() cannot be called if not cancellable smooth scroll is ongoing", __func__);
+        return;
+    }
+    vp->view_center_smooth_scroll_target.lng = lng;
+    vp->view_center_smooth_scroll_target.lat = lat;
+    vp->smooth_scrolling = 1;
+    vp->smooth_scroll_cancellable = cancellable;
+}
+
+void lwttl_worldmap_smooth_scroll_to_cell_center(LWTTLFIELDVIEWPORT* vp, int xc, int yc, LWUDP* sea_udp, int cancellable) {
+    lwttl_worldmap_smooth_scroll_to(vp,
+                                    cell_fx_to_lng(xc + 0.5f),
+                                    cell_fy_to_lat(yc + 0.5f),
+                                    sea_udp,
+                                    cancellable);
 }
 
 void lwttl_worldmap_scroll_to(LWTTL* ttl, float lng, float lat, LWUDP* sea_udp) {
@@ -1771,6 +1803,7 @@ static void nx_ny_to_lng_lat(const LWTTL* ttl,
 }
 
 void lwttl_change_selected_cell_to(LWTTL* ttl,
+                                   LWCONTEXT* pLwc,
                                    int xc,
                                    int yc,
                                    const LWTTLLNGLAT* lnglat) {
@@ -1784,31 +1817,68 @@ void lwttl_change_selected_cell_to(LWTTL* ttl,
             && selected->pos_yc == yc) {
             // selected the same cell
             //selected->selected = 0;
+            // show cell popup animation again
             selected->selected_cell_height = -selected->selected_cell_max_height;
+            // set main viewport center
+            //lwttl_worldmap_scroll_to_cell_center(ttl, xc, yc, ttl->sea_udp);
+            lwttl_worldmap_smooth_scroll_to_cell_center(&ttl->viewports[0], xc, yc, ttl->sea_udp, 1);
+            if (ttl->ttl_single_cell.xc0 == xc && ttl->ttl_single_cell.yc0 == yc) {
+                selected->cell_menu = 1;
+                lwttl_clear_cell_menu(ttl);
+                lwttl_add_cell_menu(ttl, "MENU 1");
+                lwttl_add_cell_menu(ttl, "MENU 2");
+                lwttl_add_cell_menu(ttl, "MENU 3");
+            } else {
+                LOGEP("Cell menu cannot be shown since single cell packet is not available.");
+            }
         } else {
             // select a new cell
-            memset(&ttl->ttl_single_cell, 0, sizeof(LWPTTLSINGLECELL));
-            selected->selected = 1;
-            selected->pos = *lnglat;
-            selected->pos_xc = xc;
-            selected->pos_yc = yc;
-            selected->selected_cell_height = -selected->selected_cell_max_height;
-            send_ttlpingsinglecell(ttl, ttl->sea_udp, xc, yc);
+            int render_touch_rect = 0;
+            do {
+                const int cell_menu_index = lwttl_selected_cell_menu_index(ttl, xc, yc);
+                if (cell_menu_index >= 0) {
+                    LOGI("Cell menu index %d", cell_menu_index);
+                    render_touch_rect = 1;
+                    break;
+                }
+                memset(&ttl->ttl_single_cell, 0, sizeof(LWPTTLSINGLECELL));
+                selected->selected = 1;
+                selected->pos = *lnglat;
+                selected->pos_xc = xc;
+                selected->pos_yc = yc;
+                selected->selected_cell_height = -selected->selected_cell_max_height;
+                send_ttlpingsinglecell(ttl, ttl->sea_udp, xc, yc);
 
-            // set aux1 viewport center
-            LWTTLLNGLAT selected_center_cell;
-            selected_center_cell.lng = cell_fx_to_lng(xc + 0.5f);
-            selected_center_cell.lat = cell_fy_to_lat(yc + 0.5f);
-            lwttl_update_viewport_data(ttl,
-                                       &ttl->viewports[1],
-                                       ttl->viewports[1].field_viewport_x,
-                                       ttl->viewports[1].field_viewport_y,
-                                       ttl->viewports[1].field_viewport_width,
-                                       ttl->viewports[1].field_viewport_height,
-                                       ttl->viewports[1].view_scale,
-                                       &selected_center_cell,
-                                       ttl->viewports[1].half_lng_extent_in_deg,
-                                       ttl->viewports[1].half_lat_extent_in_deg);
+                // set aux1 viewport center
+                LWTTLLNGLAT selected_center_cell;
+                selected_center_cell.lng = cell_fx_to_lng(xc + 0.5f);
+                selected_center_cell.lat = cell_fy_to_lat(yc + 0.5f);
+                lwttl_update_viewport_data(ttl,
+                                           &ttl->viewports[1],
+                                           ttl->viewports[1].field_viewport_x,
+                                           ttl->viewports[1].field_viewport_y,
+                                           ttl->viewports[1].field_viewport_width,
+                                           ttl->viewports[1].field_viewport_height,
+                                           ttl->viewports[1].view_scale,
+                                           &selected_center_cell,
+                                           ttl->viewports[1].half_lng_extent_in_deg,
+                                           ttl->viewports[1].half_lat_extent_in_deg);
+                selected->cell_menu = 0;
+            } while (0);
+            if (render_touch_rect) {
+                const float extend = 0.1f;
+                const LWTTLFIELDVIEWPORT* vp = lwttl_viewport(ttl, 0);
+                htmlui_add_touch_rect(pLwc->htmlui,
+                                      cell_fx_to_render_coords(xc + 0.5f, lwttl_center(ttl), lwttl_viewport_view_scale(vp)),
+                                      cell_fy_to_render_coords(yc + 0.5f, lwttl_center(ttl), lwttl_viewport_view_scale(vp)),
+                                      lwttl_cell_menu_popup_max_height(ttl, vp),
+                                      1,
+                                      1,
+                                      extend,
+                                      extend,
+                                      vp->view,
+                                      vp->proj);
+            }
         }
     }
 }
@@ -1863,6 +1933,7 @@ void lwttl_on_release(LWTTL* ttl, LWCONTEXT* pLwc, float nx, float ny) {
                          &yc,
                          &lnglat);
         lwttl_change_selected_cell_to(ttl,
+                                      pLwc,
                                       xc,
                                       yc,
                                       &lnglat);
@@ -2375,7 +2446,7 @@ void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc) {
                 snprintf(text,
                          ARRAY_SIZE(text) - 1,
                          "%s%d",
-                         u8"◊",
+                         LW_UTF8_TTL_CHAR_ICON_GOLD,
                          p->amount);
                 text[ARRAY_SIZE(text) - 1] = 0;
                 spawn_world_text(ttl, text, p->xc0, p->yc0);
@@ -2394,7 +2465,7 @@ void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc) {
                 snprintf(text,
                          ARRAY_SIZE(text) - 1,
                          "%s%d",
-                         u8"☗",
+                         LW_UTF8_TTL_CHAR_ICON_CARGO,
                          p->amount);
                 text[ARRAY_SIZE(text) - 1] = 0;
                 LW_TTL_WORLD_TEXT_ANIM_TYPE anim_type = LTWTAT_STOP;
@@ -2445,7 +2516,7 @@ void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc) {
                 snprintf(text,
                          ARRAY_SIZE(text) - 1,
                          "%s%d",
-                         u8"◊",
+                         LW_UTF8_TTL_CHAR_ICON_GOLD,
                          -p->amount);
                 text[ARRAY_SIZE(text) - 1] = 0;
                 spawn_world_text(ttl, text, p->xc0, p->yc0);
@@ -2491,40 +2562,68 @@ void lwttl_update(LWTTL* ttl, LWCONTEXT* pLwc, float delta_time) {
         lwttl_udp_update(ttl, pLwc);
     }
 
-    LWTTLSELECTED* selected = &ttl->viewports[0].selected;
-    float dx = 0, dy = 0, dlen = 0;
-    if ((lw_pinch() == 0)
-        && (selected->dragging == 0)
-        && lw_get_normalized_dir_pad_input(pLwc, &pLwc->left_dir_pad, &dx, &dy, &dlen)
-        && (dx || dy)
-        && (dlen > 0.05f)) {
-        // dx, dy in world space coordinates
-        vec2 dworld;
-        lwttl_screen_to_world_pos(ttl, dx, dy, dworld);
+    LWTTLFIELDVIEWPORT* vp = &ttl->viewports[0];
 
-        const float dworld_len = sqrtf(dworld[0] * dworld[0] + dworld[1] * dworld[1]);
-        dworld[0] /= dworld_len;
-        dworld[1] /= dworld_len;
+    LWTTLSELECTED* selected = &vp->selected;
+    // not smooth scrolling or smooth scrolling is cancellable; then user panning is handled.
+    if (vp->smooth_scrolling == 0 || vp->smooth_scroll_cancellable == 1) {
+        float dx = 0, dy = 0, dlen = 0;
+        if ((lw_pinch() == 0)
+            && (selected->dragging == 0)
+            && lw_get_normalized_dir_pad_input(pLwc, &pLwc->left_dir_pad, &dx, &dy, &dlen)
+            && (dx || dy)
+            && (dlen > 0.05f)) {
+            // dx, dy in world space coordinates
+            vec2 dworld;
+            lwttl_screen_to_world_pos(ttl, dx, dy, dworld);
 
-        // cancel tracking if user want to scroll around
-        lwttl_set_track_object_ship_id(ttl, 0);
-        const int view_scale = lwttl_view_scale(ttl);
-        // direction inverted
-        lwttl_worldmap_scroll_to(ttl,
-                                 ttl->viewports[0].view_center.lng + (-dworld[0]) / 50.0f * delta_time * view_scale,
-                                 ttl->viewports[0].view_center.lat + (-dworld[1]) / 50.0f * delta_time * view_scale,
-                                 0);
-        // prevent unintentional change of cell selection
-        // while spanning the map
-        lwttl_clear_selected_pressed_pos(ttl);
-        // send ping persistently while map panning
-        ttl->panning = 1;
-    } else {
-        ttl->panning = 0;
+            const float dworld_len = sqrtf(dworld[0] * dworld[0] + dworld[1] * dworld[1]);
+            dworld[0] /= dworld_len;
+            dworld[1] /= dworld_len;
+
+            // cancel tracking if user want to scroll around
+            lwttl_set_track_object_ship_id(ttl, 0);
+            const int view_scale = lwttl_view_scale(ttl);
+            // direction inverted
+            lwttl_worldmap_scroll_to(ttl,
+                                     vp->view_center.lng + (-dworld[0]) / 50.0f * delta_time * view_scale,
+                                     vp->view_center.lat + (-dworld[1]) / 50.0f * delta_time * view_scale,
+                                     0);
+            // prevent unintentional change of cell selection
+            // while spanning the map
+            lwttl_clear_selected_pressed_pos(ttl);
+            // send ping persistently while map panning
+            ttl->panning = 1;
+            selected->cell_menu = 0;
+            // user panning enabled; smooth scrolling should be turned off
+            vp->smooth_scrolling = 0;
+        } else {
+            ttl->panning = 0;
+        }
+    }
+
+    if (vp->smooth_scrolling) {
+        const float dlng = vp->view_center_smooth_scroll_target.lng - vp->view_center.lng;
+        const float dlat = vp->view_center_smooth_scroll_target.lat - vp->view_center.lat;
+        // near enough to target view center
+        if (fabsf(dlng) < 1e-4 && fabsf(dlat) < 1e-4) {
+            vp->view_center.lng = vp->view_center_smooth_scroll_target.lng;
+            vp->view_center.lat = vp->view_center_smooth_scroll_target.lat;
+            vp->smooth_scrolling = 0;
+            ttl->panning = 0;
+        } else {
+            const float r = 0.1f;
+            lwttl_worldmap_scroll_to(ttl,
+                                     vp->view_center.lng + r * dlng,
+                                     vp->view_center.lat + r * dlat,
+                                     0);
+            ttl->panning = 1;
+        }
     }
 
     if (selected->press_pos_xc >= 0 && selected->press_pos_yc >= 0) {
-        if (selected->pressing) {
+        if (selected->pressing
+            && (lwttl_selected_cell_menu_index(ttl, selected->press_pos_xc, selected->press_pos_yc) < 0)) {
             if (app_time > selected->press_at + selected->press_menu_gauge_appear_delay
                 && (selected->press_pos_xc != selected->pos_xc || selected->press_pos_yc != selected->pos_yc)) {
                 // change selection after 'press_menu_gauge_appear_delay'
@@ -2533,6 +2632,7 @@ void lwttl_update(LWTTL* ttl, LWCONTEXT* pLwc, float delta_time) {
                 lnglat.lng = cell_x_to_lng(selected->press_pos_xc);
                 lnglat.lat = cell_y_to_lat(selected->press_pos_yc);
                 lwttl_change_selected_cell_to(ttl,
+                                              pLwc,
                                               selected->press_pos_xc,
                                               selected->press_pos_yc,
                                               &lnglat);
@@ -2540,6 +2640,7 @@ void lwttl_update(LWTTL* ttl, LWCONTEXT* pLwc, float delta_time) {
                        && app_time > selected->press_at + selected->press_menu_gauge_total) {
                 // change to selection-dragging mode
                 selected->dragging = 1;
+                selected->cell_menu = 0;
                 selected->dragging_pos_xc = selected->pos_xc;
                 selected->dragging_pos_yc = selected->pos_yc;
             }
@@ -2592,17 +2693,29 @@ int lwttl_is_selected_cell_diff(const LWTTL* ttl, int x0, int y0, int* dx0, int*
     return selected->selected;
 }
 
+int lwttl_cell_menu(const LWTTL* ttl) {
+    return ttl->viewports[0].view_scale == 1 && ttl->viewports[0].selected.cell_menu;
+}
+
 float lwttl_selected_cell_popup_height(const LWTTL* ttl, const LWTTLFIELDVIEWPORT* vp) {
     return vp->selected.selected_cell_height;
+}
+
+float lwttl_cell_menu_popup_height(const LWTTL* ttl, const LWTTLFIELDVIEWPORT* vp) {
+    return vp->selected.selected_cell_height * 1;
+}
+
+float lwttl_cell_menu_popup_max_height(const LWTTL* ttl, const LWTTLFIELDVIEWPORT* vp) {
+    return vp->selected.selected_cell_max_height * 1;
 }
 
 const char* lwttl_route_state(const LWPTTLROUTEOBJECT* obj) {
     if (obj->route_flags.breakdown) {
         return "BREAKDOWN";
     } else if (obj->route_flags.loading) {
-        return "LOADING";
+        return LW_UTF8_TTL_CHAR_ICON_CARGO_LOADED;
     } else if (obj->route_flags.unloading) {
-        return "UNLOADING";
+        return LW_UTF8_TTL_CHAR_ICON_CARGO_UNLOADED;
     } else {
         return "";
     }
@@ -2853,8 +2966,8 @@ float lwttl_viewport_waypoint_line_segment_thickness(const LWTTLFIELDVIEWPORT* v
     return 0.1f / sqrtf((float)(vp->view_scale_msb + 1));
 }
 
-static float lwttl_viewport_icon_size_ratio(const LWTTLFIELDVIEWPORT* vp) {
-    return 2.0f / sqrtf((float)(vp->clamped_view_scale_msb + 1));
+float lwttl_viewport_icon_size_ratio(const LWTTLFIELDVIEWPORT* vp) {
+    return 1.0f / sqrtf((float)(vp->clamped_view_scale_msb + 1));
 }
 
 float lwttl_viewport_icon_width(const LWTTLFIELDVIEWPORT* vp) {
@@ -2971,4 +3084,58 @@ void lwttl_cell_box(const LWTTL* ttl, int index, int* xc0, int* yc0, int* xc1, i
     *yc0 = ttl->cell_box[index].yc0;
     *xc1 = ttl->cell_box[index].xc1;
     *yc1 = ttl->cell_box[index].yc1;
+}
+
+int lwttl_viewport_show(const LWTTLFIELDVIEWPORT* vp) {
+    return vp->show;
+}
+
+int lwttl_selected_cell_menu_index(const LWTTL* ttl, int xc, int yc) {
+    const LWTTLSELECTED* selected = &ttl->viewports[0].selected;
+    if (selected->cell_menu) {
+        if (selected->pos_xc - 2 == xc && selected->pos_yc - 0 == yc) {
+            return 0;
+        } else if (selected->pos_xc - 2 == xc && selected->pos_yc - 2 == yc) {
+            return 1;
+        } else if (selected->pos_xc - 0 == xc && selected->pos_yc - 2 == yc) {
+            return 2;
+        }
+    }
+    return -1;
+}
+
+void lwttl_clear_cell_menu(LWTTL* ttl) {
+    memset(ttl->cell_menu, 0, sizeof(ttl->cell_menu));
+}
+
+void lwttl_add_cell_menu(LWTTL* ttl, const char* text) {
+    for (int i = 0; i < ARRAY_SIZE(ttl->cell_menu); i++) {
+        if (ttl->cell_menu[i].text[0] == 0) {
+            strncpy(ttl->cell_menu[i].text, text, ARRAY_SIZE(ttl->cell_menu[i].text) - 1);
+            ttl->cell_menu[i].text[ARRAY_SIZE(ttl->cell_menu[i].text) - 1] = 0;
+            return;
+        }
+    }
+    LOGEP("cell menu capacity exceeded");
+}
+
+int lwttl_cell_menu_count(const LWTTL* ttl) {
+    return ARRAY_SIZE(ttl->cell_menu);
+}
+
+const char* lwttl_cell_menu_text(const LWTTL* ttl, int index) {
+    return ttl->cell_menu[index].text;
+}
+
+void lwttl_cell_menu_offset(const LWTTL* ttl, int index, int* xc_offset, int* yc_offset) {
+    if (index == 0) {
+        *xc_offset = -2;
+        *yc_offset = -0;
+    } else if (index == 1) {
+        *xc_offset = -2;
+        *yc_offset = -2;
+    } else if (index == 2) {
+        *xc_offset = -0;
+        *yc_offset = -2;
+    }
 }

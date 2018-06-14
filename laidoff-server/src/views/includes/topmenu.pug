@@ -2,42 +2,29 @@ div.wspre.stat.green
   | #{resultMsg}
 div.wspre.stat.red
   | #{errMsg}
-div.floatright
+div.floatleft
   br
   br
   br
   br
-  a.dpinblk.red.pad3(href='/idle?u=' + user.guid) 축소
-  br
-  a.dpinblk.red.pad3(href='script:enable_water_way()') 해로
-  br
-  a.dpinblk.red.pad3(href='script:enable_land_way()') 육로
-  br
-  a.dpinblk.red.pad3(href='/vessel?u=' + user.guid) 선박
-  br
-  a.dpinblk.red.pad3(href='/port?u=' + user.guid) 항구
-  //br
-  //a.dpinblk.red.pad3(href='/seaway?u=' + user.guid) 항로
-  br
-  a.dpinblk.red.pad3(href='script:toggle_grid()') 격자
-  br
-  a.dpinblk.red.pad3(href='script:transform_single_cell_water_to_land()') 물2땅
-  br
-  a.dpinblk.red.pad3(href='script:transform_single_cell_land_to_water()') 땅2물
-  br
-  a.dpinblk.red.pad3(href='script:toggle_cam_iso_top_mode()') 이소2탑
-  //br
-  //a.dpinblk.red.pad3(href='/mission?u=' + user.guid) 임무
-  //br
-  //a.dpinblk.red.pad3(href='/?u=' + user.guid) 공지
-  //br
-  //a.dpinblk.red.pad3(href='/HTMLPage1.html') Test
-  //br
-  //a.dpinblk.red.pad3(href='/newPortRegistered')
-    | 항구
-    br
-    | 등록
-//div#footer
-  div#center
-    a.dpinblk.red.pad3(href='script:map_zoomport cannot be created:_in()') 확대
-    a.dpinblk.red.pad3(href='script:map_zoom_out()') 축소
+  div
+    a.dpinblk.red.pad2(href='/idle?u=' + user.guid + '&mt=' + menuToggle) X
+  if menuToggle
+    div
+      a.dpinblk.red.pad2(href='script:enable_water_way()') 해로
+    div
+      a.dpinblk.red.pad2(href='script:enable_land_way()') 육로
+    div
+      a.dpinblk.red.pad2(href='/vessel?u=' + user.guid) 선박
+    div
+      a.dpinblk.red.pad2(href='/port?u=' + user.guid) 항구
+    //br
+    //a.dpinblk.red.pad3(href='/seaway?u=' + user.guid) 항로
+    div
+      a.dpinblk.red.pad2(href='script:toggle_grid()') 격자
+    div
+      a.dpinblk.red.pad2(href='script:transform_single_cell_water_to_land()') 물➡땅
+    div
+      a.dpinblk.red.pad2(href='script:transform_single_cell_land_to_water()') 땅➡물
+    div
+      a.dpinblk.red.pad2(href='script:toggle_cam_iso_top_mode()') 카메라

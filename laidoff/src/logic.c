@@ -529,7 +529,7 @@ void reset_battle_context(LWCONTEXT* pLwc) {
 
     set_creature_data(
         &pLwc->player[1],
-        u8"Screenwriter",
+        "Screenwriter",
         2,
         25,
         50,
@@ -545,7 +545,7 @@ void reset_battle_context(LWCONTEXT* pLwc) {
 
     set_creature_data(
         &pLwc->player[2],
-        u8"Nail Clipper",
+        "Nail Clipper",
         3,
         46,
         46,
@@ -561,7 +561,7 @@ void reset_battle_context(LWCONTEXT* pLwc) {
 
     set_creature_data(
         &pLwc->player[3],
-        u8"Great Writer",
+        "Great Writer",
         8,
         105,
         105,
@@ -1365,8 +1365,8 @@ void lwc_start_logic_thread(LWCONTEXT* pLwc) {
     // [2] Ball Rumble Scene
     // [3] TTL Scene
     /*[1]*///load_field_2_init_runtime_data_async(pLwc, pLwc->logic_actor);
-    /*[2]*/load_scene_async(pLwc, pLwc->logic_actor, change_to_puck_game);
-    /*[3]*///load_scene_async(pLwc, pLwc->logic_actor, change_to_ttl);
+    /*[2]*///load_scene_async(pLwc, pLwc->logic_actor, change_to_puck_game);
+    /*[3]*/load_scene_async(pLwc, pLwc->logic_actor, change_to_ttl);
 }
 
 const char* logic_server_addr(int idx) {

@@ -433,9 +433,9 @@ static void render_timer(const LWCONTEXT* pLwc, float remain_sec, float total_se
     SET_COLOR_RGBA_FLOAT(text_block.color_emp_outline, 0, 0, 0, ui_alpha);
     char str[32];
     if (remain_sec < 0) {
-        sprintf(str, u8"--");
+        sprintf(str, "--");
     } else {
-        sprintf(str, u8"%.0f", remain_sec);
+        sprintf(str, "%.0f", remain_sec);
     }
     float remain_ratio = 1.0f;
     if (total_sec != 0) {
