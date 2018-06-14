@@ -17,7 +17,9 @@ return function ()
 		lo.request_player_reveal_leaderboard(c.tcp, items_in_page)
 		lo.change_to_physics(c)
 	elseif c.puck_game.game_state == lo.LPGS_TUTORIAL then
-		lo.script_cleanup_all_coros(c)
+		if lo.puck_game_is_tutorial_stoppable(c.puck_game) == 1 then
+			lo.script_cleanup_all_coros(c)
+		end
 		lo.lw_go_back(c, c.android_native_activity)
 	elseif c.puck_game.game_state == lo.LPGS_BATTLE then
 		-- refresh leaderboard
