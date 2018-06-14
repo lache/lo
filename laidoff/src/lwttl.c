@@ -2606,9 +2606,9 @@ const char* lwttl_route_state(const LWPTTLROUTEOBJECT* obj) {
     if (obj->route_flags.breakdown) {
         return "BREAKDOWN";
     } else if (obj->route_flags.loading) {
-        return "LOADING";
+        return LW_UTF8_TTL_CHAR_ICON_CARGO_LOADED;
     } else if (obj->route_flags.unloading) {
-        return "UNLOADING";
+        return LW_UTF8_TTL_CHAR_ICON_CARGO_UNLOADED;
     } else {
         return "";
     }

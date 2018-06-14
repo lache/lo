@@ -981,7 +981,7 @@ static void render_sea_objects_nameplate(const LWCONTEXT* pLwc, const LWTTLFIELD
             } else if (ttl_dynamic_state->obj[i].route_flags.sailing) {
                 sprintf(obj_nameplate, "%s%.0f", LW_UTF8_TTL_CHAR_ICON_SHIP, ttl_dynamic_state->obj[i].route_param);
             } else {
-                sprintf(obj_nameplate, "%s%s", LW_UTF8_TTL_CHAR_ICON_SHIP, route_state);
+                sprintf(obj_nameplate, "%s", route_state);
             }
         } else if (view_scale <= 32) {
             if (ttl_dynamic_state->obj[i].route_flags.breakdown) {
@@ -989,7 +989,7 @@ static void render_sea_objects_nameplate(const LWCONTEXT* pLwc, const LWTTLFIELD
             } else if (ttl_dynamic_state->obj[i].route_flags.sailing) {
                 sprintf(obj_nameplate, "%s", LW_UTF8_TTL_CHAR_ICON_SHIP);
             } else {
-                sprintf(obj_nameplate, "%s", LW_UTF8_TTL_CHAR_ICON_SHIP);
+                sprintf(obj_nameplate, "%s", route_state);
             }
         }
 
