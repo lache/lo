@@ -14,7 +14,7 @@ using namespace ss;
 
 const auto update_interval = boost::posix_time::milliseconds(75);
 //const auto update_interval = boost::posix_time::milliseconds(250);
-const auto salvage_update_interval = boost::posix_time::milliseconds(30000);
+const auto salvage_update_interval = boost::posix_time::milliseconds(600 * 1000);
 
 udp_server::udp_server(boost::asio::io_service& io_service,
                        std::shared_ptr<sea> sea,
