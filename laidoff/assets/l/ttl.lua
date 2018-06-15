@@ -82,6 +82,7 @@ function transform_single_cell_water_to_land()
         local xc0 = lo.lwttl_selected_int_x(c.ttl)
         local yc0 = lo.lwttl_selected_int_y(c.ttl)
         lo.lwttl_udp_send_ttltransformsinglecell(c.ttl, lo.lwttl_sea_udp(c.ttl), xc0, yc0, 0)
+        lo.lwttl_send_ping_now(c.ttl)
     else
         print('No selection')
     end
@@ -92,6 +93,7 @@ function transform_single_cell_land_to_water()
         local xc0 = lo.lwttl_selected_int_x(c.ttl)
         local yc0 = lo.lwttl_selected_int_y(c.ttl)
         lo.lwttl_udp_send_ttltransformsinglecell(c.ttl, lo.lwttl_sea_udp(c.ttl), xc0, yc0, 1)
+        lo.lwttl_send_ping_now(c.ttl)
     else
         print('No selection')
     end
@@ -122,8 +124,9 @@ function demolish_port(port_id)
 end
 
 local CELL_MENU_PURCHASE_NEW_PORT = 1
-local CELL_MENU_DETAILS = 2
-local CELL_MENU_DEMOLISH_PORT = 3
+local CELL_MENU_DEMOLISH_PORT = 2
+local CELL_MENU_TRANSFORM_SINGLE_CELL_WATER_TO_LAND = 3
+local CELL_MENU_TRANSFORM_SINGLE_CELL_LAND_TO_WATER = 4
 
 function reset_cell_menu()
     lo.lwttl_clear_cell_menu(c.ttl);
@@ -131,10 +134,16 @@ function reset_cell_menu()
     local is_land = sc.attr & 1
     local is_water = sc.attr & 2
     local is_seawater = sc.attr & 4
-    if is_land and sc.port_id <= 0 then
+    if is_water ~= 0 and sc.port_id <= 0 then
         lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_PURCHASE_NEW_PORT, "항구건설");
     end
-    lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_DETAILS, "상세정보");
+    if sc.port_id <= 0 and sc.city_id <= 0 then
+        if is_water ~= 0 then
+            lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_TRANSFORM_SINGLE_CELL_WATER_TO_LAND, "땅으로 변환");
+        elseif is_land ~= 0 then
+            lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_TRANSFORM_SINGLE_CELL_LAND_TO_WATER, "물로 변환");
+        end
+    end
     if sc.port_id > 0 then
         lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_DEMOLISH_PORT, "철거");
     end
@@ -155,16 +164,23 @@ function on_cell_menu(index, command_id)
         purchase_new_port()
     elseif command_id == CELL_MENU_DEMOLISH_PORT and sc.port_id > 0 then
         demolish_port(sc.port_id)
+    elseif command_id == CELL_MENU_TRANSFORM_SINGLE_CELL_WATER_TO_LAND then
+        transform_single_cell_water_to_land()
+    elseif command_id == CELL_MENU_TRANSFORM_SINGLE_CELL_LAND_TO_WATER then
+        transform_single_cell_land_to_water()
     end
 end
 
-function on_lwttl_prerender_mutable_context()
-    print("on_lwttl_prerender_mutable_context")
+function on_set_refresh_html_body()
+    print("on_set_refresh_html_body")
     lo.lwttl_send_ping_now(c.ttl)
     lo.lwttl_send_ttlpingsinglecell_on_selected(c.ttl)
-    
 end
 
 function on_ttl_single_cell()
     reset_cell_menu()
+end
+
+function on_ttl_static_state2()
+    lo.lwttl_send_ttlpingsinglecell_on_selected(c.ttl)
 end

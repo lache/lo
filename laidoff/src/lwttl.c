@@ -1710,13 +1710,6 @@ void lwttl_send_ping_now(LWTTL* ttl) {
     lwttl_udp_send_ttlping(ttl, ttl->sea_udp, 0);
 }
 
-void lwttl_prerender_mutable_context(LWTTL* ttl, LWCONTEXT* pLwc, LWHTMLUI* htmlui) {
-    if (htmlui && htmlui_get_refresh_html_body(htmlui)) {
-        const char* s = "on_lwttl_prerender_mutable_context()";
-        logic_emit_evalute_with_name_async(pLwc, s, strlen(s), s);
-    }
-}
-
 int lwttl_selected(const LWTTL* ttl, LWTTLLNGLAT* pos) {
     if (pos) {
         memcpy(pos, &ttl->viewports[0].selected.pos, sizeof(LWTTLLNGLAT));
@@ -2335,6 +2328,7 @@ void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc) {
                 if (add_ret == 1) {
                     //send_ttlpingflush(ttl);
                 }
+                script_evaluate_async(pLwc, "on_ttl_static_state2()", strlen("on_ttl_static_state2()"));
                 break;
             }
             case LPGP_LWPTTLSTATICSTATE3:
@@ -3126,11 +3120,11 @@ int lwttl_selected_cell_menu_index(const LWTTL* ttl, int xc, int yc) {
     const LWTTLSELECTED* selected = &ttl->viewports[0].selected;
     if (selected->cell_menu) {
         if (selected->pos_xc - 2 == xc && selected->pos_yc - 0 == yc) {
-            return 0;
+            return ttl->cell_menu[0].command_id > 0 ? 0 : -1;
         } else if (selected->pos_xc - 2 == xc && selected->pos_yc - 2 == yc) {
-            return 1;
+            return ttl->cell_menu[1].command_id > 0 ? 1 : -1;
         } else if (selected->pos_xc - 0 == xc && selected->pos_yc - 2 == yc) {
-            return 2;
+            return ttl->cell_menu[2].command_id > 0 ? 2 : -1;
         }
     }
     return -1;

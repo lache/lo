@@ -136,6 +136,10 @@ public:
         next_html_path = html_path;
     }
     void set_refresh_html_body(int v) {
+        if (refresh_html_body == 0 && v == 1) {
+            const char* s = "on_set_refresh_html_body()";
+            logic_emit_evalute_with_name_async(pLwc, s, strlen(s), s);
+        }
         refresh_html_body = v;
     }
     int get_refresh_html_body() const {
@@ -216,7 +220,7 @@ public:
 private:
     LWHTMLUI();
     LWHTMLUI(const LWHTMLUI&);
-    const LWCONTEXT* pLwc;
+    LWCONTEXT* pLwc;
     litehtml::context browser_context;
     litehtml::text_container container;
     litehtml::document::ptr doc;

@@ -193,7 +193,6 @@ void lwttl_scroll_view_scale(LWTTL* ttl, float offset);
 float lwttl_earth_globe_y(const LWTTLLNGLAT* center, float earth_globe_scale);
 void lwttl_fill_world_seaports_bookmarks(LWHTMLUI* htmlui);
 void lwttl_send_ping_now(LWTTL* ttl);
-void lwttl_prerender_mutable_context(LWTTL* ttl, LWCONTEXT* pLwc, LWHTMLUI* htmlui);
 int lwttl_selected(const LWTTL* ttl, LWTTLLNGLAT* pos);
 int lwttl_selected_int(const LWTTL* ttl, int* xc0, int* yc0);
 int lwttl_selected_int_x(const LWTTL* ttl);

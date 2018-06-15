@@ -104717,43 +104717,6 @@ fail:
 }
 
 
-static int _wrap_lwttl_prerender_mutable_context(lua_State* L) {
-  int SWIG_arg = 0;
-  LWTTL *arg1 = (LWTTL *) 0 ;
-  LWCONTEXT *arg2 = (LWCONTEXT *) 0 ;
-  LWHTMLUI *arg3 = (LWHTMLUI *) 0 ;
-  
-  SWIG_check_num_args("lwttl_prerender_mutable_context",3,3)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_prerender_mutable_context",1,"LWTTL *");
-  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("lwttl_prerender_mutable_context",2,"LWCONTEXT *");
-  if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("lwttl_prerender_mutable_context",3,"LWHTMLUI *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTL,0))){
-    SWIG_fail_ptr("lwttl_prerender_mutable_context",1,SWIGTYPE_p__LWTTL);
-  }
-  
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("lwttl_prerender_mutable_context",2,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p__LWHTMLUI,0))){
-    SWIG_fail_ptr("lwttl_prerender_mutable_context",3,SWIGTYPE_p__LWHTMLUI);
-  }
-  
-  lwttl_prerender_mutable_context(arg1,arg2,arg3);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
 static int _wrap_lwttl_selected(lua_State* L) {
   int SWIG_arg = 0;
   LWTTL *arg1 = (LWTTL *) 0 ;
@@ -110114,7 +110077,6 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "lwttl_earth_globe_y", _wrap_lwttl_earth_globe_y},
     { "lwttl_fill_world_seaports_bookmarks", _wrap_lwttl_fill_world_seaports_bookmarks},
     { "lwttl_send_ping_now", _wrap_lwttl_send_ping_now},
-    { "lwttl_prerender_mutable_context", _wrap_lwttl_prerender_mutable_context},
     { "lwttl_selected", _wrap_lwttl_selected},
     { "lwttl_selected_int", _wrap_lwttl_selected_int},
     { "lwttl_selected_int_x", _wrap_lwttl_selected_int_x},
