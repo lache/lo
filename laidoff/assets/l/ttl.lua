@@ -1,3 +1,5 @@
+local inspect = require('inspect')
+
 local c = lo.script_context()
 lo.htmlui_set_online(c.htmlui, 0)
 
@@ -70,6 +72,7 @@ function link()
 		lo.htmlui_execute_anchor_click(c.htmlui, "/linkland");
 	end
 end
+
 function toggle_grid()
 	lo.lwttl_toggle_cell_grid(c.ttl)
 end
@@ -106,4 +109,24 @@ function toggle_cam_iso_top_mode()
 	lo.lwttl_set_cam_eye(c.ttl, eye)
 	lo.lwttl_update_aspect_ratio(c.ttl, c.viewport_width, c.viewport_height)
 	lo.delete_vec3(eye)
+end
+
+function purchase_new_port()
+	print('purchase_new_port')
+    lo.htmlui_execute_anchor_click(c.htmlui, "/purchaseNewPort");
+end
+
+function reset_cell_menu()
+    lo.lwttl_clear_cell_menu(c.ttl);
+    lo.lwttl_add_cell_menu(c.ttl, "항구건설");
+    lo.lwttl_add_cell_menu(c.ttl, "상세정보");
+    lo.lwttl_add_cell_menu(c.ttl, "철거");
+end
+
+function on_cell_menu(index)
+    print(string.format('on_cell_menu:%d', index))
+    print(inspect(getmetatable(lo.lwttl_single_cell(c.ttl))))
+    if index == 0 then
+        purchase_new_port()
+    end
 end

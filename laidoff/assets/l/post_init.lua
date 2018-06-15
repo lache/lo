@@ -38,6 +38,9 @@ local c = lo.script_context()
 
 local Data = reload_require('data')
 print('Data loaded!')
+
+reload_require('ttl')
+
 local data = Data:new()
 
 local Field = reload_require('field')

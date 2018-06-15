@@ -171,7 +171,8 @@ public:
             int x = static_cast<int>(roundf(nx * client_width));
             int y = static_cast<int>(roundf(ny * client_height));
             const auto over_el = doc->root()->get_element_by_point(x, y, x, y);
-            return over_el ? (strcmp(over_el->get_tagName(), "body") != 0) : false;
+            const auto over_el_bg = over_el->get_background();
+            return over_el ? (strcmp(over_el->get_tagName(), "body") != 0 && over_el_bg && over_el_bg->m_color.alpha) : false;
         }
         return false;
     }

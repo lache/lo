@@ -165,7 +165,7 @@ const teleportTo = (id, x, y) => {
 }
 
 app.get('/idle', (req, res) => {
-  const u = findOrCreateUser(req.query.u || uuidv1())
+  const u = findOrCreateUser(req.get('X-U') || req.query.u || uuidv1())
   return res.render('idle', {
     user: u,
     resultMsg: req.query.resultMsg,
@@ -340,6 +340,37 @@ app.get('/teleporttoport', (req, res) => {
   console.log('teleport to port', p.region_id, p.x, p.y)
   teleportTo(u.guid, p.x, p.y)
   return res.render('idle', { user: u })
+})
+
+const purchaseNewPort = async (req, res, expectLand) => {
+  const u = findOrCreateUser(req.get('X-U') || uuidv1())
+  const xc0 = req.get('X-D-XC0')
+  const yc0 = req.get('X-D-YC0')
+  const xc1 = req.get('X-D-XC1')
+  const yc1 = req.get('X-D-YC1')
+  console.log(`Link [${xc0}, ${yc0}]-[${xc1}, ${yc1}]`)
+  let resultMsg = ''
+  let errMsg = ''
+  const r0 = await execCreatePort(u, xc0, yc0, expectLand)
+  if (r0 > 0) {
+    resultMsg = '새 항구 건설 완료'
+  } else {
+    errMsg = '새 항구 건설 실패'
+  }
+  res.redirect(
+    url.format({
+      pathname: '/idle',
+      query: {
+        u: u.guid,
+        resultMsg: resultMsg,
+        errMsg: errMsg
+      }
+    })
+  )
+}
+
+app.get('/purchaseNewPort', async (req, res) => {
+  await purchaseNewPort(req, res, 0)
 })
 
 const sendSpawnShip = async (

@@ -102890,6 +102890,84 @@ fail:
 }
 
 
+static int _wrap_lwttl_worldmap_smooth_scroll_to(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTLFIELDVIEWPORT *arg1 = (LWTTLFIELDVIEWPORT *) 0 ;
+  float arg2 ;
+  float arg3 ;
+  LWUDP *arg4 = (LWUDP *) 0 ;
+  int arg5 ;
+  
+  SWIG_check_num_args("lwttl_worldmap_smooth_scroll_to",5,5)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_worldmap_smooth_scroll_to",1,"LWTTLFIELDVIEWPORT *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("lwttl_worldmap_smooth_scroll_to",2,"float");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("lwttl_worldmap_smooth_scroll_to",3,"float");
+  if(!SWIG_isptrtype(L,4)) SWIG_fail_arg("lwttl_worldmap_smooth_scroll_to",4,"LWUDP *");
+  if(!lua_isnumber(L,5)) SWIG_fail_arg("lwttl_worldmap_smooth_scroll_to",5,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
+    SWIG_fail_ptr("lwttl_worldmap_smooth_scroll_to",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
+  }
+  
+  arg2 = (float)lua_tonumber(L, 2);
+  arg3 = (float)lua_tonumber(L, 3);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,4,(void**)&arg4,SWIGTYPE_p__LWUDP,0))){
+    SWIG_fail_ptr("lwttl_worldmap_smooth_scroll_to",4,SWIGTYPE_p__LWUDP);
+  }
+  
+  arg5 = (int)lua_tonumber(L, 5);
+  lwttl_worldmap_smooth_scroll_to(arg1,arg2,arg3,arg4,arg5);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_worldmap_smooth_scroll_to_cell_center(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTLFIELDVIEWPORT *arg1 = (LWTTLFIELDVIEWPORT *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  LWUDP *arg4 = (LWUDP *) 0 ;
+  int arg5 ;
+  
+  SWIG_check_num_args("lwttl_worldmap_smooth_scroll_to_cell_center",5,5)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_worldmap_smooth_scroll_to_cell_center",1,"LWTTLFIELDVIEWPORT *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("lwttl_worldmap_smooth_scroll_to_cell_center",2,"int");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("lwttl_worldmap_smooth_scroll_to_cell_center",3,"int");
+  if(!SWIG_isptrtype(L,4)) SWIG_fail_arg("lwttl_worldmap_smooth_scroll_to_cell_center",4,"LWUDP *");
+  if(!lua_isnumber(L,5)) SWIG_fail_arg("lwttl_worldmap_smooth_scroll_to_cell_center",5,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
+    SWIG_fail_ptr("lwttl_worldmap_smooth_scroll_to_cell_center",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  arg3 = (int)lua_tonumber(L, 3);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,4,(void**)&arg4,SWIGTYPE_p__LWUDP,0))){
+    SWIG_fail_ptr("lwttl_worldmap_smooth_scroll_to_cell_center",4,SWIGTYPE_p__LWUDP);
+  }
+  
+  arg5 = (int)lua_tonumber(L, 5);
+  lwttl_worldmap_smooth_scroll_to_cell_center(arg1,arg2,arg3,arg4,arg5);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_lwttl_worldmap_scroll_to(lua_State* L) {
   int SWIG_arg = 0;
   LWTTL *arg1 = (LWTTL *) 0 ;
@@ -107503,6 +107581,200 @@ fail:
 }
 
 
+static int _wrap_lwttl_selected_cell_menu_index(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTL *arg1 = (LWTTL *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  int result;
+  
+  SWIG_check_num_args("lwttl_selected_cell_menu_index",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_selected_cell_menu_index",1,"LWTTL const *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("lwttl_selected_cell_menu_index",2,"int");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("lwttl_selected_cell_menu_index",3,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTL,0))){
+    SWIG_fail_ptr("lwttl_selected_cell_menu_index",1,SWIGTYPE_p__LWTTL);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  arg3 = (int)lua_tonumber(L, 3);
+  result = (int)lwttl_selected_cell_menu_index((struct _LWTTL const *)arg1,arg2,arg3);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_clear_cell_menu(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTL *arg1 = (LWTTL *) 0 ;
+  
+  SWIG_check_num_args("lwttl_clear_cell_menu",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_clear_cell_menu",1,"LWTTL *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTL,0))){
+    SWIG_fail_ptr("lwttl_clear_cell_menu",1,SWIGTYPE_p__LWTTL);
+  }
+  
+  lwttl_clear_cell_menu(arg1);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_add_cell_menu(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTL *arg1 = (LWTTL *) 0 ;
+  char *arg2 = (char *) 0 ;
+  
+  SWIG_check_num_args("lwttl_add_cell_menu",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_add_cell_menu",1,"LWTTL *");
+  if(!SWIG_lua_isnilstring(L,2)) SWIG_fail_arg("lwttl_add_cell_menu",2,"char const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTL,0))){
+    SWIG_fail_ptr("lwttl_add_cell_menu",1,SWIGTYPE_p__LWTTL);
+  }
+  
+  arg2 = (char *)lua_tostring(L, 2);
+  lwttl_add_cell_menu(arg1,(char const *)arg2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_cell_menu_count(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTL *arg1 = (LWTTL *) 0 ;
+  int result;
+  
+  SWIG_check_num_args("lwttl_cell_menu_count",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_cell_menu_count",1,"LWTTL const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTL,0))){
+    SWIG_fail_ptr("lwttl_cell_menu_count",1,SWIGTYPE_p__LWTTL);
+  }
+  
+  result = (int)lwttl_cell_menu_count((struct _LWTTL const *)arg1);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_cell_menu_text(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTL *arg1 = (LWTTL *) 0 ;
+  int arg2 ;
+  char *result = 0 ;
+  
+  SWIG_check_num_args("lwttl_cell_menu_text",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_cell_menu_text",1,"LWTTL const *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("lwttl_cell_menu_text",2,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTL,0))){
+    SWIG_fail_ptr("lwttl_cell_menu_text",1,SWIGTYPE_p__LWTTL);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  result = (char *)lwttl_cell_menu_text((struct _LWTTL const *)arg1,arg2);
+  lua_pushstring(L,(const char *)result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_cell_menu_offset(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTL *arg1 = (LWTTL *) 0 ;
+  int arg2 ;
+  int *arg3 = (int *) 0 ;
+  int *arg4 = (int *) 0 ;
+  
+  SWIG_check_num_args("lwttl_cell_menu_offset",4,4)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_cell_menu_offset",1,"LWTTL const *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("lwttl_cell_menu_offset",2,"int");
+  if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("lwttl_cell_menu_offset",3,"int *");
+  if(!SWIG_isptrtype(L,4)) SWIG_fail_arg("lwttl_cell_menu_offset",4,"int *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTL,0))){
+    SWIG_fail_ptr("lwttl_cell_menu_offset",1,SWIGTYPE_p__LWTTL);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_int,0))){
+    SWIG_fail_ptr("lwttl_cell_menu_offset",3,SWIGTYPE_p_int);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,4,(void**)&arg4,SWIGTYPE_p_int,0))){
+    SWIG_fail_ptr("lwttl_cell_menu_offset",4,SWIGTYPE_p_int);
+  }
+  
+  lwttl_cell_menu_offset((struct _LWTTL const *)arg1,arg2,arg3,arg4);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_viewport_icon_size_ratio(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTLFIELDVIEWPORT *arg1 = (LWTTLFIELDVIEWPORT *) 0 ;
+  float result;
+  
+  SWIG_check_num_args("lwttl_viewport_icon_size_ratio",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_viewport_icon_size_ratio",1,"LWTTLFIELDVIEWPORT const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTLFIELDVIEWPORT,0))){
+    SWIG_fail_ptr("lwttl_viewport_icon_size_ratio",1,SWIGTYPE_p__LWTTLFIELDVIEWPORT);
+  }
+  
+  result = (float)lwttl_viewport_icon_size_ratio((struct _LWTTLFIELDVIEWPORT const *)arg1);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_LWTTLCHUNKKEY_v_set(lua_State* L) {
   int SWIG_arg = 0;
   union _LWTTLCHUNKKEY *arg1 = (union _LWTTLCHUNKKEY *) 0 ;
@@ -109765,6 +110037,8 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "htmlui_get_touch_rect", _wrap_htmlui_get_touch_rect},
     { "lwttl_new", _wrap_lwttl_new},
     { "lwttl_destroy", _wrap_lwttl_destroy},
+    { "lwttl_worldmap_smooth_scroll_to", _wrap_lwttl_worldmap_smooth_scroll_to},
+    { "lwttl_worldmap_smooth_scroll_to_cell_center", _wrap_lwttl_worldmap_smooth_scroll_to_cell_center},
     { "lwttl_worldmap_scroll_to", _wrap_lwttl_worldmap_scroll_to},
     { "lwttl_worldmap_scroll_to_cell_center", _wrap_lwttl_worldmap_scroll_to_cell_center},
     { "lwttl_update_aspect_ratio", _wrap_lwttl_update_aspect_ratio},
@@ -109905,6 +110179,13 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "lwttl_cell_box_count", _wrap_lwttl_cell_box_count},
     { "lwttl_cell_box", _wrap_lwttl_cell_box},
     { "lwttl_viewport_show", _wrap_lwttl_viewport_show},
+    { "lwttl_selected_cell_menu_index", _wrap_lwttl_selected_cell_menu_index},
+    { "lwttl_clear_cell_menu", _wrap_lwttl_clear_cell_menu},
+    { "lwttl_add_cell_menu", _wrap_lwttl_add_cell_menu},
+    { "lwttl_cell_menu_count", _wrap_lwttl_cell_menu_count},
+    { "lwttl_cell_menu_text", _wrap_lwttl_cell_menu_text},
+    { "lwttl_cell_menu_offset", _wrap_lwttl_cell_menu_offset},
+    { "lwttl_viewport_icon_size_ratio", _wrap_lwttl_viewport_icon_size_ratio},
     { "msb_index", _wrap_msb_index},
     { "make_chunk_key", _wrap_make_chunk_key},
     { "aligned_chunk_index", _wrap_aligned_chunk_index},

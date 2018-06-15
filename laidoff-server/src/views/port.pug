@@ -7,7 +7,7 @@ html
       div.alignright
         if errMsg
           div 친절한 안내: #{errMsg}
-        a.dpinblk.red.pad3(href='/purchase_new_port?u=' + user.guid + '&currentFirstKey=' + firstKey)
+        a.dpinblk.red.pad3(href='/purchaseNewPort?u=' + user.guid + '&currentFirstKey=' + firstKey)
           | 새 항구
         a.dpinblk.red.pad3(href='/port?u=' + user.guid + '&lastKey=' + firstKey + '&currentFirstKey=' + firstKey)
           | 이전
