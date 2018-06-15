@@ -187,6 +187,7 @@ typedef struct _LWTTLCELLBOX {
 } LWTTLCELLBOX;
 
 typedef struct _LWTTLCELLMENU {
+    int command_id;
     char text[128];
 } LWTTLCELLMENU;
 
@@ -926,6 +927,15 @@ static void send_ttlpingsinglecell(const LWTTL* ttl,
     p.xc0 = xc0;
     p.yc0 = yc0;
     udp_send(udp, (const char*)&p, sizeof(LWPTTLPINGSINGLECELL));
+}
+
+void lwttl_send_ttlpingsinglecell_on_selected(const LWTTL* ttl) {
+    int xc0, yc0;
+    if (lwttl_selected_int(ttl, &xc0, &yc0)) {
+        send_ttlpingsinglecell(ttl, ttl->sea_udp, xc0, yc0);
+    } else {
+        LOGI("%s: No selected cell.", __func__);
+    }
 }
 
 static void send_ttlpingflush(LWTTL* ttl) {
@@ -1702,11 +1712,8 @@ void lwttl_send_ping_now(LWTTL* ttl) {
 
 void lwttl_prerender_mutable_context(LWTTL* ttl, LWCONTEXT* pLwc, LWHTMLUI* htmlui) {
     if (htmlui && htmlui_get_refresh_html_body(htmlui)) {
-        const char* send_ping_now = "local c = lo.script_context();lo.lwttl_send_ping_now(c.ttl)";
-        logic_emit_evalute_with_name_async(pLwc,
-                                           send_ping_now,
-                                           strlen(send_ping_now),
-                                           "send_ping_now");
+        const char* s = "on_lwttl_prerender_mutable_context()";
+        logic_emit_evalute_with_name_async(pLwc, s, strlen(s), s);
     }
 }
 
@@ -1846,20 +1853,19 @@ void lwttl_change_selected_cell_to(LWTTL* ttl,
             do {
                 const int cell_menu_index = lwttl_selected_cell_menu_index(ttl, xc, yc);
                 if (cell_menu_index >= 0) {
-                    LOGI("Cell menu index %d", cell_menu_index);
-                    if (cell_menu_index == 0) {
-                        char s[64];
-                        int slen = snprintf(s, ARRAY_SIZE(s), "on_cell_menu(%d)", cell_menu_index);
-                        s[ARRAY_SIZE(s) - 1] = 0;
-                        if (slen == 0) {
-                            LOGEP("emptry script to run! slen == 0!");
-                        } else if (slen < 0) {
-                            LOGEP("script formatting invalid! slen == %d!", slen);
-                        } else if (slen >= ARRAY_SIZE(s)) {
-                            LOGEP("script formatting too long! slen == %d, ssize == %d!", slen, ARRAY_SIZE(s));
-                        } else {
-                            script_evaluate_async(pLwc, s, slen);
-                        }
+                    const int command_id = ttl->cell_menu[cell_menu_index].command_id;
+                    LOGI("Cell menu index %d / command id %d", cell_menu_index, command_id);
+                    char s[64];
+                    int slen = snprintf(s, ARRAY_SIZE(s), "on_cell_menu(%d,%d)", cell_menu_index, command_id);
+                    s[ARRAY_SIZE(s) - 1] = 0;
+                    if (slen == 0) {
+                        LOGEP("emptry script to run! slen == 0!");
+                    } else if (slen < 0) {
+                        LOGEP("script formatting invalid! slen == %d!", slen);
+                    } else if (slen >= ARRAY_SIZE(s)) {
+                        LOGEP("script formatting too long! slen == %d, ssize == %d!", slen, ARRAY_SIZE(s));
+                    } else {
+                        script_evaluate_async(pLwc, s, slen);
                     }
                     render_touch_rect = 1;
                     break;
@@ -2454,6 +2460,7 @@ void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc) {
                     ttl->cell_box[ttl->cell_box_count].yc1 = p->water_box[3];
                     ttl->cell_box_count++;
                 }
+                script_evaluate_async(pLwc, "on_ttl_single_cell()", strlen("on_ttl_single_cell()"));
                 break;
             }
             case LPGP_LWPTTLGOLDEARNED:
@@ -2628,7 +2635,9 @@ void lwttl_update(LWTTL* ttl, LWCONTEXT* pLwc, float delta_time) {
     if (vp->smooth_scroll.in_progress) {
         const float speed = 12.0f;
         vp->smooth_scroll.ratio += (1.0f - vp->smooth_scroll.ratio) * speed * delta_time;
-        if (vp->smooth_scroll.ratio > 0.999f) {
+        const float dlng = vp->smooth_scroll.target.lng - vp->smooth_scroll.current.lng;
+        const float dlat = vp->smooth_scroll.target.lat - vp->smooth_scroll.current.lat;
+        if (vp->smooth_scroll.ratio > 0.999f || (fabsf(dlng) < 1e-4 && fabsf(dlat) < 1e-4)) {
             vp->smooth_scroll.ratio = 1.0f;
             vp->smooth_scroll.in_progress = 0;
             ttl->panning = 0;
@@ -3131,9 +3140,18 @@ void lwttl_clear_cell_menu(LWTTL* ttl) {
     memset(ttl->cell_menu, 0, sizeof(ttl->cell_menu));
 }
 
-void lwttl_add_cell_menu(LWTTL* ttl, const char* text) {
+void lwttl_add_cell_menu(LWTTL* ttl, int command_id, const char* text) {
+    if (command_id <= 0) {
+        LOGEP("command_id invalid");
+        return;
+    }
+    if (text == 0 || text[0] == 0) {
+        LOGEP("text invalid");
+        return;
+    }
     for (int i = 0; i < ARRAY_SIZE(ttl->cell_menu); i++) {
-        if (ttl->cell_menu[i].text[0] == 0) {
+        if (ttl->cell_menu[i].command_id <= 0) {
+            ttl->cell_menu[i].command_id = command_id;
             strncpy(ttl->cell_menu[i].text, text, ARRAY_SIZE(ttl->cell_menu[i].text) - 1);
             ttl->cell_menu[i].text[ARRAY_SIZE(ttl->cell_menu[i].text) - 1] = 0;
             return;

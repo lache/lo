@@ -353,11 +353,12 @@ void lwttl_cell_box(const LWTTL* ttl, int index, int* xc0, int* yc0, int* xc1, i
 int lwttl_viewport_show(const LWTTLFIELDVIEWPORT* vp);
 int lwttl_selected_cell_menu_index(const LWTTL* ttl, int xc, int yc);
 void lwttl_clear_cell_menu(LWTTL* ttl);
-void lwttl_add_cell_menu(LWTTL* ttl, const char* text);
+void lwttl_add_cell_menu(LWTTL* ttl, int command_id, const char* text);
 int lwttl_cell_menu_count(const LWTTL* ttl);
 const char* lwttl_cell_menu_text(const LWTTL* ttl, int index);
 void lwttl_cell_menu_offset(const LWTTL* ttl, int index, int* xc_offset, int* yc_offset);
 float lwttl_viewport_icon_size_ratio(const LWTTLFIELDVIEWPORT* vp);
+void lwttl_send_ttlpingsinglecell_on_selected(const LWTTL* ttl);
 #ifdef __cplusplus
 }
 #endif

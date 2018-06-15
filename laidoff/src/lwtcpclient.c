@@ -262,8 +262,8 @@ int parse_body_length(const char* html_response) {
 
 void refresh_body(LWTCP* tcp, void* htmlui, const char* html_response) {
     const char* body = strstr(html_response, "\r\n\r\n") + strlen("\r\n\r\n");
-    LOGI("HTTP Packet Total: %d bytes (received but not parsed)", tcp->recv_buf_not_parsed);
-    LOGI("HTTP Packet Body: %zd bytes", strlen(body));
+    LOGIx("HTTP Packet Total: %d bytes (received but not parsed)", tcp->recv_buf_not_parsed);
+    LOGIx("HTTP Packet Body: %zd bytes", strlen(body));
     memset(tcp->html_body, 0, sizeof(tcp->html_body));
     strcpy(tcp->html_body, body);
     if (strncmp(html_response + strlen("HTTP/1.1 "), "302", 3) == 0) {
@@ -299,7 +299,7 @@ int append_and_refresh_body(LWTCP* tcp, void* htmlui, char* cursor) {
     int content_length = parse_content_length(tcp->html_response);
     int body_length = parse_body_length(tcp->html_response);
     if (content_length != -1 && content_length <= body_length) {
-        LOGI("HTTP body_length / content_length = %d / %d", body_length, content_length);
+        LOGIx("HTTP body_length / content_length = %d / %d", body_length, content_length);
         char* body = strstr(tcp->html_response, "\r\n\r\n") + strlen("\r\n\r\n");
         body[body_length] = 0;
         tcp->html_body_parse_start = 0;

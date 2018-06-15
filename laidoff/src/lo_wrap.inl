@@ -107637,18 +107637,21 @@ fail:
 static int _wrap_lwttl_add_cell_menu(lua_State* L) {
   int SWIG_arg = 0;
   LWTTL *arg1 = (LWTTL *) 0 ;
-  char *arg2 = (char *) 0 ;
+  int arg2 ;
+  char *arg3 = (char *) 0 ;
   
-  SWIG_check_num_args("lwttl_add_cell_menu",2,2)
+  SWIG_check_num_args("lwttl_add_cell_menu",3,3)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_add_cell_menu",1,"LWTTL *");
-  if(!SWIG_lua_isnilstring(L,2)) SWIG_fail_arg("lwttl_add_cell_menu",2,"char const *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("lwttl_add_cell_menu",2,"int");
+  if(!SWIG_lua_isnilstring(L,3)) SWIG_fail_arg("lwttl_add_cell_menu",3,"char const *");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTL,0))){
     SWIG_fail_ptr("lwttl_add_cell_menu",1,SWIGTYPE_p__LWTTL);
   }
   
-  arg2 = (char *)lua_tostring(L, 2);
-  lwttl_add_cell_menu(arg1,(char const *)arg2);
+  arg2 = (int)lua_tonumber(L, 2);
+  arg3 = (char *)lua_tostring(L, 3);
+  lwttl_add_cell_menu(arg1,arg2,(char const *)arg3);
   
   return SWIG_arg;
   
@@ -107765,6 +107768,29 @@ static int _wrap_lwttl_viewport_icon_size_ratio(lua_State* L) {
   
   result = (float)lwttl_viewport_icon_size_ratio((struct _LWTTLFIELDVIEWPORT const *)arg1);
   lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwttl_send_ttlpingsinglecell_on_selected(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTL *arg1 = (LWTTL *) 0 ;
+  
+  SWIG_check_num_args("lwttl_send_ttlpingsinglecell_on_selected",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_send_ttlpingsinglecell_on_selected",1,"LWTTL const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTL,0))){
+    SWIG_fail_ptr("lwttl_send_ttlpingsinglecell_on_selected",1,SWIGTYPE_p__LWTTL);
+  }
+  
+  lwttl_send_ttlpingsinglecell_on_selected((struct _LWTTL const *)arg1);
+  
   return SWIG_arg;
   
   if(0) SWIG_fail;
@@ -110186,6 +110212,7 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "lwttl_cell_menu_text", _wrap_lwttl_cell_menu_text},
     { "lwttl_cell_menu_offset", _wrap_lwttl_cell_menu_offset},
     { "lwttl_viewport_icon_size_ratio", _wrap_lwttl_viewport_icon_size_ratio},
+    { "lwttl_send_ttlpingsinglecell_on_selected", _wrap_lwttl_send_ttlpingsinglecell_on_selected},
     { "msb_index", _wrap_msb_index},
     { "make_chunk_key", _wrap_make_chunk_key},
     { "aligned_chunk_index", _wrap_aligned_chunk_index},
