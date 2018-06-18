@@ -214,7 +214,6 @@ typedef struct _LWPUCKGAME {
     void(*on_go)(LWPUCKGAME*);
 	void(*on_finished)(LWPUCKGAME*, int);
     void(*on_new_record_frame)(const LWPUCKGAME*, LWPUCKGAMERECORD*, unsigned short);
-    void(*on_finalize_record)(const LWPUCKGAME*, const LWPUCKGAMERECORD*);
 	void* server;
 	int battle_id;
 	unsigned int token;
@@ -273,6 +272,7 @@ typedef struct _LWPUCKGAME {
     int show_html_ui;
     LW_PUCK_GAME_MAP game_map;
     LWPUCKGAMERECORD* record;
+    int record_replay_mode;
 } LWPUCKGAME;
 
 LWPUCKGAME* new_puck_game(int update_frequency, LW_PUCK_GAME_MAP gameMap);

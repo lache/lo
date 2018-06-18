@@ -1012,6 +1012,25 @@ void puck_game_set_tutorial_guide_str(LWPUCKGAME* puck_game, const char* str) {
     strcpy(puck_game->tutorial_guide_str, str);
 }
 
+static void set_gameobject_state(const LWPUCKGAMEOBJECT* go, const LWPUCKGAMERECORDFRAMEGAMEOBJECT* record_go) {
+    dBodySetPosition(go->body, record_go->pos[0], record_go->pos[1], record_go->pos[2]);
+    dBodySetLinearVel(go->body, record_go->linvel[0], record_go->linvel[1], record_go->linvel[2]);
+    dBodySetQuaternion(go->body, record_go->quat);
+    dBodySetAngularVel(go->body, record_go->angularvel[0], record_go->angularvel[1], record_go->angularvel[2]);
+}
+
+static void puck_game_restore_state_bitfield(LWPUCKGAME* puck_game, LWPUCKGAMEPLAYER* player, LWPUCKGAMEPLAYER* target, int* wall_hit_bit, const LWPSTATEBITFIELD* bf) {
+    player->current_hp = (int)bf->player_current_hp;
+    player->total_hp = (int)bf->player_total_hp;
+    target->current_hp = (int)bf->target_current_hp;
+    target->total_hp = (int)bf->target_total_hp;
+    puck_game->puck_owner_player_no = (int)bf->puck_owner_player_no;
+    puck_game->battle_phase = (LWP_STATE_PHASE)bf->phase;
+    puck_game->remote_control[LW_PUCK_GAME_PLAYER_TEAM][0].pull_puck = (int)bf->player_pull;
+    puck_game->remote_control[LW_PUCK_GAME_TARGET_TEAM][0].pull_puck = (int)bf->target_pull;
+    *wall_hit_bit = (int)bf->wall_hit_bit;
+}
+
 void puck_game_update_tick(LWPUCKGAME* puck_game, int update_frequency) {
     // update puck game time
     puck_game->time = puck_game_elapsed_time(puck_game->update_tick, update_frequency);
@@ -1056,8 +1075,27 @@ void puck_game_update_tick(LWPUCKGAME* puck_game, int update_frequency) {
     // stepping physics only if battling
     if (puck_game_state_phase_battling(puck_game->battle_phase)
         || puck_game->battle_phase == LSP_TUTORIAL) {
+        // real battle or record play?
         if (puck_game->on_new_record_frame) {
+            // real battle - record this game
             puck_game->on_new_record_frame(puck_game, puck_game->record, puck_game->update_tick);
+        } else if (puck_game->record_replay_mode && puck_game->record) {
+            // record play - overwrite all states
+            if (puck_game->update_tick < puck_game->record->num_frame) {
+                const LWPUCKGAMERECORDFRAME* f = &puck_game->record->frames[puck_game->update_tick];
+                set_gameobject_state(&puck_game->go[0], &f->go[0]);
+                set_gameobject_state(&puck_game->go[1], &f->go[1]);
+                set_gameobject_state(&puck_game->go[2], &f->go[2]);
+                LWPUCKGAMEPLAYER* player = &puck_game->pg_player[0];
+                LWPUCKGAMEPLAYER* target = &puck_game->pg_target[0];
+                int* wall_hit_bit = &puck_game->wall_hit_bit_send_buf_1;
+                puck_game_restore_state_bitfield(puck_game, player, target, wall_hit_bit, &f->bf);
+            } else {
+                LOGEP("puck_game->update_tick >= puck_game->record->num_frame!");
+            }
+        } else {
+            // WTF?
+            LOGEP("Unknown case");
         }
         puck_game->update_tick++;
         dSpaceCollide(puck_game->space, puck_game, puck_game_near_callback);
@@ -1228,10 +1266,14 @@ void puck_game_on_new_record_frame(const LWPUCKGAME* puck_game, LWPUCKGAMERECORD
     fill_record_gameobject(&f->go[0], puck_game, &puck_game->go[LPGO_PUCK]);
     fill_record_gameobject(&f->go[1], puck_game, &puck_game->go[LPGO_PLAYER]);
     fill_record_gameobject(&f->go[2], puck_game, &puck_game->go[LPGO_TARGET]);
+    memcpy(&f->control[0], &puck_game->remote_control[0][0], sizeof(LWPUCKGAMERECORDFRAMECONTROL));
+    memcpy(&f->control[1], &puck_game->remote_control[1][0], sizeof(LWPUCKGAMERECORDFRAMECONTROL));
     const LWPUCKGAMEPLAYER* player = &puck_game->pg_player[0];
     const LWPUCKGAMEPLAYER* target = &puck_game->pg_target[0];
     const int* wall_hit_bit = &puck_game->wall_hit_bit_send_buf_1;
     puck_game_fill_state_bitfield(&f->bf, puck_game, player, target, wall_hit_bit);
+    f->dash_elapsed_since_last[0] = puck_game_dash_elapsed_since_last(puck_game, &puck_game->remote_dash[0][0]);
+    f->dash_elapsed_since_last[1] = puck_game_dash_elapsed_since_last(puck_game, &puck_game->remote_dash[1][0]);
     record->num_frame++;
 }
 

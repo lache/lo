@@ -11,6 +11,7 @@
 #elif !LW_PLATFORM_OSX
 #   include <endian.h>
 #endif
+#include "lz4.h"
 
 #if LW_PLATFORM_WIN32
 #   define LwChangeDirectory(x) SetCurrentDirectory(x)
@@ -495,6 +496,24 @@ void select_server(LWSERVER* server, LWCONN* conn, LWTCP* reward_service) {
     }
 }
 
+static char* server_create_binary_from_file(const char* filename, size_t* size) {
+    FILE* f;
+    f = fopen(filename, "rb");
+    if (f) {
+        fseek(f, 0, SEEK_END);
+        const int f_size = (int)ftell(f);
+        fseek(f, 0, SEEK_SET);
+        char* d = (char*)malloc(f_size);
+        fread(d, 1, f_size, f);
+        *size = f_size;
+        fclose(f);
+        LOGI("%s: %s (%d bytes) loaded to memory.", __func__, filename, f_size);
+        return d;
+    }
+    LOGE("%s: %s [ERROR] FILE NOT FOUND.", __func__, filename);
+    return 0;
+}
+
 int tcp_admin_server_entry(void* context) {
     LWTCPSERVER* tcp_server = new_tcp_server();
     LWSERVER* server = context;
@@ -527,18 +546,33 @@ int tcp_admin_server_entry(void* context) {
             puck_game->c1_token = pcg32_random();
             puck_game->c2_token = pcg32_random();
             // record data init
-            puck_game->record = calloc(1, sizeof(LWPUCKGAMERECORD));
-            puck_game->record->game_map = puck_game->game_map;
-            memcpy(puck_game->record->nickname, puck_game->nickname, LWMIN(sizeof(puck_game->record->nickname), sizeof(puck_game->nickname)));
-            memcpy(puck_game->record->target_nickname, puck_game->target_nickname, LWMIN(sizeof(puck_game->record->target_nickname), sizeof(puck_game->target_nickname)));
-            memcpy(puck_game->record->id1, puck_game->id1, LWMIN(sizeof(puck_game->record->id1), sizeof(puck_game->id1)));
-            memcpy(puck_game->record->id2, puck_game->id2, LWMIN(sizeof(puck_game->record->id2), sizeof(puck_game->id2)));
-            memcpy(puck_game->record->id3, puck_game->id3, LWMIN(sizeof(puck_game->record->id3), sizeof(puck_game->id3)));
-            memcpy(puck_game->record->id4, puck_game->id4, LWMIN(sizeof(puck_game->record->id4), sizeof(puck_game->id4)));
-            puck_game->record->player_score = puck_game->player_score[0];
-            puck_game->record->target_score = puck_game->target_score[0];
-            puck_game->on_new_record_frame = puck_game_on_new_record_frame;
-            puck_game->on_finalize_record = puck_game_on_finalize_record;
+            puck_game->record_replay_mode = 0;
+            if (puck_game->record_replay_mode) {
+                size_t file_size;
+                char* replay_data = server_create_binary_from_file(puck_game->game_map == LPGM_OCTAGON ? "2018_06_18_19_02_24-00003.dat" : "2018_06_18_19_01_35-00001.dat", &file_size);
+                LWPUCKGAMERECORD* record = malloc(sizeof(LWPUCKGAMERECORD));
+                int decompressed_bytes = LZ4_decompress_safe(replay_data, (char*)record, file_size, sizeof(LWPUCKGAMERECORD));
+                if (decompressed_bytes > 0) {
+                    puck_game->record = record;
+                } else {
+                    free(puck_game->record);
+                    puck_game->record = 0;
+                    LOGEP("decompression of replay data failed: decompressed_bytes == %d", decompressed_bytes);
+                }
+            } else {
+                puck_game->record = calloc(1, sizeof(LWPUCKGAMERECORD));
+                puck_game->record->game_map = puck_game->game_map;
+                memcpy(puck_game->record->nickname, puck_game->nickname, LWMIN(sizeof(puck_game->record->nickname), sizeof(puck_game->nickname)));
+                memcpy(puck_game->record->target_nickname, puck_game->target_nickname, LWMIN(sizeof(puck_game->record->target_nickname), sizeof(puck_game->target_nickname)));
+                memcpy(puck_game->record->id1, puck_game->id1, LWMIN(sizeof(puck_game->record->id1), sizeof(puck_game->id1)));
+                memcpy(puck_game->record->id2, puck_game->id2, LWMIN(sizeof(puck_game->record->id2), sizeof(puck_game->id2)));
+                memcpy(puck_game->record->id3, puck_game->id3, LWMIN(sizeof(puck_game->record->id3), sizeof(puck_game->id3)));
+                memcpy(puck_game->record->id4, puck_game->id4, LWMIN(sizeof(puck_game->record->id4), sizeof(puck_game->id4)));
+                puck_game->record->player_score = puck_game->player_score[0];
+                puck_game->record->target_score = puck_game->target_score[0];
+                puck_game->record->dash_interval = puck_game->dash_interval;
+                puck_game->on_new_record_frame = puck_game_on_new_record_frame;
+            }
             // Build reply packet
             reply_p.Type = LPGP_LWPCREATEBATTLEOK;
             reply_p.Size = sizeof(LWPCREATEBATTLEOK);
@@ -839,7 +873,9 @@ int main(int argc, char* argv[]) {
                             // process reward
                             process_battle_reward(puck_game, reward_service, logic_hz);
                             // write record
-                            puck_game_on_finalize_record(puck_game, puck_game->record);
+                            if (puck_game->record_replay_mode == 0) {
+                                puck_game_on_finalize_record(puck_game, puck_game->record);
+                            }
                         }
                     }
                 }
