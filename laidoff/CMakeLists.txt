@@ -287,6 +287,7 @@ target_link_libraries(laidoff-server
         ${WINSOCK2}
         tinycthread
         ${CMAKE_THREAD_LIBS_INIT} # pthread deps on Linux server build
+        lz4_static
         )
 
 if (NOT SERVER_ONLY)

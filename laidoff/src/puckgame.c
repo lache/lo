@@ -6,6 +6,8 @@
 #include <assert.h>
 #include "file.h"
 #include "sound.h"
+#include "puckgamerecord.h"
+#include "lz4.h"
 
 static void call_collision_callback(LWPUCKGAME* puck_game,
                                     const dContact* contact,
@@ -435,9 +437,16 @@ void puck_game_set_tower_pos_multiplier(LWPUCKGAME* puck_game, int index, float 
 }
 
 void delete_puck_game(LWPUCKGAME** puck_game) {
+    if ((*puck_game) == 0) {
+        LOGEP("already deleted puck game (try to re-delete)");
+        return;
+    }
     puck_game_destroy_all_battle_objects(*puck_game);
     dSpaceDestroy((*puck_game)->space);
     dWorldDestroy((*puck_game)->world);
+    if ((*puck_game)->record) {
+        free((*puck_game)->record);
+    }
     free(*puck_game);
     *puck_game = 0;
 }
@@ -1047,6 +1056,9 @@ void puck_game_update_tick(LWPUCKGAME* puck_game, int update_frequency) {
     // stepping physics only if battling
     if (puck_game_state_phase_battling(puck_game->battle_phase)
         || puck_game->battle_phase == LSP_TUTORIAL) {
+        if (puck_game->on_new_record_frame) {
+            puck_game->on_new_record_frame(puck_game, puck_game->record, puck_game->update_tick);
+        }
         puck_game->update_tick++;
         dSpaceCollide(puck_game->space, puck_game, puck_game_near_callback);
         dWorldQuickStep(puck_game->world, 1.0f / 60);
@@ -1175,4 +1187,71 @@ int puck_game_leaderboard_items_in_page(float aspect_ratio) {
     } else {
         return LW_LEADERBOARD_ITEMS_IN_PAGE - 3;
     }
+}
+
+static void fill_record_gameobject(LWPUCKGAMERECORDFRAMEGAMEOBJECT* record_frame_go,
+                            const LWPUCKGAME* puck_game,
+                            const LWPUCKGAMEOBJECT* go) {
+    dCopyVector3(record_frame_go->pos, dBodyGetPosition(go->body));
+    dCopyVector3(record_frame_go->linvel, dBodyGetLinearVel(go->body));
+    dCopyVector4(record_frame_go->quat, dBodyGetQuaternion(go->body));
+    dCopyVector3(record_frame_go->angularvel, dBodyGetAngularVel(go->body));
+}
+
+void puck_game_fill_state_bitfield(LWPSTATEBITFIELD* bf, const LWPUCKGAME* puck_game, const LWPUCKGAMEPLAYER* player, const LWPUCKGAMEPLAYER* target, const int* wall_hit_bit) {
+    bf->player_current_hp = (unsigned int)player->current_hp;
+    bf->player_total_hp = (unsigned int)player->total_hp;
+    bf->target_current_hp = (unsigned int)target->current_hp;
+    bf->target_total_hp = (unsigned int)target->total_hp;
+    bf->puck_owner_player_no = (unsigned int)puck_game->puck_owner_player_no;
+    bf->phase = (unsigned int)puck_game->battle_phase;
+    bf->player_pull = (unsigned int)puck_game->remote_control[LW_PUCK_GAME_PLAYER_TEAM][0].pull_puck;
+    bf->target_pull = (unsigned int)puck_game->remote_control[LW_PUCK_GAME_TARGET_TEAM][0].pull_puck;
+    bf->wall_hit_bit = (unsigned int)*wall_hit_bit;
+}
+
+void puck_game_on_new_record_frame(const LWPUCKGAME* puck_game, LWPUCKGAMERECORD* record, unsigned short update_tick) {
+    if (puck_game == 0 || record == 0) {
+        LOGEP("puck game record: required pointer null");
+        return;
+    }
+    if (record->num_frame != update_tick) {
+        LOGEP("puck game record: num frame skipped?");
+        return;
+    }
+    if (record->num_frame >= ARRAY_SIZE(record->frames)) {
+        LOGEP("puck game record: maximum capacity exceeded");
+        return;
+    }
+    LWPUCKGAMERECORDFRAME* f = &record->frames[record->num_frame];
+    f->frame = record->num_frame;
+    fill_record_gameobject(&f->go[0], puck_game, &puck_game->go[LPGO_PUCK]);
+    fill_record_gameobject(&f->go[1], puck_game, &puck_game->go[LPGO_PLAYER]);
+    fill_record_gameobject(&f->go[2], puck_game, &puck_game->go[LPGO_TARGET]);
+    const LWPUCKGAMEPLAYER* player = &puck_game->pg_player[0];
+    const LWPUCKGAMEPLAYER* target = &puck_game->pg_target[0];
+    const int* wall_hit_bit = &puck_game->wall_hit_bit_send_buf_1;
+    puck_game_fill_state_bitfield(&f->bf, puck_game, player, target, wall_hit_bit);
+    record->num_frame++;
+}
+
+void puck_game_on_finalize_record(const LWPUCKGAME* puck_game, const LWPUCKGAMERECORD* record) {
+    const size_t compressed_bound_size = LZ4_COMPRESSBOUND(sizeof(LWPUCKGAMERECORD));
+    char* compressed = malloc(compressed_bound_size);
+    int compressed_size = LZ4_compress_default((char*)record, compressed, sizeof(LWPUCKGAMERECORD), compressed_bound_size);
+    if (compressed_size > 0) {
+        char dt[128];
+        time_t now = time(NULL);
+        struct tm *t = localtime(&now);
+        strftime(dt, sizeof(dt) - 1, "%Y_%m_%d_%H_%M_%S", t);
+        char filename[256];
+        snprintf(filename, sizeof(filename), "%s-%05d.dat", dt, puck_game->battle_id);
+        FILE* f = fopen(filename, "wb");
+        fwrite(compressed, compressed_size, 1, f);
+        fclose(f);
+        LOGI("puck game record: record file '%s' written (%d bytes)", filename, compressed_size);
+    } else {
+        LOGEP("puck game record: finalized failed! (compressed size == %d)", compressed_size);
+    }
+    free(compressed);
 }

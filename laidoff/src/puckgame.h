@@ -5,6 +5,7 @@
 #include "pcg_basic.h"
 
 typedef struct _LWPUCKGAME LWPUCKGAME;
+typedef struct _LWPUCKGAMERECORD LWPUCKGAMERECORD;
 
 typedef enum _LW_PUCK_GAME_BOUNDARY {
 	LPGB_GROUND,
@@ -212,6 +213,8 @@ typedef struct _LWPUCKGAME {
     void(*on_steady)(LWPUCKGAME*);
     void(*on_go)(LWPUCKGAME*);
 	void(*on_finished)(LWPUCKGAME*, int);
+    void(*on_new_record_frame)(const LWPUCKGAME*, LWPUCKGAMERECORD*, unsigned short);
+    void(*on_finalize_record)(const LWPUCKGAME*, const LWPUCKGAMERECORD*);
 	void* server;
 	int battle_id;
 	unsigned int token;
@@ -269,6 +272,7 @@ typedef struct _LWPUCKGAME {
     int show_top_level_main_menu;
     int show_html_ui;
     LW_PUCK_GAME_MAP game_map;
+    LWPUCKGAMERECORD* record;
 } LWPUCKGAME;
 
 LWPUCKGAME* new_puck_game(int update_frequency, LW_PUCK_GAME_MAP gameMap);
@@ -323,3 +327,6 @@ LWPUCKGAMEPLAYER* puck_game_target(LWPUCKGAME* puck_game, int index);
 void puck_game_set_show_top_level_main_menu(LWPUCKGAME* puck_game, int show);
 void puck_game_set_show_htmlui(LWPUCKGAME* puck_game, int show);
 int puck_game_leaderboard_items_in_page(float aspect_ratio);
+void puck_game_on_new_record_frame(const LWPUCKGAME* puck_game, LWPUCKGAMERECORD* record, unsigned short update_tick);
+void puck_game_fill_state_bitfield(LWPSTATEBITFIELD* bf, const LWPUCKGAME* puck_game, const LWPUCKGAMEPLAYER* player, const LWPUCKGAMEPLAYER* target, const int* wall_hit_bit);
+void puck_game_on_finalize_record(const LWPUCKGAME* puck_game, const LWPUCKGAMERECORD* record);

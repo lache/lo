@@ -2,6 +2,7 @@
 #include "numcomp_puck_game.h"
 #include "lwlog.h"
 #include "puckgame.h"
+#include "puckgamerecord.h"
 #include "lwtimepoint.h"
 #include <tinycthread.h>
 #include "lwmacro.h"
@@ -525,6 +526,19 @@ int tcp_admin_server_entry(void* context) {
             puck_game->battle_id = battle_id;
             puck_game->c1_token = pcg32_random();
             puck_game->c2_token = pcg32_random();
+            // record data init
+            puck_game->record = calloc(1, sizeof(LWPUCKGAMERECORD));
+            puck_game->record->game_map = puck_game->game_map;
+            memcpy(puck_game->record->nickname, puck_game->nickname, LWMIN(sizeof(puck_game->record->nickname), sizeof(puck_game->nickname)));
+            memcpy(puck_game->record->target_nickname, puck_game->target_nickname, LWMIN(sizeof(puck_game->record->target_nickname), sizeof(puck_game->target_nickname)));
+            memcpy(puck_game->record->id1, puck_game->id1, LWMIN(sizeof(puck_game->record->id1), sizeof(puck_game->id1)));
+            memcpy(puck_game->record->id2, puck_game->id2, LWMIN(sizeof(puck_game->record->id2), sizeof(puck_game->id2)));
+            memcpy(puck_game->record->id3, puck_game->id3, LWMIN(sizeof(puck_game->record->id3), sizeof(puck_game->id3)));
+            memcpy(puck_game->record->id4, puck_game->id4, LWMIN(sizeof(puck_game->record->id4), sizeof(puck_game->id4)));
+            puck_game->record->player_score = puck_game->player_score[0];
+            puck_game->record->target_score = puck_game->target_score[0];
+            puck_game->on_new_record_frame = puck_game_on_new_record_frame;
+            puck_game->on_finalize_record = puck_game_on_finalize_record;
             // Build reply packet
             reply_p.Type = LPGP_LWPCREATEBATTLEOK;
             reply_p.Size = sizeof(LWPCREATEBATTLEOK);
@@ -544,9 +558,6 @@ int tcp_admin_server_entry(void* context) {
             server->battle_counter++;
             if (server->battle_counter >= LW_PUCK_GAME_POOL_CAPACITY) {
                 server->battle_counter = 0;
-                if (server->puck_game_pool[server->battle_counter]) {
-                    delete_puck_game(&server->puck_game_pool[server->battle_counter]);
-                }
             }
         } else if (base->type == LPGP_LWPSUDDENDEATH && base->size == sizeof(LWPSUDDENDEATH)) {
             LOGI("LWPSUDDENDEATH received");
@@ -626,15 +637,7 @@ void send_puck_game_state2(LWSERVER* server,
     fill_state2_gameobject(&packet_state.go[0], server, &puck_game->go[LPGO_PUCK]);
     fill_state2_gameobject(&packet_state.go[1], server, &puck_game->go[player_go_enum]);
     fill_state2_gameobject(&packet_state.go[2], server, &puck_game->go[target_go_enum]);
-    packet_state.bf.player_current_hp = (unsigned int)player->current_hp;
-    packet_state.bf.player_total_hp = (unsigned int)player->total_hp;
-    packet_state.bf.target_current_hp = (unsigned int)target->current_hp;
-    packet_state.bf.target_total_hp = (unsigned int)target->total_hp;
-    packet_state.bf.puck_owner_player_no = (unsigned int)puck_game->puck_owner_player_no;
-    packet_state.bf.phase = (unsigned int)puck_game->battle_phase;
-    packet_state.bf.player_pull = (unsigned int)puck_game->remote_control[LW_PUCK_GAME_PLAYER_TEAM][0].pull_puck;
-    packet_state.bf.target_pull = (unsigned int)puck_game->remote_control[LW_PUCK_GAME_TARGET_TEAM][0].pull_puck;
-    packet_state.bf.wall_hit_bit = (unsigned int)*wall_hit_bit;
+    puck_game_fill_state_bitfield(&packet_state.bf, puck_game, player, target, wall_hit_bit);
     if (*wall_hit_bit && player_no == 1) {
         LOGIx("WALL HIT BIT: %d", *wall_hit_bit);
     }
@@ -835,6 +838,8 @@ int main(int argc, char* argv[]) {
                             puck_game->battle_stat[1].Hp = puck_game->pg_target[0].current_hp;
                             // process reward
                             process_battle_reward(puck_game, reward_service, logic_hz);
+                            // write record
+                            puck_game_on_finalize_record(puck_game, puck_game->record);
                         }
                     }
                 }
