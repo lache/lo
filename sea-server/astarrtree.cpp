@@ -1113,7 +1113,8 @@ std::vector<xy32> astarrtree::astar_rtree_memory(const rtree* rtree_ptr, const x
             LOGI("Cell Path Count: %1%", pathCount);
             float pathCost = ASPathGetCost(path);
             LOGI("Cell Path Cost: %f", pathCost);
-            if (distance > pathCost) {
+            // need some margin for almost equal values
+            if (distance > pathCost + 1e-4) {
                 LOGEP("Path cost %f is less than distance %f!!! LOGIC ERROR", pathCost, distance);
             }
             /*if (pathCost < 6000)*/
