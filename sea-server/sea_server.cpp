@@ -8,6 +8,7 @@
 #include "region.hpp"
 #include "city.hpp"
 #include "salvage.hpp"
+#include "shipyard.hpp"
 using namespace ss;
 
 int main(int argc, char* argv[]) {
@@ -52,6 +53,8 @@ int main(int argc, char* argv[]) {
                                                      seaport_instance));
         std::shared_ptr<salvage> salvage_instance(new salvage(io_service,
                                                               sea_static_instance));
+        std::shared_ptr<shipyard> shipyard_instance(new shipyard(io_service,
+                                                                sea_static_instance));
         if (argc > 1 && strcmp(argv[1], "--prepare") == 0) {
             LOGI("Preparation is completed.");
             return 0;
@@ -62,7 +65,8 @@ int main(int argc, char* argv[]) {
                                                                        seaport_instance,
                                                                        region_instance,
                                                                        city_instance,
-                                                                       salvage_instance));
+                                                                       salvage_instance,
+                                                                       shipyard_instance));
         tcp_server tcp_server_instance(io_service);
         std::shared_ptr<udp_admin_server> udp_admin_server_instance(new udp_admin_server(io_service,
                                                                                          sea_instance,

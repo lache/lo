@@ -31,6 +31,7 @@
 #define TTL_OBJECT_CACHE_SEAPORT_COUNT (TTL_OBJECT_CACHE_CHUNK_COUNT*32)
 #define TTL_OBJECT_CACHE_CITY_COUNT (TTL_OBJECT_CACHE_CHUNK_COUNT*16)
 #define TTL_OBJECT_CACHE_SALVAGE_COUNT (TTL_OBJECT_CACHE_CHUNK_COUNT*8)
+#define TTL_OBJECT_CACHE_SHIPYARD_COUNT (TTL_OBJECT_CACHE_CHUNK_COUNT*16)
 
 typedef struct _LWTTLCHUNKVALUE {
     LWTTLCHUNKKEY key;
@@ -79,6 +80,10 @@ typedef struct _LWTTLOBJECTCACHEGROUP {
     LWTTLOBJECTCACHE salvage_cache;
     LWPTTLSALVAGEOBJECT salvage_array[TTL_OBJECT_CACHE_SALVAGE_COUNT];
     int salvage_count;
+
+    LWTTLOBJECTCACHE shipyard_cache;
+    LWPTTLSHIPYARDOBJECT shipyard_array[TTL_OBJECT_CACHE_SHIPYARD_COUNT];
+    int shipyard_count;
 } LWTTLOBJECTCACHEGROUP;
 
 typedef struct _LWTTLSAVEDATA {
@@ -870,6 +875,24 @@ static int add_to_object_cache_salvage(LWTTLOBJECTCACHE* c,
                                s2->obj);
 }
 
+static int add_to_object_cache_shipyard(LWTTLOBJECTCACHE* c,
+                                       LWPTTLSHIPYARDOBJECT* shipyard_array,
+                                       const size_t shipyard_array_size,
+                                       int* shipyard_count,
+                                       const LWPTTLSHIPYARDSTATE* s2) {
+    return add_to_object_cache(c,
+                               shipyard_count,
+                               shipyard_array,
+                               sizeof(LWPTTLSHIPYARDOBJECT),
+                               shipyard_array_size,
+                               s2->ts,
+                               s2->xc0,
+                               s2->yc0,
+                               s2->view_scale,
+                               s2->count,
+                               s2->obj);
+}
+
 static void cell_bound_to_chunk_bound(const LWTTLCELLBOUND* cell_bound, const int view_scale, LWTTLCHUNKBOUND* chunk_bound) {
     const int half_cell_pixel_extent = LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS / 2 * view_scale;
     chunk_bound->xcc0 = aligned_chunk_index(cell_bound->xc0, view_scale, LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS) >> msb_index(LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS * view_scale);
@@ -1482,6 +1505,54 @@ int lwttl_query_chunk_range_salvage(const LWTTL* ttl,
                                    ycc1);
 }
 
+int lwttl_query_chunk_range_shipyard_vp(const LWTTL* ttl,
+                                       const LWTTLFIELDVIEWPORT* vp,
+                                       int* chunk_index_array,
+                                       const int chunk_index_array_len,
+                                       int* xcc0,
+                                       int* ycc0,
+                                       int* xcc1,
+                                       int* ycc1) {
+    return lwttl_query_chunk_range_shipyard(ttl,
+                                           vp->lng_min,
+                                           vp->lat_min,
+                                           vp->lng_max,
+                                           vp->lat_max,
+                                           vp->clamped_view_scale,
+                                           chunk_index_array,
+                                           chunk_index_array_len,
+                                           xcc0,
+                                           ycc0,
+                                           xcc1,
+                                           ycc1);
+}
+
+int lwttl_query_chunk_range_shipyard(const LWTTL* ttl,
+                                    const float lng_min,
+                                    const float lat_min,
+                                    const float lng_max,
+                                    const float lat_max,
+                                    const int view_scale,
+                                    int* chunk_index_array,
+                                    const int chunk_index_array_len,
+                                    int* xcc0,
+                                    int* ycc0,
+                                    int* xcc1,
+                                    int* ycc1) {
+    return lwttl_query_chunk_range(lng_min,
+                                   lat_min,
+                                   lng_max,
+                                   lat_max,
+                                   view_scale,
+                                   &ttl->object_cache.shipyard_cache,
+                                   chunk_index_array,
+                                   chunk_index_array_len,
+                                   xcc0,
+                                   ycc0,
+                                   xcc1,
+                                   ycc1);
+}
+
 static const void* lwttl_query_chunk(const LWTTL* ttl,
                                      const LWTTLOBJECTCACHE* c,
                                      const int chunk_index,
@@ -1557,6 +1628,21 @@ const LWPTTLSALVAGEOBJECT* lwttl_query_chunk_salvage(const LWTTL* ttl,
                              chunk_index,
                              ttl->object_cache.salvage_array,
                              sizeof(LWPTTLSALVAGEOBJECT),
+                             xc0,
+                             yc0,
+                             count);
+}
+
+const LWPTTLSHIPYARDOBJECT* lwttl_query_chunk_shipyard(const LWTTL* ttl,
+                                                     const int chunk_index,
+                                                     int* xc0,
+                                                     int* yc0,
+                                                     int* count) {
+    return lwttl_query_chunk(ttl,
+                             &ttl->object_cache.shipyard_cache,
+                             chunk_index,
+                             ttl->object_cache.shipyard_array,
+                             sizeof(LWPTTLSHIPYARDOBJECT),
                              xc0,
                              yc0,
                              count);
@@ -2409,6 +2495,22 @@ void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc) {
                                                                 ARRAY_SIZE(ttl->object_cache.salvage_array),
                                                                 &ttl->object_cache.salvage_count,
                                                                 p);
+                break;
+            }
+            case LPGP_LWPTTLSHIPYARDSTATE:
+            {
+                if (decompressed_bytes != sizeof(LWPTTLSHIPYARDSTATE)) {
+                    LOGE("LWPTTLSHIPYARDSTATE: Size error %d (%zu expected)",
+                         decompressed_bytes,
+                         sizeof(LWPTTLSHIPYARDSTATE));
+                }
+                LWPTTLSHIPYARDSTATE* p = (LWPTTLSHIPYARDSTATE*)decompressed;
+                LOGIx("LWPTTLSHIPYARDSTATE: %d objects.", p->count);
+                const int add_ret = add_to_object_cache_shipyard(&ttl->object_cache.shipyard_cache,
+                                                                 ttl->object_cache.shipyard_array,
+                                                                 ARRAY_SIZE(ttl->object_cache.shipyard_array),
+                                                                 &ttl->object_cache.shipyard_count,
+                                                                 p);
                 break;
             }
             case LPGP_LWPTTLWAYPOINTS:

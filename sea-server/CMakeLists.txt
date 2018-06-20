@@ -96,7 +96,12 @@ set(ServerSources
     salvage_object.cpp
     salvage_object.hpp
 	crypt.cpp
-	crypt.hpp)
+	crypt.hpp
+    shipyard.cpp
+    shipyard.hpp
+    shipyard_object.cpp
+    shipyard_object.hpp
+)
 
 add_msvc_precompiled_header("precompiled.hpp" "precompiled.cpp" ServerSources)
 add_executable(sea-server ${ServerSources} AStar.c AStar.h CohenSutherland.c CohenSutherland.h)

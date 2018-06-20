@@ -38,6 +38,7 @@ typedef enum _LW_PUCK_GAME_PACKET {
     LPGP_LWPTTLGOLDUSED = 128, // server -> client (aoi push)
     LPGP_LWPTTLCHAT = 129, // server <-> client
     LPGP_LWPTTLTRANSFORMSINGLECELL = 130, // client -> server
+    LPGP_LWPTTLSHIPYARDSTATE = 136, // server -> client
     LPGP_LWPQUEUE2 = 200,
     LPGP_LWPMAYBEMATCHED = 201,
     LPGP_LWPMATCHED2 = 202,
@@ -449,6 +450,7 @@ typedef enum _LW_TTL_STATIC_OBJECT_TYPE {
     LTSOT_SEAPORT,
     LTSOT_CITY,
     LTSOT_SALVAGE,
+    LTSOT_SHIPYARD,
 } LW_TTL_STATIC_OBJECT_TYPE;
 
 // UDP
@@ -548,6 +550,28 @@ typedef struct _LWPTTLSALVAGESTATE {
     int count;
     LWPTTLSALVAGEOBJECT obj[256];
 } LWPTTLSALVAGESTATE;
+
+// UDP
+typedef struct _LWPTTLSHIPYARDOBJECT {
+    signed char x_scaled_offset_0;
+    signed char y_scaled_offset_0;
+    unsigned char padding0;
+    unsigned char padding1;
+} LWPTTLSHIPYARDOBJECT;
+
+// UDP
+typedef struct _LWPTTLSHIPYARDSTATE {
+    unsigned char type;
+    unsigned char padding0;
+    unsigned char padding1;
+    unsigned char padding2;
+    long long ts;
+    int xc0;
+    int yc0;
+    int view_scale;
+    int count;
+    LWPTTLSHIPYARDOBJECT obj[256];
+} LWPTTLSHIPYARDSTATE;
 
 typedef struct _LWPTTLCARGONOTIFICATIONBITFIELD {
     int unused_for_now : 1;

@@ -10,6 +10,7 @@
 #include "city.hpp"
 #include "endpoint_aoi_object.hpp"
 #include "salvage.hpp"
+#include "shipyard.hpp"
 using namespace ss;
 
 const auto update_interval = boost::posix_time::milliseconds(75);
@@ -22,7 +23,8 @@ udp_server::udp_server(boost::asio::io_service& io_service,
                        std::shared_ptr<seaport> seaport,
                        std::shared_ptr<region> region,
                        std::shared_ptr<city> city,
-                       std::shared_ptr<salvage> salvage)
+                       std::shared_ptr<salvage> salvage,
+                       std::shared_ptr<shipyard> shipyard)
     : socket_(io_service, udp::endpoint(udp::v4(), 3100))
     , timer_(io_service, update_interval)
     , salvage_timer_(io_service, salvage_update_interval)
@@ -32,6 +34,7 @@ udp_server::udp_server(boost::asio::io_service& io_service,
     , region_(region)
     , city_(city)
     , salvage_(salvage)
+    , shipyard_(shipyard)
     , tick_seq_(0)
     , client_endpoint_aoi_int_key_(0)
     , gold_(0) {
@@ -532,6 +535,48 @@ void udp_server::send_salvage_cell_aligned(int xc0_aligned, int yc0_aligned, flo
     }
 }
 
+void udp_server::send_shipyard_cell_aligned(int xc0_aligned, int yc0_aligned, float ex_lng, float ex_lat, int view_scale) {
+    const auto half_lng_cell_pixel_extent = boost::math::iround(ex_lng / 2.0f * view_scale);
+    const auto half_lat_cell_pixel_extent = boost::math::iround(ex_lat / 2.0f * view_scale);
+    auto sop_list = shipyard_->query_near_to_packet(xc0_aligned,
+                                                   yc0_aligned,
+                                                   ex_lng * view_scale,
+                                                   ex_lat * view_scale);
+    std::shared_ptr<LWPTTLSHIPYARDSTATE> reply(new LWPTTLSHIPYARDSTATE);
+    memset(reply.get(), 0, sizeof(LWPTTLSHIPYARDSTATE));
+    reply->type = LPGP_LWPTTLSHIPYARDSTATE;
+    reply->ts = shipyard_->query_ts(xc0_aligned, yc0_aligned, view_scale);
+    reply->xc0 = xc0_aligned;
+    reply->yc0 = yc0_aligned;
+    reply->view_scale = view_scale;
+    size_t reply_obj_index = 0;
+    const int view_scale_msb_index = msb_index(view_scale);
+    for (const auto& v : sop_list) {
+        reply->obj[reply_obj_index].x_scaled_offset_0 = aligned_scaled_offset(v.x0, xc0_aligned, view_scale, view_scale_msb_index, false, 0, 0);
+        reply->obj[reply_obj_index].y_scaled_offset_0 = aligned_scaled_offset(v.y0, yc0_aligned, view_scale, view_scale_msb_index, false, 0, 0);
+        reply_obj_index++;
+        if (reply_obj_index >= boost::size(reply->obj)) {
+            break;
+        }
+    }
+    reply->count = static_cast<int>(reply_obj_index);
+    if (reply->count < sop_list.size()) {
+        LOGEP("packet truncated; capacity %1%, actual %2%", reply->count, sop_list.size());
+    }
+    char compressed[1500];
+    int compressed_size = LZ4_compress_default((char*)reply.get(), compressed, sizeof(LWPTTLSHIPYARDSTATE), static_cast<int>(boost::size(compressed)));
+    if (compressed_size > 0) {
+        socket_.async_send_to(boost::asio::buffer(compressed, compressed_size),
+                              remote_endpoint_,
+                              boost::bind(&udp_server::handle_send,
+                                          this,
+                                          boost::asio::placeholders::error,
+                                          boost::asio::placeholders::bytes_transferred));
+    } else {
+        LOGEP("LZ4_compress_default() error! - %1%", compressed_size);
+    }
+}
+
 void udp_server::send_seaarea(float lng, float lat) {
     std::string area_name;
     region_->query_tree(lng, lat, area_name);
@@ -678,6 +723,24 @@ void udp_server::handle_receive(const boost::system::error_code& error, std::siz
                           p->ts);
                 } else {
                     LOGIx("Salvages chunk key (%1%,%2%,%3%) Not Sent! (server ts %4%, client ts %5%)",
+                          static_cast<int>(chunk_key.bf.xcc0),
+                          static_cast<int>(chunk_key.bf.ycc0),
+                          static_cast<int>(chunk_key.bf.view_scale_msb),
+                          ts,
+                          p->ts);
+                }
+            } else if (p->static_object == LTSOT_SHIPYARD) {
+                const auto ts = shipyard_->query_ts(chunk_key);
+                if (ts > p->ts) {
+                    send_shipyard_cell_aligned(xc0_aligned, yc0_aligned, ex_lng, ex_lat, clamped_view_scale);
+                    LOGIx("Shipyards chunk key (%1%,%2%,%3%) Sent! (server ts %4%, client ts %5%)",
+                          static_cast<int>(chunk_key.bf.xcc0),
+                          static_cast<int>(chunk_key.bf.ycc0),
+                          static_cast<int>(chunk_key.bf.view_scale_msb),
+                          ts,
+                          p->ts);
+                } else {
+                    LOGIx("Shipyards chunk key (%1%,%2%,%3%) Not Sent! (server ts %4%, client ts %5%)",
                           static_cast<int>(chunk_key.bf.xcc0),
                           static_cast<int>(chunk_key.bf.ycc0),
                           static_cast<int>(chunk_key.bf.view_scale_msb),

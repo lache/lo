@@ -418,43 +418,58 @@ static void render_salvage_icon(const LWCONTEXT* pLwc,
                                                  lwttl_viewport_ui_proj(vp));
 }
 
-static void render_seaport_icon_xxx(const LWCONTEXT* pLwc, const mat4x4 view, const mat4x4 proj, float x, float y, float z, float w, float h) {
-    int shader_index = LWST_DEFAULT_NORMAL_COLOR;
-    const LWSHADER* shader = &pLwc->shader[shader_index];
-    lazy_glUseProgram(pLwc, shader_index);
-    mat4x4 rot;
-    mat4x4_identity(rot);
-
-    mat4x4 model_normal_transform;
-    mat4x4_identity(model_normal_transform);
-
-    float sx = w, sy = h, sz = 1;
-    mat4x4 model;
-    mat4x4_identity(model);
-    mat4x4_mul(model, model, rot);
-    mat4x4_scale_aniso(model, model, sx, sy, sz);
-
-    mat4x4 model_translate;
-    mat4x4_translate(model_translate, x, y, z);
-
-    mat4x4_mul(model, model_translate, model);
-
-    mat4x4 view_model;
-    mat4x4_mul(view_model, view, model);
-
-    mat4x4 proj_view_model;
-    mat4x4_identity(proj_view_model);
-    mat4x4_mul(proj_view_model, proj, view_model);
-
-    const LW_VBO_TYPE lvt = LVT_SEAPORT_ICON;
-    lazy_glBindBuffer(pLwc, lvt);
-    bind_all_color_vertex_attrib(pLwc, lvt);
-    glUniformMatrix4fv(shader->mvp_location, 1, GL_FALSE, (const GLfloat*)proj_view_model);
-    glUniformMatrix4fv(shader->m_location, 1, GL_FALSE, (const GLfloat*)model_normal_transform);
-    glUniform1f(shader->vertex_color_ratio, 0);
-    glUniform3f(shader->vertex_color, 0, 0, 0);
-    //glShadeModel(GL_FLAT);
-    glDrawArrays(GL_TRIANGLES, 0, pLwc->vertex_buffer[lvt].vertex_count);
+static void render_shipyard_icon(const LWCONTEXT* pLwc,
+                                 const LWTTLFIELDVIEWPORT* vp,
+                                 float x,
+                                 float y,
+                                 float z,
+                                 float w,
+                                 float h) {
+    mat4x4 proj_view;
+    mat4x4_identity(proj_view);
+    mat4x4_mul(proj_view,
+               lwttl_viewport_proj(vp),
+               lwttl_viewport_view(vp));
+    const vec4 obj_pos_vec4 = {
+        x,
+        y,
+        z,
+        1,
+    };
+    const vec4 obj_pos_2_vec4 = {
+        x + 1,
+        y,
+        z,
+        1,
+    };
+    vec2 ui_point;
+    calculate_ui_point_from_world_point(pLwc->viewport_aspect_ratio, proj_view, obj_pos_vec4, ui_point);
+    vec2 ui_point_2;
+    calculate_ui_point_from_world_point(pLwc->viewport_aspect_ratio, proj_view, obj_pos_2_vec4, ui_point_2);
+    const float cell_width_in_ui_space = ui_point_2[0] - ui_point[0];
+    mat4x4 identity_view;
+    mat4x4_identity(identity_view);
+    lazy_tex_atlas_glBindTexture(pLwc, LAE_TTL_CONTAINER_WHITE);
+    lazy_tex_atlas_glBindTexture(pLwc, LAE_TTL_CONTAINER_WHITE_ALPHA);
+    const int view_scale = lwttl_viewport_view_scale(vp);
+    render_solid_vb_ui_alpha_uv_shader_view_proj(pLwc,
+                                                 ui_point[0],
+                                                 ui_point[1],
+                                                 cell_width_in_ui_space / view_scale, //w * 0.075f,
+                                                 cell_width_in_ui_space / view_scale, //h * 0.075f,
+                                                 pLwc->tex_atlas[LAE_TTL_CONTAINER_WHITE],
+                                                 pLwc->tex_atlas[LAE_TTL_CONTAINER_WHITE_ALPHA],
+                                                 LVT_CENTER_CENTER_ANCHORED_SQUARE,
+                                                 1.0f,
+                                                 1.0f,
+                                                 1.0f,
+                                                 1.0f,
+                                                 0.0f,
+                                                 default_uv_offset,
+                                                 default_uv_scale,
+                                                 LWST_ETC1,
+                                                 identity_view,
+                                                 lwttl_viewport_ui_proj(vp));
 }
 
 static void render_cell_color(const LWCONTEXT* pLwc,
@@ -551,7 +566,7 @@ static int bitmap_land(const unsigned char bitmap[LNGLAT_RENDER_EXTENT_MULTIPLIE
     return bitmap[by][bx];
 }
 
-#define TILEMAP_GAP (0.005f) //(0.005f)
+#define TILEMAP_GAP 0//(0.005f) //(0.005f)
 #define TILEMAP_TILE_COUNT (4)
 
 static const float tilemap_uv_offset[16][2] = {
@@ -1441,6 +1456,68 @@ static void render_salvages(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp)
     }
 }
 
+static void render_shipyards(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp) {
+    const float icon_width = lwttl_viewport_icon_width(vp);
+    const float icon_height = lwttl_viewport_icon_height(vp);
+
+    int chunk_index_array[LNGLAT_RENDER_EXTENT_MULTIPLIER_LNG_WITH_MARGIN*LNGLAT_RENDER_EXTENT_MULTIPLIER_LAT_WITH_MARGIN];
+    int bound_xcc0, bound_ycc0, bound_xcc1, bound_ycc1;
+    const int chunk_index_array_count = lwttl_query_chunk_range_shipyard_vp(pLwc->ttl,
+                                                                            vp,
+                                                                            chunk_index_array,
+                                                                            ARRAY_SIZE(chunk_index_array),
+                                                                            &bound_xcc0,
+                                                                            &bound_ycc0,
+                                                                            &bound_xcc1,
+                                                                            &bound_ycc1);
+    if (chunk_index_array_count > ARRAY_SIZE(chunk_index_array)) {
+        LOGEP("incorrect query result");
+        assert(0);
+    }
+    if (bound_xcc1 - bound_xcc0 > LNGLAT_RENDER_EXTENT_MULTIPLIER_LNG_WITH_MARGIN) {
+        LOGEP("incorrect query result");
+        assert(0);
+    }
+    if (bound_ycc1 - bound_ycc0 > LNGLAT_RENDER_EXTENT_MULTIPLIER_LAT_WITH_MARGIN) {
+        LOGEP("incorrect query result");
+        assert(0);
+    }
+    const int chunk_index_max = LWMIN(chunk_index_array_count, ARRAY_SIZE(chunk_index_array));
+    for (int ci = 0; ci < chunk_index_max; ci++) {
+        int obj_count = 0;
+        int xc0 = 0;
+        int yc0 = 0;
+        const LWPTTLSHIPYARDOBJECT* obj_begin = lwttl_query_chunk_shipyard(pLwc->ttl,
+                                                                           chunk_index_array[ci],
+                                                                           &xc0,
+                                                                           &yc0,
+                                                                           &obj_count);
+        if (obj_begin && obj_count > 0) {
+            for (int i = 0; i < obj_count; i++) {
+                float cell_x0, cell_y0, cell_z0;
+                if (lwttl_viewport_icon_render_info(pLwc->ttl,
+                                                    vp,
+                                                    xc0,
+                                                    obj_begin[i].x_scaled_offset_0,
+                                                    yc0,
+                                                    obj_begin[i].y_scaled_offset_0,
+                                                    &cell_x0,
+                                                    &cell_y0,
+                                                    &cell_z0) != 0) {
+                    continue;
+                }
+                render_shipyard_icon(pLwc,
+                                     vp,
+                                     cell_x0,
+                                     cell_y0,
+                                     cell_z0,
+                                     icon_width,
+                                     icon_height);
+            }
+        }
+    }
+}
+
 static void render_cell_box_boundary(const LWCONTEXT* pLwc,
                                      const LWTTLFIELDVIEWPORT* vp) {
     const int cell_box_count = lwttl_cell_box_count(pLwc->ttl);
@@ -1543,7 +1620,7 @@ static void render_cell_menu(const LWCONTEXT* pLwc,
                              const LWTTLFIELDVIEWPORT* vp) {
     LW_ATLAS_ENUM tile_lae = LAE_ZERO_FOR_BLACK;
     LW_VBO_TYPE lvt = LVT_LEFT_TOP_ANCHORED_SQUARE;
-int valid_cell_menu_count = 0;
+    int valid_cell_menu_count = 0;
     for (int i = 0; i < lwttl_cell_menu_count(pLwc->ttl); i++) {
         const char* cell_menu_text = lwttl_cell_menu_text(pLwc->ttl, valid_cell_menu_count);
         if (cell_menu_text[0]) {
@@ -2018,6 +2095,9 @@ static void lwc_render_ttl_field_viewport(const LWCONTEXT* pLwc, const LWTTLFIEL
     }
     if (render_flags & LTFVRF_SALVAGE) {
         render_salvages(pLwc, vp);
+    }
+    if (render_flags & LTFVRF_SHIPYARD) {
+        render_shipyards(pLwc, vp);
     }
     if (render_flags & LTFVRF_COORDINATES) {
         render_coords(pLwc, vp);

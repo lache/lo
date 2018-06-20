@@ -77,6 +77,13 @@ const listPortToArray = () => {
   })
   return rows
 }
+const listShipyardToArray = () => {
+  const rows = []
+  listShipyard(row => {
+    rows.push(row)
+  })
+  return rows
+}
 const findShip = shipId => query.findShip.get(shipId)
 const findUser = guid => query.findUser.get(guid)
 const findUserGuid = userId => query.findUserGuid.get(userId)
@@ -476,6 +483,26 @@ const sendSpawnPort = async (expectedDbId, name, x, y, ownerId, expectLand) => {
   })
 }
 
+const sendSpawnShipyard = async (expectedDbId, name, x, y, ownerId) => {
+  const buf = message.SpawnShipyardStruct.buffer()
+  for (let i = 0; i < buf.length; i++) {
+    buf[i] = 0
+  }
+  const replyId = issueNewReplyId()
+  message.SpawnShipyardStruct.fields.type = 6
+  message.SpawnShipyardStruct.fields.expectedDbId = expectedDbId
+  message.SpawnShipyardStruct.fields.name = name
+  message.SpawnShipyardStruct.fields.x = x
+  message.SpawnShipyardStruct.fields.y = y
+  message.SpawnShipyardStruct.fields.ownerId = ownerId
+  message.SpawnShipyardStruct.fields.replyId = replyId
+  return sendAndReplyFromSea(buf, replyId, err => {
+    if (err) {
+      console.error('sea udp SpawnShipyardStruct client error:', err)
+    }
+  })
+}
+
 const execCreatePort = async (u, selectedLng, selectedLat, expectLand) => {
   const portName = `Port ${raname.first()}`
   // create db entry first
@@ -681,6 +708,21 @@ seaUdpClient.on('message', async (buf, remote) => {
       portCount++
     }
     console.log(`  ${portCount} port(s) recovered...`)
+    // recovering shipyards
+    let shipyardCount = 0
+    const shipyards = listShipyardToArray()
+    for (let i = 0; i < shipyards.length; i++) {
+      const row = ports[i]
+      await sendSpawnShipyard(
+        row.shipyard_id,
+        row.name,
+        row.x,
+        row.y,
+        row.owner_id
+      )
+      shipyardCount++
+    }
+    console.log(`  ${shipyardCount} shipyard(s) recovered...`)
     // recovering ships
     let shipShiprouteCount = 0
     const ships = listShipShiprouteToArray()

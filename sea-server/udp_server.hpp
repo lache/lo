@@ -17,9 +17,9 @@ namespace ss {
     class region;
     class city;
     class salvage;
+    class shipyard;
     struct cargo_notification;
     class udp_server {
-
     public:
         udp_server(boost::asio::io_service& io_service,
                    std::shared_ptr<sea> sea,
@@ -27,7 +27,8 @@ namespace ss {
                    std::shared_ptr<seaport> seaport,
                    std::shared_ptr<region> region,
                    std::shared_ptr<city> city,
-                   std::shared_ptr<salvage> salvage);
+                   std::shared_ptr<salvage> salvage,
+                   std::shared_ptr<shipyard> shipyard);
         bool set_route(int id, int seaport_id1, int seaport_id2, int expect_land, std::shared_ptr<astarrtree::coro_context> coro);
         void gold_earned(int xc, int yc, int amount) {
             if (amount > 0) {
@@ -56,6 +57,7 @@ namespace ss {
         void send_seaport_cell_aligned(int xc0_aligned, int yc0_aligned, float ex_lng, float ex_lat, int view_scale);
         void send_city_cell_aligned(int xc0_aligned, int yc0_aligned, float ex_lng, float ex_lat, int view_scale);
         void send_salvage_cell_aligned(int xc0_aligned, int yc0_aligned, float ex_lng, float ex_lat, int view_scale);
+        void send_shipyard_cell_aligned(int xc0_aligned, int yc0_aligned, float ex_lng, float ex_lat, int view_scale);
         void send_land_cell_aligned_bitmap(int xc0_aligned, int yc0_aligned, float ex_lng, float ex_lat, int view_scale);
         void send_track_object_coords(int track_object_id, int track_object_ship_id);
         void send_seaarea(float lng, float lat);
@@ -109,6 +111,7 @@ namespace ss {
         std::shared_ptr<region> region_;
         std::shared_ptr<city> city_;
         std::shared_ptr<salvage> salvage_;
+        std::shared_ptr<shipyard> shipyard_;
         std::unordered_map<int, std::shared_ptr<route> > route_map_; // id -> route
         int tick_seq_;
         std::map<udp::endpoint, std::chrono::steady_clock::duration> client_endpoints_;
