@@ -892,6 +892,15 @@ void udp_server::send_single_cell(int xc0, int yc0) {
             LOGEP("salvage_gold_amount is %1% at salvage ID %2%", salvage_gold_amount, salvage_id);
         }
     }
+    // shipyard details
+    int shipyard_id = -1;
+    int shipyard_gold_amount = 0;
+    auto shipyard_name = shipyard_->query_single_cell(xc0, yc0, shipyard_id, shipyard_gold_amount);
+    reply->shipyard_id = shipyard_id;
+    if (shipyard_id >= 0 && shipyard_name) {
+        strncpy(reply->shipyard_name, shipyard_name, boost::size(reply->shipyard_name));
+        reply->shipyard_name[boost::size(reply->shipyard_name) - 1] = 0;
+    }
     char compressed[1500];
     int compressed_size = LZ4_compress_default((char*)reply.get(), compressed, sizeof(LWPTTLSINGLECELL), static_cast<int>(boost::size(compressed)));
     if (compressed_size > 0) {

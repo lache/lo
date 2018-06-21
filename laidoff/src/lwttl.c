@@ -1052,6 +1052,7 @@ void lwttl_udp_send_ttlping(const LWTTL* ttl, LWUDP* udp, int ping_seq) {
                 { &ttl->object_cache.seaport_cache, LTSOT_SEAPORT, 1 },
                 { &ttl->object_cache.city_cache, LTSOT_CITY, 1 },
                 { &ttl->object_cache.salvage_cache, LTSOT_SALVAGE, 1 },
+                { &ttl->object_cache.shipyard_cache, LTSOT_SHIPYARD, 1 },
             };
             for (int k = 0; k < ARRAY_SIZE(cache_list); k++) {
                 send_ttlping_with_timestamp(ttl,

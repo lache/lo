@@ -485,6 +485,8 @@ typedef struct _LWPTTLSINGLECELL {
     char port_name[64];
     int city_id;
     char city_name[64];
+    int shipyard_id;
+    char shipyard_name[64];
     unsigned int attr;
     int cargo;
     int cargo_loaded;

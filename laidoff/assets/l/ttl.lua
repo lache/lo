@@ -120,13 +120,25 @@ end
 
 function demolish_port(port_id)
     print('demolish_port')
-    lo.htmlui_execute_anchor_click(c.htmlui, "/demolishPort?portId=" .. math.floor(port_id));
+    lo.htmlui_execute_anchor_click(c.htmlui, "/demolishPort?portId=" .. math.floor(port_id))
+end
+
+function purchase_new_shipyard()
+    print('purchase_new_shipyard');
+    lo.htmlui_execute_anchor_click(c.htmlui, "/purchaseNewShipyard")
+end
+
+function demolish_shipyard(shipyard_id)
+    print('demolish_shipyard')
+    lo.htmlui_execute_anchor_click(c.htmlui, "/demolishShipyard?shipyardId=" .. math.floor(shipyard_id))
 end
 
 local CELL_MENU_PURCHASE_NEW_PORT = 1
 local CELL_MENU_DEMOLISH_PORT = 2
 local CELL_MENU_TRANSFORM_SINGLE_CELL_WATER_TO_LAND = 3
 local CELL_MENU_TRANSFORM_SINGLE_CELL_LAND_TO_WATER = 4
+local CELL_MENU_PURCHASE_NEW_SHIPYARD = 5
+local CELL_MENU_DEMOLISH_SHIPYARD = 6
 
 function reset_cell_menu()
     lo.lwttl_clear_cell_menu(c.ttl);
@@ -134,10 +146,12 @@ function reset_cell_menu()
     local is_land = sc.attr & 1
     local is_water = sc.attr & 2
     local is_seawater = sc.attr & 4
-    if is_water ~= 0 and sc.port_id <= 0 then
+    local empty_cell = sc.port_id <= 0 and sc.city_id <= 0 and sc.shipyard_id <= 0
+    if is_water ~= 0 and empty_cell then
         lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_PURCHASE_NEW_PORT, "항구건설");
+        lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_PURCHASE_NEW_SHIPYARD, "조선소건설");
     end
-    if sc.port_id <= 0 and sc.city_id <= 0 then
+    if empty_cell then
         if is_water ~= 0 then
             lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_TRANSFORM_SINGLE_CELL_WATER_TO_LAND, "땅으로 변환");
         elseif is_land ~= 0 then
@@ -145,7 +159,10 @@ function reset_cell_menu()
         end
     end
     if sc.port_id > 0 then
-        lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_DEMOLISH_PORT, "철거");
+        lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_DEMOLISH_PORT, "항구철거");
+    end
+    if sc.shipyard_id > 0 then
+        lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_DEMOLISH_SHIPYARD, "조선소철거");
     end
 end
 
@@ -168,6 +185,10 @@ function on_cell_menu(index, command_id)
         transform_single_cell_water_to_land()
     elseif command_id == CELL_MENU_TRANSFORM_SINGLE_CELL_LAND_TO_WATER then
         transform_single_cell_land_to_water()
+    elseif command_id == CELL_MENU_PURCHASE_NEW_SHIPYARD then
+        purchase_new_shipyard()
+    elseif command_id == CELL_MENU_DEMOLISH_SHIPYARD then
+        demolish_shipyard(sc.shipyard_id)
     end
 end
 

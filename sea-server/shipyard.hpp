@@ -14,8 +14,7 @@ namespace ss {
         int get_nearest_two(const xy32& pos, int& id1, std::string& name1, int& id2, std::string& name2) const;
         int lng_to_xc(float lng) const;
         int lat_to_yc(float lat) const;
-        int spawn(const char* name, int xc0, int yc0, int gold_amount, bool& existing);
-        int spawn_random(const char* name, shipyard_object::box box, bool& existing);
+        int spawn(int expected_db_id, const char* name, int xc0, int yc0, int owner_id, int gold_amount, bool& existing);
         void despawn(int id);
         void set_name(int id, const char* name, int gold_amount);
         long long query_ts(const int xc0, const int yc0, const int view_scale) const;
@@ -34,6 +33,7 @@ namespace ss {
         std::unordered_map<int, std::string> id_name; // shipyard ID -> shipyard name
         std::unordered_map<int, shipyard_object::point> id_point; // shipyard ID -> shipyard position
         std::unordered_map<int, int> id_gold_amount; // shipyard ID -> gold amount
+        std::unordered_map<int, int> id_owner_id; // shipyard ID -> owner ID
         boost::asio::deadline_timer timer_;
         std::shared_ptr<sea_static> sea_static_;
         boost::random::mt19937 rng_;

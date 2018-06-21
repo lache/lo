@@ -338,7 +338,7 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
             }
             if (check_type && check_distance) {
                 bool existing = false;
-                int id = shipyard_->spawn(spawn->name, spawn->xc, spawn->yc, spawn->owner_id, existing);
+                int id = shipyard_->spawn(spawn->expected_db_id, spawn->name, spawn->xc, spawn->yc, spawn->owner_id, 0, existing);
                 if (existing == false) {
                     udp_server_->gold_used(spawn->xc, spawn->yc, 50000);
                 }

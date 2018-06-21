@@ -39,6 +39,10 @@ const createPort = (portName, x, y, userId, expectLand) => {
   const port = query.insertPort.run(portName, x, y, userId, expectLand)
   return port.lastInsertROWID
 }
+const createShipyard = (shipyardName, x, y, userId) => {
+  const shipyard = query.insertShipyard.run(shipyardName, x, y, userId)
+  return shipyard.lastInsertROWID
+}
 const createShip = (userId, shipName, shipType) => {
   const ship = query.insertShip.run(userId, shipName, shipType)
   return ship.lastInsertROWID
@@ -135,7 +139,7 @@ const findMissions = () => {
 }
 
 const findPort = portId => query.findPort.get(portId)
-const findShipyard = portId => query.findShipyard.get(portId)
+const findShipyard = shipyardId => query.findShipyard.get(shipyardId)
 const findPortsScrollDown = (userId, lastRegionId, count) => {
   return query.findPortsScrollDown.all(lastRegionId, count)
 }
@@ -362,9 +366,7 @@ const purchaseNewPort = async (req, res, expectLand) => {
   const u = findOrCreateUser(req.get('X-U') || uuidv1())
   const xc0 = req.get('X-D-XC0')
   const yc0 = req.get('X-D-YC0')
-  const xc1 = req.get('X-D-XC1')
-  const yc1 = req.get('X-D-YC1')
-  console.log(`Link [${xc0}, ${yc0}]-[${xc1}, ${yc1}]`)
+  console.log(`purchaseNewPort at [${xc0}, ${yc0}]`)
   let resultMsg = ''
   let errMsg = ''
   const r0 = await execCreatePort(u, xc0, yc0, expectLand)
@@ -372,6 +374,31 @@ const purchaseNewPort = async (req, res, expectLand) => {
     resultMsg = '새 항구 건설 완료'
   } else {
     errMsg = '새 항구 건설 실패'
+  }
+  res.redirect(
+    url.format({
+      pathname: '/idle',
+      query: {
+        u: u.guid,
+        resultMsg: resultMsg,
+        errMsg: errMsg
+      }
+    })
+  )
+}
+
+const purchaseNewShipyard = async (req, res) => {
+  const u = findOrCreateUser(req.get('X-U') || uuidv1())
+  const xc0 = req.get('X-D-XC0')
+  const yc0 = req.get('X-D-YC0')
+  console.log(`purchaseNewShipyard at [${xc0}, ${yc0}]`)
+  let resultMsg = ''
+  let errMsg = ''
+  const r0 = await execCreateShipyard(u, xc0, yc0)
+  if (r0.shipyardId > 0 && r0.err === null) {
+    resultMsg = '새 조선소 건설 완료'
+  } else {
+    errMsg = '새 조선소 건설 실패'
   }
   res.redirect(
     url.format({
@@ -411,6 +438,46 @@ app.get('/demolishPort', (req, res) => {
   res.redirect(
     url.format({
       pathname: '/idle'
+    })
+  )
+})
+
+app.get('/purchaseNewShipyard', async (req, res) => {
+  await purchaseNewShipyard(req, res, 0)
+})
+
+app.get('/demolishShipyard', (req, res) => {
+  const u = findOrCreateUser(req.query.u || uuidv1())
+  let resultMsg = ''
+  let errMsg = ''
+  if (req.query.shipyardId) {
+    const shipyard = findShipyard(req.query.shipyardId)
+    if (shipyard) {
+      deleteShipyard(req.query.shipyardId)
+      const buf = message.DeleteShipyardStruct.buffer()
+      for (let i = 0; i < buf.length; i++) {
+        buf[i] = 0
+      }
+      message.DeleteShipyardStruct.fields.type = 10 // Delete Shipyard
+      message.DeleteShipyardStruct.fields.shipyardId = shipyard.shipyard_id
+      seaUdpClient.send(Buffer.from(buf), 4000, 'localhost', err => {
+        if (err) {
+          console.error('sea udp client error:', err)
+        }
+      })
+      resultMsg = '조선소 철거 성공'
+    } else {
+      errMsg = '존재하지 않는 조선소'
+    }
+  }
+  res.redirect(
+    url.format({
+      pathname: '/idle',
+      query: {
+        u: u.guid,
+        resultMsg: resultMsg,
+        errMsg: errMsg
+      }
     })
   )
 })
@@ -575,6 +642,67 @@ const execCreatePort = async (u, selectedLng, selectedLat, expectLand) => {
   }
 }
 
+const execCreateShipyard = async (u, selectedLng, selectedLat) => {
+  const shipyardName = `Shipyard ${raname.first()}`
+  // create db entry first
+  const shipyardId = createShipyard(
+    shipyardName,
+    selectedLng,
+    selectedLat,
+    u.user_id
+  )
+  // send spawn command to sea-server
+  const reply = await sendSpawnShipyard(
+    shipyardId,
+    shipyardName,
+    selectedLng,
+    selectedLat,
+    u.user_id
+  )
+  if (reply.dbId === shipyardId) {
+    if (reply.existing === 0) {
+      // successfully created
+      spendGold(u.guid, 10000)
+      return {
+        shipyardId: shipyardId,
+        err: null
+      }
+    } else {
+      console.error(
+        'Shipyard with the same ID already exists on sea-server (is this possible?!)'
+      )
+      return {
+        shipyardId: shipyardId,
+        err: 'db inconsistent'
+      }
+    }
+  }
+  // something went wrong; delete from db
+  deleteShipyard(shipyardId)
+  // print useful information
+  if (reply.dbId > 0 && reply.dbId !== shipyardId) {
+    console.log(
+      `shipyard cannot be created: shipyard ID ${
+        reply.dbId
+      } already exists on that location`
+    )
+    return {
+      seaportId: reply.dbId,
+      err: 'already exists'
+    }
+  } else if (reply.tooClose) {
+    console.error('shipyard cannot be created: too close')
+    return {
+      err: 'too close'
+    }
+  } else {
+    console.error('shipyard cannot be created: unknown case')
+    return {
+      err: 'unknown error'
+    }
+  }
+}
+
 const execCreateShipWithRoute = async (
   userId,
   xc0,
@@ -689,42 +817,6 @@ app.get('/link', async (req, res) => {
 
 app.get('/linkland', async (req, res) => {
   await link(req, res, 1)
-})
-
-app.get('/deleteShipyard', (req, res) => {
-  const u = findOrCreateUser(req.query.u || uuidv1())
-  let resultMsg = ''
-  let errMsg = ''
-  if (req.query.s) {
-    const shipyard = findShipyard(req.query.r)
-    if (shipyard) {
-      deleteShipyard(req.query.s)
-      const buf = message.DeleteShipyardStruct.buffer()
-      for (let i = 0; i < buf.length; i++) {
-        buf[i] = 0
-      }
-      message.DeletePortStruct.fields.type = 10 // Delete Shipyard
-      message.DeletePortStruct.fields.shipyardId = shipyard.shipyard_id
-      seaUdpClient.send(Buffer.from(buf), 4000, 'localhost', err => {
-        if (err) {
-          console.error('sea udp client error:', err)
-        }
-      })
-      resultMsg = '조선소 철거 성공'
-    } else {
-      errMsg = '존재하지 않는 조선소'
-    }
-  }
-  res.redirect(
-    url.format({
-      pathname: '/idle',
-      query: {
-        u: u.guid,
-        resultMsg: resultMsg,
-        errMsg: errMsg
-      }
-    })
-  )
 })
 
 seaUdpClient.on('message', async (buf, remote) => {

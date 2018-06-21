@@ -40,7 +40,7 @@ std::vector<shipyard_object> shipyard::query_near_to_packet(int xc, int yc, floa
 std::vector<shipyard_object::value> shipyard::query_tree_ex(int xc, int yc, int half_lng_ex, int half_lat_ex) const {
     // min-max range should be inclusive-exclusive.
     shipyard_object::box query_box(shipyard_object::point(xc - half_lng_ex, yc - half_lat_ex),
-                                  shipyard_object::point(xc + half_lng_ex - 1, yc + half_lat_ex - 1));
+                                   shipyard_object::point(xc + half_lng_ex - 1, yc + half_lat_ex - 1));
     std::vector<shipyard_object::value> result_s;
     rtree.query(bgi::intersects(query_box), std::back_inserter(result_s));
     return result_s;
@@ -102,7 +102,7 @@ void shipyard::update_single_chunk_key_ts(const LWTTLCHUNKKEY& chunk_key, long l
     chunk_key_ts[chunk_key.v] = monotonic_uptime;
 }
 
-int shipyard::spawn(const char* name, int xc0, int yc0, int gold_amount, bool& existing) {
+int shipyard::spawn(int expected_db_id, const char* name, int xc0, int yc0, int owner_id, int gold_amount, bool& existing) {
     existing = false;
     shipyard_object::point new_shipyard_point{ xc0, yc0 };
     const auto existing_it = rtree.qbegin(bgi::intersects(new_shipyard_point));
@@ -112,19 +112,19 @@ int shipyard::spawn(const char* name, int xc0, int yc0, int gold_amount, bool& e
         return existing_it->second;
     }
 
-    const auto id = ++shipyard_id_seq_;
-    rtree.insert(std::make_pair(new_shipyard_point, id));
-    id_point[id] = new_shipyard_point;
+    rtree.insert(std::make_pair(new_shipyard_point, expected_db_id));
+    id_point[expected_db_id] = new_shipyard_point;
     if (name[0] != 0) {
-        set_name(id, name, gold_amount);
+        set_name(expected_db_id, name, gold_amount);
     } else {
         LOGEP("%1%: shipyard spawned, but name empty. (shipyard id = %2%)",
-             __func__,
-             id);
+              __func__,
+              expected_db_id);
     }
+    id_owner_id[expected_db_id] = owner_id;
 
     update_chunk_key_ts(xc0, yc0);
-    return id;
+    return expected_db_id;
 }
 
 void shipyard::despawn(int id) {
@@ -136,11 +136,12 @@ void shipyard::despawn(int id) {
 
     const auto xc0 = it->second.get<0>();
     const auto yc0 = it->second.get<1>();
-    
+
     rtree.remove(std::make_pair(it->second, id));
     id_name.erase(id);
     id_point.erase(it);
     id_gold_amount.erase(id);
+    id_owner_id.erase(id);
 
     update_chunk_key_ts(xc0, yc0);
 }
@@ -188,21 +189,4 @@ void shipyard::update() {
 
     timer_.expires_at(timer_.expires_at() + update_interval);
     timer_.async_wait(boost::bind(&shipyard::update, this));
-}
-
-int shipyard::spawn_random(const char* name, shipyard_object::box box, bool& existing) {
-    const auto& sop_list = sea_static_->query_near_to_packet_water(box.min_corner().get<0>(),
-                                                                   box.min_corner().get<1>(),
-                                                                   box.max_corner().get<0>(),
-                                                                   box.max_corner().get<1>());
-    if (sop_list.size() == 0) {
-        existing = false;
-        return 0;
-    }
-    boost::random::uniform_int_distribution<> choose(0, static_cast<int>(sop_list.size()) - 1);
-    auto chosen_index = choose(rng_);
-    const auto& s = sop_list[chosen_index];
-    boost::random::uniform_int_distribution<> xrnd(s.x0, s.x1 - 1);
-    boost::random::uniform_int_distribution<> yrnd(s.y0, s.y1 - 1);
-    return spawn(name, xrnd(rng_), yrnd(rng_), 100, existing);
 }
