@@ -7,6 +7,7 @@
 #define LW_UTF8_TTL_CHAR_ICON_SEAPORT            "\xe2\x99\xa6"      // u8"♦"
 #define LW_UTF8_TTL_CHAR_ICON_CARGO_LOADED       "\xe2\xac\x86"      // u8"⬆"
 #define LW_UTF8_TTL_CHAR_ICON_CARGO_UNLOADED     "\xe2\xac\x87"      // u8"⬇"
+#define LW_UTF8_TTL_CHAR_ICON_SHIPYARD           "\xe3\x80\x93"      // u8"〓"
 #define LW_UTF8_DEGREES                          "\xc2\xb0"          // u8"°"
 #define LW_UTF8_MINUTES                          "\xe2\x80\xb2"      // u8"′"
 #define LW_UTF8_SECONDS                          "\xe2\x80\xb3"      // u8"″"

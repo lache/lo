@@ -1795,6 +1795,11 @@ static void render_single_cell_info(const LWCONTEXT* pLwc,
                 p->cargo_loaded,
                 LW_UTF8_TTL_CHAR_ICON_CARGO_UNLOADED,
                 p->cargo_unloaded);
+    } else if (p->shipyard_id >= 0 && p->shipyard_name[0]) {
+        sprintf(info,
+                "%s%s",
+                LW_UTF8_TTL_CHAR_ICON_SHIPYARD,
+                p->shipyard_name);
     } else {
         /*sprintf(info,
         "%s",

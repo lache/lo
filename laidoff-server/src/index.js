@@ -865,7 +865,7 @@ seaUdpClient.on('message', async (buf, remote) => {
     let shipyardCount = 0
     const shipyards = await listShipyardToArray()
     for (let i = 0; i < shipyards.length; i++) {
-      const row = ports[i]
+      const row = shipyards[i]
       await sendSpawnShipyard(
         row.shipyard_id,
         row.name,
