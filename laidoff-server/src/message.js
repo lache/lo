@@ -118,6 +118,7 @@ const SpawnPortReplyStruct = Struct()
   .word32Sle('dbId')
   .word32Sle('replyId')
   .word32Sle('existing')
+  .word32Sle('tooClose')
 SpawnPortReplyStruct.allocate()
 
 const SpawnShipyardStruct = Struct()
@@ -164,6 +165,14 @@ const DeletePortStruct = Struct()
   .word32Sle('portId')
 DeletePortStruct.allocate()
 
+const DeleteShipyardStruct = Struct()
+  .word8Sle('type')
+  .word8Sle('padding0')
+  .word8Sle('padding1')
+  .word8Sle('padding2')
+  .word32Sle('shipyardId')
+DeleteShipyardStruct.allocate()
+
 module.exports = {
   SpawnStruct,
   TravelToStruct,
@@ -178,4 +187,5 @@ module.exports = {
   DeletePortStruct,
   SpawnShipyardStruct,
   SpawnShipyardReplyStruct,
+  DeleteShipyardStruct
 }

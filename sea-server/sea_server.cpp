@@ -72,6 +72,7 @@ int main(int argc, char* argv[]) {
                                                                                          sea_instance,
                                                                                          sea_static_instance,
                                                                                          seaport_instance,
+                                                                                         shipyard_instance,
                                                                                          udp_server_instance));
         sea_instance->set_udp_admin_server(udp_admin_server_instance);
         udp_admin_server_instance->send_recover_all_ships();

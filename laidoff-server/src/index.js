@@ -70,16 +70,21 @@ const listPort = async onRow => {
     await onRow(row)
   }
 }
-const listPortToArray = () => {
+const listPortToArray = async () => {
   const rows = []
-  listPort(row => {
+  await listPort(row => {
     rows.push(row)
   })
   return rows
 }
-const listShipyardToArray = () => {
+const listShipyard = async onRow => {
+  for (const row of query.listShipyard.iterate()) {
+    await onRow(row)
+  }
+}
+const listShipyardToArray = async () => {
   const rows = []
-  listShipyard(row => {
+  await listShipyard(row => {
     rows.push(row)
   })
   return rows
@@ -130,6 +135,7 @@ const findMissions = () => {
 }
 
 const findPort = portId => query.findPort.get(portId)
+const findShipyard = portId => query.findShipyard.get(portId)
 const findPortsScrollDown = (userId, lastRegionId, count) => {
   return query.findPortsScrollDown.all(lastRegionId, count)
 }
@@ -138,6 +144,9 @@ const findPortsScrollUp = (userId, lastRegionId, count) => {
 }
 const deletePort = portId => {
   query.deletePort.run(portId)
+}
+const deleteShipyard = shipyardId => {
+  query.deleteShipyard.run(shipyardId)
 }
 const travelTo = (id, x, y) => {
   const buf = message.TeleportToStruct.buffer()
@@ -359,7 +368,7 @@ const purchaseNewPort = async (req, res, expectLand) => {
   let resultMsg = ''
   let errMsg = ''
   const r0 = await execCreatePort(u, xc0, yc0, expectLand)
-  if (r0 > 0) {
+  if (r0.seaportId > 0 && r0.err === null) {
     resultMsg = '새 항구 건설 완료'
   } else {
     errMsg = '새 항구 건설 실패'
@@ -381,7 +390,7 @@ app.get('/purchaseNewPort', async (req, res) => {
 })
 
 app.get('/demolishPort', (req, res) => {
-  const u = findOrCreateUser(req.get('X-U') || req.query.u || uuidv1())
+  // const u = findOrCreateUser(req.get('X-U') || req.query.u || uuidv1())
   if (req.query.portId) {
     const port = findPort(req.query.portId)
     if (port) {
@@ -489,7 +498,7 @@ const sendSpawnShipyard = async (expectedDbId, name, x, y, ownerId) => {
     buf[i] = 0
   }
   const replyId = issueNewReplyId()
-  message.SpawnShipyardStruct.fields.type = 6
+  message.SpawnShipyardStruct.fields.type = 9
   message.SpawnShipyardStruct.fields.expectedDbId = expectedDbId
   message.SpawnShipyardStruct.fields.name = name
   message.SpawnShipyardStruct.fields.x = x
@@ -526,12 +535,18 @@ const execCreatePort = async (u, selectedLng, selectedLat, expectLand) => {
     if (reply.existing === 0) {
       // successfully created
       spendGold(u.guid, 10000)
-      return regionId
+      return {
+        seaportId: regionId,
+        err: null
+      }
     } else {
       console.error(
         'Port with the same ID already exists on sea-server (is this possible?!)'
       )
-      return regionId
+      return {
+        seaportId: regionId,
+        err: 'db inconsistent'
+      }
     }
   }
   // something went wrong; delete from db
@@ -543,11 +558,21 @@ const execCreatePort = async (u, selectedLng, selectedLat, expectLand) => {
         reply.dbId
       } already exists on that location`
     )
-    return reply.dbId
+    return {
+      seaportId: reply.dbId,
+      err: 'already exists'
+    }
+  } else if (reply.tooClose) {
+    console.error('port cannot be created: too close')
+    return {
+      err: 'too close'
+    }
   } else {
     console.error('port cannot be created: unknown case')
+    return {
+      err: 'unknown error'
+    }
   }
-  return 0
 }
 
 const execCreateShipWithRoute = async (
@@ -624,27 +649,27 @@ const link = async (req, res, expectLand) => {
   let resultMsg = ''
   let errMsg = ''
   const r0 = await execCreatePort(u, xc0, yc0, expectLand)
-  if (r0 > 0) {
+  if (r0.seaportId > 0) {
     const r1 = await execCreatePort(u, xc1, yc1, expectLand)
-    if (r1 > 0) {
+    if (r1.seaportId > 0) {
       const shipDbId = await execCreateShipWithRoute(
         u.user_id,
         xc0,
         yc0,
         expectLand,
-        r0,
-        r1
+        r0.seaportId,
+        r1.seaportId
       )
       if (shipDbId > 0) {
         resultMsg = '새 항로 등록 성공'
       } else {
-        errMsg = '항로 등록 실패 (경로 찾을 수 없음)'
+        errMsg = '항로 등록 실패'
       }
     } else {
-      errMsg = '도착 항구 건설 실패 (다른 항구와 너무 가까움)'
+      errMsg = '도착 항구 건설 실패'
     }
   } else {
-    errMsg = '출발 항구 건설 실패 (다른 항구와 너무 가까움)'
+    errMsg = '출발 항구 건설 실패'
   }
   res.redirect(
     url.format({
@@ -664,6 +689,42 @@ app.get('/link', async (req, res) => {
 
 app.get('/linkland', async (req, res) => {
   await link(req, res, 1)
+})
+
+app.get('/deleteShipyard', (req, res) => {
+  const u = findOrCreateUser(req.query.u || uuidv1())
+  let resultMsg = ''
+  let errMsg = ''
+  if (req.query.s) {
+    const shipyard = findShipyard(req.query.r)
+    if (shipyard) {
+      deleteShipyard(req.query.s)
+      const buf = message.DeleteShipyardStruct.buffer()
+      for (let i = 0; i < buf.length; i++) {
+        buf[i] = 0
+      }
+      message.DeletePortStruct.fields.type = 10 // Delete Shipyard
+      message.DeletePortStruct.fields.shipyardId = shipyard.shipyard_id
+      seaUdpClient.send(Buffer.from(buf), 4000, 'localhost', err => {
+        if (err) {
+          console.error('sea udp client error:', err)
+        }
+      })
+      resultMsg = '조선소 철거 성공'
+    } else {
+      errMsg = '존재하지 않는 조선소'
+    }
+  }
+  res.redirect(
+    url.format({
+      pathname: '/idle',
+      query: {
+        u: u.guid,
+        resultMsg: resultMsg,
+        errMsg: errMsg
+      }
+    })
+  )
 })
 
 seaUdpClient.on('message', async (buf, remote) => {
@@ -694,7 +755,7 @@ seaUdpClient.on('message', async (buf, remote) => {
     console.log('Recovering in progress...')
     // recovering ports
     let portCount = 0
-    const ports = listPortToArray()
+    const ports = await listPortToArray()
     for (let i = 0; i < ports.length; i++) {
       const row = ports[i]
       await sendSpawnPort(
@@ -710,7 +771,7 @@ seaUdpClient.on('message', async (buf, remote) => {
     console.log(`  ${portCount} port(s) recovered...`)
     // recovering shipyards
     let shipyardCount = 0
-    const shipyards = listShipyardToArray()
+    const shipyards = await listShipyardToArray()
     for (let i = 0; i < shipyards.length; i++) {
       const row = ports[i]
       await sendSpawnShipyard(
@@ -765,6 +826,15 @@ seaUdpClient.on('message', async (buf, remote) => {
     )
     message.SpawnPortReplyStruct._setBuff(buf)
     notifyWaiter(message.SpawnPortReplyStruct)
+  } else if (buf[0] === 5) {
+    // SpawnShipyardReply
+    console.log(
+      `SpawnShipyardReply from ${remote.address}:${remote.port} (len=${
+        buf.length
+      })`
+    )
+    message.SpawnShipyardReplyStruct._setBuff(buf)
+    notifyWaiter(message.SpawnShipyardReplyStruct)
   }
 })
 

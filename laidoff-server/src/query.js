@@ -81,6 +81,10 @@ const deleteShipyard = db.prepare(`DELETE FROM shipyard WHERE shipyard_id = ?`)
 const listShipyard = db.prepare(
   `SELECT shipyard_id, name, x, y, owner_id FROM shipyard`
 )
+const findShipyard = db.prepare(`SELECT
+  shipyard_id, name, x, y
+FROM shipyard s
+WHERE s.shipyard_id = ?`)
 module.exports = {
   insertUser,
   insertShip,
@@ -107,5 +111,6 @@ module.exports = {
   deletePort,
   insertShipyard,
   deleteShipyard,
-  listShipyard
+  listShipyard,
+  findShipyard
 }
