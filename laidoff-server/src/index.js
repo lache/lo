@@ -819,6 +819,16 @@ app.get('/linkland', async (req, res) => {
   await link(req, res, 1)
 })
 
+app.get('/openShipyard', (req, res) => {
+  const u = findOrCreateUser(req.get('X-U') || req.query.u || uuidv1())
+  return res.render('openShipyard', {
+    user: u,
+    resultMsg: req.query.resultMsg,
+    errMsg: req.query.errMsg,
+    menuToggle: req.query.mt === 'false'
+  })
+})
+
 seaUdpClient.on('message', async (buf, remote) => {
   if (buf[0] === 1) {
     // SpawnShipReply

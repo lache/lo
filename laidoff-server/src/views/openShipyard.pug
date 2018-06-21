@@ -1,0 +1,26 @@
+html
+  include ./includes/head.pug
+  body.mar00.fwht.bsea.f1
+    h3.menuheader.tc 정박중
+    - var n = 0;
+    div.tc
+      while n < 9
+        div.dpinblk
+          p 배 1
+          a.dpinblk.red.pad1(href='script:enable_water_way()') 항로지정
+        - n++
+
+    h3.menuheader.tc 새 선박 구입
+    ol
+      li
+        p 선박 1
+        img(src='atlas/flags-mini/au.png')
+      li
+        p 선박 2
+        img(src='atlas/flags-mini/kr.png')
+      li
+        img(src='atlas/flags-mini/au.png')
+      li
+        img(src='atlas/flags-mini/au.png')
+  div.tc
+    a.dpinblk.red.pad2(href='script:return_to_idle()') 닫기

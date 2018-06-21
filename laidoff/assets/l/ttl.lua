@@ -214,3 +214,8 @@ end
 function on_ttl_static_state2()
     lo.lwttl_send_ttlpingsinglecell_on_selected(c.ttl)
 end
+
+function return_to_idle()
+    print('return_to_idle');
+    lo.htmlui_execute_anchor_click(c.htmlui, "/idle")
+end
