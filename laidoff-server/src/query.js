@@ -85,6 +85,12 @@ const findShipyard = db.prepare(`SELECT
   shipyard_id, name, x, y
 FROM shipyard s
 WHERE s.shipyard_id = ?`)
+const setShipDockedShipyardId = db.prepare(
+  `UPDATE ship SET docked_shipyard_id = ? WHERE ship_id = ?`
+)
+const listShipDockedAtShipyard = db.prepare(
+  `SELECT ship_id, name, user_id FROM ship WHERE docked_shipyard_id = ?`
+)
 module.exports = {
   insertUser,
   insertShip,
@@ -112,5 +118,7 @@ module.exports = {
   insertShipyard,
   deleteShipyard,
   listShipyard,
-  findShipyard
+  findShipyard,
+  setShipDockedShipyardId,
+  listShipDockedAtShipyard
 }

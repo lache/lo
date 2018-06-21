@@ -219,3 +219,8 @@ function return_to_idle()
     print('return_to_idle');
     lo.htmlui_execute_anchor_click(c.htmlui, "/idle")
 end
+
+function purchase_ship_at_shipyard(shipyard_id, ship_template_id)
+    print('purchase_ship_at_shipyard')
+    lo.htmlui_execute_anchor_click(c.htmlui, "/purchaseShipAtShipyard?shipyardId=" .. math.floor(shipyard_id) .. "&shipTemplateId=" .. math.floor(ship_template_id))
+end

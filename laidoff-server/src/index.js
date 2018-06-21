@@ -57,6 +57,9 @@ const createShiproute = (port1Id, port2Id) => {
 const setShipShiproute = (shipId, shiprouteId) => {
   query.setShipShiproute.run(shiprouteId, shipId)
 }
+const setShipDockedShipyardId = (shipId, dockedShipyardId) => {
+  query.setShipDockedShipyardId.run(dockedShipyardId, shipId)
+}
 const listShipShiproute = onRow => {
   for (const row of query.listShipShiproute.iterate()) {
     onRow(row)
@@ -89,6 +92,18 @@ const listShipyard = async onRow => {
 const listShipyardToArray = async () => {
   const rows = []
   await listShipyard(row => {
+    rows.push(row)
+  })
+  return rows
+}
+const listShipDockedAtShipyard = (shipyardId, onRow) => {
+  for (const row of query.listShipDockedAtShipyard.iterate(shipyardId)) {
+    onRow(row)
+  }
+}
+const listShipDockedAtShipyardToArray = shipyardId => {
+  const rows = []
+  listShipDockedAtShipyard(shipyardId, row => {
     rows.push(row)
   })
   return rows
@@ -821,12 +836,48 @@ app.get('/linkland', async (req, res) => {
 
 app.get('/openShipyard', (req, res) => {
   const u = findOrCreateUser(req.get('X-U') || req.query.u || uuidv1())
-  return res.render('openShipyard', {
-    user: u,
-    resultMsg: req.query.resultMsg,
-    errMsg: req.query.errMsg,
-    menuToggle: req.query.mt === 'false'
-  })
+  const shipyard = findShipyard(req.query.shipyardId)
+  const dockedShips = listShipDockedAtShipyardToArray(req.query.shipyardId)
+  if (shipyard) {
+    return res.render('openShipyard', {
+      user: u,
+      shipyard: shipyard,
+      dockedShips: dockedShips
+    })
+  } else {
+    res.redirect(
+      url.format({
+        pathname: '/idle',
+        query: {
+          errMsg: '조선소를 찾을 수 없습니다'
+        }
+      })
+    )
+  }
+})
+
+app.get('/purchaseShipAtShipyard', (req, res) => {
+  const u = findOrCreateUser(req.get('X-U') || req.query.u || uuidv1())
+  const shipyard = findShipyard(req.query.shipyardId)
+  let resultMsg, errMsg
+  if (shipyard) {
+    const shipName = `${raname.middle()} ${raname.middle()}`
+    const shipId = createShip(u.user_id, shipName, 0)
+    setShipDockedShipyardId(shipId, req.query.shipyardId)
+    resultMsg = '새 선박 구입 성공'
+  } else {
+    errMsg = '새 선박 구입 실패'
+  }
+  res.redirect(
+    url.format({
+      pathname: '/openShipyard',
+      query: {
+        shipyardId: shipyard.shipyard_id,
+        resultMsg: resultMsg,
+        errMsg: errMsg
+      }
+    })
+  )
 })
 
 seaUdpClient.on('message', async (buf, remote) => {

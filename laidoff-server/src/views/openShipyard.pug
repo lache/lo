@@ -1,26 +1,26 @@
 html
   include ./includes/head.pug
   body.mar00.fwht.bsea.f1
+    h2.menuheader.tc #{shipyard.name}
     h3.menuheader.tc 정박중
     - var n = 0;
     div.tc
-      while n < 9
+      a.dpinblk.red.pad1(href='script:enable_water_way()') 판매
+      a.dpinblk.red.pad1(href='script:enable_water_way()') 항로지정
+      br
+      each dockedShip in dockedShips
         div.dpinblk
-          p 배 1
-          a.dpinblk.red.pad1(href='script:enable_water_way()') 항로지정
-        - n++
-
+          img(src='atlas/flags-mini/au.png')
+          p #{dockedShip.name}
+          a.dpinblk.red.pad1(href='script:enable_water_way()') 선택
     h3.menuheader.tc 새 선박 구입
-    ol
-      li
-        p 선박 1
-        img(src='atlas/flags-mini/au.png')
-      li
-        p 선박 2
-        img(src='atlas/flags-mini/kr.png')
-      li
-        img(src='atlas/flags-mini/au.png')
-      li
-        img(src='atlas/flags-mini/au.png')
+    div.tc
+      - var n = 0;
+      while n < 1
+        div.dpinblk
+          p 선박 모델 #{n + 1}
+          img(src='atlas/flags-mini/au.png')
+          a.dpinblk.red.pad1(href='script:purchase_ship_at_shipyard(' + shipyard.shipyard_id + ',' + (n + 1) + ')') 구입
+        - n++
   div.tc
     a.dpinblk.red.pad2(href='script:return_to_idle()') 닫기
