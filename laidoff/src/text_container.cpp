@@ -470,10 +470,10 @@ void litehtml::text_container::on_anchor_click_ex(const litehtml::tchar_t * url,
                                         strlen(url + strlen("script:")),
                                         "on_anchor_click");
     } else {
-        const char* path_prefix = ASSETS_BASE_PATH "html" PATH_SEPARATOR;
-        char path[1024] = { 0, };
-        strcat(path, path_prefix);
-        strcat(path, url);
+        if (url[0] == '/' && online == false) {
+            LOGI("Online URL anchor requested when online == false; change online to true.");
+            online = true;
+        }
         if (online) {
             if (pLwc->tcp_ttl) {
                 // make a script executing this asynchronously in logic thread;
@@ -494,6 +494,10 @@ void litehtml::text_container::on_anchor_click_ex(const litehtml::tchar_t * url,
                 LOGE("tcp_ttl null");
             }
         } else {
+            char path[1024] = { 0, };
+            const char* path_prefix = ASSETS_BASE_PATH "html" PATH_SEPARATOR;
+            strcat(path, path_prefix);
+            strcat(path, url);
             htmlui_set_next_html_path(pLwc->htmlui, path);
         }
     }

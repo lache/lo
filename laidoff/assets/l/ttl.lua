@@ -133,12 +133,18 @@ function demolish_shipyard(shipyard_id)
     lo.htmlui_execute_anchor_click(c.htmlui, "/demolishShipyard?shipyardId=" .. math.floor(shipyard_id))
 end
 
+function open_shipyard(shipyard_id)
+    print('open_shipyard')
+    lo.htmlui_execute_anchor_click(c.htmlui, "/openShipyard?shipyardId=" .. math.floor(shipyard_id))
+end
+
 local CELL_MENU_PURCHASE_NEW_PORT = 1
 local CELL_MENU_DEMOLISH_PORT = 2
 local CELL_MENU_TRANSFORM_SINGLE_CELL_WATER_TO_LAND = 3
 local CELL_MENU_TRANSFORM_SINGLE_CELL_LAND_TO_WATER = 4
 local CELL_MENU_PURCHASE_NEW_SHIPYARD = 5
 local CELL_MENU_DEMOLISH_SHIPYARD = 6
+local CELL_MENU_SHIPYARD = 7
 
 function reset_cell_menu()
     lo.lwttl_clear_cell_menu(c.ttl);
@@ -163,6 +169,7 @@ function reset_cell_menu()
     end
     if sc.shipyard_id > 0 then
         lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_DEMOLISH_SHIPYARD, "조선소철거");
+        lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_SHIPYARD, "상세메뉴");
     end
 end
 
@@ -189,6 +196,8 @@ function on_cell_menu(index, command_id)
         purchase_new_shipyard()
     elseif command_id == CELL_MENU_DEMOLISH_SHIPYARD then
         demolish_shipyard(sc.shipyard_id)
+    elseif command_id == CELL_MENU_SHIPYARD then
+        open_shipyard(sc.shipyard_id)
     end
 end
 
