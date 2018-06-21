@@ -138,6 +138,16 @@ function open_shipyard(shipyard_id)
     lo.htmlui_execute_anchor_click(c.htmlui, "/openShipyard?shipyardId=" .. math.floor(shipyard_id))
 end
 
+function open_ship(ship_id)
+    print('open_ship')
+    lo.htmlui_execute_anchor_click(c.htmlui, "/openShip?shipId=" .. math.floor(ship_id))
+end
+
+function sell_ship(ship_id)
+    print('sell_ship')
+    lo.htmlui_execute_anchor_click(c.htmlui, "/sellShip?shipId=" .. math.floor(ship_id))
+end
+
 local CELL_MENU_PURCHASE_NEW_PORT = 1
 local CELL_MENU_DEMOLISH_PORT = 2
 local CELL_MENU_TRANSFORM_SINGLE_CELL_WATER_TO_LAND = 3

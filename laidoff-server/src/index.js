@@ -48,7 +48,7 @@ const createShip = (userId, shipName, shipType) => {
   return ship.lastInsertROWID
 }
 const deleteShip = shipId => {
-  query.deleteShip.run(shipId)
+  return query.deleteShip.run(shipId).changes
 }
 const createShiproute = (port1Id, port2Id) => {
   const shiproute = query.insertShiproute.run(port1Id, port2Id)
@@ -213,6 +213,41 @@ app.get('/idle', (req, res) => {
 app.get('/loan', (req, res) => {
   const u = findOrCreateUser(req.query.u || uuidv1())
   return res.render('loan', { user: u })
+})
+
+app.get('/sellShip', (req, res) => {
+  // const u = findOrCreateUser(req.query.u || uuidv1())
+  let resultMsg, errMsg
+  if (req.query.shipId) {
+    const deletedRowCount = deleteShip(req.query.shipId)
+    if (deletedRowCount === 1) {
+      const buf = message.DeleteShipStruct.buffer()
+      for (let i = 0; i < buf.length; i++) {
+        buf[i] = 0
+      }
+      message.DeleteShipStruct.fields.type = 5 // Delete Ship
+      message.DeleteShipStruct.fields.shipId = req.query.shipId
+      seaUdpClient.send(Buffer.from(buf), 4000, 'localhost', err => {
+        if (err) {
+          console.error('sea udp client error:', err)
+        }
+      })
+      resultMsg = '선박 판매 성공'
+    } else if (deletedRowCount === 0) {
+      resultMsg = '선박 판매 성공?!'
+    } else {
+      errMsg = '선박 판매 실패'
+    }
+  }
+  res.redirect(
+    url.format({
+      pathname: '/idle',
+      query: {
+        resultMsg: resultMsg,
+        errMsg: errMsg
+      }
+    })
+  )
 })
 
 app.get('/sell_vessel', (req, res) => {
@@ -851,6 +886,30 @@ app.get('/openShipyard', (req, res) => {
         pathname: '/idle',
         query: {
           errMsg: '조선소를 찾을 수 없습니다'
+        }
+      })
+    )
+  }
+})
+
+app.get('/openShip', (req, res) => {
+  const u = findOrCreateUser(req.get('X-U') || req.query.u || uuidv1())
+  const ship = findShip(req.query.shipId)
+  if (ship) {
+    const dockedShipyard = ship.docked_shipyard_id
+      ? findShipyard(ship.docked_shipyard_id)
+      : null
+    return res.render('openShip', {
+      user: u,
+      ship: ship,
+      dockedShipyard: dockedShipyard
+    })
+  } else {
+    res.redirect(
+      url.format({
+        pathname: '/idle',
+        query: {
+          errMsg: '선박을 찾을 수 없습니다'
         }
       })
     )
