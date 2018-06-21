@@ -166,6 +166,7 @@ const deletePort = portId => {
 }
 const deleteShipyard = shipyardId => {
   query.deleteShipyard.run(shipyardId)
+  query.deleteShipDockedAtShipyard.run(shipyardId)
 }
 const travelTo = (id, x, y) => {
   const buf = message.TeleportToStruct.buffer()
