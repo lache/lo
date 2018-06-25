@@ -106527,6 +106527,29 @@ fail:
 }
 
 
+static int _wrap_lwttl_clear_selected(lua_State* L) {
+  int SWIG_arg = 0;
+  LWTTL *arg1 = (LWTTL *) 0 ;
+  
+  SWIG_check_num_args("lwttl_clear_selected",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwttl_clear_selected",1,"LWTTL *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTTL,0))){
+    SWIG_fail_ptr("lwttl_clear_selected",1,SWIGTYPE_p__LWTTL);
+  }
+  
+  lwttl_clear_selected(arg1);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_lwttl_single_cell(lua_State* L) {
   int SWIG_arg = 0;
   LWTTL *arg1 = (LWTTL *) 0 ;
@@ -110400,7 +110423,7 @@ static swig_lua_const_info swig_SwigModule_constants[]= {
     {SWIG_LUA_CONSTTAB_INT("LGS_LEADERBOARD", LGS_LEADERBOARD)},
     {SWIG_LUA_CONSTTAB_INT("LGS_REMTEX", LGS_REMTEX)},
     {SWIG_LUA_CONSTTAB_STRING("__LW_STRING_LINE__", "61")},
-    {SWIG_LUA_CONSTTAB_STRING("LWLOGPOS", "src\\lwlog.h(62): ")},
+    {SWIG_LUA_CONSTTAB_STRING("LWLOGPOS", "src/lwlog.h(62): ")},
     {SWIG_LUA_CONSTTAB_INT("LPT_GRID", LPT_GRID)},
     {SWIG_LUA_CONSTTAB_INT("LPT_SOLID_RED", LPT_SOLID_RED)},
     {SWIG_LUA_CONSTTAB_INT("LPT_SOLID_GREEN", LPT_SOLID_GREEN)},
@@ -111536,6 +111559,7 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "lwttl_update_view_proj", _wrap_lwttl_update_view_proj},
     { "lwttl_screen_to_world_pos", _wrap_lwttl_screen_to_world_pos},
     { "lwttl_clear_selected_pressed_pos", _wrap_lwttl_clear_selected_pressed_pos},
+    { "lwttl_clear_selected", _wrap_lwttl_clear_selected},
     { "lwttl_single_cell", _wrap_lwttl_single_cell},
     { "lwttl_press_menu_info", _wrap_lwttl_press_menu_info},
     { "lwttl_change_selected_cell_to", _wrap_lwttl_change_selected_cell_to},

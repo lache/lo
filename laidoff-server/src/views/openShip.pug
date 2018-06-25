@@ -3,11 +3,24 @@ html
   body.mar00.fwht.bsea.f1
     include ./includes/actionresult.pug
     a.dpinblk.red.pad2(href='script:ttl_go_back()') 뒤로
-    h2.semitransblack.tc #{ship.name}
+    h2.semitransblack.tc &#9157;#{ship.name}
     div.tc 최대 적재량: 100
     if dockedShipyard
       div.tc 상태: &#12307;#{dockedShipyard.name} 정박중
-    div.tc
-      a.dpinblk.red.pad2(href='script:sell_ship(' + ship.ship_id + ')') 선박 매각
-  div.tc
-    a.dpinblk.red.pad2(href='script:ttl_go_back()') 닫기
+      div.tc
+        a.dpinblk.red.pad2(href='script:sell_ship(' + ship.ship_id + ')') 선박 매각
+    unless ship.shiproute_id
+      h3.semitransblack.tc 항로
+      div.tc
+        a.dpinblk.red.pad2(href='script:select_seaport(\'seaport1Id\')')
+          div 항구 선택
+          if seaport1
+            div #{seaport1.name}
+        div.dpinblknoline.pad2 &#x27a1;
+        a.dpinblk.red.pad2(href='script:select_seaport(\'seaport2Id\')')
+          div 항구 선택
+          if seaport2
+            div #{seaport2.name}
+      if seaport1 && seaport2
+        div.tc
+          a.dpinblk.red.pad2(href='script:confirm_new_route()') 항로 확정

@@ -909,10 +909,14 @@ app.get('/openShip', (req, res) => {
     const dockedShipyard = ship.docked_shipyard_id
       ? findShipyard(ship.docked_shipyard_id)
       : null
+    const seaport1 = findPort(req.query.seaport1Id)
+    const seaport2 = findPort(req.query.seaport2Id)
     return res.render('openShip', {
       user: u,
       ship: ship,
-      dockedShipyard: dockedShipyard
+      dockedShipyard: dockedShipyard,
+      seaport1: seaport1,
+      seaport2: seaport2
     })
   } else {
     res.redirect(

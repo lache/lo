@@ -1,7 +1,28 @@
 local inspect = require('inspect')
+local neturl = require('neturl')
 
 local c = lo.script_context()
 lo.htmlui_set_online(c.htmlui, 0)
+
+local select_context = {}
+local way_mode = 0
+local cam_iso_top_mode = 0
+local ttl_url_history = {}
+
+local CELL_MENU_PURCHASE_NEW_PORT                   = 1
+local CELL_MENU_DEMOLISH_PORT                       = 2
+local CELL_MENU_TRANSFORM_SINGLE_CELL_WATER_TO_LAND = 3
+local CELL_MENU_TRANSFORM_SINGLE_CELL_LAND_TO_WATER = 4
+local CELL_MENU_PURCHASE_NEW_SHIPYARD               = 5
+local CELL_MENU_DEMOLISH_SHIPYARD                   = 6
+local CELL_MENU_SHIPYARD                            = 7
+local CELL_MENU_SELECT_SEAPORT                      = 8
+
+local CELL_MENU_MODE_NORMAL = 1
+local CELL_MENU_MODE_SELECT_SEAPORT = 2
+local cell_menu_mode = CELL_MENU_MODE_NORMAL
+local select_var_name
+local selected_seaport_id
 
 function worldmap_scroll(dlng, dlat, dscale)
     lo.lwttl_worldmap_scroll(c.ttl, dlng/100, dlat/100, dscale)
@@ -31,7 +52,6 @@ function request_waypoints(ship_id)
     lo.lwttl_request_waypoints(c.ttl, ship_id)
 end
 
-local select_context = {}
 function select(type, id)
     print('[ui-select] type:'..type..',id:'..id)
     if select_context[type] == nil then
@@ -55,7 +75,6 @@ function track(ship_id)
     request_waypoints(ship_id)
 end
 
-local way_mode = 0
 function enable_water_way()
     way_mode = 0
 end
@@ -99,7 +118,6 @@ function transform_single_cell_land_to_water()
     end
 end
 
-local cam_iso_top_mode = 0
 function toggle_cam_iso_top_mode()
     cam_iso_top_mode = ~cam_iso_top_mode
     local eye
@@ -112,8 +130,6 @@ function toggle_cam_iso_top_mode()
     lo.lwttl_update_aspect_ratio(c.ttl, c.viewport_width, c.viewport_height)
     lo.delete_vec3(eye)
 end
-
-local ttl_url_history = {}
 
 function execute_anchor_click_with_history(url)
     table.insert(ttl_url_history, url)
@@ -191,40 +207,38 @@ function ttl_go_back(qs)
         previous_url = previous_url .. qs
     end
     lo.htmlui_execute_anchor_click(c.htmlui, previous_url)
+    -- revert cell menu mode
+    cell_menu_mode = CELL_MENU_MODE_NORMAL
+    reset_cell_menu()
 end
 
-local CELL_MENU_PURCHASE_NEW_PORT = 1
-local CELL_MENU_DEMOLISH_PORT = 2
-local CELL_MENU_TRANSFORM_SINGLE_CELL_WATER_TO_LAND = 3
-local CELL_MENU_TRANSFORM_SINGLE_CELL_LAND_TO_WATER = 4
-local CELL_MENU_PURCHASE_NEW_SHIPYARD = 5
-local CELL_MENU_DEMOLISH_SHIPYARD = 6
-local CELL_MENU_SHIPYARD = 7
-
 function reset_cell_menu()
+    print('reset_cell_menu')
     lo.lwttl_clear_cell_menu(c.ttl)
     local sc = lo.lwttl_single_cell(c.ttl)
     local is_land = sc.attr & 1
     local is_water = sc.attr & 2
     local is_seawater = sc.attr & 4
     local empty_cell = sc.port_id <= 0 and sc.city_id <= 0 and sc.shipyard_id <= 0
-    if is_water ~= 0 and empty_cell then
-        lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_PURCHASE_NEW_PORT, '항구건설')
-        lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_PURCHASE_NEW_SHIPYARD, '조선소건설')
-    end
-    if empty_cell then
-        if is_water ~= 0 then
-            lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_TRANSFORM_SINGLE_CELL_WATER_TO_LAND, '땅으로 변환')
-        elseif is_land ~= 0 then
-            lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_TRANSFORM_SINGLE_CELL_LAND_TO_WATER, '물로 변환')
+    if cell_menu_mode == CELL_MENU_MODE_NORMAL then
+        if is_water ~= 0 and empty_cell then
+            lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_PURCHASE_NEW_PORT, '항구건설')
+            lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_PURCHASE_NEW_SHIPYARD, '조선소건설')
         end
-    end
-    if sc.port_id > 0 then
-        lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_DEMOLISH_PORT, '항구철거')
-    end
-    if sc.shipyard_id > 0 then
-        lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_DEMOLISH_SHIPYARD, '조선소철거')
-        lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_SHIPYARD, '상세메뉴')
+        if empty_cell then
+            if is_water ~= 0 then
+                lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_TRANSFORM_SINGLE_CELL_WATER_TO_LAND, '땅으로 변환')
+            elseif is_land ~= 0 then
+                lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_TRANSFORM_SINGLE_CELL_LAND_TO_WATER, '물로 변환')
+            end
+        end
+        if sc.port_id > 0 then
+            lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_DEMOLISH_PORT, '항구철거')
+        end
+        if sc.shipyard_id > 0 then
+            lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_DEMOLISH_SHIPYARD, '조선소철거')
+            lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_SHIPYARD, '상세메뉴')
+        end
     end
 end
 
@@ -253,6 +267,24 @@ function on_cell_menu(index, command_id)
         demolish_shipyard(sc.shipyard_id)
     elseif command_id == CELL_MENU_SHIPYARD then
         open_shipyard(sc.shipyard_id)
+    elseif command_id == CELL_MENU_SELECT_SEAPORT then
+        --local url = ttl_url_history[#ttl_url_history]
+        --local parsed_url = neturl.parse(url)
+        --parsed_url.query[select_var_name] = math.floor(selected_seaport_id)
+        --local new_url = parsed_url:build()
+        --lo.htmlui_execute_anchor_click(c.htmlui, new_url)
+        --ttl_url_history[#ttl_url_history] = new_url
+    end
+end
+
+function reexecute_anchor_click_append_qs(var_name, var_val)
+    if #ttl_url_history > 0 then
+        local url = ttl_url_history[#ttl_url_history]
+        local parsed_url = neturl.parse(url)
+        parsed_url.query[var_name] = var_val
+        local new_url = parsed_url:build()
+        lo.htmlui_execute_anchor_click(c.htmlui, new_url)
+        ttl_url_history[#ttl_url_history] = new_url
     end
 end
 
@@ -263,9 +295,25 @@ function on_set_refresh_html_body()
 end
 
 function on_ttl_single_cell()
-    reset_cell_menu()
+    print('on_ttl_single_cell')
+    if cell_menu_mode == CELL_MENU_MODE_NORMAL then
+        reset_cell_menu()
+    elseif cell_menu_mode == CELL_MENU_MODE_SELECT_SEAPORT then
+        local sc = lo.lwttl_single_cell(c.ttl)
+        if sc.port_id > 0 then
+            cell_menu_mode = CELL_MENU_MODE_SELECT_NORMAL
+            reexecute_anchor_click_append_qs(select_var_name, math.floor(sc.port_id))
+        end
+    end
 end
 
 function on_ttl_static_state2()
     lo.lwttl_send_ttlpingsinglecell_on_selected(c.ttl)
+end
+
+function select_seaport(var_name)
+    select_var_name = var_name
+    cell_menu_mode = CELL_MENU_MODE_SELECT_SEAPORT
+    lo.lwttl_clear_selected(c.ttl)
+    reset_cell_menu()
 end

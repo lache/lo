@@ -1,4 +1,4 @@
-﻿#include "lwttl.h"
+#include "lwttl.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include "file.h"
@@ -2115,6 +2115,11 @@ void lwttl_clear_selected_pressed_pos(LWTTL* ttl) {
     LWTTLSELECTED* selected = &ttl->viewports[0].selected;
     selected->press_pos_xc = -1;
     selected->press_pos_yc = -1;
+}
+
+void lwttl_clear_selected(LWTTL* ttl) {
+    ttl->viewports[0].selected.selected = 0;
+    lwttl_clear_selected_pressed_pos(ttl);
 }
 
 const LWPTTLSINGLECELL* lwttl_single_cell(const LWTTL* ttl) {

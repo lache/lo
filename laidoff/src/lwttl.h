@@ -239,6 +239,7 @@ void lwttl_screen_to_world_pos(const LWTTL* ttl,
                                const float touchny,
                                vec2 world_pos);
 void lwttl_clear_selected_pressed_pos(LWTTL* ttl);
+void lwttl_clear_selected(LWTTL* ttl);
 const LWPTTLSINGLECELL* lwttl_single_cell(const LWTTL* ttl);
 int lwttl_press_menu_info(const LWTTL* ttl,
                           float* press_menu_gauge_total,
