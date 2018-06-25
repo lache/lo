@@ -186,14 +186,14 @@ function ttl_refresh(qs)
     if #ttl_url_history > 0 then
         local url = ttl_url_history[#ttl_url_history]
         if qs then
-        local qbeg, qend = string.find(url, '?')
-        if qbeg and qend then
-            -- if previous_url already has its query string,
-            -- qs's prepended ? should to changed to &
-            qs = '&' .. string.gsub(qs, '?', '')
+            local qbeg, qend = string.find(url, '?')
+            if qbeg and qend then
+                -- if previous_url already has its query string,
+                -- qs's prepended ? should to changed to &
+                qs = '&' .. string.gsub(qs, '?', '')
+            end
+            url = url .. qs
         end
-        url = url .. qs
-    end
         lo.htmlui_execute_anchor_click(c.htmlui, url)
     end
 end

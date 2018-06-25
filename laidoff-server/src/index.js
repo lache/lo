@@ -224,8 +224,12 @@ app.get('/loan', (req, res) => {
 app.get('/sellShip', (req, res) => {
   // const u = findOrCreateUser(req.query.u || uuidv1())
   let resultMsg, errMsg
-  if (req.query.shipId) {
-    const deletedRowCount = deleteShip(req.query.shipId)
+  const ship = findShip(req.query.shipId)
+  if (ship) {
+    if (ship.shiproute_id) {
+      deleteShiproute(ship.shiproute_id)
+    }
+    const deletedRowCount = deleteShip(ship.ship_id)
     if (deletedRowCount === 1) {
       const buf = message.DeleteShipStruct.buffer()
       for (let i = 0; i < buf.length; i++) {
@@ -929,7 +933,9 @@ app.get('/openShip', (req, res) => {
       ship: ship,
       dockedShipyard: dockedShipyard,
       seaport1: seaport1,
-      seaport2: seaport2
+      seaport2: seaport2,
+      resultMsg: req.query.resultMsg,
+      errMsg: req.query.errMsg
     })
   } else {
     res.redirect(
