@@ -122,37 +122,37 @@ end
 
 function purchase_new_port()
     print('purchase_new_port')
-    execute_anchor_click_with_history('/purchaseNewPort')
+    lo.htmlui_execute_anchor_click(c.htmlui, '/purchaseNewPort')
 end
 
 function demolish_port(port_id)
     print('demolish_port')
-    execute_anchor_click_with_history('/demolishPort?portId=' .. math.floor(port_id))
+    lo.htmlui_execute_anchor_click(c.htmlui, string.format('/demolishPort?portId=%d', port_id))
 end
 
 function purchase_new_shipyard()
     print('purchase_new_shipyard')
-    execute_anchor_click_with_history('/purchaseNewShipyard')
+    lo.htmlui_execute_anchor_click(c.htmlui, '/purchaseNewShipyard')
 end
 
 function demolish_shipyard(shipyard_id)
     print('demolish_shipyard')
-    execute_anchor_click_with_history('/demolishShipyard?shipyardId=' .. math.floor(shipyard_id))
+    lo.htmlui_execute_anchor_click(c.htmlui, string.format('/demolishShipyard?shipyardId=%d', shipyard_id))
 end
 
 function open_shipyard(shipyard_id)
     print('open_shipyard')
-    execute_anchor_click_with_history('/openShipyard?shipyardId=' .. math.floor(shipyard_id))
+    execute_anchor_click_with_history(string.format('/openShipyard?shipyardId=%d', shipyard_id))
 end
 
 function open_ship(ship_id)
     print('open_ship')
-    execute_anchor_click_with_history('/openShip?shipId=' .. math.floor(ship_id))
+    execute_anchor_click_with_history(string.format('/openShip?shipId=%d', ship_id))
 end
 
 function sell_ship(ship_id)
     print('sell_ship')
-    lo.htmlui_execute_anchor_click(c.htmlui, '/sellShip?shipId=' .. math.floor(ship_id))
+    lo.htmlui_execute_anchor_click(c.htmlui, string.format('/sellShip?shipId=%d', ship_id))
 end
 
 function return_to_idle()
@@ -163,22 +163,34 @@ end
 function purchase_ship_at_shipyard(shipyard_id, ship_template_id)
     print('purchase_ship_at_shipyard')
     -- no url history should be created for this request since it is redirected to the same url
-    lo.htmlui_execute_anchor_click(c.htmlui, '/purchaseShipAtShipyard?shipyardId=' .. math.floor(shipyard_id) .. '&shipTemplateId=' .. math.floor(ship_template_id))
+    lo.htmlui_execute_anchor_click(c.htmlui, string.format('/purchaseShipAtShipyard?shipyardId=%d&shipTemplateId=%d', shipyard_id, ship_template_id))
 end
 
-function ttl_go_back()
-    print(string.format('ttl_go_back (%d entries)', #ttl_url_history))
+function ttl_go_back(qs)
+    print(string.format('ttl_go_back - %s - (%d entries)', qs, #ttl_url_history))
     -- for i, v in ipairs(ttl_url_history) do print(i, v) end
     -- remove last url entry on history (which is the current url)
     if #ttl_url_history > 0 then
         table.remove(ttl_url_history, #ttl_url_history)
     end
+    -- get previous url from history; or go to /idle if history is empty
+    local previous_url
     if #ttl_url_history > 0 then
-        local previous_url = ttl_url_history[#ttl_url_history]
-        lo.htmlui_execute_anchor_click(c.htmlui, previous_url)
+        previous_url = ttl_url_history[#ttl_url_history]
     else
-        lo.htmlui_execute_anchor_click(c.htmlui, '/idle')
+        previous_url = '/idle'
     end
+    -- check for query string on previous_url
+    if qs then
+        local qbeg, qend = string.find(previous_url, '?')
+        if qbeg and qend then
+            -- if previous_url already has its query string,
+            -- qs's prepended ? should to changed to &
+            qs = '&' .. string.gsub(qs, '?', '')
+        end
+        previous_url = previous_url .. qs
+    end
+    lo.htmlui_execute_anchor_click(c.htmlui, previous_url)
 end
 
 local CELL_MENU_PURCHASE_NEW_PORT = 1

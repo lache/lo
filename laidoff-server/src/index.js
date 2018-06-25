@@ -248,7 +248,14 @@ app.get('/sellShip', (req, res) => {
   //     }
   //   })
   // )
-  res.redirect('script:ttl_go_back()')
+  const qs = url.format({
+    pathname: '',
+    query: {
+      resultMsg: resultMsg,
+      errMsg: errMsg
+    }
+  })
+  res.redirect(`script:ttl_go_back('${qs}')`)
 })
 
 app.get('/sell_vessel', (req, res) => {
@@ -879,7 +886,9 @@ app.get('/openShipyard', (req, res) => {
     return res.render('openShipyard', {
       user: u,
       shipyard: shipyard,
-      dockedShips: dockedShips
+      dockedShips: dockedShips,
+      resultMsg: req.query.resultMsg,
+      errMsg: req.query.errMsg
     })
   } else {
     res.redirect(
