@@ -16,7 +16,7 @@ function go_online()
         lo.lw_new_tcp_ttl(c)
     end
     lo.htmlui_set_online(c.htmlui, 1)
-    lo.tcp_request_landing_page(c.tcp_ttl, c.user_data_path, c.ttl);
+    lo.tcp_request_landing_page(c.tcp_ttl, c.user_data_path, c.ttl)
 end
 
 function set_track_object_id(id)
@@ -67,9 +67,9 @@ end
 function link()
     print('link')
     if way_mode == 0 then
-        lo.htmlui_execute_anchor_click(c.htmlui, "/link");
+        lo.htmlui_execute_anchor_click(c.htmlui, '/link')
     else
-        lo.htmlui_execute_anchor_click(c.htmlui, "/linkland");
+        lo.htmlui_execute_anchor_click(c.htmlui, '/linkland')
     end
 end
 
@@ -113,39 +113,72 @@ function toggle_cam_iso_top_mode()
     lo.delete_vec3(eye)
 end
 
+local ttl_url_history = {}
+
+function execute_anchor_click_with_history(url)
+    table.insert(ttl_url_history, url)
+    lo.htmlui_execute_anchor_click(c.htmlui, url)
+end
+
 function purchase_new_port()
     print('purchase_new_port')
-    lo.htmlui_execute_anchor_click(c.htmlui, "/purchaseNewPort");
+    execute_anchor_click_with_history('/purchaseNewPort')
 end
 
 function demolish_port(port_id)
     print('demolish_port')
-    lo.htmlui_execute_anchor_click(c.htmlui, "/demolishPort?portId=" .. math.floor(port_id))
+    execute_anchor_click_with_history('/demolishPort?portId=' .. math.floor(port_id))
 end
 
 function purchase_new_shipyard()
-    print('purchase_new_shipyard');
-    lo.htmlui_execute_anchor_click(c.htmlui, "/purchaseNewShipyard")
+    print('purchase_new_shipyard')
+    execute_anchor_click_with_history('/purchaseNewShipyard')
 end
 
 function demolish_shipyard(shipyard_id)
     print('demolish_shipyard')
-    lo.htmlui_execute_anchor_click(c.htmlui, "/demolishShipyard?shipyardId=" .. math.floor(shipyard_id))
+    execute_anchor_click_with_history('/demolishShipyard?shipyardId=' .. math.floor(shipyard_id))
 end
 
 function open_shipyard(shipyard_id)
     print('open_shipyard')
-    lo.htmlui_execute_anchor_click(c.htmlui, "/openShipyard?shipyardId=" .. math.floor(shipyard_id))
+    execute_anchor_click_with_history('/openShipyard?shipyardId=' .. math.floor(shipyard_id))
 end
 
 function open_ship(ship_id)
     print('open_ship')
-    lo.htmlui_execute_anchor_click(c.htmlui, "/openShip?shipId=" .. math.floor(ship_id))
+    execute_anchor_click_with_history('/openShip?shipId=' .. math.floor(ship_id))
 end
 
 function sell_ship(ship_id)
     print('sell_ship')
-    lo.htmlui_execute_anchor_click(c.htmlui, "/sellShip?shipId=" .. math.floor(ship_id))
+    lo.htmlui_execute_anchor_click(c.htmlui, '/sellShip?shipId=' .. math.floor(ship_id))
+end
+
+function return_to_idle()
+    print('return_to_idle')
+    execute_anchor_click_with_history('/idle')
+end
+
+function purchase_ship_at_shipyard(shipyard_id, ship_template_id)
+    print('purchase_ship_at_shipyard')
+    -- no url history should be created for this request since it is redirected to the same url
+    lo.htmlui_execute_anchor_click(c.htmlui, '/purchaseShipAtShipyard?shipyardId=' .. math.floor(shipyard_id) .. '&shipTemplateId=' .. math.floor(ship_template_id))
+end
+
+function ttl_go_back()
+    print(string.format('ttl_go_back (%d entries)', #ttl_url_history))
+    -- for i, v in ipairs(ttl_url_history) do print(i, v) end
+    -- remove last url entry on history (which is the current url)
+    if #ttl_url_history > 0 then
+        table.remove(ttl_url_history, #ttl_url_history)
+    end
+    if #ttl_url_history > 0 then
+        local previous_url = ttl_url_history[#ttl_url_history]
+        lo.htmlui_execute_anchor_click(c.htmlui, previous_url)
+    else
+        lo.htmlui_execute_anchor_click(c.htmlui, '/idle')
+    end
 end
 
 local CELL_MENU_PURCHASE_NEW_PORT = 1
@@ -157,36 +190,36 @@ local CELL_MENU_DEMOLISH_SHIPYARD = 6
 local CELL_MENU_SHIPYARD = 7
 
 function reset_cell_menu()
-    lo.lwttl_clear_cell_menu(c.ttl);
+    lo.lwttl_clear_cell_menu(c.ttl)
     local sc = lo.lwttl_single_cell(c.ttl)
     local is_land = sc.attr & 1
     local is_water = sc.attr & 2
     local is_seawater = sc.attr & 4
     local empty_cell = sc.port_id <= 0 and sc.city_id <= 0 and sc.shipyard_id <= 0
     if is_water ~= 0 and empty_cell then
-        lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_PURCHASE_NEW_PORT, "항구건설");
-        lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_PURCHASE_NEW_SHIPYARD, "조선소건설");
+        lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_PURCHASE_NEW_PORT, '항구건설')
+        lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_PURCHASE_NEW_SHIPYARD, '조선소건설')
     end
     if empty_cell then
         if is_water ~= 0 then
-            lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_TRANSFORM_SINGLE_CELL_WATER_TO_LAND, "땅으로 변환");
+            lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_TRANSFORM_SINGLE_CELL_WATER_TO_LAND, '땅으로 변환')
         elseif is_land ~= 0 then
-            lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_TRANSFORM_SINGLE_CELL_LAND_TO_WATER, "물로 변환");
+            lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_TRANSFORM_SINGLE_CELL_LAND_TO_WATER, '물로 변환')
         end
     end
     if sc.port_id > 0 then
-        lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_DEMOLISH_PORT, "항구철거");
+        lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_DEMOLISH_PORT, '항구철거')
     end
     if sc.shipyard_id > 0 then
-        lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_DEMOLISH_SHIPYARD, "조선소철거");
-        lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_SHIPYARD, "상세메뉴");
+        lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_DEMOLISH_SHIPYARD, '조선소철거')
+        lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_SHIPYARD, '상세메뉴')
     end
 end
 
 function print_single_cell_info(sc)
     print('--single cell info--')
-    for key,value in pairs(getmetatable(sc)[".get"]) do
-        print(key .. ": " .. tostring(value(sc)))
+    for key,value in pairs(getmetatable(sc)['.get']) do
+        print(key .. ': ' .. tostring(value(sc)))
     end
 end
 
@@ -212,7 +245,7 @@ function on_cell_menu(index, command_id)
 end
 
 function on_set_refresh_html_body()
-    print("on_set_refresh_html_body")
+    print('on_set_refresh_html_body')
     lo.lwttl_send_ping_now(c.ttl)
     lo.lwttl_send_ttlpingsinglecell_on_selected(c.ttl)
 end
@@ -223,14 +256,4 @@ end
 
 function on_ttl_static_state2()
     lo.lwttl_send_ttlpingsinglecell_on_selected(c.ttl)
-end
-
-function return_to_idle()
-    print('return_to_idle');
-    lo.htmlui_execute_anchor_click(c.htmlui, "/idle")
-end
-
-function purchase_ship_at_shipyard(shipyard_id, ship_template_id)
-    print('purchase_ship_at_shipyard')
-    lo.htmlui_execute_anchor_click(c.htmlui, "/purchaseShipAtShipyard?shipyardId=" .. math.floor(shipyard_id) .. "&shipTemplateId=" .. math.floor(ship_template_id))
 end

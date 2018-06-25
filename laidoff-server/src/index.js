@@ -239,15 +239,16 @@ app.get('/sellShip', (req, res) => {
       errMsg = '선박 판매 실패'
     }
   }
-  res.redirect(
-    url.format({
-      pathname: '/idle',
-      query: {
-        resultMsg: resultMsg,
-        errMsg: errMsg
-      }
-    })
-  )
+  // res.redirect(
+  //   url.format({
+  //     pathname: '/idle',
+  //     query: {
+  //       resultMsg: resultMsg,
+  //       errMsg: errMsg
+  //     }
+  //   })
+  // )
+  res.redirect('script:ttl_go_back()')
 })
 
 app.get('/sell_vessel', (req, res) => {

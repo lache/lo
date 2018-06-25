@@ -13,6 +13,7 @@
 #include "logic.h"
 #include "htmlui.h"
 #include "lwttl.h"
+#include "script.h"
 
 void tcp_on_connect(LWTCP* tcp, const char* path_prefix) {
     if (get_cached_user_id(path_prefix, &tcp->user_id) == 0) {
@@ -276,8 +277,16 @@ void refresh_body(LWTCP* tcp, void* htmlui, const char* html_response) {
         location[copy_len] = 0;
         // overlapping prevent down
         tcp->html_wait = 0;
-        // start a new request
-        tcp_send_httpget(tcp, location, lwttl_http_header(tcp->pLwc->ttl));
+        // start a new HTTP GET request if this is url;
+        // otherwise, run lua script
+        if (strstr(location, "script:") != location) {
+            tcp_send_httpget(tcp, location, lwttl_http_header(tcp->pLwc->ttl));
+        } else {
+            script_evaluate_with_name_async(tcp->pLwc,
+                                            location + strlen("script:"), // remove 'script:' prefix
+                                            strlen(location + strlen("script:")),
+                                            "refresh_body redirect");
+        }
     } else {
         // Plain GET reply
         htmlui_set_refresh_html_body(htmlui, 1);

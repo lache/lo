@@ -1,6 +1,7 @@
 html
   include ./includes/head.pug
   body.mar00.fwht.bsea.f1
+    a.dpinblk.red.pad2(href='script:ttl_go_back()') 뒤로
     h2.semitransblack.tc #{ship.name}
     div.tc 최대 적재량: 100
     if dockedShipyard
@@ -8,4 +9,4 @@ html
     div.tc
       a.dpinblk.red.pad2(href='script:sell_ship(' + ship.ship_id + ')') 선박 매각
   div.tc
-    a.dpinblk.red.pad2(href='script:return_to_idle()') 닫기
+    a.dpinblk.red.pad2(href='script:ttl_go_back()') 닫기

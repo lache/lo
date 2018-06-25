@@ -1,6 +1,7 @@
 html
   include ./includes/head.pug
   body.mar00.fwht.bsea.f1
+    a.dpinblk.red.pad2(href='script:ttl_go_back()') 뒤로
     h2.semitransblack.tc #{shipyard.name}
     div.tc 최대 정박 가능 선박 수: 4
     if dockedShips.length > 0
@@ -24,4 +25,4 @@ html
           a.dpinblk.red.pad1(href='script:purchase_ship_at_shipyard(' + shipyard.shipyard_id + ',' + (n + 1) + ')') 구입
         - n++
   div.tc
-    a.dpinblk.red.pad2(href='script:return_to_idle()') 닫기
+    a.dpinblk.red.pad2(href='script:ttl_go_back()') 닫기
