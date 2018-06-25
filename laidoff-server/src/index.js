@@ -931,10 +931,15 @@ app.get('/purchaseShipAtShipyard', (req, res) => {
   const shipyard = findShipyard(req.query.shipyardId)
   let resultMsg, errMsg
   if (shipyard) {
-    const shipName = `${raname.middle()} ${raname.middle()}`
-    const shipId = createShip(u.user_id, shipName, 0)
-    setShipDockedShipyardId(shipId, req.query.shipyardId)
-    resultMsg = '새 선박 구입 성공'
+    const dockedShips = listShipDockedAtShipyardToArray(shipyard.shipyard_id)
+    if (dockedShips.length < 4) {
+      const shipName = `${raname.middle()} ${raname.middle()}`
+      const shipId = createShip(u.user_id, shipName, 0)
+      setShipDockedShipyardId(shipId, req.query.shipyardId)
+      resultMsg = '새 선박 구입 성공'
+    } else {
+      errMsg = '정박중 선박 초과'
+    }
   } else {
     errMsg = '새 선박 구입 실패'
   }
