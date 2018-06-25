@@ -182,6 +182,22 @@ function purchase_ship_at_shipyard(shipyard_id, ship_template_id)
     lo.htmlui_execute_anchor_click(c.htmlui, string.format('/purchaseShipAtShipyard?shipyardId=%d&shipTemplateId=%d', shipyard_id, ship_template_id))
 end
 
+function ttl_refresh(qs)
+    if #ttl_url_history > 0 then
+        local url = ttl_url_history[#ttl_url_history]
+        if qs then
+        local qbeg, qend = string.find(url, '?')
+        if qbeg and qend then
+            -- if previous_url already has its query string,
+            -- qs's prepended ? should to changed to &
+            qs = '&' .. string.gsub(qs, '?', '')
+        end
+        url = url .. qs
+    end
+        lo.htmlui_execute_anchor_click(c.htmlui, url)
+    end
+end
+
 function ttl_go_back(qs)
     print(string.format('ttl_go_back - %s - (%d entries)', qs, #ttl_url_history))
     -- for i, v in ipairs(ttl_url_history) do print(i, v) end
@@ -316,4 +332,14 @@ function select_seaport(var_name)
     cell_menu_mode = CELL_MENU_MODE_SELECT_SEAPORT
     lo.lwttl_clear_selected(c.ttl)
     reset_cell_menu()
+end
+
+function confirm_new_route(ship_id, seaport1_id, seaport2_id)
+    print('confirm_new_route')
+    lo.htmlui_execute_anchor_click(c.htmlui, string.format('/confirmNewRoute?shipId=%d&seaport1Id=%d&seaport2Id=%d', ship_id, seaport1_id, seaport2_id))
+end
+
+function delete_route(ship_id)
+    print('delete_route')
+    lo.htmlui_execute_anchor_click(c.htmlui, string.format('/deleteRoute?shipId=%d', ship_id))
 end

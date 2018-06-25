@@ -18,6 +18,9 @@ const setShipShiproute = db.prepare(
 const listShipShiproute = db.prepare(
   `SELECT ship_id, port1_id, port2_id, ship_type FROM ship s JOIN shiproute sr ON s.shiproute_id=sr.shiproute_id`
 )
+const findShipShiproute = db.prepare(
+  `SELECT ship_id, port1_id, port2_id, ship_type FROM ship s JOIN shiproute sr ON s.shiproute_id=sr.shiproute_id WHERE s.ship_id = ?`
+)
 const findUserGuid = db.prepare(`SELECT guid FROM user WHERE user_id = ?`)
 const findUser = db.prepare(`SELECT
   u.user_id, u.guid, u.name AS user_name, u.gold,
@@ -94,6 +97,9 @@ const listShipDockedAtShipyard = db.prepare(
 const deleteShipDockedAtShipyard = db.prepare(
   `DELETE FROM ship WHERE docked_shipyard_id = ?`
 )
+const deleteShiproute = db.prepare(
+  `DELETE FROM shiproute WHERE shiproute_id = ?`
+)
 module.exports = {
   insertUser,
   insertShip,
@@ -112,6 +118,7 @@ module.exports = {
   insertShiproute,
   setShipShiproute,
   listShipShiproute,
+  findShipShiproute,
   findShip,
   findUserGuid,
   findUserShipsScrollDown,
@@ -124,5 +131,6 @@ module.exports = {
   findShipyard,
   setShipDockedShipyardId,
   listShipDockedAtShipyard,
-  deleteShipDockedAtShipyard
+  deleteShipDockedAtShipyard,
+  deleteShiproute
 }

@@ -54,11 +54,17 @@ const createShiproute = (port1Id, port2Id) => {
   const shiproute = query.insertShiproute.run(port1Id, port2Id)
   return shiproute.lastInsertROWID
 }
+const deleteShiproute = shiprouteId => {
+  return query.deleteShiproute.run(shiprouteId).changes
+}
 const setShipShiproute = (shipId, shiprouteId) => {
   query.setShipShiproute.run(shiprouteId, shipId)
 }
 const setShipDockedShipyardId = (shipId, dockedShipyardId) => {
   query.setShipDockedShipyardId.run(dockedShipyardId, shipId)
+}
+const findShipShiproute = shipId => {
+  return query.findShipShiproute.get(shipId)
 }
 const listShipShiproute = onRow => {
   for (const row of query.listShipShiproute.iterate()) {
@@ -906,11 +912,18 @@ app.get('/openShip', (req, res) => {
   const u = findOrCreateUser(req.get('X-U') || req.query.u || uuidv1())
   const ship = findShip(req.query.shipId)
   if (ship) {
+    let seaport1, seaport2
     const dockedShipyard = ship.docked_shipyard_id
       ? findShipyard(ship.docked_shipyard_id)
       : null
-    const seaport1 = findPort(req.query.seaport1Id)
-    const seaport2 = findPort(req.query.seaport2Id)
+    if (ship.shiproute_id) {
+      const shiproute = findShipShiproute(ship.ship_id)
+      seaport1 = findPort(shiproute.port1_id)
+      seaport2 = findPort(shiproute.port2_id)
+    } else {
+      seaport1 = findPort(req.query.seaport1Id)
+      seaport2 = findPort(req.query.seaport2Id)
+    }
     return res.render('openShip', {
       user: u,
       ship: ship,
@@ -957,6 +970,60 @@ app.get('/purchaseShipAtShipyard', (req, res) => {
       }
     })
   )
+})
+
+app.get('/confirmNewRoute', (req, res) => {
+  let resultMsg, errMsg
+  const ship = findShip(req.query.shipId)
+  do {
+    if (ship) {
+      const seaport1 = findPort(req.query.seaport1Id)
+      if (seaport1) {
+        const seaport2 = findPort(req.query.seaport2Id)
+        if (seaport2) {
+          const shiprouteId = createShiproute(
+            seaport1.region_id,
+            seaport2.region_id
+          )
+          setShipShiproute(ship.ship_id, shiprouteId)
+          resultMsg = '항로 확정 성공'
+          break
+        }
+      }
+    }
+    errMsg = '항로 확정 실패'
+  } while (0)
+  const qs = url.format({
+    pathname: '',
+    query: {
+      resultMsg: resultMsg,
+      errMsg: errMsg
+    }
+  })
+  res.redirect(`script:ttl_refresh('${qs}')`)
+})
+
+app.get('/deleteRoute', (req, res) => {
+  let resultMsg, errMsg
+  const ship = findShip(req.query.shipId)
+  if (ship && ship.shiproute_id) {
+    setShipShiproute(ship.ship_id, null)
+    resultMsg = '항로 초기화 성공'
+    const affectedRows = deleteShiproute(ship.shiproute_id)
+    if (affectedRows !== 1) {
+      errMsg = '항로 데이터 경고'
+    }
+  } else {
+    errMsg = '항로 초기화 실패'
+  }
+  const qs = url.format({
+    pathname: '',
+    query: {
+      resultMsg: resultMsg,
+      errMsg: errMsg
+    }
+  })
+  res.redirect(`script:ttl_refresh('${qs}')`)
 })
 
 seaUdpClient.on('message', async (buf, remote) => {
