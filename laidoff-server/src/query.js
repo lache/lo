@@ -16,10 +16,10 @@ const setShipShiproute = db.prepare(
   `UPDATE ship SET shiproute_id = ? WHERE ship_id = ?`
 )
 const listShipShiproute = db.prepare(
-  `SELECT ship_id, port1_id, port2_id, ship_type FROM ship s JOIN shiproute sr ON s.shiproute_id=sr.shiproute_id`
+  `SELECT ship_id, port1_id, port2_id, ship_type, docked_shipyard_id FROM ship s JOIN shiproute sr ON s.shiproute_id=sr.shiproute_id`
 )
 const findShipShiproute = db.prepare(
-  `SELECT ship_id, port1_id, port2_id, ship_type FROM ship s JOIN shiproute sr ON s.shiproute_id=sr.shiproute_id WHERE s.ship_id = ?`
+  `SELECT ship_id, docked_shipyard_id, port1_id, port2_id, ship_type, sr.shiproute_id FROM ship s JOIN shiproute sr ON s.shiproute_id=sr.shiproute_id WHERE s.ship_id = ?`
 )
 const findUserGuid = db.prepare(`SELECT guid FROM user WHERE user_id = ?`)
 const findUser = db.prepare(`SELECT

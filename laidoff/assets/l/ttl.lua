@@ -343,3 +343,8 @@ function delete_route(ship_id)
     print('delete_route')
     lo.htmlui_execute_anchor_click(c.htmlui, string.format('/deleteRoute?shipId=%d', ship_id))
 end
+
+function start_route(ship_id)
+    print('start_route')
+    lo.htmlui_execute_anchor_click(c.htmlui, string.format('/startRoute?shipId=%d', ship_id))
+end

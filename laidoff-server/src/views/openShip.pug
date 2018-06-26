@@ -9,6 +9,8 @@ html
       div.tc 상태: &#12307;#{dockedShipyard.name} 정박중
       div.tc
         a.dpinblk.red.pad2(href='script:sell_ship(' + ship.ship_id + ')') 선박 매각
+    else
+      div.tc 상태: 운항중
     h3.semitransblack.tc 항로
     unless ship.shiproute_id
       div.tc
@@ -29,5 +31,7 @@ html
         div.dpinblknoline.pad2 &diams;#{seaport1.name}
         div.dpinblknoline.pad2 &#x27a1;
         div.dpinblknoline.pad2 &diams;#{seaport2.name}
-      div.tc
-        a.dpinblk.red.pad2(href='script:delete_route(' + ship.ship_id + ')') 항로 초기화
+      if dockedShipyard
+        div.tc
+          a.dpinblk.red.pad2(href='script:delete_route(' + ship.ship_id + ')') 항로 초기화
+          a.dpinblk.red.pad2(href='script:start_route(' + ship.ship_id + ')') 운행 시작

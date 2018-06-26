@@ -61,7 +61,7 @@ const setShipShiproute = (shipId, shiprouteId) => {
   query.setShipShiproute.run(shiprouteId, shipId)
 }
 const setShipDockedShipyardId = (shipId, dockedShipyardId) => {
-  query.setShipDockedShipyardId.run(dockedShipyardId, shipId)
+  return query.setShipDockedShipyardId.run(dockedShipyardId, shipId).changes
 }
 const findShipShiproute = shipId => {
   return query.findShipShiproute.get(shipId)
@@ -981,12 +981,16 @@ app.get('/purchaseShipAtShipyard', (req, res) => {
 app.get('/confirmNewRoute', (req, res) => {
   let resultMsg, errMsg
   const ship = findShip(req.query.shipId)
-  do {
+  while (1) {
     if (ship) {
       const seaport1 = findPort(req.query.seaport1Id)
       if (seaport1) {
         const seaport2 = findPort(req.query.seaport2Id)
         if (seaport2) {
+          if (req.query.seaport1Id === req.query.seaport2Id) {
+            errMsg = '중복 항구 오류'
+            break
+          }
           const shiprouteId = createShiproute(
             seaport1.region_id,
             seaport2.region_id
@@ -994,11 +998,20 @@ app.get('/confirmNewRoute', (req, res) => {
           setShipShiproute(ship.ship_id, shiprouteId)
           resultMsg = '항로 확정 성공'
           break
+        } else {
+          errMsg = '항로 확정 실패 - 항구2오류'
+          break
         }
+      } else {
+        errMsg = '항로 확정 실패 - 항구1오류'
+        break
       }
+    } else {
+      errMsg = '항로 확정 실패 - 선박오류'
+      break
     }
-    errMsg = '항로 확정 실패'
-  } while (0)
+    // break
+  }
   const qs = url.format({
     pathname: '',
     query: {
@@ -1021,6 +1034,44 @@ app.get('/deleteRoute', (req, res) => {
     }
   } else {
     errMsg = '항로 초기화 실패'
+  }
+  const qs = url.format({
+    pathname: '',
+    query: {
+      resultMsg: resultMsg,
+      errMsg: errMsg
+    }
+  })
+  res.redirect(`script:ttl_refresh('${qs}')`)
+})
+
+app.get('/startRoute', async (req, res) => {
+  let resultMsg, errMsg
+  const shiproute = findShipShiproute(req.query.shipId)
+  if (shiproute) {
+    if (shiproute.shiproute_id > 0) {
+      if (shiproute.docked_shipyard_id > 0) {
+        const affectedRows = setShipDockedShipyardId(shiproute.ship_id, null)
+        if (affectedRows !== 1) {
+          errMsg = '항로 데이터 경고'
+        }
+        resultMsg = '운항 시작 성공'
+        await sendSpawnShip(
+          shiproute.ship_id,
+          0,
+          0,
+          shiproute.port1_id,
+          shiproute.port2_id,
+          shiproute.ship_type
+        )
+      } else {
+        errMsg = '정박중인 선박 아님'
+      }
+    } else {
+      errMsg = '항로 미확정 선박'
+    }
+  } else {
+    errMsg = '선박 찾기 실패'
   }
   const qs = url.format({
     pathname: '',
@@ -1091,20 +1142,27 @@ seaUdpClient.on('message', async (buf, remote) => {
     console.log(`  ${shipyardCount} shipyard(s) recovered...`)
     // recovering ships
     let shipShiprouteCount = 0
+    let shipDockedCount = 0
     const ships = listShipShiprouteToArray()
     for (let i = 0; i < ships.length; i++) {
       const row = ships[i]
-      await sendSpawnShip(
-        row.ship_id,
-        0,
-        0,
-        row.port1_id,
-        row.port2_id,
-        row.ship_type
-      )
-      shipShiprouteCount++
+      if (!row.docked_shipyard_id) {
+        await sendSpawnShip(
+          row.ship_id,
+          0,
+          0,
+          row.port1_id,
+          row.port2_id,
+          row.ship_type
+        )
+        shipShiprouteCount++
+      } else {
+        shipDockedCount++
+      }
     }
-    console.log(`  ${shipShiprouteCount} ship(s) recovered...`)
+    console.log(
+      `  ${shipShiprouteCount} ship(s) recovered... (${shipDockedCount} docked ships excluded)`
+    )
     console.log(`Recovering Done.`)
   } else if (buf[0] === 3) {
     // Arrival
