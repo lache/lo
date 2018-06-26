@@ -35,6 +35,7 @@ void lw_release_key_q(LWCONTEXT* pLwc);
 void lw_go_back(LWCONTEXT* pLwc, void* native_context);
 void lw_trigger_scroll(LWCONTEXT* pLwc, float xoffset, float yoffset);
 int lw_pinch();
+void lw_convert_touch_coord_to_ui_coord(const LWCONTEXT* pLwc, float *x, float *y);
 #ifdef __cplusplus
 };
 #endif

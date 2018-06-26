@@ -877,10 +877,10 @@ static int add_to_object_cache_salvage(LWTTLOBJECTCACHE* c,
 }
 
 static int add_to_object_cache_shipyard(LWTTLOBJECTCACHE* c,
-                                       LWPTTLSHIPYARDOBJECT* shipyard_array,
-                                       const size_t shipyard_array_size,
-                                       int* shipyard_count,
-                                       const LWPTTLSHIPYARDSTATE* s2) {
+                                        LWPTTLSHIPYARDOBJECT* shipyard_array,
+                                        const size_t shipyard_array_size,
+                                        int* shipyard_count,
+                                        const LWPTTLSHIPYARDSTATE* s2) {
     return add_to_object_cache(c,
                                shipyard_count,
                                shipyard_array,
@@ -1508,39 +1508,39 @@ int lwttl_query_chunk_range_salvage(const LWTTL* ttl,
 }
 
 int lwttl_query_chunk_range_shipyard_vp(const LWTTL* ttl,
-                                       const LWTTLFIELDVIEWPORT* vp,
-                                       int* chunk_index_array,
-                                       const int chunk_index_array_len,
-                                       int* xcc0,
-                                       int* ycc0,
-                                       int* xcc1,
-                                       int* ycc1) {
+                                        const LWTTLFIELDVIEWPORT* vp,
+                                        int* chunk_index_array,
+                                        const int chunk_index_array_len,
+                                        int* xcc0,
+                                        int* ycc0,
+                                        int* xcc1,
+                                        int* ycc1) {
     return lwttl_query_chunk_range_shipyard(ttl,
-                                           vp->lng_min,
-                                           vp->lat_min,
-                                           vp->lng_max,
-                                           vp->lat_max,
-                                           vp->clamped_view_scale,
-                                           chunk_index_array,
-                                           chunk_index_array_len,
-                                           xcc0,
-                                           ycc0,
-                                           xcc1,
-                                           ycc1);
+                                            vp->lng_min,
+                                            vp->lat_min,
+                                            vp->lng_max,
+                                            vp->lat_max,
+                                            vp->clamped_view_scale,
+                                            chunk_index_array,
+                                            chunk_index_array_len,
+                                            xcc0,
+                                            ycc0,
+                                            xcc1,
+                                            ycc1);
 }
 
 int lwttl_query_chunk_range_shipyard(const LWTTL* ttl,
-                                    const float lng_min,
-                                    const float lat_min,
-                                    const float lng_max,
-                                    const float lat_max,
-                                    const int view_scale,
-                                    int* chunk_index_array,
-                                    const int chunk_index_array_len,
-                                    int* xcc0,
-                                    int* ycc0,
-                                    int* xcc1,
-                                    int* ycc1) {
+                                     const float lng_min,
+                                     const float lat_min,
+                                     const float lng_max,
+                                     const float lat_max,
+                                     const int view_scale,
+                                     int* chunk_index_array,
+                                     const int chunk_index_array_len,
+                                     int* xcc0,
+                                     int* ycc0,
+                                     int* xcc1,
+                                     int* ycc1) {
     return lwttl_query_chunk_range(lng_min,
                                    lat_min,
                                    lng_max,
@@ -1636,10 +1636,10 @@ const LWPTTLSALVAGEOBJECT* lwttl_query_chunk_salvage(const LWTTL* ttl,
 }
 
 const LWPTTLSHIPYARDOBJECT* lwttl_query_chunk_shipyard(const LWTTL* ttl,
-                                                     const int chunk_index,
-                                                     int* xc0,
-                                                     int* yc0,
-                                                     int* count) {
+                                                       const int chunk_index,
+                                                       int* xc0,
+                                                       int* yc0,
+                                                       int* count) {
     return lwttl_query_chunk(ttl,
                              &ttl->object_cache.shipyard_cache,
                              chunk_index,
@@ -2056,6 +2056,20 @@ void lwttl_on_release(LWTTL* ttl, LWCONTEXT* pLwc, float nx, float ny) {
         }
         selected->dragging = 0;
     }
+    if (ttl->panning == 0) {
+        float x = nx;
+        float y = ny;
+        lw_convert_touch_coord_to_ui_coord(pLwc, &x, &y);
+
+        float w_ratio, h_ratio;
+        int released_idx = lwbutton_press(pLwc, &pLwc->button_list, x, y, &w_ratio, &h_ratio);
+        if (released_idx >= 0) {
+            const char* released_button_id = lwbutton_id(&pLwc->button_list, released_idx);
+            if (strncmp(pLwc->pressed_button_id, released_button_id, sizeof(pLwc->pressed_button_id)) == 0) {
+                logic_emit_ui_event_async(pLwc, released_button_id, w_ratio, h_ratio);
+            }
+        }
+    }
 }
 
 void lwttl_view_proj(const LWTTL* ttl, mat4x4 view, mat4x4 proj) {
@@ -2349,7 +2363,7 @@ void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc) {
             udp->reinit_next_update = 1;
             return;
 #endif
-        }
+            }
 
         char decompressed[1500 * 255]; // maximum lz4 compression ratio is 255...
         int decompressed_bytes = LZ4_decompress_safe(udp->buf, decompressed, udp->recv_len, ARRAY_SIZE(decompressed));
@@ -2676,8 +2690,8 @@ void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc) {
         } else {
             LOGEP("lz4 decompression failed!");
         }
+        }
     }
-}
 
 void lwttl_update(LWTTL* ttl, LWCONTEXT* pLwc, float delta_time) {
     if (ttl == 0) {
