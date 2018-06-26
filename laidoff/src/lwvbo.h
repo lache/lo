@@ -6,6 +6,9 @@ typedef struct _LWVBO
 {
 	GLuint vertex_buffer;
 	int vertex_count;
+    int bound_valid;
+    float bound_min[3];
+    float bound_max[3];
 } LWVBO;
 
 void lw_load_vbo_data(LWCONTEXT* pLwc, const char* mesh_vbo_data, size_t mesh_size, LWVBO* pVbo, int stride_in_bytes);

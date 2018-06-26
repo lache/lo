@@ -22,7 +22,7 @@
 #include "iconchar.h"
 #include "logic.h"
 #include "lwtimepoint.h"
-
+#include <float.h>
 #define WATER_COLOR_R (0 / 255.f)
 #define WATER_COLOR_G (94 / 255.f)
 #define WATER_COLOR_B (190 / 255.f)
@@ -48,8 +48,23 @@
 #define CELL_BOX_BOUNDARY_COLOR_B (0.1f)
 
 #define UI_SCREEN_EDGE_MARGIN (0.01f)
+#define MAX_SELECTABLE_COUNT (32)
 
 typedef struct _LWTTLFIELDVIEWPORT LWTTLFIELDVIEWPORT;
+
+#define SELECTABLE_TYPE_VEHICLE (1)
+
+typedef struct _LWTTLRENDERSELECTABLE {
+    int id;
+    int type;
+    vec2 ui_bound_min;
+    vec2 ui_bound_max;
+} LWTTLRENDERSELECTABLE;
+
+typedef struct _LWTTLRENDERCONTEXT {
+    int selectable_count;
+    LWTTLRENDERSELECTABLE selectable[MAX_SELECTABLE_COUNT];
+} LWTTLRENDERCONTEXT;
 
 void lwc_render_ttl_fbo_body(const LWCONTEXT* pLwc, const char* html_body) {
     if (lwfbo_prerender(pLwc, &pLwc->shared_fbo) == 0) {
@@ -156,7 +171,9 @@ static void render_vehicle(const LWCONTEXT* pLwc,
                            int shader_index,
                            LW_VBO_TYPE lvt,
                            LW_ATLAS_ENUM lae,
-                           float scale) {
+                           float scale,
+                           LWTTLRENDERCONTEXT* render_context,
+                           int db_id) {
     const LWSHADER* shader = &pLwc->shader[shader_index];
     lazy_glUseProgram(pLwc, shader_index);
     mat4x4 rot;
@@ -178,6 +195,9 @@ static void render_vehicle(const LWCONTEXT* pLwc,
     mat4x4 view_model;
     mat4x4_mul(view_model, lwttl_viewport_view(vp), model);
 
+    mat4x4 proj_view;
+    mat4x4_mul(proj_view, lwttl_viewport_proj(vp), lwttl_viewport_view(vp));
+
     mat4x4 proj_view_model;
     mat4x4_identity(proj_view_model);
     mat4x4_mul(proj_view_model, lwttl_viewport_proj(vp), view_model);
@@ -198,6 +218,50 @@ static void render_vehicle(const LWCONTEXT* pLwc,
         lazy_tex_atlas_glBindTexture(pLwc, lae);
         set_tex_filter(GL_LINEAR, GL_LINEAR);
     }
+    // calculate bounding box for UI selection of ships
+    const LWVBO* vbo = &pLwc->vertex_buffer[lvt];
+    if (vbo->bound_valid) {
+        vec2 ui_bound_min = { +FLT_MAX, +FLT_MAX };
+        vec2 ui_bound_max = { -FLT_MAX, -FLT_MAX };
+        const float* bound[] = { vbo->bound_min, vbo->bound_max };
+        for (int ixx = 0; ixx < 2; ixx++) {
+            for (int iyy = 0; iyy < 2; iyy++) {
+                for (int izz = 0; izz < 2; izz++) {
+                    const vec4 bound_point_vec4 = {
+                        bound[ixx][0],
+                        bound[iyy][1],
+                        bound[izz][2],
+                        1
+                    };
+                    vec4 bound_point_world_vec4;
+                    mat4x4_mul_vec4(bound_point_world_vec4, model, bound_point_vec4);
+                    vec2 ui_point;
+                    calculate_ui_point_from_world_point(lwttl_viewport_aspect_ratio(vp),
+                                                        proj_view,
+                                                        bound_point_world_vec4,
+                                                        ui_point);
+                    for (int i = 0; i < 2; i++) {
+                        if (ui_bound_min[i] > ui_point[i]) {
+                            ui_bound_min[i] = ui_point[i];
+                        }
+                        if (ui_bound_max[i] < ui_point[i]) {
+                            ui_bound_max[i] = ui_point[i];
+                        }
+                    }
+                }
+            }
+        }
+        if (render_context) {
+            if (render_context->selectable_count < ARRAY_SIZE(render_context->selectable)) {
+                LWTTLRENDERSELECTABLE* selectable = &render_context->selectable[render_context->selectable_count];
+                selectable->id = db_id;
+                selectable->type = SELECTABLE_TYPE_VEHICLE;
+                memcpy(selectable->ui_bound_min, ui_bound_min, sizeof(vec2));
+                memcpy(selectable->ui_bound_max, ui_bound_max, sizeof(vec2));
+                render_context->selectable_count++;
+            }
+        }
+    }
     glUniformMatrix4fv(shader->mvp_location, 1, GL_FALSE, (const GLfloat*)proj_view_model);
     glUniformMatrix4fv(shader->m_location, 1, GL_FALSE, (const GLfloat*)model_normal_transform);
     glUniform1f(shader->vertex_color_ratio, 0);
@@ -206,15 +270,15 @@ static void render_vehicle(const LWCONTEXT* pLwc,
     glUniform1i(shader->alpha_only_location, 1); // 1 means GL_TEXTURE1
     glUniform1f(shader->overlay_color_ratio_location, 0);
     //glShadeModel(GL_FLAT);
-    glDrawArrays(GL_TRIANGLES, 0, pLwc->vertex_buffer[lvt].vertex_count);
+    glDrawArrays(GL_TRIANGLES, 0, vbo->vertex_count);
 }
 
-static void render_ship(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp, float x, float y, float z, float rot_z) {
-    render_vehicle(pLwc, vp, x, y, z, rot_z, LWST_DEFAULT_NORMAL_COLOR, LVT_SHIP, LAE_DONTCARE, 0.075f);
+static void render_ship(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp, float x, float y, float z, float rot_z, LWTTLRENDERCONTEXT* render_context, int db_id) {
+    render_vehicle(pLwc, vp, x, y, z, rot_z, LWST_DEFAULT_NORMAL_COLOR, LVT_SHIP, LAE_DONTCARE, 0.075f, render_context, db_id);
 }
 
-static void render_truck(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp, float x, float y, float z, float rot_z) {
-    render_vehicle(pLwc, vp, x, y, z, rot_z + (float)LWDEG2RAD(90), LWST_DEFAULT, LVT_OIL_TRUCK, LAE_3D_OIL_TRUCK_TEX_KTX, 0.2f);
+static void render_truck(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp, float x, float y, float z, float rot_z, LWTTLRENDERCONTEXT* render_context, int db_id) {
+    render_vehicle(pLwc, vp, x, y, z, rot_z + (float)LWDEG2RAD(90), LWST_DEFAULT, LVT_OIL_TRUCK, LAE_3D_OIL_TRUCK_TEX_KTX, 0.2f, render_context, db_id);
 }
 
 static void render_terminal_icon(const LWCONTEXT* pLwc,
@@ -1093,7 +1157,38 @@ static void render_sea_objects_nameplate(const LWCONTEXT* pLwc, const LWTTLFIELD
     }
 }
 
-static void render_sea_objects(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp) {
+static void render_sea_objects_selectable(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp, const LWTTLRENDERCONTEXT* render_context) {
+    mat4x4 identity_view; mat4x4_identity(identity_view);
+    const vec4* ui_proj = lwttl_viewport_ui_proj(vp);
+    for (int i = 0; i < render_context->selectable_count; i++) {
+        const LWTTLRENDERSELECTABLE* selectable = &render_context->selectable[i];
+        const float sx1 = (selectable->ui_bound_max[0] - selectable->ui_bound_min[0]) / 2;
+        const float sy1 = (selectable->ui_bound_max[1] - selectable->ui_bound_min[1]) / 2;
+        const float sz1 = 1.0f;
+        render_solid_vb_uv_shader_rot_view_proj(pLwc,
+                                                selectable->ui_bound_min[0],
+                                                selectable->ui_bound_min[1],
+                                                0,
+                                                sx1,
+                                                sy1,
+                                                sz1,
+                                                pLwc->tex_atlas[LAE_ZERO_FOR_BLACK],
+                                                LVT_LEFT_BOTTOM_ANCHORED_SQUARE,
+                                                0.5f,
+                                                0.6f,
+                                                0.3f,
+                                                0.8f,
+                                                1.0f,
+                                                default_uv_offset,
+                                                default_flip_y_uv_scale,
+                                                LWST_DEFAULT,
+                                                0,
+                                                identity_view,
+                                                ui_proj);
+    }
+}
+
+static void render_sea_objects(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp, LWTTLRENDERCONTEXT* render_context) {
     const LWPTTLROUTESTATE* ttl_dynamic_state = lwttl_full_state(pLwc->ttl);
     for (int i = 0; i < ttl_dynamic_state->count; i++) {
         const LWPTTLROUTEOBJECT* obj = &ttl_dynamic_state->obj[i];
@@ -1118,14 +1213,18 @@ static void render_sea_objects(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* 
                         rx,
                         ry,
                         0,
-                        rot_z);
+                        rot_z,
+                        render_context,
+                        obj->db_id);
         } else {
             render_truck(pLwc,
                          vp,
                          rx,
                          ry,
                          0,
-                         rot_z);
+                         rot_z,
+                         render_context,
+                         obj->db_id);
         }
     }
 }
@@ -1890,9 +1989,9 @@ static void render_world_text(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* v
     }
 }
 
-static void render_world(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp) {
+static void render_world(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp, LWTTLRENDERCONTEXT* render_context) {
     //render_ship(pLwc, view, proj, 0, ship_y, 0);
-    render_sea_objects(pLwc, vp);
+    render_sea_objects(pLwc, vp, render_context);
     //render_port(pLwc, view, proj, 0);
     //render_port(pLwc, view, proj, 160);
     //render_sea_city(pLwc, view, proj);
@@ -2005,7 +2104,9 @@ static void render_ttl_stat(const LWTTL* ttl, const LWCONTEXT* pLwc) {
     render_text_block_two_pass(pLwc, &test_text_block);
 }
 
-static void lwc_render_ttl_field_viewport(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp) {
+static void lwc_render_ttl_field_viewport(const LWCONTEXT* pLwc,
+                                          const LWTTLFIELDVIEWPORT* vp,
+                                          LWTTLRENDERCONTEXT* render_context) {
     const int render_flags = lwttl_viewport_render_flags(vp);
     const int view_scale = lwttl_viewport_view_scale(vp);
     glDisable(GL_DEPTH_TEST);
@@ -2038,7 +2139,7 @@ static void lwc_render_ttl_field_viewport(const LWCONTEXT* pLwc, const LWTTLFIEL
     glEnable(GL_DEPTH_TEST);
     // render sea objects(ships)
     if (render_flags & LTFVRF_SHIP) {
-        render_world(pLwc, vp);
+        render_world(pLwc, vp, render_context);
     }
     glDisable(GL_DEPTH_TEST);
     int selected_xc0;
@@ -2110,6 +2211,9 @@ static void lwc_render_ttl_field_viewport(const LWCONTEXT* pLwc, const LWTTLFIEL
     // UI (hud)
     if (render_flags & LTFVRF_SEA_OBJECT_NAMEPLATE) {
         render_sea_objects_nameplate(pLwc, vp);
+    }
+    if (render_flags & LTFVRF_SEA_OBJECT_SELECTABLE) {
+        render_sea_objects_selectable(pLwc, vp, render_context);
     }
     if (lwttl_selected_int(pLwc->ttl, &selected_xc0, &selected_yc0)) {
         if (render_flags & LTFVRF_SINGLE_CELL_INFO) {
@@ -2193,6 +2297,7 @@ static void render_htmlui_touch_rect(const LWCONTEXT* pLwc) {
 }
 
 void lwc_render_ttl(const LWCONTEXT* pLwc) {
+    LWTTLRENDERCONTEXT render_context = { 0, };
     LW_GL_VIEWPORT();
     lw_clear_color();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -2242,7 +2347,7 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
             lw_set_viewport_size((LWCONTEXT*)pLwc,
                                  viewport_width,
                                  viewport_height);
-            lwc_render_ttl_field_viewport(pLwc, vp_copy);
+            lwc_render_ttl_field_viewport(pLwc, vp_copy, &render_context);
         }
     }
     // revert to original viewport
