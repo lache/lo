@@ -4,6 +4,7 @@
 #include "lwcontext.h"
 #include <assert.h>
 #include "laidoff.h"
+#include <string.h>
 
 void lw_load_vbo_data(LWCONTEXT* pLwc, const char* mesh_vbo_data, size_t mesh_size, LWVBO* pVbo, int stride_in_bytes) {
     GLuint vbo = 0;
