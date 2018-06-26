@@ -169,6 +169,11 @@ function open_ship(ship_id)
     execute_anchor_click_with_history(string.format('/openShip?shipId=%d', ship_id))
 end
 
+function open_ship_without_history(ship_id)
+    print('open_ship_without_history')
+    lo.htmlui_execute_anchor_click(c.htmlui, string.format('/openShip?shipId=%d', ship_id))
+end
+
 function sell_ship(ship_id)
     print('sell_ship')
     lo.htmlui_execute_anchor_click(c.htmlui, string.format('/sellShip?shipId=%d', ship_id))
@@ -352,9 +357,17 @@ function start_route(ship_id)
     lo.htmlui_execute_anchor_click(c.htmlui, string.format('/startRoute?shipId=%d', ship_id))
 end
 
+function string.starts(String,Start)
+   return string.sub(String,1,string.len(Start))==Start
+end
+
 function on_ttl_ship_selected(ship_id)
-    if #ttl_url_history == 0 then
-        --print(string.format('Ship ID %d selected!', ship_id))
-        open_ship(ship_id)
+    print('on_ttl_ship_selected')
+    if cell_menu_mode == CELL_MENU_MODE_NORMAL then
+        if #ttl_url_history == 0 then
+            open_ship(ship_id)
+        elseif string.starts(ttl_url_history[#ttl_url_history], '/openShip') then
+            open_ship_without_history(ship_id)
+        end
     end
 end
