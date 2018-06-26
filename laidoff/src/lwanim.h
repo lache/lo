@@ -1,5 +1,5 @@
 #pragma once
-#include <linmath.h>
+#include "linmath.h"
 #include "lwmacro.h"
 
 typedef struct _LWKEYFRAME LWKEYFRAME;

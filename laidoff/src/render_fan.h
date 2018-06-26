@@ -1,5 +1,5 @@
 #pragma once
-#include <linmath.h>
+#include "linmath.h"
 #include "vertices.h"
 
 typedef struct _LWCONTEXT LWCONTEXT;

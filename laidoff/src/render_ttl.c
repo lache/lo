@@ -23,6 +23,7 @@
 #include "logic.h"
 #include "lwtimepoint.h"
 #include <float.h>
+#include "lwttlrendercontext.h"
 #define WATER_COLOR_R (0 / 255.f)
 #define WATER_COLOR_G (94 / 255.f)
 #define WATER_COLOR_B (190 / 255.f)
@@ -48,23 +49,8 @@
 #define CELL_BOX_BOUNDARY_COLOR_B (0.1f)
 
 #define UI_SCREEN_EDGE_MARGIN (0.01f)
-#define MAX_SELECTABLE_COUNT (32)
 
 typedef struct _LWTTLFIELDVIEWPORT LWTTLFIELDVIEWPORT;
-
-#define SELECTABLE_TYPE_VEHICLE (1)
-
-typedef struct _LWTTLRENDERSELECTABLE {
-    int id;
-    int type;
-    vec2 ui_bound_min;
-    vec2 ui_bound_max;
-} LWTTLRENDERSELECTABLE;
-
-typedef struct _LWTTLRENDERCONTEXT {
-    int selectable_count;
-    LWTTLRENDERSELECTABLE selectable[MAX_SELECTABLE_COUNT];
-} LWTTLRENDERCONTEXT;
 
 void lwc_render_ttl_fbo_body(const LWCONTEXT* pLwc, const char* html_body) {
     if (lwfbo_prerender(pLwc, &pLwc->shared_fbo) == 0) {
@@ -255,10 +241,25 @@ static void render_vehicle(const LWCONTEXT* pLwc,
             if (render_context->selectable_count < ARRAY_SIZE(render_context->selectable)) {
                 LWTTLRENDERSELECTABLE* selectable = &render_context->selectable[render_context->selectable_count];
                 selectable->id = db_id;
-                selectable->type = SELECTABLE_TYPE_VEHICLE;
+                selectable->type = TTL_SELECTABLE_TYPE_VEHICLE;
                 memcpy(selectable->ui_bound_min, ui_bound_min, sizeof(vec2));
                 memcpy(selectable->ui_bound_max, ui_bound_max, sizeof(vec2));
                 render_context->selectable_count++;
+                char button_id[LW_UI_IDENTIFIER_LENGTH];
+                snprintf(button_id, sizeof(button_id), "ship%d", db_id);
+                lwbutton_lae_append(pLwc,
+                                    &(((LWCONTEXT*)pLwc)->button_list),
+                                    button_id,
+                                    selectable->ui_bound_min[0],
+                                    selectable->ui_bound_max[1], // LWBUTTON receives left-top corner as (x, y)
+                                    selectable->ui_bound_max[0] - selectable->ui_bound_min[0],
+                                    selectable->ui_bound_max[1] - selectable->ui_bound_min[1],
+                                    0,
+                                    0,
+                                    0,
+                                    1.0f,
+                                    1.0f,
+                                    1.0f);
             }
         }
     }

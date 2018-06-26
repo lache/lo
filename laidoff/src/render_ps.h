@@ -1,6 +1,6 @@
 #pragma once
 
-#include <linmath.h>
+#include "linmath.h"
 
 typedef struct _LWCONTEXT LWCONTEXT;
 typedef struct _LWEMITTER2OBJECT LWEMITTER2OBJECT;

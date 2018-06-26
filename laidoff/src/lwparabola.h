@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include <linmath.h>
+#include "linmath.h"
 
 typedef struct _LWPARABOLA3D {
 	float abc[3];

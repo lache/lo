@@ -132,7 +132,10 @@ function toggle_cam_iso_top_mode()
 end
 
 function execute_anchor_click_with_history(url)
-    table.insert(ttl_url_history, url)
+    -- prevent from the duplicated entry inserted to history
+    if #ttl_url_history == 0 or (#ttl_url_history > 0 and ttl_url_history[#ttl_url_history] ~= url) then
+        table.insert(ttl_url_history, url)
+    end
     lo.htmlui_execute_anchor_click(c.htmlui, url)
 end
 
@@ -347,4 +350,11 @@ end
 function start_route(ship_id)
     print('start_route')
     lo.htmlui_execute_anchor_click(c.htmlui, string.format('/startRoute?shipId=%d', ship_id))
+end
+
+function on_ttl_ship_selected(ship_id)
+    if #ttl_url_history == 0 then
+        --print(string.format('Ship ID %d selected!', ship_id))
+        open_ship(ship_id)
+    end
 end

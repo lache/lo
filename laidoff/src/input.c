@@ -58,7 +58,7 @@ void lw_trigger_mouse_press(LWCONTEXT* pLwc, float nx, float ny, int pointer_id)
     float y = ny;
 	convert_touch_coord_to_ui_coord(pLwc, &x, &y);
 
-	LOGIx("mouse press ui coord x=%f, y=%f", x, y);
+	LOGI("mouse press ui coord x=%f, y=%f", x, y);
 
     // Touch right top corner of the screen
     if (pLwc->game_scene != LGS_ADMIN
@@ -111,11 +111,12 @@ void lw_trigger_mouse_press(LWCONTEXT* pLwc, float nx, float ny, int pointer_id)
 	float w_ratio, h_ratio;
 	int pressed_idx = lwbutton_press(pLwc, &pLwc->button_list, x, y, &w_ratio, &h_ratio);
 	if (pressed_idx >= 0) {
-		const char* id = lwbutton_id(&pLwc->button_list, pressed_idx);
-		logic_emit_ui_event_async(pLwc, id, w_ratio, h_ratio);
-		// Should return here to prevent calling overlapped UI element behind buttons.
-		return;
-	}
+		const char* pressed_button_id = lwbutton_id(&pLwc->button_list, pressed_idx);
+        // save pressed button ID and checks again on release handler
+        memcpy(pLwc->pressed_button_id, pressed_button_id, sizeof(pLwc->pressed_button_id));
+    } else {
+        pLwc->pressed_button_id[0] = 0;
+    }
 
 	if (pLwc->game_scene == LGS_FIELD || pLwc->game_scene == LGS_PUCK_GAME) {
 		const float sr = get_dir_pad_size_radius();
@@ -322,6 +323,15 @@ void lw_trigger_mouse_release(LWCONTEXT* pLwc, float nx, float ny, int pointer_i
     if (field_network(pLwc->field)) {
 		mq_publish_now(pLwc, pLwc->mq, 1);
 	}
+
+    float w_ratio, h_ratio;
+    int released_idx = lwbutton_press(pLwc, &pLwc->button_list, x, y, &w_ratio, &h_ratio);
+    if (released_idx >= 0) {
+        const char* released_button_id = lwbutton_id(&pLwc->button_list, released_idx);
+        if (strncmp(pLwc->pressed_button_id, released_button_id, sizeof(pLwc->pressed_button_id)) == 0) {
+            logic_emit_ui_event_async(pLwc, released_button_id, w_ratio, h_ratio);
+        }
+    }
 
 	const float fist_button_x_center = pLwc->viewport_aspect_ratio - 0.3f - 0.75f / 2;
 	const float fist_button_y_center = -1 + 0.75f / 2;

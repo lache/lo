@@ -1,6 +1,6 @@
 #pragma once
 
-#include <linmath.h>
+#include "linmath.h"
 #include "pcg_basic.h"
 
 typedef struct _LWCONTEXT LWCONTEXT;

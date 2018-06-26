@@ -373,6 +373,7 @@ typedef struct _LWCONTEXT {
 	double last_now;
 	// Button list
 	LWBUTTONLIST button_list;
+    char pressed_button_id[LW_UI_IDENTIFIER_LENGTH];
 	// Construct
 	LWCONSTRUCT construct;
 	// Puck game sub-context

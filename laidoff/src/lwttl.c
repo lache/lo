@@ -350,6 +350,7 @@ LWTTL* lwttl_new(float aspect_ratio) {
     vp.cell_grid = 1;
     vp.render_flags = LTFVRF_ALL;
     vp.render_flags &= ~LTFVRF_COORDINATES;
+    vp.render_flags &= ~LTFVRF_SEA_OBJECT_SELECTABLE;
 #if 1 || !LW_PLATFORM_WIN32
     vp.render_flags &= ~LTFVRF_CELL_BOX_BOUNDARY;
 #endif

@@ -86,7 +86,7 @@ end
 
 -- Lua handler for logc frame finish events emitted from C
 function on_ui_event(id, w_ratio, h_ratio)
-	--print(string.format('ui event emitted from C:%s (w_ratio:%.2f, h_ratio:%.2f)', id, w_ratio, h_ratio))
+	print(string.format('ui event emitted from C:%s (w_ratio:%.2f, h_ratio:%.2f)', id, w_ratio, h_ratio))
 	local gtid = 'catapult'
 	if id == 'seltower0' then gtid = 'catapult'
 	elseif id == 'seltower1' then gtid = 'crossbow'
@@ -166,6 +166,10 @@ function on_ui_event(id, w_ratio, h_ratio)
 		lo.puck_game_clear_match_data(c, c.puck_game)
 		lo.puck_game_roll_to_practice(c.puck_game)
 	else
+		local ship_id = id:match("ship(%d+)")
+		if ship_id then
+			on_ttl_ship_selected(tonumber(ship_id))
+		end
 		lo.construct_set_preview_enable(c.construct, 0)
 		return 0
 	end

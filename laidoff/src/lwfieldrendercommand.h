@@ -1,6 +1,6 @@
 #pragma once
 
-#include <linmath.h>
+#include "linmath.h"
 #include "lwatlasenum.h"
 #include "lwvbotype.h"
 #include "armature.h"
