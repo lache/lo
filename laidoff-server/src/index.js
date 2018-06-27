@@ -268,21 +268,25 @@ app.get('/sellShip', (req, res) => {
   res.redirect(`script:ttl_go_back('${qs}')`)
 })
 
+const requestDespawnShipToSeaServer = shipId => {
+  const buf = message.DeleteShipStruct.buffer()
+  for (let i = 0; i < buf.length; i++) {
+    buf[i] = 0
+  }
+  message.DeleteShipStruct.fields.type = 5 // Delete Ship
+  message.DeleteShipStruct.fields.shipId = shipId
+  seaUdpClient.send(Buffer.from(buf), 4000, 'localhost', err => {
+    if (err) {
+      console.error('sea udp client error:', err)
+    }
+  })
+}
+
 app.get('/sell_vessel', (req, res) => {
   const u = findOrCreateUser(req.query.u || uuidv1())
   if (req.query.s) {
     deleteShip(req.query.s)
-    const buf = message.DeleteShipStruct.buffer()
-    for (let i = 0; i < buf.length; i++) {
-      buf[i] = 0
-    }
-    message.DeleteShipStruct.fields.type = 5 // Delete Ship
-    message.DeleteShipStruct.fields.shipId = req.query.s
-    seaUdpClient.send(Buffer.from(buf), 4000, 'localhost', err => {
-      if (err) {
-        console.error('sea udp client error:', err)
-      }
-    })
+    requestDespawnShipToSeaServer(req.query.s)
   }
   res.redirect(
     url.format({
@@ -1083,6 +1087,54 @@ app.get('/startRoute', async (req, res) => {
   res.redirect(`script:ttl_refresh('${qs}')`)
 })
 
+const sendQueryNearestShipyardForShip = async shipId => {
+  const buf = message.QueryNearestShipyardForShipStruct.buffer()
+  for (let i = 0; i < buf.length; i++) {
+    buf[i] = 0
+  }
+  const replyId = issueNewReplyId()
+  message.QueryNearestShipyardForShipStruct.fields.type = 11
+  message.QueryNearestShipyardForShipStruct.fields.shipId = shipId
+  message.QueryNearestShipyardForShipStruct.fields.replyId = replyId
+  return sendAndReplyFromSea(buf, replyId, err => {
+    if (err) {
+      console.error('sea udp SpawnShipStruct client error:', err)
+    }
+  })
+}
+
+app.get('/moveToNearestShipyard', async (req, res) => {
+  let resultMsg, errMsg
+  const shipId = req.query.shipId
+  const reply = await sendQueryNearestShipyardForShip(shipId)
+  const nearestShipyardId = reply.shipyardId
+  if (nearestShipyardId >= 0) {
+    const shipyard = findShipyard(nearestShipyardId)
+    if (shipyard) {
+      const dockedShips = listShipDockedAtShipyardToArray(nearestShipyardId)
+      if (dockedShips.length < 4) {
+        requestDespawnShipToSeaServer(shipId)
+        setShipDockedShipyardId(shipId, nearestShipyardId)
+        resultMsg = '정박 성공'
+      } else {
+        errMsg = '가장 가까운 조선소 정박 초과'
+      }
+    } else {
+      errMsg = '조선소 조회 오류'
+    }
+  } else {
+    errMsg = '가장 가까운 조선소 조회 오류'
+  }
+  const qs = url.format({
+    pathname: '',
+    query: {
+      resultMsg: resultMsg,
+      errMsg: errMsg
+    }
+  })
+  res.redirect(`script:ttl_refresh('${qs}')`)
+})
+
 seaUdpClient.on('message', async (buf, remote) => {
   if (buf[0] === 1) {
     // SpawnShipReply
@@ -1198,6 +1250,15 @@ seaUdpClient.on('message', async (buf, remote) => {
     )
     message.SpawnShipyardReplyStruct._setBuff(buf)
     notifyWaiter(message.SpawnShipyardReplyStruct)
+  } else if (buf[0] === 6) {
+    // QueryNearestShipyardForShipReplyStruct
+    console.log(
+      `QueryNearestShipyardForShipReplyStruct from ${remote.address}:${
+        remote.port
+      } (len=${buf.length})`
+    )
+    message.QueryNearestShipyardForShipReplyStruct._setBuff(buf)
+    notifyWaiter(message.QueryNearestShipyardForShipReplyStruct)
   }
 })
 

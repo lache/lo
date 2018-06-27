@@ -371,3 +371,8 @@ function on_ttl_ship_selected(ship_id)
         end
     end
 end
+
+function move_to_nearest_shipyard(ship_id)
+    print('move_to_nearest_shipyard')
+    lo.htmlui_execute_anchor_click(c.htmlui, string.format('/moveToNearestShipyard?shipId=%d', ship_id))
+end
