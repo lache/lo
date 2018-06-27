@@ -802,7 +802,7 @@ std::shared_ptr<route> udp_server::create_route_id(const std::vector<int>& seapo
         }
     }
     std::shared_ptr<route> r(new route(wp_total, seaport_id_list[0], seaport_id_list[1], expect_land));
-    r->set_velocity(0.5f);
+    r->set_velocity(0.1f);
     return r;
 }
 

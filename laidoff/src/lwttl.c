@@ -121,7 +121,7 @@ typedef struct _LWTTLSMOOTHSCROLL {
     int cancellable;
     LWTTLLNGLAT current;
     LWTTLLNGLAT target;
-    float ratio;
+    double ratio;
 } LWTTLSMOOTHSCROLL;
 
 typedef struct _LWTTLFIELDVIEWPORT {
@@ -2751,11 +2751,11 @@ void lwttl_update(LWTTL* ttl, LWCONTEXT* pLwc, float delta_time) {
 
     if (vp->smooth_scroll.in_progress) {
         const float speed = 12.0f;
-        vp->smooth_scroll.ratio += (1.0f - vp->smooth_scroll.ratio) * speed * delta_time;
+        vp->smooth_scroll.ratio += (1.0 - vp->smooth_scroll.ratio) * speed * delta_time;
         const float dlng = vp->smooth_scroll.target.lng - vp->smooth_scroll.current.lng;
         const float dlat = vp->smooth_scroll.target.lat - vp->smooth_scroll.current.lat;
-        if (vp->smooth_scroll.ratio > 0.999f || (fabsf(dlng) < 1e-4 && fabsf(dlat) < 1e-4)) {
-            vp->smooth_scroll.ratio = 1.0f;
+        if (vp->smooth_scroll.ratio > 0.999 || (fabsf(dlng) < 1e-4 && fabsf(dlat) < 1e-4)) {
+            vp->smooth_scroll.ratio = 1.0;
             vp->smooth_scroll.in_progress = 0;
             ttl->panning = 0;
             LOGI("smooth scrolling finished");
@@ -2763,8 +2763,8 @@ void lwttl_update(LWTTL* ttl, LWCONTEXT* pLwc, float delta_time) {
             ttl->panning = 1;
         }
         lwttl_worldmap_scroll_to(ttl,
-                                 vp->smooth_scroll.ratio * vp->smooth_scroll.target.lng + (1.0f - vp->smooth_scroll.ratio) * vp->smooth_scroll.current.lng,
-                                 vp->smooth_scroll.ratio * vp->smooth_scroll.target.lat + (1.0f - vp->smooth_scroll.ratio) * vp->smooth_scroll.current.lat,
+                                 (float)(vp->smooth_scroll.ratio * vp->smooth_scroll.target.lng + (1.0 - vp->smooth_scroll.ratio) * vp->smooth_scroll.current.lng),
+                                 (float)(vp->smooth_scroll.ratio * vp->smooth_scroll.target.lat + (1.0 - vp->smooth_scroll.ratio) * vp->smooth_scroll.current.lat),
                                  0);
     }
 
