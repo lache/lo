@@ -123,7 +123,7 @@ void udp_server::send_route_state(float lng, float lat, float ex_lng, float ex_l
         auto it = route_map_.find(v.get_db_id());
         if (it != route_map_.end() && it->second) {
             o.route_param = it->second->get_param();
-            o.route_speed = 1.0f;
+            o.route_speed = it->second->get_velocity();
             o.route_flags.reversed = it->second->get_reversed() ? 1 : 0;
         } else {
             o.route_param = 0;
@@ -802,7 +802,7 @@ std::shared_ptr<route> udp_server::create_route_id(const std::vector<int>& seapo
         }
     }
     std::shared_ptr<route> r(new route(wp_total, seaport_id_list[0], seaport_id_list[1], expect_land));
-    r->set_velocity(1);
+    r->set_velocity(0.5f);
     return r;
 }
 

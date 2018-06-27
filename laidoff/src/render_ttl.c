@@ -275,7 +275,7 @@ static void render_vehicle(const LWCONTEXT* pLwc,
 }
 
 static void render_ship(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp, float x, float y, float z, float rot_z, LWTTLRENDERCONTEXT* render_context, int db_id) {
-    render_vehicle(pLwc, vp, x, y, z, rot_z, LWST_DEFAULT_NORMAL_COLOR, LVT_SHIP, LAE_DONTCARE, 0.075f, render_context, db_id);
+    render_vehicle(pLwc, vp, x, y, z, rot_z, LWST_DEFAULT_NORMAL_COLOR, LVT_SHIP1, LAE_DONTCARE, 0.075f, render_context, db_id);
 }
 
 static void render_truck(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp, float x, float y, float z, float rot_z, LWTTLRENDERCONTEXT* render_context, int db_id) {
@@ -1001,14 +1001,12 @@ static void render_morphed_earth(const LWCONTEXT* pLwc,
                  earth_globe_morph_weight);
 }
 
-static float distance_xy(const int ax,
+static double distance_xy(const int ax,
                          const int ay,
                          const int bx,
                          const int by) {
-    return sqrtf((float)((ax - bx) * (ax - bx) + (ay - by) * (ay - by)));
+    return sqrt((double)((ax - bx) * (ax - bx) + (ay - by) * (ay - by)));
 }
-
-float float_value_with_stride(const float* a, size_t stride, int i);
 
 int std_lower_bound_float(const float* a,
                           int first,
@@ -1031,13 +1029,34 @@ int std_lower_bound_float(const float* a,
     return first;
 }
 
+int std_lower_bound_double(const double* a,
+                          int first,
+                          const int last,
+                          const double value) {
+    int count = last - first;
+    int it;
+    int step;
+    while (count > 0) {
+        it = first;
+        step = count / 2;
+        it += step;
+        if (a[it] < value) {
+            first = ++it;
+            count -= step + 1;
+        } else {
+            count = step;
+        }
+    }
+    return first;
+}
+
 static void pos_from_waypoints(const LWPTTLWAYPOINTS* wp,
-                               const float param,
+                               const double param,
                                const int reversed,
-                               float* px,
-                               float* py,
-                               float* dx,
-                               float* dy) {
+                               double* px,
+                               double* py,
+                               double* dx,
+                               double* dy) {
     *px = 0;
     *py = 0;
     *dx = 0;
@@ -1045,9 +1064,9 @@ static void pos_from_waypoints(const LWPTTLWAYPOINTS* wp,
     if (wp->count < 2) {
         LOGEP("wp count less than 2");
     } else {
-        float* accum_distance = alloca(sizeof(float) * wp->count);
+        double* accum_distance = alloca(sizeof(double) * wp->count);
         size_t accum_distance_cursor = 0;
-        float dist = 0;
+        double dist = 0;
         accum_distance[accum_distance_cursor++] = dist;
         for (size_t i = 0; i < (size_t)wp->count - 1; i++) {
             dist += distance_xy(wp->waypoints[i + 0].x,
@@ -1062,27 +1081,27 @@ static void pos_from_waypoints(const LWPTTLWAYPOINTS* wp,
         if (reversed) {
             //param = accum_distance[accum_distance_cursor - 1] - param;
         }
-        int it_idx = std_lower_bound_float(accum_distance, 0, accum_distance_cursor, param);
+        int it_idx = std_lower_bound_double(accum_distance, 0, accum_distance_cursor, param);
         if (it_idx == 0) {
-            *px = (float)wp->waypoints[0].x;
-            *py = (float)wp->waypoints[0].y;
-            *dx = (float)wp->waypoints[1].x - *px;
-            *dy = (float)wp->waypoints[1].y - *py;
+            *px = wp->waypoints[0].x;
+            *py = wp->waypoints[0].y;
+            *dx = wp->waypoints[1].x - *px;
+            *dy = wp->waypoints[1].y - *py;
         } else if (it_idx == accum_distance_cursor) {
-            *px = (float)wp->waypoints[wp->count - 1].x;
-            *py = (float)wp->waypoints[wp->count - 1].y;
-            *dx = *px - (float)wp->waypoints[wp->count - 2].x;
-            *dy = *py - (float)wp->waypoints[wp->count - 2].y;
+            *px = wp->waypoints[wp->count - 1].x;
+            *py = wp->waypoints[wp->count - 1].y;
+            *dx = *px - wp->waypoints[wp->count - 2].x;
+            *dy = *py - wp->waypoints[wp->count - 2].y;
         } else {
             const xy32* wp1 = &wp->waypoints[it_idx - 1];
             const xy32* wp2 = &wp->waypoints[it_idx];
-            float d1 = accum_distance[it_idx - 1];
-            float d2 = accum_distance[it_idx];
-            float r = (param - d1) / (d2 - d1);
+            double d1 = accum_distance[it_idx - 1];
+            double d2 = accum_distance[it_idx];
+            double r = (param - d1) / (d2 - d1);
             if (r < 0) r = 0;
             if (r > 1) r = 1;
-            *dx = (float)(wp2->x - wp1->x);
-            *dy = (float)(wp2->y - wp1->y);
+            *dx = wp2->x - wp1->x;
+            *dy = wp2->y - wp1->y;
             *px = wp1->x + *dx * r;
             *py = wp1->y + *dy * r;
         }
@@ -1103,16 +1122,16 @@ static void render_sea_objects_nameplate(const LWCONTEXT* pLwc, const LWTTLFIELD
         if (wp == 0) {
             continue;
         }
-        float px, py, dx, dy;
+        double px, py, dx, dy;
         pos_from_waypoints(wp,
-                           ttl_dynamic_state->obj[i].route_param,
+                           (double)ttl_dynamic_state->obj[i].route_param,
                            ttl_dynamic_state->obj[i].route_flags.reversed,
                            &px,
                            &py,
                            &dx,
                            &dy);
-        const float rx = cell_fx_to_render_coords_vp(px + 0.5f, vp);
-        const float ry = cell_fy_to_render_coords_vp(py + 0.5f, vp);
+        const float rx = (float)cell_fx_to_render_coords_vp(px + 0.5, vp);
+        const float ry = (float)cell_fy_to_render_coords_vp(py + 0.5, vp);
         vec4 obj_pos_vec4 = {
             rx,
             ry,
@@ -1197,7 +1216,7 @@ static void render_sea_objects(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* 
         if (wp == 0) {
             continue;
         }
-        float px, py, dx, dy;
+        double px, py, dx, dy;
         pos_from_waypoints(wp,
                            obj->route_param,
                            obj->route_flags.reversed,
@@ -1205,9 +1224,9 @@ static void render_sea_objects(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* 
                            &py,
                            &dx,
                            &dy);
-        const float rx = cell_fx_to_render_coords_vp(px + 0.5f, vp);
-        const float ry = cell_fy_to_render_coords_vp(py + 0.5f, vp);
-        const float rot_z = atan2f(-dy, dx) + (obj->route_flags.reversed ? (-1) : (+1)) * (-(float)(M_PI / 2));
+        const float rx = (float)cell_fx_to_render_coords_vp(px + 0.5, vp);
+        const float ry = (float)cell_fy_to_render_coords_vp(py + 0.5, vp);
+        const float rot_z = (float)(atan2(-dy, dx) + (obj->route_flags.reversed ? (-1) : (+1)) * (-(M_PI / 2)));
         if (obj->route_flags.land == 0) {
             render_ship(pLwc,
                         vp,
@@ -1244,15 +1263,15 @@ static void render_waypoint_line_segment_offset(const LWTTL* ttl,
     if (x0 == x1 && y0 == y1) {
         return;
     }
-    const float lng0_not_clamped = cell_fx_to_lng(x0 + offset);
-    const float lat0_not_clamped = cell_fy_to_lat(y0 + offset);
-    const float lng1_not_clamped = cell_fx_to_lng(x1 + offset);
-    const float lat1_not_clamped = cell_fy_to_lat(y1 + offset);
+    const float lng0_not_clamped = (float)cell_fx_to_lng(x0 + offset);
+    const float lat0_not_clamped = (float)cell_fy_to_lat(y0 + offset);
+    const float lng1_not_clamped = (float)cell_fx_to_lng(x1 + offset);
+    const float lat1_not_clamped = (float)cell_fy_to_lat(y1 + offset);
 
-    const float cell_x0 = lng_to_render_coords(lng0_not_clamped, vp);
-    const float cell_y0 = lat_to_render_coords(lat0_not_clamped, vp);
-    const float cell_x1 = lng_to_render_coords(lng1_not_clamped, vp);
-    const float cell_y1 = lat_to_render_coords(lat1_not_clamped, vp);
+    const float cell_x0 = (float)lng_to_render_coords(lng0_not_clamped, vp);
+    const float cell_y0 = (float)lat_to_render_coords(lat0_not_clamped, vp);
+    const float cell_x1 = (float)lng_to_render_coords(lng1_not_clamped, vp);
+    const float cell_y1 = (float)lat_to_render_coords(lat1_not_clamped, vp);
 
     const float dx = cell_x1 - cell_x0;
     const float dy = cell_y1 - cell_y0;
@@ -1726,8 +1745,8 @@ static void render_cell_menu(const LWCONTEXT* pLwc,
         if (cell_menu_text[0]) {
             int xc_offset, yc_offset;
             lwttl_cell_menu_offset(pLwc->ttl, valid_cell_menu_count, &xc_offset, &yc_offset);
-            const float x = cell_x_to_render_coords(lwttl_selected_int_x(pLwc->ttl) + xc_offset, vp);
-            const float y = cell_y_to_render_coords(lwttl_selected_int_y(pLwc->ttl) + yc_offset, vp);
+            const float x = (float)cell_x_to_render_coords(lwttl_selected_int_x(pLwc->ttl) + xc_offset, vp);
+            const float y = (float)cell_y_to_render_coords(lwttl_selected_int_y(pLwc->ttl) + yc_offset, vp);
             const float z = lwttl_cell_menu_popup_height(pLwc->ttl, vp) / lwttl_viewport_clamped_view_scale(vp);
             const float sx = 0.5f;
             const float sy = 0.5f;
@@ -1915,8 +1934,8 @@ static void render_cell_pixel_selector_lng_lat(const LWTTL* ttl,
                                                const LWTTLFIELDVIEWPORT* vp,
                                                const int xc0,
                                                const int yc0) {
-    const float selector_rx = cell_x_to_render_coords(xc0, vp);
-    const float selector_ry = cell_y_to_render_coords(yc0, vp);
+    const float selector_rx = (float)cell_x_to_render_coords(xc0, vp);
+    const float selector_ry = (float)cell_y_to_render_coords(yc0, vp);
     render_cell_pixel_selector(ttl,
                                pLwc,
                                lwttl_viewport_view(vp),
@@ -1935,8 +1954,8 @@ static void render_single_cell_info_lng_lat(const LWTTL* ttl,
                                             const int xc0,
                                             const int yc0) {
     if (lwttl_cell_menu(ttl)) {
-        const float selector_rx = cell_fx_to_render_coords(xc0 - 2.5f, lwttl_center(ttl), lwttl_viewport_view_scale(vp));
-        const float selector_ry = cell_fy_to_render_coords(yc0 - 2.5f, lwttl_center(ttl), lwttl_viewport_view_scale(vp));
+        const float selector_rx = (float)cell_fx_to_render_coords(xc0 - 2.5f, lwttl_center(ttl), lwttl_viewport_view_scale(vp));
+        const float selector_ry = (float)cell_fy_to_render_coords(yc0 - 2.5f, lwttl_center(ttl), lwttl_viewport_view_scale(vp));
         render_single_cell_info(pLwc,
                                 vp,
                                 selector_rx,
@@ -1945,8 +1964,8 @@ static void render_single_cell_info_lng_lat(const LWTTL* ttl,
                                 LTBA_CENTER_BOTTOM,
                                 0);
     } else {
-        const float selector_rx = cell_x_to_render_coords(xc0, vp);
-        const float selector_ry = cell_y_to_render_coords(yc0, vp);
+        const float selector_rx = (float)cell_x_to_render_coords(xc0, vp);
+        const float selector_ry = (float)cell_y_to_render_coords(yc0, vp);
         render_single_cell_info(pLwc,
                                 vp,
                                 selector_rx,
@@ -2126,7 +2145,7 @@ static void lwc_render_ttl_field_viewport(const LWCONTEXT* pLwc,
 #if LW_PLATFORM_WIN32
         if (view_scale < 16) {
 #endif
-            render_waypoints(pLwc->ttl, pLwc, vp);
+            //render_waypoints(pLwc->ttl, pLwc, vp);
             render_waypoints_cache(pLwc->ttl, pLwc, vp);
 #if LW_PLATFORM_WIN32
         } else {
