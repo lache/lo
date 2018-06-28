@@ -26,7 +26,7 @@ html
             div &diams;#{seaport2.name}
       if seaport1 && seaport2
         div.tc
-          a.dpinblk.red.pad2(href='script:confirm_new_route(' + ship.ship_id + ',' + seaport1.region_id + ',' + seaport2.region_id + ')') 항로 확정
+          a.dpinblk.red.pad2(href='script:confirm_new_route(' + ship.ship_id + ',' + seaport1.seaport_id + ',' + seaport2.seaport_id + ')') 항로 확정
     else
       div.tc
         if seaport1

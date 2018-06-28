@@ -7,7 +7,7 @@ const insertShip = db.prepare(
 )
 const deleteShip = db.prepare(`DELETE FROM ship WHERE ship_id = ?`)
 const insertPort = db.prepare(
-  `INSERT INTO region (name, x, y, owner_id, region_type) VALUES (?, ?, ?, ?, ?)`
+  `INSERT INTO seaport (name, x, y, owner_id, seaport_type) VALUES (?, ?, ?, ?, ?)`
 )
 const insertShiproute = db.prepare(
   `INSERT INTO shiproute (port1_id, port2_id) VALUES (?, ?)`
@@ -47,8 +47,8 @@ const findMission = db.prepare(`SELECT
   arvl.name AS arvl_name, arvl.x AS arvl_x, arvl.y AS arvl_y,
   (dept.x - arvl.x)*(dept.x - arvl.x)+(dept.y-arvl.y)*(dept.y-arvl.y) AS dist
 FROM mission m
-  JOIN region dept ON m.departure_id=dept.region_id
-  JOIN region arvl ON m.arrival_id=arvl.region_id
+  JOIN seaport dept ON m.departure_id=dept.seaport_id
+  JOIN seaport arvl ON m.arrival_id=arvl.seaport_id
 WHERE m.mission_id = ?`)
 const findMissions = db.prepare(`SELECT
   mission_id, reward,
@@ -56,27 +56,27 @@ const findMissions = db.prepare(`SELECT
   arvl.name AS arvl_name, arvl.x AS arvl_x, arvl.y AS arvl_y,
   (dept.x - arvl.x)*(dept.x - arvl.x)+(dept.y-arvl.y)*(dept.y-arvl.y) AS dist
 FROM mission m
-  JOIN region dept ON m.departure_id=dept.region_id
-  JOIN region arvl ON m.arrival_id=arvl.region_id`)
+  JOIN seaport dept ON m.departure_id=dept.seaport_id
+  JOIN seaport arvl ON m.arrival_id=arvl.seaport_id`)
 const findPort = db.prepare(`SELECT
-  region_id, name, x, y
-FROM region r
-WHERE r.region_id = ?`)
+  seaport_id, name, x, y
+FROM seaport r
+WHERE r.seaport_id = ?`)
 const findPorts = db.prepare(`SELECT
-  region_id, name, x, y
-FROM region LIMIT 7`)
+  seaport_id, name, x, y
+FROM seaport LIMIT 7`)
 const findPortsScrollDown = db.prepare(`SELECT
-  region_id, name, x, y
-  FROM region
-  WHERE region_id > ? ORDER BY region_id LIMIT ?`)
+  seaport_id, name, x, y
+  FROM seaport
+  WHERE seaport_id > ? ORDER BY seaport_id LIMIT ?`)
 const findPortsScrollUp = db.prepare(`SELECT
-  region_id, name, x, y
-  FROM region
-  WHERE region_id < ? ORDER BY region_id DESC LIMIT ?`)
+  seaport_id, name, x, y
+  FROM seaport
+  WHERE seaport_id < ? ORDER BY seaport_id DESC LIMIT ?`)
 const listPort = db.prepare(
-  `SELECT region_id, name, x, y, owner_id, region_type FROM region`
+  `SELECT seaport_id, name, x, y, owner_id, seaport_type FROM seaport`
 )
-const deletePort = db.prepare(`DELETE FROM region WHERE region_id = ?`)
+const deletePort = db.prepare(`DELETE FROM seaport WHERE seaport_id = ?`)
 const insertShipyard = db.prepare(
   `INSERT INTO shipyard (name, x, y, owner_id) VALUES (?, ?, ?, ?)`
 )

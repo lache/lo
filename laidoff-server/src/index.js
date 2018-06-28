@@ -407,8 +407,8 @@ app.get('/port', (req, res) => {
     // default: fetch first page
     p = findPortsScrollDown(u.user_id, 0, limit)
   }
-  const firstKey = p.length > 0 ? p[0].region_id : undefined
-  const lastKey = p.length > 0 ? p[p.length - 1].region_id : undefined
+  const firstKey = p.length > 0 ? p[0].seaport_id : undefined
+  const lastKey = p.length > 0 ? p[p.length - 1].seaport_id : undefined
 
   return res.render('port', {
     user: u,
@@ -421,16 +421,16 @@ app.get('/port', (req, res) => {
 
 app.get('/traveltoport', (req, res) => {
   const u = findOrCreateUser(req.query.u || uuidv1())
-  const p = findPort(req.query.region || 1)
-  console.log('travel to port', p.region_id, p.x, p.y)
+  const p = findPort(req.query.seaport || 1)
+  console.log('travel to port', p.seaport_id, p.x, p.y)
   travelTo(u.guid, p.x, p.y)
   return res.render('idle', { user: u })
 })
 
 app.get('/teleporttoport', (req, res) => {
   const u = findOrCreateUser(req.query.u || uuidv1())
-  const p = findPort(req.query.region || 1)
-  console.log('teleport to port', p.region_id, p.x, p.y)
+  const p = findPort(req.query.seaport || 1)
+  console.log('teleport to port', p.seaport_id, p.x, p.y)
   teleportTo(u.guid, p.x, p.y)
   return res.render('idle', { user: u })
 })
@@ -500,7 +500,7 @@ app.get('/demolishPort', (req, res) => {
         buf[i] = 0
       }
       message.DeletePortStruct.fields.type = 8 // Delete Port
-      message.DeletePortStruct.fields.portId = port.region_id
+      message.DeletePortStruct.fields.portId = port.seaport_id
       seaUdpClient.send(Buffer.from(buf), 4000, 'localhost', err => {
         if (err) {
           console.error('sea udp client error:', err)
@@ -655,7 +655,7 @@ const sendSpawnShipyard = async (expectedDbId, name, x, y, ownerId) => {
 const execCreatePort = async (u, selectedLng, selectedLat, expectLand) => {
   const portName = `Port ${raname.first()}`
   // create db entry first
-  const regionId = createPort(
+  const seaportId = createPort(
     portName,
     selectedLng,
     selectedLat,
@@ -664,19 +664,19 @@ const execCreatePort = async (u, selectedLng, selectedLat, expectLand) => {
   )
   // send spawn command to sea-server
   const reply = await sendSpawnPort(
-    regionId,
+    seaportId,
     portName,
     selectedLng,
     selectedLat,
     u.user_id,
     expectLand
   )
-  if (reply.dbId === regionId) {
+  if (reply.dbId === seaportId) {
     if (reply.existing === 0) {
       // successfully created
       spendGold(u.guid, 10000)
       return {
-        seaportId: regionId,
+        seaportId: seaportId,
         err: null
       }
     } else {
@@ -684,15 +684,15 @@ const execCreatePort = async (u, selectedLng, selectedLat, expectLand) => {
         'Port with the same ID already exists on sea-server (is this possible?!)'
       )
       return {
-        seaportId: regionId,
+        seaportId: seaportId,
         err: 'db inconsistent'
       }
     }
   }
   // something went wrong; delete from db
-  deletePort(regionId)
+  deletePort(seaportId)
   // print useful information
-  if (reply.dbId > 0 && reply.dbId !== regionId) {
+  if (reply.dbId > 0 && reply.dbId !== seaportId) {
     console.log(
       `port cannot be created: port ID ${
         reply.dbId
@@ -793,8 +793,8 @@ const execCreateShipWithRoute = async (
       dbId,
       xc0,
       yc0,
-      p0.region_id,
-      p1.region_id,
+      p0.seaport_id,
+      p1.seaport_id,
       expectLand
     )
     if (reply.dbId === dbId) {
@@ -821,7 +821,7 @@ app.get('/sell_port', (req, res) => {
         buf[i] = 0
       }
       message.DeletePortStruct.fields.type = 8 // Delete Port
-      message.DeletePortStruct.fields.portId = port.region_id
+      message.DeletePortStruct.fields.portId = port.seaport_id
       seaUdpClient.send(Buffer.from(buf), 4000, 'localhost', err => {
         if (err) {
           console.error('sea udp client error:', err)
@@ -996,8 +996,8 @@ app.get('/confirmNewRoute', (req, res) => {
             break
           }
           const shiprouteId = createShiproute(
-            seaport1.region_id,
-            seaport2.region_id
+            seaport1.seaport_id,
+            seaport2.seaport_id
           )
           setShipShiproute(ship.ship_id, shiprouteId)
           resultMsg = '항로 확정 성공'
@@ -1167,12 +1167,12 @@ seaUdpClient.on('message', async (buf, remote) => {
     for (let i = 0; i < ports.length; i++) {
       const row = ports[i]
       await sendSpawnPort(
-        row.region_id,
+        row.seaport_id,
         row.name,
         row.x,
         row.y,
         row.owner_id,
-        row.region_type
+        row.seaport_type
       )
       portCount++
     }

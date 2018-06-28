@@ -42,14 +42,14 @@ CREATE TABLE IF NOT EXISTS `ship` (
 	`ship_type`	INTEGER,
 	`docked_shipyard_id` INTEGER
 );
-DROP TABLE IF EXISTS `region`;
-CREATE TABLE IF NOT EXISTS `region` (
-	`region_id`	INTEGER PRIMARY KEY AUTOINCREMENT,
+DROP TABLE IF EXISTS `seaport`;
+CREATE TABLE IF NOT EXISTS `seaport` (
+	`seaport_id`	INTEGER PRIMARY KEY AUTOINCREMENT,
 	`name`	VARCHAR ( 80 ) NOT NULL,
 	`x`	REAL NOT NULL,
 	`y`	REAL NOT NULL,
 	`owner_id`	INTEGER,
-	`region_type`	INTEGER
+	`seaport_type`	INTEGER
 );
 DROP TABLE IF EXISTS `mission`;
 CREATE TABLE IF NOT EXISTS `mission` (
