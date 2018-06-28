@@ -30,6 +30,9 @@ const listShipDockedAtShipyard = db.prepare(
 const deleteShipDockedAtShipyard = db.prepare(
   `DELETE FROM ship WHERE docked_shipyard_id = ?`
 )
+const setShipCaptainId = db.prepare(
+  `UPDATE ship SET captain_id = ? WHERE ship_id = ?`
+)
 
 module.exports = {
   insertShip,
@@ -42,5 +45,6 @@ module.exports = {
   deleteShip,
   setShipDockedShipyardId,
   listShipDockedAtShipyard,
-  deleteShipDockedAtShipyard
+  deleteShipDockedAtShipyard,
+  setShipCaptainId
 }

@@ -40,7 +40,9 @@ CREATE TABLE IF NOT EXISTS `ship` (
 	`updated`	DATETIME DEFAULT CURRENT_TIMESTAMP,
 	`shiproute_id`	INTEGER,
 	`ship_type`	INTEGER,
-	`docked_shipyard_id` INTEGER
+	`docked_shipyard_id`	INTEGER,
+	`captain_id`	INTEGER,
+	`template_id`	INTEGER
 );
 DROP TABLE IF EXISTS `seaport`;
 CREATE TABLE IF NOT EXISTS `seaport` (
@@ -59,6 +61,13 @@ CREATE TABLE IF NOT EXISTS `mission` (
 	`reward`	INTEGER NOT NULL,
 	`expired`	DATETIME DEFAULT CURRENT_TIMESTAMP,
 	`updated`	DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+DROP TABLE IF EXISTS `captain`;
+CREATE TABLE IF NOT EXISTS `captain` (
+	`captain_id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+	`name`	TEXT,
+	`template_id`	INTEGER,
+	`owner_user_id`	INTEGER
 );
 DROP INDEX IF EXISTS `ux_guid`;
 CREATE UNIQUE INDEX IF NOT EXISTS `ux_guid` ON `user` (
