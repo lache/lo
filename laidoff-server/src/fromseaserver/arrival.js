@@ -1,6 +1,6 @@
 const message = require('../message')
 const db = require('../db')
-const dbUser = require('../dbuser ')
+const dbUser = require('../dbuser')
 
 const receive = (buf, remote) => {
   // Arrival
