@@ -940,7 +940,11 @@ static int RTreePixelPathNodeEarlyExit(size_t visitedCount, void *visitingNode, 
     return 0;
 }
 
-std::vector<xy32> calculate_pixel_waypoints(xy32 from, xy32 to, ASPath cell_path, std::shared_ptr<coro_context> coro) {
+std::vector<xy32> calculate_pixel_waypoints(const xy32 from,
+                                            const xy32 to,
+                                            const ASPath cell_path,
+                                            std::shared_ptr<coro_context> coro,
+                                            const double distance) {
     std::vector<xy32> waypoints;
     ASPathNodeSource PathNodeSource =
     {
@@ -967,20 +971,20 @@ std::vector<xy32> calculate_pixel_waypoints(xy32 from, xy32 to, ASPath cell_path
     ASPath pixel_path = ASPathCreate(&PathNodeSource, &pws, &from_rect, &to_rect);
     size_t pixel_path_count = ASPathGetCount(pixel_path);
     if (pixel_path_count > 0) {
-        LOGI("Path Count: %1%", pixel_path_count);
+        LOGI("Pixel Path Count: %1%", pixel_path_count);
         float pixel_path_cost = ASPathGetCost(pixel_path);
-        LOGI("Path Cost: %f", pixel_path_cost);
-        /*if (pixel_path_cost < 6000)*/
-        {
-            for (size_t i = 0; i < pixel_path_count; i++) {
-                xy32ibb* pixel_node = reinterpret_cast<xy32ibb*>(ASPathGetNode(pixel_path, i));
-                LOGIx("Pixel Path %1%: (%2%, %3%) [Cell index=%4%]",
-                      i,
-                      pixel_node->p.x,
-                      pixel_node->p.y,
-                      pixel_node->i);
-                waypoints.push_back(pixel_node->p);
-            }
+        LOGI("Pixel Path Cost: %f", pixel_path_cost);
+        if (distance > pixel_path_cost + 1e-4) {
+            LOGEP("Pixel path cost %f is less than distance %f!!! LOGIC ERROR", pixel_path_cost, distance);
+        }
+        for (size_t i = 0; i < pixel_path_count; i++) {
+            xy32ibb* pixel_node = reinterpret_cast<xy32ibb*>(ASPathGetNode(pixel_path, i));
+            LOGIx("Pixel Path %1%: (%2%, %3%) [Cell index=%4%]",
+                    i,
+                    pixel_node->p.x,
+                    pixel_node->p.y,
+                    pixel_node->i);
+            waypoints.push_back(pixel_node->p);
         }
     } else {
         LOGE("No pixel waypoints found.");
@@ -1059,7 +1063,6 @@ std::vector<xy32> astarrtree::astar_rtree_memory(const rtree* rtree_ptr, const x
          to.x,
          to.y,
          distance);
-
     std::vector<xy32> waypoints;
     LOGI("R Tree size: %1%", rtree_ptr->size());
     if (rtree_ptr->size() == 0) {
@@ -1108,32 +1111,33 @@ std::vector<xy32> astarrtree::astar_rtree_memory(const rtree* rtree_ptr, const x
             0,
         };
         ASPath path = ASPathCreate(&PathNodeSource, &context, &from_rect, &to_rect);
-        size_t pathCount = ASPathGetCount(path);
-        if (pathCount > 0) {
-            LOGI("Cell Path Count: %1%", pathCount);
-            float pathCost = ASPathGetCost(path);
-            LOGI("Cell Path Cost: %f", pathCost);
+        size_t cell_path_count = ASPathGetCount(path);
+        if (cell_path_count > 0) {
+            LOGI("Cell Path Count: %1%", cell_path_count);
+            float cell_path_cost = ASPathGetCost(path);
+            LOGI("Cell Path Cost: %f", cell_path_cost);
             // need some margin for almost equal values
-            if (distance > pathCost + 1e-4) {
-                LOGEP("Path cost %f is less than distance %f!!! LOGIC ERROR", pathCost, distance);
-            }
-            /*if (pathCost < 6000)*/
-            {
-                for (size_t i = 0; i < pathCount; i++) {
-                    xy32xy32* node = reinterpret_cast<xy32xy32*>(ASPathGetNode(path, i));
-                    LOGI("Cell Path %1%: (%2%, %3%)-(%4%, %5%) [%6% x %7% = %8%]",
-                         i,
-                         node->xy0.x,
-                         node->xy0.y,
-                         node->xy1.x,
-                         node->xy1.y,
-                         node->xy1.x - node->xy0.x,
-                         node->xy1.y - node->xy0.y,
-                         (node->xy1.x - node->xy0.x) * (node->xy1.y - node->xy0.y));
+            if (cell_path_count > 1) {
+                if (distance > cell_path_cost + 1e-4) {
+                    LOGEP("Cell path cost %f is less than distance %f!!! LOGIC ERROR", cell_path_cost, distance);
                 }
+            } else {
+                LOGI("Cell path cost is '0' since cell path count is 1 (pathfinding done within single cell)");
+            }
+            for (size_t i = 0; i < cell_path_count; i++) {
+                xy32xy32* node = reinterpret_cast<xy32xy32*>(ASPathGetNode(path, i));
+                LOGI("Cell Path %1%: (%2%, %3%)-(%4%, %5%) [%6% x %7% = %8%]",
+                        i,
+                        node->xy0.x,
+                        node->xy0.y,
+                        node->xy1.x,
+                        node->xy1.y,
+                        node->xy1.x - node->xy0.x,
+                        node->xy1.y - node->xy0.y,
+                        (node->xy1.x - node->xy0.x) * (node->xy1.y - node->xy0.y));
             }
             // Phase 2 - per-pixel node searching
-            waypoints = calculate_pixel_waypoints(from, to, path, coro);
+            waypoints = calculate_pixel_waypoints(from, to, path, coro, distance);
         } else {
             LOGE("No path found.");
         }
