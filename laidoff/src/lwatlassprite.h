@@ -30,6 +30,7 @@ typedef enum _LW_ATLAS_CONF {
     LAC_PREPARE_TITLE,
     LAC_UI_BUTTON,
     LAC_FLAGS_MINI,
+    LAC_CAPTAIN,
 
     LAC_COUNT,
 } LW_ATLAS_CONF;
@@ -39,6 +40,7 @@ static const char *atlas_conf_filename[] = {
     ASSETS_BASE_PATH "atlas" PATH_SEPARATOR "prepare-title-atlas-a.json",
     ASSETS_BASE_PATH "atlas" PATH_SEPARATOR "ui-button-atlas.json",
     ASSETS_BASE_PATH "atlas" PATH_SEPARATOR "flags-mini.json",
+    ASSETS_BASE_PATH "atlas" PATH_SEPARATOR "captain.json",
 };
 
 static LW_ATLAS_ENUM atlas_first_lae[] = {
@@ -46,6 +48,7 @@ static LW_ATLAS_ENUM atlas_first_lae[] = {
     LAE_PREPARE_TITLE_ATLAS,
     LAE_UI_BUTTON_ATLAS,
     LAE_FLAGS_MINI0,
+    LAE_CAPTAIN0,
 };
 
 static LW_ATLAS_ENUM atlas_first_alpha_lae[] = {
@@ -53,6 +56,7 @@ static LW_ATLAS_ENUM atlas_first_alpha_lae[] = {
     LAE_PREPARE_TITLE_ATLAS_ALPHA,
     LAE_DONTCARE,
     LAE_FLAGS_MINI0_ALPHA,
+    LAE_DONTCARE,
 };
 
 typedef struct _LWATLASSPRITE {
