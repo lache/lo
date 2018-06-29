@@ -9,7 +9,7 @@ module.exports = app => {
     const shipyard = db.findShipyard(req.query.shipyardId)
     const dockedShips = db.listShipDockedAtShipyardToArray(req.query.shipyardId)
     if (shipyard) {
-      return res.render('openShipyard', {
+      return res.render('openshipyard', {
         user: u,
         shipyard: shipyard,
         dockedShips: dockedShips,

@@ -20,7 +20,7 @@ module.exports = app => {
         seaport1 = db.findPort(req.query.seaport1Id)
         seaport2 = db.findPort(req.query.seaport2Id)
       }
-      return res.render('openShip', {
+      return res.render('openship', {
         user: u,
         ship: ship,
         dockedShipyard: dockedShipyard,

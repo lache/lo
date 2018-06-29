@@ -46,6 +46,7 @@ const findShipShiproute = shipId => {
   return queryShip.findShipShiproute.get(shipId)
 }
 const listShipShiproute = onRow => {
+  // noinspection JSUnresolvedFunction
   for (const row of queryShip.listShipShiproute.iterate()) {
     onRow(row)
   }

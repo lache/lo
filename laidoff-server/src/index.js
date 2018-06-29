@@ -70,7 +70,7 @@ seaUdpClient.on('message', async (buf, remote) => {
 
 seaUdpClient.on('listening', () => {
   const address = seaUdpClient.address()
-  console.log(`UDP server listening ${address.address}:${address.port}!`)
+  console.log(`UDP server listening on ${address.address}:${address.port}!`)
 })
 
 const udpPort = argv.udpport || 3003
