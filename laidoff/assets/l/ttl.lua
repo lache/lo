@@ -376,3 +376,12 @@ function move_to_nearest_shipyard(ship_id)
     print('move_to_nearest_shipyard')
     lo.htmlui_execute_anchor_click(c.htmlui, string.format('/moveToNearestShipyard?shipId=%d', ship_id))
 end
+
+function open_hire_captain(ship_id)
+    print('open_hire_captain')
+    execute_anchor_click_with_history(string.format('/openHireCaptain?shipId=%d', ship_id))
+end
+
+function confirm_hire_captain(ship_id, captain_template_id)
+    lo.show_sys_msg(c.def_sys_msg, '미구현 기능...')
+end

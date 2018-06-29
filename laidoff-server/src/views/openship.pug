@@ -9,6 +9,8 @@ html
       div.tc 상태: &#12307;#{dockedShipyard.name} 정박중
       div.tc
         a.dpinblk.red.pad2(href='script:sell_ship(' + ship.ship_id + ')') 선박 매각
+      div.tc
+        a.dpinblk.red.pad2(href='script:open_hire_captain(' + ship.ship_id + ')') 선장 고용
     else
       div.tc
         div 상태: 운항중

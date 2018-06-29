@@ -1,0 +1,15 @@
+html
+  include ./includes/head.pug
+  body.mar00.fwht.bsea.f1
+    include ./includes/actionresult.pug
+    a.dpinblk.red.pad2(href='script:ttl_go_back()') 뒤로
+    h2.semitransblack.tc 선장 고용
+    div.tc
+      img(src=captain.portrait)
+    div.tc 항해 속도 증가: #{captain.speed}
+    div.tc 선박 내구도 증가: #{captain.durability}
+    div.tc 비용: #{captain.price}
+    div.tc 월급: #{captain.salary}
+    div.tc
+      a.dpinblk.red.pad2(href='script:confirm_hire_captain(' + ship.ship_id + ',' + captain.id + ')') 고용하기
+      a.dpinblk.red.pad2(href='script:ttl_go_back()') 취소
