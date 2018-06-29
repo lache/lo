@@ -1,10 +1,10 @@
 const raname = require('random-name')
-const queryMission = require('./queryMission')
-const querySeaport = require('./querySeaport')
-const queryShip = require('./queryShip')
-const queryShiproute = require('./queryShiproute')
-const queryShipyard = require('./queryShipyard')
-const queryUser = require('./queryUser')
+const queryMission = require('./query/mission')
+const querySeaport = require('./query/seaport')
+const queryShip = require('./query/ship')
+const queryShiproute = require('./query/shiproute')
+const queryShipyard = require('./query/shipyard')
+const queryUser = require('./query/user')
 
 const createUser = guid => {
   const userName = `${raname.first()} ${raname.last()}`
