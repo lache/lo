@@ -3,30 +3,65 @@ html
   body.mar00.fwht.bsea.f1
     include ./includes/actionresult.pug
     a.dpinblk.red.pad2(href='script:ttl_go_back()') 뒤로
-    h2.semitransblack.tc &#9157;#{ship.name}
-    div.tc 최대 적재량: 100
+    div.semitransblack.tc &#9157;#{ship.name}
+    table.semitransblack.pad0.mar0a.noborder.statfontsize
+      tr
+        td.textalignright.statcellw 적재량
+        td :
+        td.statcellw
+          | 100
+          | &nbsp;
+      tr
+        td.textalignright.statcellw 속도
+        td :
+        td.statcellw
+          | 5
+          | &nbsp;
+          if captain && captainTemplate && captainTemplate.speed > 0
+            span.statplus (+#{captainTemplate.speed})
+      tr
+        td.textalignright.statcellw 내구도
+        td :
+        td.statcellw
+          | 7
+          | &nbsp;
+          if captain && captainTemplate && captainTemplate.durability > 0
+            span.statplus (+#{captainTemplate.durability})
+      tr
+        td.textalignright.statcellw 위치
+        td :
+        td.statcellw
+          if dockedShipyard
+            div &#12307;#{dockedShipyard.name}
+          else
+            div 운항중
+    //div.tc
+      | 최대 적재량: 100
+      | &nbsp;
+      span.statplus (+5)
+      | &nbsp;
+      | 히히히
     if dockedShipyard
-      div.tc 상태: &#12307;#{dockedShipyard.name} 정박중
-      div.tc
-        a.dpinblk.red.pad2(href='script:sell_ship(' + ship.ship_id + ')') 선박 매각
-      h3.semitransblack.tc 선장
-      if captain
+      if !captain
         div.tc
-          img(src=captainTemplate.portrait)
-        div.tc #{captain.name}
-        div.tc 항해 속도 증가: #{captainTemplate.speed}
-        div.tc 선박 내구도 증가: #{captainTemplate.durability}
-        div.tc 비용: #{captainTemplate.price}
-        div.tc 월급: #{captainTemplate.salary}
+          a.dpinblk.red.pad2(href='script:sell_ship(' + ship.ship_id + ')') 선박 매각
+    div.semitransblack.tc 선장
+    if captain
+      div.tc
+        img(src=captainTemplate.portrait)
+      div.tc #{captain.name}
+      //div.tc 항해 속도 증가: #{captainTemplate.speed}
+      //div.tc 선박 내구도 증가: #{captainTemplate.durability}
+      //div.tc 비용: #{captainTemplate.price}
+      div.tc 월급: #{captainTemplate.salary}
+      if dockedShipyard
         div.tc
           a.dpinblk.red.pad2(href='script:fire_captain(' + ship.ship_id + ')') 해고
-      else
+    else
+      if dockedShipyard
         div.tc
           a.dpinblk.red.pad2(href='script:open_hire_captain(' + ship.ship_id + ')') 고용
-    else
-      div.tc
-        div 상태: 운항중
-    h3.semitransblack.tc 항로
+    div.semitransblack.tc 항로
     unless ship.shiproute_id
       div.tc
         a.dpinblk.red.pad2(href=`script:select_seaport('seaport1Id')`)

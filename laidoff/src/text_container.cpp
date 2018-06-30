@@ -80,7 +80,7 @@ void litehtml::text_container::draw_text(litehtml::uint_ptr hdc, const litehtml:
     LWTEXTBLOCK text_block;
     fill_text_block(&text_block, pos.x, pos.y, text, size, color);
     //render_text_block(pLwc, &text_block);
-    render_text_block_two_pass(pLwc, &text_block);
+    render_text_block_two_pass_color(pLwc, &text_block);
 }
 
 int litehtml::text_container::pt_to_px(int pt) {

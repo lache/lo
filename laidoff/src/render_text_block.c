@@ -399,13 +399,30 @@ void render_query_text_block_alpha(const LWCONTEXT* pLwc, const LWTEXTBLOCK* tex
 // (1) black outline once
 // (2) overwrite white glphy once
 void render_text_block_two_pass(const LWCONTEXT* pLwc, LWTEXTBLOCK* text_block) {
-    SET_COLOR_RGBA_FLOAT(text_block->color_normal_glyph, 0, 0, 0, 1);
-    SET_COLOR_RGBA_FLOAT(text_block->color_normal_outline, 0, 0, 0, 1);
+    LWTEXTBLOCK text_block_bg;
+    memcpy(&text_block_bg, text_block, sizeof(LWTEXTBLOCK));
+    SET_COLOR_RGBA_FLOAT(text_block_bg.color_normal_glyph, 0, 0, 0, 1);
+    SET_COLOR_RGBA_FLOAT(text_block_bg.color_normal_outline, 0, 0, 0, 1);
+    SET_COLOR_RGBA_FLOAT(text_block_bg.color_emp_glyph, 1, 1, 0, 1);
+    SET_COLOR_RGBA_FLOAT(text_block_bg.color_emp_outline, 0, 0, 0, 1);
+    render_text_block(pLwc, &text_block_bg);
+    SET_COLOR_RGBA_FLOAT(text_block->color_normal_glyph, 1, 1, 1, 1);
+    SET_COLOR_RGBA_FLOAT(text_block->color_normal_outline, 1, 1, 1, 0); // should be 'white' even if alpha is zero; to correctly render thickness of the glyph
     SET_COLOR_RGBA_FLOAT(text_block->color_emp_glyph, 1, 1, 0, 1);
     SET_COLOR_RGBA_FLOAT(text_block->color_emp_outline, 0, 0, 0, 1);
     render_text_block(pLwc, text_block);
-    SET_COLOR_RGBA_FLOAT(text_block->color_normal_glyph, 1, 1, 1, 1);
-    SET_COLOR_RGBA_FLOAT(text_block->color_normal_outline, 1, 1, 1, 0); // should be 'white' even if alpha is zero; to correctly render thickness of the glyph
+}
+
+void render_text_block_two_pass_color(const LWCONTEXT* pLwc, LWTEXTBLOCK* text_block) {
+    LWTEXTBLOCK text_block_bg;
+    memcpy(&text_block_bg, text_block, sizeof(LWTEXTBLOCK));
+    SET_COLOR_RGBA_FLOAT(text_block_bg.color_normal_glyph, 0, 0, 0, 1);
+    SET_COLOR_RGBA_FLOAT(text_block_bg.color_normal_outline, 0, 0, 0, 1);
+    SET_COLOR_RGBA_FLOAT(text_block_bg.color_emp_glyph, 1, 1, 0, 1);
+    SET_COLOR_RGBA_FLOAT(text_block_bg.color_emp_outline, 0, 0, 0, 1);
+    render_text_block(pLwc, &text_block_bg);
+    //SET_COLOR_RGBA_FLOAT(text_block->color_normal_glyph, 1, 1, 1, 1);
+    SET_COLOR_RGBA_FLOAT(text_block->color_normal_outline, text_block->color_normal_glyph[0], text_block->color_normal_glyph[1], text_block->color_normal_glyph[2], 0); // should be 'white' even if alpha is zero; to correctly render thickness of the glyph
     SET_COLOR_RGBA_FLOAT(text_block->color_emp_glyph, 1, 1, 0, 1);
     SET_COLOR_RGBA_FLOAT(text_block->color_emp_outline, 0, 0, 0, 1);
     render_text_block(pLwc, text_block);
