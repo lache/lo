@@ -6,7 +6,7 @@ const numeral = require('numeral')
 const dgram = require('dgram')
 const seaUdpClient = dgram.createSocket('udp4')
 const app = express()
-const captainData = require('./data/captain')
+const glob = require('glob')
 
 if (argv.init) {
   init.initialize()
@@ -20,32 +20,20 @@ app.use(express.static('./src/html'))
 app.set('views', './src/views')
 app.set('view engine', 'pug')
 app.set('seaUdpClient', seaUdpClient)
-require('./httphandler/confirmnewroute')(app)
-require('./httphandler/deleteroute')(app)
-require('./httphandler/demolishport')(app)
-require('./httphandler/demolishshipyard')(app)
-require('./httphandler/idle')(app)
-require('./httphandler/link')(app)
-require('./httphandler/linkland')(app)
-require('./httphandler/loan')(app)
-require('./httphandler/mission')(app)
-require('./httphandler/movetonearestshipyard')(app)
-require('./httphandler/openhirecaptain')(app)
-require('./httphandler/openship')(app)
-require('./httphandler/openshipyard')(app)
-require('./httphandler/port')(app)
-require('./httphandler/purchasenewport')(app)
-require('./httphandler/purchasenewshipyard')(app)
-require('./httphandler/purchaseshipatshipyard')(app)
-require('./httphandler/sellport')(app)
-require('./httphandler/sellship')(app)
-require('./httphandler/sellvessel')(app)
-require('./httphandler/start')(app)
-require('./httphandler/startroute')(app)
-require('./httphandler/success')(app)
-require('./httphandler/teleporttoport')(app)
-require('./httphandler/traveltoport')(app)
-require('./httphandler/vessel')(app)
+
+// register all HTTP handlers
+glob('./src/httphandler/*.js', (err, files) => {
+  if (!err) {
+    for (const file of files) {
+      const requireModuleName = file
+        .replace(/^\.\/src\//, './')
+        .replace(/\.js$/, '')
+      require(requireModuleName)(app)
+    }
+  } else {
+    console.error(err)
+  }
+})
 
 seaUdpClient.on('message', async (buf, remote) => {
   if (buf[0] === 1) {

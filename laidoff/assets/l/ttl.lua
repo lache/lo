@@ -383,5 +383,12 @@ function open_hire_captain(ship_id)
 end
 
 function confirm_hire_captain(ship_id, captain_template_id)
-    lo.show_sys_msg(c.def_sys_msg, '미구현 기능...')
+    --lo.show_sys_msg(c.def_sys_msg, '히힛 미구현 기능...')
+    print('confirm_hire_captain')
+    lo.htmlui_execute_anchor_click(c.htmlui, string.format('/confirmHireCaptain?shipId=%d&captainTemplateId=%d', ship_id, captain_template_id))
+end
+
+function fire_captain(ship_id)
+    print('fire_captain')
+    lo.htmlui_execute_anchor_click(c.htmlui, string.format('/fireCaptain?shipId=%d', ship_id))
 end

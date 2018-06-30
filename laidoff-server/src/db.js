@@ -5,6 +5,7 @@ const queryShip = require('./query/ship')
 const queryShiproute = require('./query/shiproute')
 const queryShipyard = require('./query/shipyard')
 const queryUser = require('./query/user')
+const queryCaptain = require('./query/captain')
 
 const createUser = guid => {
   const userName = `${raname.first()} ${raname.last()}`
@@ -41,6 +42,9 @@ const setShipShiproute = (shipId, shiprouteId) => {
 }
 const setShipDockedShipyardId = (shipId, dockedShipyardId) => {
   return queryShip.setShipDockedShipyardId.run(dockedShipyardId, shipId).changes
+}
+const setShipCaptainId = (shipId, captainId) => {
+  queryShip.setShipCaptainId.run(captainId, shipId)
 }
 const findShipShiproute = shipId => {
   return queryShip.findShipShiproute.get(shipId)
@@ -144,6 +148,16 @@ const deleteShipyard = shipyardId => {
   queryShipyard.deleteShipyard.run(shipyardId)
   queryShip.deleteShipDockedAtShipyard.run(shipyardId)
 }
+const insertCaptain = (userId, name, captainTemplateId) => {
+  const captain = queryCaptain.insertCaptain.run(
+    userId,
+    name,
+    captainTemplateId
+  )
+  return captain.lastInsertROWID
+}
+const findCaptain = captainId => queryCaptain.findCaptain.get(captainId)
+const deleteCaptain = captainId => queryCaptain.deleteCaptain.run(captainId)
 
 module.exports = {
   createUser,
@@ -155,6 +169,7 @@ module.exports = {
   deleteShiproute,
   setShipShiproute,
   setShipDockedShipyardId,
+  setShipCaptainId,
   findShipShiproute,
   listShipShiproute,
   listShipShiprouteToArray,
@@ -179,5 +194,8 @@ module.exports = {
   findPortsScrollDown,
   findPortsScrollUp,
   deletePort,
-  deleteShipyard
+  deleteShipyard,
+  insertCaptain,
+  findCaptain,
+  deleteCaptain
 }

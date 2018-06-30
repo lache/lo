@@ -2,6 +2,7 @@ const db = require('../db')
 const dbUser = require('../dbuser')
 const uuidv1 = require('uuid/v1')
 const url = require('url')
+const captainData = require('../data/captain')
 
 module.exports = app => {
   app.get('/openShip', (req, res) => {
@@ -20,12 +21,18 @@ module.exports = app => {
         seaport1 = db.findPort(req.query.seaport1Id)
         seaport2 = db.findPort(req.query.seaport2Id)
       }
+      const captain = ship.captain_id ? db.findCaptain(ship.captain_id) : null
+      const captainTemplate = captain
+        ? captainData.data[captain.template_id]
+        : null
       return res.render('openship', {
         user: u,
         ship: ship,
         dockedShipyard: dockedShipyard,
         seaport1: seaport1,
         seaport2: seaport2,
+        captain: captain,
+        captainTemplate: captainTemplate,
         resultMsg: req.query.resultMsg,
         errMsg: req.query.errMsg
       })

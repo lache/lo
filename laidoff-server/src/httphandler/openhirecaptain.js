@@ -6,12 +6,15 @@ module.exports = app => {
   app.get('/openHireCaptain', (req, res) => {
     const ship = db.findShip(req.query.shipId)
     if (ship) {
-      const captainCount = captainData.keys.length
-      const randomCaptainIndex = Math.floor(Math.random() * captainCount)
-      const c = captainData.data[captainData.keys[randomCaptainIndex]]
+      const captainTemplateCount = captainData.keys.length
+      const randomCaptainIndex = Math.floor(
+        Math.random() * captainTemplateCount
+      )
+      const captainTemplate =
+        captainData.data[captainData.keys[randomCaptainIndex]]
       return res.render('openhirecaptain', {
-        ship: ship,
-        captain: c
+        ship,
+        captainTemplate
       })
     } else {
       res.redirect(

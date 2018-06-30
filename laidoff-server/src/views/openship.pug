@@ -9,8 +9,20 @@ html
       div.tc 상태: &#12307;#{dockedShipyard.name} 정박중
       div.tc
         a.dpinblk.red.pad2(href='script:sell_ship(' + ship.ship_id + ')') 선박 매각
-      div.tc
-        a.dpinblk.red.pad2(href='script:open_hire_captain(' + ship.ship_id + ')') 선장 고용
+      h3.semitransblack.tc 선장
+      if captain
+        div.tc
+          img(src=captainTemplate.portrait)
+        div.tc #{captain.name}
+        div.tc 항해 속도 증가: #{captainTemplate.speed}
+        div.tc 선박 내구도 증가: #{captainTemplate.durability}
+        div.tc 비용: #{captainTemplate.price}
+        div.tc 월급: #{captainTemplate.salary}
+        div.tc
+          a.dpinblk.red.pad2(href='script:fire_captain(' + ship.ship_id + ')') 해고
+      else
+        div.tc
+          a.dpinblk.red.pad2(href='script:open_hire_captain(' + ship.ship_id + ')') 고용
     else
       div.tc
         div 상태: 운항중
