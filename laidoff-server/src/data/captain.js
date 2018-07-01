@@ -1,6 +1,6 @@
 const XLSX = require('xlsx')
 const fs = require('fs')
-const xlsxBuf = fs.readFileSync('data/ttl.xlsx')
+const xlsxBuf = fs.readFileSync('data/ttl.ods')
 const workbook = XLSX.read(xlsxBuf, { type: 'buffer' })
 const captainSheet = workbook.Sheets[workbook.SheetNames[0]]
 
