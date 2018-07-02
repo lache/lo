@@ -4,26 +4,38 @@ html
     include ./includes/actionresult.pug
     a.dpinblk.red.pad2(href='script:ttl_go_back()') 뒤로
     div.semitransblack.tc &#9157;#{ship.name}
+    div.tc
+      img(src=shipTemplate.portrait)
     table.semitransblack.pad0.mar0a.noborder.statfontsize
       tr
-        td.textalignright.statcellw 적재량
+        td.textalignright.statcellw 최대적재량
         td :
         td.statcellw
-          | 100
+          | #{shipStat.maxLoad}
           | &nbsp;
+          if captain && captainTemplate && captainTemplate.maxLoad > 0
+            span.statplus (+#{captainTemplate.maxLoad})
       tr
-        td.textalignright.statcellw 속도
+        td.textalignright.statcellw 이동속도
         td :
         td.statcellw
-          | 5
+          | #{shipStat.moveSpeed}
           | &nbsp;
-          if captain && captainTemplate && captainTemplate.speed > 0
-            span.statplus (+#{captainTemplate.speed})
+          if captain && captainTemplate && captainTemplate.moveSpeed > 0
+            span.statplus (+#{captainTemplate.moveSpeed})
+      tr
+        td.textalignright.statcellw 하역속도
+        td :
+        td.statcellw
+          | #{shipStat.loadingSpeed}
+          | &nbsp;
+          if captain && captainTemplate && captainTemplate.loadingSpeed > 0
+            span.statplus (+#{captainTemplate.loadingSpeed})
       tr
         td.textalignright.statcellw 내구도
         td :
         td.statcellw
-          | 7
+          | #{shipStat.durability}
           | &nbsp;
           if captain && captainTemplate && captainTemplate.durability > 0
             span.statplus (+#{captainTemplate.durability})
