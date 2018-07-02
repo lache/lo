@@ -1,11 +1,11 @@
 #include "render_command_container.h"
 #include <stdio.h>
 #include <locale>
-#include "lwgl.h"
+//#include "lwgl.h"
 #include "lwtextblock.h"
 #include "lwcontext.h"
-#include "render_text_block.h"
-#include "render_solid.h"
+//#include "render_text_block.h"
+//#include "render_solid.h"
 #include "lwlog.h"
 #include "htmlui.h"
 #include "lwtcpclient.h"
@@ -15,9 +15,11 @@
 #include "lwttl.h"
 #include "remtex.h"
 #include "logic.h"
+#include "lwsolid.h"
 
 litehtml::render_command_container::render_command_container(LWCONTEXT* pLwc, int w, int h)
-    : pLwc(pLwc) {
+    : pLwc(pLwc)
+    , font_handle_seq(0) {
     set_client_size(w, h);
 }
 
@@ -25,15 +27,26 @@ litehtml::render_command_container::~render_command_container() {
 }
 
 litehtml::uint_ptr litehtml::render_command_container::create_font(const litehtml::tchar_t * faceName, int size, int weight, litehtml::font_style italic, unsigned int decoration, litehtml::font_metrics * fm) {
-    LOGIx("create_font: faceName=%s, size=%d, weight=%d\n", faceName, size, weight);
-    size_t font_idx = font_sizes.size();
-    font_sizes.push_back(size);
-    fm->height = static_cast<int>(size / 5.5f);
+    font_handle_seq++;
+    litehtml::uint_ptr font_handle = font_handle_seq;
+    LOGI("create_font: faceName=%s, size=%d, weight=%d --> font handle %d", faceName, size, weight, font_handle);
+    font_sizes[font_handle] = size;
+    if (client_aspect_ratio > 1) {
+        //fm->height = static_cast<int>(roundf(size * 0.8f * client_height / 720.0f));
+        //fm->descent = static_cast<int>(roundf(size * 0.1f * client_height / 720.0f));
+    } else {
+        //fm->height = static_cast<int>(roundf(size * 0.8f * client_width / 1280.0f));
+        //fm->descent = static_cast<int>(roundf(size * 0.1f * client_width / 1280.0f));
+    }
+    fm->height = static_cast<int>(font_sizes[font_handle] / 5.5f);// static_cast<int>(roundf(size * 0.8f * client_height / 720.0f));
     fm->descent = static_cast<int>(fm->height / 4.5f);
-    return litehtml::uint_ptr(font_idx);
+    //fm->ascent = fm->height / 4;
+    return font_handle;
 }
 
 void litehtml::render_command_container::delete_font(litehtml::uint_ptr hFont) {
+    LOGI("delete_font: font handle %d", hFont);
+    font_sizes.erase(hFont);
 }
 
 void litehtml::render_command_container::fill_text_block(LWTEXTBLOCK* text_block, int x, int y, const char* text, int size, const litehtml::web_color& color) {
@@ -58,18 +71,19 @@ void litehtml::render_command_container::fill_text_block(LWTEXTBLOCK* text_block
 int litehtml::render_command_container::text_width(const litehtml::tchar_t * text, litehtml::uint_ptr hFont) {
     LWTEXTBLOCK text_block;
     LWTEXTBLOCKQUERYRESULT query_result;
-    int size = font_sizes[(int)(size_t)hFont];
+    int size = font_sizes[hFont];
     litehtml::web_color c;
     fill_text_block(&text_block, 0, 0, text, size, c);
-    render_query_only_text_block(pLwc, &text_block, &query_result);
+    lwtextblock_query_only_text_block(pLwc, &text_block, &query_result);
     return static_cast<int>(query_result.total_glyph_width);
 }
 
 void litehtml::render_command_container::draw_text(litehtml::uint_ptr hdc, const litehtml::tchar_t * text, litehtml::uint_ptr hFont, litehtml::web_color color, const litehtml::position & pos) {
-    int size = font_sizes[(int)(size_t)hFont];
+    int size = font_sizes[hFont];
     LWTEXTBLOCK text_block;
     fill_text_block(&text_block, pos.x, pos.y, text, size, color);
-    render_text_block_two_pass_color(pLwc, &text_block);
+    //render_text_block_two_pass_color(pLwc, &text_block);
+    render_command_queue.add_text_block(&text_block);
 }
 
 int litehtml::render_command_container::pt_to_px(int pt) {
@@ -89,7 +103,8 @@ void litehtml::render_command_container::draw_list_marker(litehtml::uint_ptr hdc
     int size = font_sizes[0];
     LWTEXTBLOCK text_block;
     fill_text_block(&text_block, marker.pos.x + marker.pos.width, marker.pos.y + marker.pos.height, "*", size, marker.color);
-    render_text_block(pLwc, &text_block);
+    //render_text_block(pLwc, &text_block);
+    render_command_queue.add_text_block(&text_block);
 }
 
 void litehtml::render_command_container::load_image(const litehtml::tchar_t * src, const litehtml::tchar_t * baseurl, bool redraw_on_ready) {
@@ -258,8 +273,9 @@ void litehtml::render_command_container::draw_background(litehtml::uint_ptr hdc,
     if (show_test_image == 1) {
         lazy_tex_atlas_glBindTexture(pLwc, lae);
         lazy_tex_atlas_glBindTexture(pLwc, lae_alpha);
-        render_solid_vb_ui_alpha(
-            pLwc,
+        LWSOLID solid;
+        lwsolid_make_command_vb_ui_alpha(
+            &solid,
             conv_coord_x(bg.border_box.x),
             conv_coord_y(bg.border_box.y),
             conv_size_x(bg.border_box.width),
@@ -279,8 +295,10 @@ void litehtml::render_command_container::draw_background(litehtml::uint_ptr hdc,
         float uv_offset[] = { offset_x, offset_y };
         float uv_scale[] = { (float)bg.border_box.width / bg.image_size.width, (float)bg.border_box.height / bg.image_size.height };
         lazy_tex_atlas_glBindTexture(pLwc, lae);
-        render_solid_vb_ui_uv_shader_rot(
-            pLwc,
+
+        LWSOLID solid;
+        lwsolid_make_command_vb_ui_uv_shader_rot(
+            &solid,
             conv_coord_x(bg.border_box.x),
             conv_coord_y(bg.border_box.y),
             conv_size_x(bg.border_box.width),
@@ -309,8 +327,9 @@ void litehtml::render_command_container::draw_background(litehtml::uint_ptr hdc,
                                 LVT_LEFT_TOP_ANCHORED_SQUARE);
     } else if (show_test_image == 4 && remtex_id) {
         if (alpha_remtex_id == 0) {
-            render_solid_vb_ui_flip_y_uv_shader(
-                pLwc,
+            LWSOLID solid;
+            lwsolid_make_command_vb_ui_flip_y_uv_shader(
+                &solid,
                 conv_coord_x(bg.border_box.x),
                 conv_coord_y(bg.border_box.y),
                 conv_size_x(bg.border_box.width),
@@ -326,8 +345,9 @@ void litehtml::render_command_container::draw_background(litehtml::uint_ptr hdc,
                 LWST_DEFAULT
             );
         } else {
-            render_solid_vb_ui_alpha(
-                pLwc,
+            LWSOLID solid;
+            lwsolid_make_command_vb_ui_alpha(
+                &solid,
                 conv_coord_x(bg.border_box.x),
                 conv_coord_y(bg.border_box.y),
                 conv_size_x(bg.border_box.width),
@@ -343,8 +363,9 @@ void litehtml::render_command_container::draw_background(litehtml::uint_ptr hdc,
             );
         }
     } else {
-        render_solid_vb_ui_flip_y_uv_shader(
-            pLwc,
+        LWSOLID solid;
+        lwsolid_make_command_vb_ui_flip_y_uv_shader(
+            &solid,
             conv_coord_x(bg.border_box.x),
             conv_coord_y(bg.border_box.y),
             conv_size_x(bg.border_box.width),
@@ -369,8 +390,9 @@ void litehtml::render_command_container::draw_border_rect(const litehtml::border
     if (border.style == border_style_none || border.style == border_style_hidden) {
         return;
     }
-    render_solid_vb_ui_flip_y_uv_shader(
-        pLwc,
+    LWSOLID solid;
+    lwsolid_make_command_vb_ui_flip_y_uv_shader(
+        &solid,
         conv_coord_x(x),
         conv_coord_y(y),
         conv_size_x(w),

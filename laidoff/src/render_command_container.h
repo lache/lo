@@ -1,22 +1,15 @@
 #pragma once
 #include "litehtml.h"
 #include <vector>
+#include <map>
 #include <set>
 #include "lwvbotype.h"
+#include "htmlui_render_command_queue.h"
 
 typedef struct _LWCONTEXT LWCONTEXT;
 typedef struct _LWTEXTBLOCK LWTEXTBLOCK;
 namespace litehtml {
 	class render_command_container : public document_container {
-	public:
-		typedef std::map<std::wstring, litehtml::uint_ptr>	images_map;
-
-	protected:
-
-		images_map					m_images;
-		litehtml::position::vector	m_clips;
-		std::vector<int> font_sizes;
-
 	public:
 		render_command_container(LWCONTEXT* pLwc, int w, int h);
 		virtual ~render_command_container();
@@ -54,17 +47,16 @@ namespace litehtml {
         void set_online(bool b) { online = b; }
         void clear_remtex_name_hash_set() { remtex_name_hash_set.clear(); }
         bool need_update_on_remtex_change(unsigned long name_hash) const {
-            return remtex_name_hash_set.find(name_hash) != remtex_name_hash_set
-                .end();
+            return remtex_name_hash_set.find(name_hash) != remtex_name_hash_set.end();
         }
         void set_client_size(int client_width, int client_height);
         void on_anchor_click_ex(const litehtml::tchar_t* url, const litehtml::element::ptr& el, bool add_touch_rect);
 	private:
         void draw_border_rect(const litehtml::border& border, int x, int y, int w, int h, LW_VBO_TYPE lvt, const litehtml::web_color& color) const;
-        float conv_size_x(int x) const { return static_cast<float>(x); }// return 2 * ((float)x / client_width * client_rt_x); }
-        float conv_size_y(int y) const { return static_cast<float>(y); }// return 2 * ((float)y / client_height * client_rt_y); }
-        float conv_coord_x(int x) const { return static_cast<float>(x); }// return -client_rt_x + conv_size_x(x); }
-        float conv_coord_y(int y) const { return client_height - static_cast<float>(y); }// return client_rt_y - conv_size_y(y); }
+        float conv_size_x(int x) const { return static_cast<float>(x); }
+        float conv_size_y(int y) const { return static_cast<float>(y); }
+        float conv_coord_x(int x) const { return static_cast<float>(x); }
+        float conv_coord_y(int y) const { return client_height - static_cast<float>(y); }
         void fill_text_block(LWTEXTBLOCK* text_block, int x, int y, const char* text, int size, const litehtml::web_color& color);
         LWCONTEXT * pLwc;
 		int client_width;
@@ -75,5 +67,8 @@ namespace litehtml {
 		int default_font_size;
         bool online;
         std::set<unsigned long> remtex_name_hash_set;
+        std::map<litehtml::uint_ptr, int> font_sizes;
+        litehtml::uint_ptr font_handle_seq;
+        htmlui_render_command_queue render_command_queue;
 	};
 }

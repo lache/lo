@@ -6,6 +6,7 @@
 #include "lwlog.h"
 #include "laidoff.h"
 #include <string.h>
+#include "lwtextblock.h"
 
 #define LW_COLOR_WHITE { 1, 1, 1, 1 }
 #define LW_COLOR_BLACK { 0, 0, 0, 1 }
@@ -13,8 +14,6 @@
 
 //const static float normal_outline_thickness = 3;
 //const static float emp_outline_thickness = 3;
-
-void render_query_text_block_alpha(const LWCONTEXT* pLwc, const LWTEXTBLOCK* text_block, float ui_alpha, LWTEXTBLOCKQUERYRESULT* query_result, int query_only);
 
 static float get_proportional_font_size(int width, int height, float font_size) {
     if (width > height) {
@@ -222,10 +221,6 @@ void render_text_block(const LWCONTEXT* pLwc, const LWTEXTBLOCK* text_block) {
 
 void render_text_block_alpha(const LWCONTEXT* pLwc, const LWTEXTBLOCK* text_block, float ui_alpha) {
 	render_query_text_block_alpha(pLwc, text_block, ui_alpha, 0, 0);
-}
-
-void render_query_only_text_block(const LWCONTEXT* pLwc, const LWTEXTBLOCK* text_block, LWTEXTBLOCKQUERYRESULT* query_result) {
-	render_query_text_block_alpha(pLwc, text_block, 0, query_result, 1);
 }
 
 void render_query_text_block_alpha(const LWCONTEXT* pLwc, const LWTEXTBLOCK* text_block, float ui_alpha, LWTEXTBLOCKQUERYRESULT* query_result, int query_only) {

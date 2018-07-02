@@ -2,6 +2,10 @@
 #ifdef __cplusplus
 extern "C" {;
 #endif
+#include "lwvbotype.h"
+
+typedef struct _LWCONTEXT LWCONTEXT;
+
 void render_solid_box_ui_lvt_flip_y_uv(const LWCONTEXT* pLwc,
                                        float x,
                                        float y,

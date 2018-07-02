@@ -1,6 +1,6 @@
 #pragma once
 #include "litehtml.h"
-#include <vector>
+#include <map>
 #include <set>
 #include "lwvbotype.h"
 
@@ -8,15 +8,6 @@ typedef struct _LWCONTEXT LWCONTEXT;
 typedef struct _LWTEXTBLOCK LWTEXTBLOCK;
 namespace litehtml {
 	class text_container : public document_container {
-	public:
-		typedef std::map<std::wstring, litehtml::uint_ptr>	images_map;
-
-	protected:
-
-		images_map					m_images;
-		litehtml::position::vector	m_clips;
-		std::vector<int> font_sizes;
-
 	public:
 		text_container(LWCONTEXT* pLwc, int w, int h);
 		virtual ~text_container();
@@ -75,5 +66,7 @@ namespace litehtml {
 		int default_font_size;
         bool online;
         std::set<unsigned long> remtex_name_hash_set;
+        std::map<litehtml::uint_ptr, int> font_sizes;
+        litehtml::uint_ptr font_handle_seq;
 	};
 }
