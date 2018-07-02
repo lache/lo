@@ -18,12 +18,13 @@ html
           //a.dpinblk.red.pad1(href='script:enable_water_way()') 선택
     h3.semitransblack.tc 새 선박 구입
     div.tc
-      - var n = 0;
-      while n < 1
+      - var i = 0;
+      while i < shipData.keys.length
         div.dpinblk.semitransblack
-          p 선박 모델 #{n + 1}
-          img(src='atlas/flags-mini/au.png')
-          a.dpinblk.red.pad1(href='script:purchase_ship_at_shipyard(' + shipyard.shipyard_id + ',' + (n + 1) + ')') 구입
-        - n++
+          - var shipTemplate = shipData.data[shipData.keys[i]];
+          p #{shipTemplate.modelName}
+          img(src=shipTemplate.portrait)
+          a.dpinblk.red.pad1(href='script:purchase_ship_at_shipyard(' + shipyard.shipyard_id + ',' + shipTemplate.id + ')') 구입
+        - i++
   div.tc
     a.dpinblk.red.pad2(href='script:ttl_go_back()') 닫기

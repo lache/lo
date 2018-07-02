@@ -2,6 +2,7 @@ const db = require('../db')
 const dbUser = require('../dbuser')
 const uuidv1 = require('uuid/v1')
 const url = require('url')
+const shipData = require('../data/ship')
 
 module.exports = app => {
   app.get('/openShipyard', (req, res) => {
@@ -13,6 +14,7 @@ module.exports = app => {
         user: u,
         shipyard: shipyard,
         dockedShips: dockedShips,
+        shipData: shipData,
         resultMsg: req.query.resultMsg,
         errMsg: req.query.errMsg
       })
