@@ -454,6 +454,10 @@
 		6CC8338C205D50DA0031523A /* lwtcpclient.c in Sources */ = {isa = PBXBuildFile; fileRef = 6CC8332E205D50DA0031523A /* lwtcpclient.c */; };
 		6CC8338D205D50DA0031523A /* lwenemy.c in Sources */ = {isa = PBXBuildFile; fileRef = 6CC83333205D50DA0031523A /* lwenemy.c */; };
 		6CC8338E205D50DA0031523A /* nav.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6CC83335205D50DA0031523A /* nav.cpp */; };
+		6CD6276E20EF4B90002A2164 /* lwtextblock.c in Sources */ = {isa = PBXBuildFile; fileRef = 6CD6276020EF4B8E002A2164 /* lwtextblock.c */; };
+		6CD6276F20EF4B90002A2164 /* htmlui_render_command_queue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6CD6276A20EF4B90002A2164 /* htmlui_render_command_queue.cpp */; };
+		6CD6277020EF4B90002A2164 /* lwsolid.c in Sources */ = {isa = PBXBuildFile; fileRef = 6CD6276B20EF4B90002A2164 /* lwsolid.c */; };
+		6CD6277120EF4B90002A2164 /* render_command_container.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6CD6276C20EF4B90002A2164 /* render_command_container.cpp */; };
 		6CDDC6A42045D12E00AE3394 /* gumboutil.c in Sources */ = {isa = PBXBuildFile; fileRef = 6CDDC6A22045D12D00AE3394 /* gumboutil.c */; };
 		6CF70E3820597A1D00F782C8 /* lz4hc.c in Sources */ = {isa = PBXBuildFile; fileRef = 6CF70E3420597A1D00F782C8 /* lz4hc.c */; };
 		6CF70E3920597A1D00F782C8 /* lz4.c in Sources */ = {isa = PBXBuildFile; fileRef = 6CF70E3520597A1D00F782C8 /* lz4.c */; };
@@ -468,10 +472,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0E38E11C6E337B7525B05C1D /* lwfbo.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = lwfbo.c; path = ../src/lwfbo.c; sourceTree = "<group>"; };
-		153809DC50A3E01320158089 /* render_ttl.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = render_ttl.c; path = ../src/render_ttl.c; sourceTree = "<group>"; };
+		0E38E11C6E337B7525B05C1D /* lwfbo.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = lwfbo.c; sourceTree = "<group>"; };
+		153809DC50A3E01320158089 /* render_ttl.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = render_ttl.c; sourceTree = "<group>"; };
 		2601AFFC1EE1549700989AA6 /* platform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = platform.h; path = ../build/include/platform.h; sourceTree = "<group>"; };
-		3EF18865C9E87623A8107AC5 /* render_morph.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = render_morph.c; path = ../src/render_morph.c; sourceTree = "<group>"; };
+		3EF18865C9E87623A8107AC5 /* render_morph.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = render_morph.c; sourceTree = "<group>"; };
 		5633AC311EADDF98003F1549 /* net.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = net.c; sourceTree = "<group>"; };
 		566372651EBA52D3001DA3F4 /* collision.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = collision.h; sourceTree = "<group>"; };
 		566372661EBA52D3001DA3F4 /* collision_space.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = collision_space.h; sourceTree = "<group>"; };
@@ -1420,6 +1424,21 @@
 		6CC83334205D50DA0031523A /* lwmath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lwmath.h; sourceTree = "<group>"; };
 		6CC83335205D50DA0031523A /* nav.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nav.cpp; sourceTree = "<group>"; };
 		6CC83336205D50DA0031523A /* lwanim.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lwanim.h; sourceTree = "<group>"; };
+		6CD6275F20EF4B8E002A2164 /* lwttlrendercontext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lwttlrendercontext.h; sourceTree = "<group>"; };
+		6CD6276020EF4B8E002A2164 /* lwtextblock.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lwtextblock.c; sourceTree = "<group>"; };
+		6CD6276120EF4B8E002A2164 /* render_morph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = render_morph.h; sourceTree = "<group>"; };
+		6CD6276220EF4B8F002A2164 /* render_command_container.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = render_command_container.h; sourceTree = "<group>"; };
+		6CD6276320EF4B8F002A2164 /* lwchatringbuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lwchatringbuffer.h; sourceTree = "<group>"; };
+		6CD6276420EF4B8F002A2164 /* puckgamerecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = puckgamerecord.h; sourceTree = "<group>"; };
+		6CD6276520EF4B8F002A2164 /* lwsolid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lwsolid.h; sourceTree = "<group>"; };
+		6CD6276620EF4B8F002A2164 /* htmlui_render_command_queue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = htmlui_render_command_queue.h; sourceTree = "<group>"; };
+		6CD6276720EF4B8F002A2164 /* render_puckgame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = render_puckgame.h; sourceTree = "<group>"; };
+		6CD6276820EF4B8F002A2164 /* lwcountry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lwcountry.h; sourceTree = "<group>"; };
+		6CD6276920EF4B90002A2164 /* render_ttl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = render_ttl.h; sourceTree = "<group>"; };
+		6CD6276A20EF4B90002A2164 /* htmlui_render_command_queue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = htmlui_render_command_queue.cpp; sourceTree = "<group>"; };
+		6CD6276B20EF4B90002A2164 /* lwsolid.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lwsolid.c; sourceTree = "<group>"; };
+		6CD6276C20EF4B90002A2164 /* render_command_container.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = render_command_container.cpp; sourceTree = "<group>"; };
+		6CD6276D20EF4B90002A2164 /* iconchar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iconchar.h; sourceTree = "<group>"; };
 		6CDDC6A22045D12D00AE3394 /* gumboutil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gumboutil.c; sourceTree = "<group>"; };
 		6CDDC6A32045D12D00AE3394 /* gumboutil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gumboutil.h; sourceTree = "<group>"; };
 		6CF70E3420597A1D00F782C8 /* lz4hc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lz4hc.c; path = ../../../../lz4/lib/lz4hc.c; sourceTree = "<group>"; };
@@ -1433,8 +1452,8 @@
 		6CF70E4020597A2B00F782C8 /* xxhash.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = xxhash.h; path = ../../../../lz4/lib/xxhash.h; sourceTree = "<group>"; };
 		6CFC5017206012360077E1B7 /* lwttl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lwttl.h; sourceTree = "<group>"; };
 		6CFC5018206012360077E1B7 /* lwttl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lwttl.c; sourceTree = "<group>"; };
-		EA30351E6C793142A9AC7BD3 /* lwchatringbuffer.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = lwchatringbuffer.c; path = ../src/lwchatringbuffer.c; sourceTree = "<group>"; };
-		FE6E8484ADBCBB3A0251BB37 /* render_puckgame.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; name = render_puckgame.c; path = ../src/render_puckgame.c; sourceTree = "<group>"; };
+		EA30351E6C793142A9AC7BD3 /* lwchatringbuffer.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = lwchatringbuffer.c; sourceTree = "<group>"; };
+		FE6E8484ADBCBB3A0251BB37 /* render_puckgame.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = render_puckgame.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2360,11 +2379,6 @@
 				567F39C31EA2A7500081EB67 /* Frameworks */,
 				6CA16CD51EA20B5600DB7AF0 /* laidoff */,
 				6CA16CD41EA20B5600DB7AF0 /* Products */,
-				153809DC50A3E01320158089 /* render_ttl.c */,
-				3EF18865C9E87623A8107AC5 /* render_morph.c */,
-				FE6E8484ADBCBB3A0251BB37 /* render_puckgame.c */,
-				EA30351E6C793142A9AC7BD3 /* lwchatringbuffer.c */,
-				0E38E11C6E337B7525B05C1D /* lwfbo.c */,
 			);
 			sourceTree = "<group>";
 		};
@@ -2489,10 +2503,6 @@
 		6CC83267205D50DA0031523A /* src */ = {
 			isa = PBXGroup;
 			children = (
-				6C59053C207C60C400A14685 /* remtex.c */,
-				6C59053A207C60C400A14685 /* remtex.h */,
-				6C59053D207C60C500A14685 /* render_remtex.c */,
-				6C59053B207C60C400A14685 /* render_remtex.h */,
 				6CC8326D205D50DA0031523A /* armature.c */,
 				6CC832E0205D50DA0031523A /* armature.h */,
 				6CC83269205D50DA0031523A /* battle_result.c */,
@@ -2517,8 +2527,11 @@
 				6CC83322205D50DA0031523A /* filecompat.c */,
 				6CC832B2205D50DA0031523A /* font.c */,
 				6CC83307205D50DA0031523A /* font.h */,
+				6CD6276A20EF4B90002A2164 /* htmlui_render_command_queue.cpp */,
+				6CD6276620EF4B8F002A2164 /* htmlui_render_command_queue.h */,
 				6CC8327E205D50DA0031523A /* htmlui.cpp */,
 				6CC83312205D50DA0031523A /* htmlui.h */,
+				6CD6276D20EF4B90002A2164 /* iconchar.h */,
 				6CC83326205D50DA0031523A /* image.h */,
 				6CC832DD205D50DA0031523A /* input.c */,
 				6CC8327A205D50DA0031523A /* input.h */,
@@ -2552,8 +2565,11 @@
 				6CC832CA205D50DA0031523A /* lwbutton.c */,
 				6CC83320205D50DA0031523A /* lwbutton.h */,
 				6CC8332B205D50DA0031523A /* lwbuttoncommand.h */,
+				EA30351E6C793142A9AC7BD3 /* lwchatringbuffer.c */,
+				6CD6276320EF4B8F002A2164 /* lwchatringbuffer.h */,
 				6CC83296205D50DA0031523A /* lwcontext.c */,
 				6CC832EC205D50DA0031523A /* lwcontext.h */,
+				6CD6276820EF4B8F002A2164 /* lwcountry.h */,
 				6CC83308205D50DA0031523A /* lwdamagetext.c */,
 				6CC832B4205D50DA0031523A /* lwdamagetext.h */,
 				6CC832E9205D50DA0031523A /* lwdeltatime.c */,
@@ -2564,6 +2580,7 @@
 				6CC832B6205D50DA0031523A /* lwenemy.h */,
 				6CC83284205D50DA0031523A /* lwfanim.c */,
 				6CC83305205D50DA0031523A /* lwfanim.h */,
+				0E38E11C6E337B7525B05C1D /* lwfbo.c */,
 				6CC832BC205D50DA0031523A /* lwfbo.h */,
 				6CC832D1205D50DA0031523A /* lwfieldobject.h */,
 				6CC83314205D50DA0031523A /* lwfieldrendercommand.c */,
@@ -2597,10 +2614,13 @@
 				6CC8330F205D50DA0031523A /* lwskill.h */,
 				6CC832F4205D50DA0031523A /* lwskilleffect.h */,
 				6CC8332F205D50DA0031523A /* lwskinmesh.h */,
+				6CD6276B20EF4B90002A2164 /* lwsolid.c */,
+				6CD6276520EF4B8F002A2164 /* lwsolid.h */,
 				6CC832D4205D50DA0031523A /* lwtcp.c */,
 				6CC8327D205D50DA0031523A /* lwtcp.h */,
 				6CC8332E205D50DA0031523A /* lwtcpclient.c */,
 				6CC832BA205D50DA0031523A /* lwtcpclient.h */,
+				6CD6276020EF4B8E002A2164 /* lwtextblock.c */,
 				6CC8331A205D50DA0031523A /* lwtextblock.h */,
 				6CC832A0205D50DA0031523A /* lwtimepoint.c */,
 				6CC8331B205D50DA0031523A /* lwtimepoint.h */,
@@ -2608,6 +2628,7 @@
 				6CC832AE205D50DA0031523A /* lwtrail.h */,
 				6CFC5018206012360077E1B7 /* lwttl.c */,
 				6CFC5017206012360077E1B7 /* lwttl.h */,
+				6CD6275F20EF4B8E002A2164 /* lwttlrendercontext.h */,
 				6CC832CD205D50DA0031523A /* lwudp.c */,
 				6CC8331F205D50DA0031523A /* lwudp.h */,
 				6CC8326C205D50DA0031523A /* lwuialign.c */,
@@ -2642,14 +2663,19 @@
 				6CC8328E205D50DA0031523A /* puckgame.c */,
 				6CC832F3205D50DA0031523A /* puckgame.h */,
 				6CC832BF205D50DA0031523A /* puckgamepacket.h */,
+				6CD6276420EF4B8F002A2164 /* puckgamerecord.h */,
 				6CC832F1205D50DA0031523A /* puckgameupdate.c */,
 				6CC83291205D50DA0031523A /* puckgameupdate.h */,
+				6C59053C207C60C400A14685 /* remtex.c */,
+				6C59053A207C60C400A14685 /* remtex.h */,
 				6CC8330B205D50DA0031523A /* render_admin.c */,
 				6CC832AD205D50DA0031523A /* render_admin.h */,
 				6CC832B3205D50DA0031523A /* render_battle_result.c */,
 				6CC83306205D50DA0031523A /* render_battle_result.h */,
 				6CC832D7205D50DA0031523A /* render_battle.c */,
 				6CC83279205D50DA0031523A /* render_battle.h */,
+				6CD6276C20EF4B90002A2164 /* render_command_container.cpp */,
+				6CD6276220EF4B8F002A2164 /* render_command_container.h */,
 				6CC832E8205D50DA0031523A /* render_dialog.c */,
 				6CC83271205D50DA0031523A /* render_dialog.h */,
 				6CC83272205D50DA0031523A /* render_fan.c */,
@@ -2660,10 +2686,16 @@
 				6CC83270205D50DA0031523A /* render_font_test.h */,
 				6CC832CF205D50DA0031523A /* render_leaderboard.c */,
 				6CC83324205D50DA0031523A /* render_leaderboard.h */,
+				3EF18865C9E87623A8107AC5 /* render_morph.c */,
+				6CD6276120EF4B8E002A2164 /* render_morph.h */,
 				6CC832AA205D50DA0031523A /* render_physics.c */,
 				6CC8330A205D50DA0031523A /* render_physics.h */,
 				6CC8331C205D50DA0031523A /* render_ps.c */,
 				6CC832CE205D50DA0031523A /* render_ps.h */,
+				FE6E8484ADBCBB3A0251BB37 /* render_puckgame.c */,
+				6CD6276720EF4B8F002A2164 /* render_puckgame.h */,
+				6C59053D207C60C500A14685 /* render_remtex.c */,
+				6C59053B207C60C400A14685 /* render_remtex.h */,
 				6CC832C7205D50DA0031523A /* render_skin.c */,
 				6CC83328205D50DA0031523A /* render_skin.h */,
 				6CC83289205D50DA0031523A /* render_solid.c */,
@@ -2672,6 +2704,8 @@
 				6CC832ED205D50DA0031523A /* render_splash.h */,
 				6CC83286205D50DA0031523A /* render_text_block.c */,
 				6CC83303205D50DA0031523A /* render_text_block.h */,
+				153809DC50A3E01320158089 /* render_ttl.c */,
+				6CD6276920EF4B90002A2164 /* render_ttl.h */,
 				6CC832B7205D50DA0031523A /* render_ui.c */,
 				6CC83331205D50DA0031523A /* render_ui.h */,
 				6CC832FA205D50DA0031523A /* rmsg.c */,
@@ -2931,6 +2965,7 @@
 				56F188C01EC74DB60019312F /* lb.cpp in Sources */,
 				566373421EBA52D4001DA3F4 /* collision_trimesh_trimesh.cpp in Sources */,
 				6CC83375205D50DA0031523A /* script.c in Sources */,
+				6CD6277120EF4B90002A2164 /* render_command_container.cpp in Sources */,
 				56F189971EC751950019312F /* zcertstore.c in Sources */,
 				56F188BC1EC74DB60019312F /* ipc_address.cpp in Sources */,
 				56F189AF1EC751950019312F /* zmsg.c in Sources */,
@@ -3038,6 +3073,7 @@
 				6CC83341205D50DA0031523A /* htmlui.cpp in Sources */,
 				566373351EBA52D3001DA3F4 /* collision_quadtreespace.cpp in Sources */,
 				56F188B21EC74DB60019312F /* epoll.cpp in Sources */,
+				6CD6276F20EF4B90002A2164 /* htmlui_render_command_queue.cpp in Sources */,
 				6CC83345205D50DA0031523A /* render_solid.c in Sources */,
 				6C295EC9204310700052999C /* el_font.cpp in Sources */,
 				5663732C1EBA52D3001DA3F4 /* array.cpp in Sources */,
@@ -3075,6 +3111,7 @@
 				6CC83389205D50DA0031523A /* sysmsg.c in Sources */,
 				6CC8338D205D50DA0031523A /* lwenemy.c in Sources */,
 				5663733D1EBA52D3001DA3F4 /* collision_trimesh_internal.cpp in Sources */,
+				6CD6276E20EF4B90002A2164 /* lwtextblock.c in Sources */,
 				5663735B1EBA52D4001DA3F4 /* plane2d.cpp in Sources */,
 				6C295ED7204310700052999C /* el_style.cpp in Sources */,
 				56F189A21EC751950019312F /* zgossip_engine.inc in Sources */,
@@ -3193,6 +3230,7 @@
 				5663733F1EBA52D4001DA3F4 /* collision_trimesh_plane.cpp in Sources */,
 				5663737B1EBA52D4001DA3F4 /* util.cpp in Sources */,
 				6CC8336F205D50DA0031523A /* battle.c in Sources */,
+				6CD6277020EF4B90002A2164 /* lwsolid.c in Sources */,
 				6C295EB7204310700052999C /* el_title.cpp in Sources */,
 				6C295EA8204310700052999C /* attribute.c in Sources */,
 				566373541EBA52D4001DA3F4 /* fixed.cpp in Sources */,
