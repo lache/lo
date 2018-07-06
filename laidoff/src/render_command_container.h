@@ -68,7 +68,7 @@ namespace litehtml {
         bool online;
         std::set<unsigned long> remtex_name_hash_set;
         std::map<litehtml::uint_ptr, int> font_sizes;
-        litehtml::uint_ptr font_handle_seq;
+        int font_handle_seq;
         htmlui_render_command_queue render_command_queue;
 	};
 }

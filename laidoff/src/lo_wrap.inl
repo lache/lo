@@ -50653,6 +50653,49 @@ fail:
 }
 
 
+static int _wrap_render_query_text_block_alpha(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  LWTEXTBLOCK *arg2 = (LWTEXTBLOCK *) 0 ;
+  float arg3 ;
+  LWTEXTBLOCKQUERYRESULT *arg4 = (LWTEXTBLOCKQUERYRESULT *) 0 ;
+  int arg5 ;
+  
+  SWIG_check_num_args("render_query_text_block_alpha",5,5)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("render_query_text_block_alpha",1,"LWCONTEXT const *");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("render_query_text_block_alpha",2,"LWTEXTBLOCK const *");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("render_query_text_block_alpha",3,"float");
+  if(!SWIG_isptrtype(L,4)) SWIG_fail_arg("render_query_text_block_alpha",4,"LWTEXTBLOCKQUERYRESULT *");
+  if(!lua_isnumber(L,5)) SWIG_fail_arg("render_query_text_block_alpha",5,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("render_query_text_block_alpha",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWTEXTBLOCK,0))){
+    SWIG_fail_ptr("render_query_text_block_alpha",2,SWIGTYPE_p__LWTEXTBLOCK);
+  }
+  
+  arg3 = (float)lua_tonumber(L, 3);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,4,(void**)&arg4,SWIGTYPE_p__LWTEXTBLOCKQUERYRESULT,0))){
+    SWIG_fail_ptr("render_query_text_block_alpha",4,SWIGTYPE_p__LWTEXTBLOCKQUERYRESULT);
+  }
+  
+  arg5 = (int)lua_tonumber(L, 5);
+  render_query_text_block_alpha((struct _LWCONTEXT const *)arg1,(struct _LWTEXTBLOCK const *)arg2,arg3,arg4,arg5);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_init_lua(lua_State* L) {
   int SWIG_arg = 0;
   LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
@@ -110832,7 +110875,7 @@ static swig_lua_const_info swig_SwigModule_constants[]= {
     {SWIG_LUA_CONSTTAB_INT("LGS_LEADERBOARD", LGS_LEADERBOARD)},
     {SWIG_LUA_CONSTTAB_INT("LGS_REMTEX", LGS_REMTEX)},
     {SWIG_LUA_CONSTTAB_STRING("__LW_STRING_LINE__", "61")},
-    {SWIG_LUA_CONSTTAB_STRING("LWLOGPOS", "src\\lwlog.h(62): ")},
+    {SWIG_LUA_CONSTTAB_STRING("LWLOGPOS", "src/lwlog.h(62): ")},
     {SWIG_LUA_CONSTTAB_INT("LPT_GRID", LPT_GRID)},
     {SWIG_LUA_CONSTTAB_INT("LPT_SOLID_RED", LPT_SOLID_RED)},
     {SWIG_LUA_CONSTTAB_INT("LPT_SOLID_GREEN", LPT_SOLID_GREEN)},
@@ -111700,6 +111743,7 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "render_text_block_two_pass_color", _wrap_render_text_block_two_pass_color},
     { "render_text_block_alpha", _wrap_render_text_block_alpha},
     { "toggle_font_texture_test_mode", _wrap_toggle_font_texture_test_mode},
+    { "render_query_text_block_alpha", _wrap_render_query_text_block_alpha},
     { "init_lua", _wrap_init_lua},
     { "spawn_all_field_object", _wrap_spawn_all_field_object},
     { "script_run_file_ex", _wrap_script_run_file_ex},

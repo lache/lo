@@ -28,8 +28,8 @@ litehtml::render_command_container::~render_command_container() {
 
 litehtml::uint_ptr litehtml::render_command_container::create_font(const litehtml::tchar_t * faceName, int size, int weight, litehtml::font_style italic, unsigned int decoration, litehtml::font_metrics * fm) {
     font_handle_seq++;
-    litehtml::uint_ptr font_handle = font_handle_seq;
-    LOGI("create_font: faceName=%s, size=%d, weight=%d --> font handle %d", faceName, size, weight, font_handle);
+    litehtml::uint_ptr font_handle = reinterpret_cast<litehtml::uint_ptr>(font_handle_seq);
+    LOGIx("create_font: faceName=%s, size=%d, weight=%d --> font handle %d", faceName, size, weight, font_handle);
     font_sizes[font_handle] = size;
     if (client_aspect_ratio > 1) {
         //fm->height = static_cast<int>(roundf(size * 0.8f * client_height / 720.0f));
@@ -45,7 +45,7 @@ litehtml::uint_ptr litehtml::render_command_container::create_font(const litehtm
 }
 
 void litehtml::render_command_container::delete_font(litehtml::uint_ptr hFont) {
-    LOGI("delete_font: font handle %d", hFont);
+    LOGIx("delete_font: font handle %d", hFont);
     font_sizes.erase(hFont);
 }
 
