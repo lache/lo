@@ -2393,7 +2393,7 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
 //    }
     {
         // overwrite ui projection matrix
-        logic_update_default_ui_proj_for_htmlui(pLwc->shared_fbo.tex_width, pLwc->shared_fbo.tex_height, ((LWCONTEXT*)pLwc)->proj);
+        logic_update_default_ui_proj_for_htmlui(pLwc->shared_fbo.width, pLwc->shared_fbo.height, ((LWCONTEXT*)pLwc)->proj);
         
         // render HTML UI queued at render command queue
         htmlui_render_render_commands(pLwc->htmlui);
