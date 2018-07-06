@@ -30,6 +30,7 @@ const link = async (req, res, expectLand) => {
     )
     if (r1.seaportId > 0) {
       const shipDbId = await ship.execCreateShipWithRoute(
+        req.app.get('seaUdpClient'),
         u.user_id,
         xc0,
         yc0,
