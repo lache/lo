@@ -2380,16 +2380,28 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
                          pLwc->window_height);
     render_ttl_stat(pLwc->ttl, pLwc);
     //render_coords_dms(pLwc, &view_center);
-    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-    // render FBO (HTML UI)
-    render_solid_box_ui_lvt_flip_y_uv(pLwc,
-                                      -pLwc->viewport_rt_x,
-                                      -pLwc->viewport_rt_y,
-                                      2 * pLwc->viewport_rt_x * pLwc->shared_fbo.tex_width / pLwc->shared_fbo.width,
-                                      2 * pLwc->viewport_rt_y * pLwc->shared_fbo.tex_height / pLwc->shared_fbo.height,
-                                      pLwc->shared_fbo.color_tex,
-                                      LVT_LEFT_BOTTOM_ANCHORED_SQUARE,
-                                      1);
+//    {
+//        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+//        render_solid_box_ui_lvt_flip_y_uv(pLwc,
+//                                          -pLwc->viewport_rt_x,
+//                                          -pLwc->viewport_rt_y,
+//                                          2 * pLwc->viewport_rt_x * pLwc->shared_fbo.tex_width / pLwc->shared_fbo.width,
+//                                          2 * pLwc->viewport_rt_y * pLwc->shared_fbo.tex_height / pLwc->shared_fbo.height,
+//                                          pLwc->shared_fbo.color_tex,
+//                                          LVT_LEFT_BOTTOM_ANCHORED_SQUARE,
+//                                          1);
+//    }
+    {
+        // overwrite ui projection matrix
+        logic_update_default_ui_proj_for_htmlui(pLwc->shared_fbo.tex_width, pLwc->shared_fbo.tex_height, ((LWCONTEXT*)pLwc)->proj);
+        
+        // render HTML UI queued at render command queue
+        htmlui_render_render_commands(pLwc->htmlui);
+        
+        lw_set_viewport_size((LWCONTEXT*)pLwc,
+                             pLwc->window_width,
+                             pLwc->window_height);
+    }
     render_htmlui_touch_rect(pLwc);
     // render joystick
     if (0) {

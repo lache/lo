@@ -46,6 +46,9 @@ const setShipDockedShipyardId = (shipId, dockedShipyardId) => {
 const setShipCaptainId = (shipId, captainId) => {
   queryShip.setShipCaptainId.run(captainId, shipId)
 }
+const setShipTemplateId = (shipId, templateId) => {
+  queryShip.setShipTemplateId.run(templateId, shipId)
+}
 const findShipShiproute = shipId => {
   return queryShip.findShipShiproute.get(shipId)
 }
@@ -170,6 +173,7 @@ module.exports = {
   setShipShiproute,
   setShipDockedShipyardId,
   setShipCaptainId,
+  setShipTemplateId,
   findShipShiproute,
   listShipShiproute,
   listShipShiprouteToArray,

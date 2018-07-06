@@ -4,7 +4,6 @@
 extern "C" {;
 #endif
 typedef struct _LWCONTEXT LWCONTEXT;
-int test_html_ui(LWCONTEXT* pLwc);
 void* htmlui_new(LWCONTEXT* pLwc);
 void htmlui_destroy(void** c);
 void htmlui_load_render_draw(void* c, const char* html_path);
@@ -29,6 +28,7 @@ void htmlui_execute_anchor_click(void* c, const char* url);
 void htmlui_add_touch_rect(void* c, float x, float y, float z, float width, float height, float extend_width, float extend_height, const mat4x4 view, const mat4x4 proj);
 int htmlui_get_touch_rect_count(void* c);
 void htmlui_get_touch_rect(void* c, int index, double* start, float* x, float* y, float* z, float* width, float* height, float* extend_width, float* extend_height, mat4x4 view, mat4x4 proj);
+void htmlui_render_render_commands(void* c);
 #ifdef __cplusplus
 }
 #endif

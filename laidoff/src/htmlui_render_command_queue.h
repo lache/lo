@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 
+typedef struct _LWCONTEXT LWCONTEXT;
 typedef struct _LWSOLID LWSOLID;
 typedef struct _LWTEXTBLOCK LWTEXTBLOCK;
 
@@ -10,6 +11,7 @@ public:
     void add_solid(const LWSOLID* solid);
     void add_text_block(const LWTEXTBLOCK* text_block);
     void clear();
+    void render(const LWCONTEXT* pLwc);
 private:
     enum LW_RENDER_COMMAND_TYPE {
         LRC_RENDER_SOLID,

@@ -3,6 +3,7 @@ const dbUser = require('../dbuser')
 const uuidv1 = require('uuid/v1')
 const url = require('url')
 const raname = require('random-name')
+// const shipUtil = require('../shiputil')
 
 module.exports = app => {
   app.get('/purchaseShipAtShipyard', (req, res) => {
@@ -17,7 +18,19 @@ module.exports = app => {
         const shipName = `${raname.middle()} ${raname.middle()}`
         const shipId = db.createShip(u.user_id, shipName, 0)
         db.setShipDockedShipyardId(shipId, req.query.shipyardId)
+        db.setShipTemplateId(shipId, req.query.shipTemplateId)
         resultMsg = '새 선박 구입 성공'
+        // shipUtil.openShipHandler(req, res)
+        res.redirect(
+          url.format({
+            pathname: '/openShip',
+            query: {
+              shipId,
+              resultMsg
+            }
+          })
+        )
+        return
       } else {
         errMsg = '정박중 선박 초과'
       }

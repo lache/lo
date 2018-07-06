@@ -4,6 +4,7 @@
 #include <streambuf>
 #include <locale>
 #include "text_container.h"
+#include "render_command_container.h"
 #include "htmlui.h"
 #include "lwmacro.h"
 #include "lwcontext.h"
@@ -63,6 +64,7 @@ public:
         if (html_str) {
             lock();
             container.clear_remtex_name_hash_set();
+            container.clear_render_command_queue();
             doc = litehtml::document::createFromString(html_str.get(), &container, &browser_context);
             last_html_str = html_str.get();
             unlock();
@@ -73,6 +75,7 @@ public:
     void load_body(const char* html_body) {
         lock();
         container.clear_remtex_name_hash_set();
+        container.clear_render_command_queue();
         doc = litehtml::document::createFromString(html_body, &container, &browser_context);
         last_html_str = html_body;
         unlock();
@@ -94,6 +97,7 @@ public:
         LOGI("Redrawing FBO with the same HTML data with client size %d x %d...", client_width, client_height);
         lock();
         container.clear_remtex_name_hash_set();
+        container.clear_render_command_queue();
         doc = litehtml::document::createFromString(last_html_str.c_str(), &container, &browser_context);
         render_page();
         if (lwfbo_prerender(pLwc, &pLwc->shared_fbo) == 0) {
@@ -225,12 +229,14 @@ public:
         mat4x4_dup(view, touch_rect[index].view);
         mat4x4_dup(proj, touch_rect[index].proj);
     }
+    void render_render_commands() { container.render_render_commands(pLwc); }
 private:
     LWHTMLUI();
     LWHTMLUI(const LWHTMLUI&);
     LWCONTEXT* pLwc;
     litehtml::context browser_context;
-    litehtml::text_container container;
+    //litehtml::text_container container;
+    litehtml::render_command_container container;
     litehtml::document::ptr doc;
     int client_width;
     int client_height;
@@ -294,40 +300,6 @@ void htmlui_on_lbutton_up(void* c, float nx, float ny) {
 void htmlui_on_over(void* c, float nx, float ny) {
     LWHTMLUI* htmlui = (LWHTMLUI*)c;
     htmlui->on_over(nx, ny);
-}
-
-int test_html_ui(LWCONTEXT* pLwc) {
-    litehtml::context browser_context;
-    //browser_context.load_master_stylesheet()
-
-    char* master_css_str = create_string_from_file(ASSETS_BASE_PATH "css" PATH_SEPARATOR "master.css");
-    browser_context.load_master_stylesheet(master_css_str);
-
-    const int w = pLwc->viewport_width;
-    const int h = pLwc->viewport_height;
-    std::shared_ptr<litehtml::text_container> container(new litehtml::text_container(pLwc, w, h));
-
-    char* test_html_str = create_string_from_file(ASSETS_BASE_PATH "html" PATH_SEPARATOR "HTMLPage1.html");
-    auto doc = litehtml::document::createFromString(test_html_str, container.get(), &browser_context);
-
-    //auto elm = doc->root()->select_one(_t("#value3"));
-    //elm->get_child(0)->set_data(_t("HELLO!!!"));
-    //litehtml::tstring str;
-    //elm->get_text(str);
-
-    doc->render(w);
-    litehtml::position clip(0, 0, w, h);
-    doc->draw(0, 0, 0, &clip);
-
-    litehtml::position::vector position_vector;
-    doc->on_mouse_over(13, 19, 13, 19, position_vector);
-    doc->on_lbutton_up(13, 19, 13, 19, position_vector);
-    printf("Hey\n");
-
-    free(master_css_str);
-    free(test_html_str);
-
-    return 0;
 }
 
 void htmlui_set_next_html_path(void* c, const char* html_path) {
@@ -421,4 +393,9 @@ int htmlui_get_touch_rect_count(void* c) {
 void htmlui_get_touch_rect(void* c, int index, double* start, float* x, float* y, float* z, float* width, float* height, float* extend_width, float* extend_height, mat4x4 view, mat4x4 proj) {
     LWHTMLUI* htmlui = (LWHTMLUI*)c;
     htmlui->get_touch_rect(index, start, x, y, z, width, height, extend_width, extend_height, view, proj);
+}
+
+void htmlui_render_render_commands(void* c) {
+    LWHTMLUI* htmlui = (LWHTMLUI*)c;
+    htmlui->render_render_commands();
 }

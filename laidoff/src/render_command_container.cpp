@@ -1,11 +1,8 @@
 #include "render_command_container.h"
 #include <stdio.h>
 #include <locale>
-//#include "lwgl.h"
 #include "lwtextblock.h"
 #include "lwcontext.h"
-//#include "render_text_block.h"
-//#include "render_solid.h"
 #include "lwlog.h"
 #include "htmlui.h"
 #include "lwtcpclient.h"
@@ -16,6 +13,9 @@
 #include "remtex.h"
 #include "logic.h"
 #include "lwsolid.h"
+
+extern const float default_uv_offset[2];
+extern const float default_uv_scale[2];
 
 litehtml::render_command_container::render_command_container(LWCONTEXT* pLwc, int w, int h)
     : pLwc(pLwc)
@@ -289,6 +289,7 @@ void litehtml::render_command_container::draw_background(litehtml::uint_ptr hdc,
             show_test_image ? 1.0f : bg.color.blue / 255.0f,
             show_test_image ? 0.0f : 1.0f
         );
+        render_command_queue.add_solid(&solid);
     } else if (show_test_image == 2) {
         float offset_x = (float)(bg.border_box.x - bg.position_x) / bg.image_size.width;
         float offset_y = (float)(bg.border_box.y - bg.position_y) / bg.image_size.height;
@@ -315,7 +316,9 @@ void litehtml::render_command_container::draw_background(litehtml::uint_ptr hdc,
             LWST_DEFAULT,
             0
         );
+        render_command_queue.add_solid(&solid);
     } else if (show_test_image == 3) {
+        /*
         render_atlas_sprite_ptr(pLwc,
                                 atlas_sprite_ptr.sprite,
                                 (LW_ATLAS_ENUM)lae,
@@ -325,6 +328,71 @@ void litehtml::render_command_container::draw_background(litehtml::uint_ptr hdc,
                                 conv_coord_y(bg.border_box.y),
                                 1.0f,
                                 LVT_LEFT_TOP_ANCHORED_SQUARE);
+         */
+        const float x = conv_coord_x(bg.border_box.x);
+        const float y = conv_coord_y(bg.border_box.y);
+        const float sprite_width = conv_size_x(bg.border_box.width);
+        const int lvt = LVT_LEFT_TOP_ANCHORED_SQUARE;
+        const float ui_alpha = 1.0f;
+        float uv_offset[2];
+        float uv_scale[2];
+        // pLwc->tex_atlas_width[lae], pLwc->tex_atlas_height[lae] should be filled
+        // before calling atlas_sprite_uv()
+        lw_load_tex(pLwc, lae);
+        atlas_sprite_uv(atlas_sprite_ptr.sprite,
+                        pLwc->tex_atlas_width[lae],
+                        pLwc->tex_atlas_height[lae],
+                        uv_offset,
+                        uv_scale);
+        const float sprite_aspect_ratio = uv_scale[0] / uv_scale[1];
+        if (lae_alpha != LAE_DONTCARE) {
+            lw_load_tex(pLwc, lae_alpha);
+            LWSOLID solid;
+            mat4x4 identity_view;
+            mat4x4_identity(identity_view);
+            lwsolid_make_command_vb_ui_alpha_uv_shader_view_proj(&solid,
+                                                                 x,
+                                                                 y,
+                                                                 sprite_width,
+                                                                 sprite_width / sprite_aspect_ratio,
+                                                                 pLwc->tex_atlas[lae],
+                                                                 pLwc->tex_atlas[lae_alpha],
+                                                                 lvt,
+                                                                 ui_alpha,
+                                                                 0.0f,
+                                                                 0.0f,
+                                                                 0.0f,
+                                                                 0.0f,
+                                                                 uv_offset,
+                                                                 uv_scale,
+                                                                 LWST_ETC1,
+                                                                 identity_view,
+                                                                 pLwc->proj);
+            render_command_queue.add_solid(&solid);
+        } else {
+            LWSOLID solid;
+            mat4x4 identity_view;
+            mat4x4_identity(identity_view);
+            lwsolid_make_command_vb_ui_uv_shader_rot_view_proj(&solid,
+                                                               x,
+                                                               y,
+                                                               sprite_width,
+                                                               sprite_width / sprite_aspect_ratio,
+                                                               pLwc->tex_atlas[lae],
+                                                               lvt,
+                                                               ui_alpha,
+                                                               0.0f,
+                                                               0.0f,
+                                                               0.0f,
+                                                               0.0f,
+                                                               uv_offset,
+                                                               uv_scale,
+                                                               LWST_DEFAULT,
+                                                               0,
+                                                               identity_view,
+                                                               pLwc->proj);
+            render_command_queue.add_solid(&solid);
+        }
     } else if (show_test_image == 4 && remtex_id) {
         if (alpha_remtex_id == 0) {
             LWSOLID solid;
@@ -344,46 +412,51 @@ void litehtml::render_command_container::draw_background(litehtml::uint_ptr hdc,
                 0,
                 LWST_DEFAULT
             );
+            render_command_queue.add_solid(&solid);
         } else {
             LWSOLID solid;
-            lwsolid_make_command_vb_ui_alpha(
-                &solid,
-                conv_coord_x(bg.border_box.x),
-                conv_coord_y(bg.border_box.y),
-                conv_size_x(bg.border_box.width),
-                conv_size_y(bg.border_box.height),
-                remtex_id,
-                alpha_remtex_id,
-                LVT_LEFT_TOP_ANCHORED_SQUARE,
-                bg.is_root ? 0.0f : show_test_image ? 1.0f : bg.color.alpha / 255.0f,
-                show_test_image ? 1.0f : bg.color.red / 255.0f,
-                show_test_image ? 1.0f : bg.color.green / 255.0f,
-                show_test_image ? 1.0f : bg.color.blue / 255.0f,
-                show_test_image ? 0.0f : 1.0f
-            );
+            lwsolid_make_command_vb_ui_alpha(&solid,
+                                             conv_coord_x(bg.border_box.x),
+                                             conv_coord_y(bg.border_box.y),
+                                             conv_size_x(bg.border_box.width),
+                                             conv_size_y(bg.border_box.height),
+                                             remtex_id,
+                                             alpha_remtex_id,
+                                             LVT_LEFT_TOP_ANCHORED_SQUARE,
+                                             bg.is_root ? 0.0f : show_test_image ? 1.0f : bg.color.alpha / 255.0f,
+                                             show_test_image ? 1.0f : bg.color.red / 255.0f,
+                                             show_test_image ? 1.0f : bg.color.green / 255.0f,
+                                             show_test_image ? 1.0f : bg.color.blue / 255.0f,
+                                             show_test_image ? 0.0f : 1.0f);
+            render_command_queue.add_solid(&solid);
         }
     } else {
         LWSOLID solid;
-        lwsolid_make_command_vb_ui_flip_y_uv_shader(
-            &solid,
-            conv_coord_x(bg.border_box.x),
-            conv_coord_y(bg.border_box.y),
-            conv_size_x(bg.border_box.width),
-            conv_size_y(bg.border_box.height),
-            show_test_image ? pLwc->tex_atlas[lae] : 0,
-            LVT_LEFT_TOP_ANCHORED_SQUARE,
-            bg.is_root ? 0.0f : show_test_image ? 1.0f : bg.color.alpha / 255.0f,
-            show_test_image ? 1.0f : bg.color.red / 255.0f,
-            show_test_image ? 1.0f : bg.color.green / 255.0f,
-            show_test_image ? 1.0f : bg.color.blue / 255.0f,
-            show_test_image ? 0.0f : 1.0f,
-            0,
-            LWST_DEFAULT
-        );
+        mat4x4 identity_view;
+        mat4x4_identity(identity_view);
+        lwsolid_make_command_vb_ui_uv_shader_rot_view_proj(&solid,
+                                                           conv_coord_x(bg.border_box.x),
+                                                           conv_coord_y(bg.border_box.y),
+                                                           conv_size_x(bg.border_box.width),
+                                                           conv_size_y(bg.border_box.height),
+                                                           show_test_image ? pLwc->tex_atlas[lae] : 0,
+                                                           LVT_LEFT_TOP_ANCHORED_SQUARE,
+                                                           bg.is_root ? 0.0f : show_test_image ? 1.0f : bg.color.alpha / 255.0f,
+                                                           show_test_image ? 1.0f : bg.color.red / 255.0f,
+                                                           show_test_image ? 1.0f : bg.color.green / 255.0f,
+                                                           show_test_image ? 1.0f : bg.color.blue / 255.0f,
+                                                           show_test_image ? 0.0f : 1.0f,
+                                                           default_uv_offset,
+                                                           default_uv_scale,
+                                                           LWST_DEFAULT,
+                                                           0,
+                                                           identity_view,
+                                                           pLwc->proj);
+        render_command_queue.add_solid(&solid);
     }
 }
 
-void litehtml::render_command_container::draw_border_rect(const litehtml::border& border, int x, int y, int w, int h, LW_VBO_TYPE lvt, const litehtml::web_color& color) const {
+void litehtml::render_command_container::draw_border_rect(const litehtml::border& border, int x, int y, int w, int h, LW_VBO_TYPE lvt, const litehtml::web_color& color) {
     if (w <= 0 || h <= 0) {
         return;
     }
@@ -391,22 +464,27 @@ void litehtml::render_command_container::draw_border_rect(const litehtml::border
         return;
     }
     LWSOLID solid;
-    lwsolid_make_command_vb_ui_flip_y_uv_shader(
-        &solid,
-        conv_coord_x(x),
-        conv_coord_y(y),
-        conv_size_x(w),
-        conv_size_y(h),
-        0,
-        lvt,
-        color.alpha / 255.0f,
-        color.red / 255.0f,
-        color.green / 255.0f,
-        color.blue / 255.0f,
-        1.0f,
-        0,
-        LWST_DEFAULT
-    );
+    mat4x4 identity_view;
+    mat4x4_identity(identity_view);
+    lwsolid_make_command_vb_ui_uv_shader_rot_view_proj(&solid,
+                                                       conv_coord_x(x),
+                                                       conv_coord_y(y),
+                                                       conv_size_x(w),
+                                                       conv_size_y(h),
+                                                       0,
+                                                       lvt,
+                                                       color.alpha / 255.0f,
+                                                       color.red / 255.0f,
+                                                       color.green / 255.0f,
+                                                       color.blue / 255.0f,
+                                                       1.0f,
+                                                       default_uv_offset,
+                                                       default_uv_scale,
+                                                       LWST_DEFAULT,
+                                                       0,
+                                                       identity_view,
+                                                       pLwc->proj);
+    render_command_queue.add_solid(&solid);
 }
 
 void litehtml::render_command_container::draw_borders(litehtml::uint_ptr hdc, const litehtml::borders & borders, const litehtml::position & draw_pos, bool root) {
