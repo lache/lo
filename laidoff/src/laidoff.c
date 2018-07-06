@@ -1139,6 +1139,15 @@ void lwc_prerender_mutable_context(LWCONTEXT* pLwc) {
         puck_game_update_world_roll(pLwc->puck_game);
         puck_game_follow_cam(pLwc, pLwc->puck_game);
     }
+    if (pLwc->htmlui) {
+        if (pLwc->game_scene == LGS_TTL
+            || (pLwc->game_scene == LGS_PUCK_GAME && pLwc->puck_game->show_html_ui)) {
+            htmlui_update_on_render_thread(pLwc->htmlui);
+        }
+    }
+    if (pLwc->game_scene == LGS_TTL) {
+        
+    }
     if (pLwc->udp == 0 || pLwc->udp->ready == 0) {
         return;
     }

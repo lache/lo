@@ -11,7 +11,7 @@ public:
     void add_solid(const LWSOLID* solid);
     void add_text_block(const LWTEXTBLOCK* text_block);
     void clear();
-    void render(const LWCONTEXT* pLwc);
+    void render(const LWCONTEXT* pLwc, int scroll_y);
 private:
     enum LW_RENDER_COMMAND_TYPE {
         LRC_RENDER_SOLID,

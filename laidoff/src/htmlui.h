@@ -29,6 +29,7 @@ void htmlui_add_touch_rect(void* c, float x, float y, float z, float width, floa
 int htmlui_get_touch_rect_count(void* c);
 void htmlui_get_touch_rect(void* c, int index, double* start, float* x, float* y, float* z, float* width, float* height, float* extend_width, float* extend_height, mat4x4 view, mat4x4 proj);
 void htmlui_render_render_commands(void* c);
+void htmlui_update_on_render_thread(void* c);
 #ifdef __cplusplus
 }
 #endif

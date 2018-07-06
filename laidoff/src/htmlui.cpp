@@ -24,7 +24,13 @@ public:
         , client_width(w)
         , client_height(h)
         , refresh_html_body(0)
-        , touch_rect(4) {
+        , touch_rect(4)
+        , scroll_y(0)
+        , scroll_dy(0)
+        , mouse_down(false)
+        , mouse_down_nx(0)
+        , mouse_down_ny(0)
+        , mouse_dragging(false) {
         LWMUTEX_INIT(parsing_mutex);
         std::shared_ptr<char> master_css_str(create_string_from_file(ASSETS_BASE_PATH "css" PATH_SEPARATOR "master.css"), free);
         browser_context.load_master_stylesheet(master_css_str.get());
@@ -62,23 +68,24 @@ public:
     bool load_page(const char* html_path) {
         std::shared_ptr<char> html_str(create_string_from_file(html_path), free);
         if (html_str) {
-            lock();
-            container.clear_remtex_name_hash_set();
-            container.clear_render_command_queue();
-            doc = litehtml::document::createFromString(html_str.get(), &container, &browser_context);
-            last_html_str = html_str.get();
-            unlock();
+            load_body(html_str.get());
             return true;
         }
         return false;
     }
     void load_body(const char* html_body) {
         lock();
-        container.clear_remtex_name_hash_set();
-        container.clear_render_command_queue();
-        doc = litehtml::document::createFromString(html_body, &container, &browser_context);
+        load_body_internal(html_body);
         last_html_str = html_body;
         unlock();
+    }
+    void load_body_internal(const char* html_body) {
+        container.clear_remtex_name_hash_set();
+        container.clear_render_command_queue();
+        scroll_y = 0;
+        scroll_dy = 0;
+        doc = litehtml::document::createFromString(html_body, &container, &browser_context);
+        // root document size can be obtained after calling doc->render()
     }
     void lock() {
         LWMUTEX_LOCK(parsing_mutex);
@@ -88,17 +95,19 @@ public:
     }
     void render_page() {
         doc->render(client_width);
+        document_size.width = 0;
+        document_size.height = 0;
+        doc->root()->calc_document_size(document_size);
+        LOGI("HTML UI document size: %d x %d", document_size.width, document_size.height);
     }
     void draw() {
-        litehtml::position clip(0, 0, client_width, client_height);
+        litehtml::position clip(0, 0, document_size.width, document_size.height);
         doc->draw(0, 0, 0, &clip);
     }
     void redraw_fbo() {
         LOGI("Redrawing FBO with the same HTML data with client size %d x %d...", client_width, client_height);
         lock();
-        container.clear_remtex_name_hash_set();
-        container.clear_render_command_queue();
-        doc = litehtml::document::createFromString(last_html_str.c_str(), &container, &browser_context);
+        load_body_internal(last_html_str.c_str());
         render_page();
         if (lwfbo_prerender(pLwc, &pLwc->shared_fbo) == 0) {
             draw();
@@ -109,31 +118,50 @@ public:
     void on_lbutton_down(float nx, float ny) {
         if (doc) {
             int x = static_cast<int>(roundf(nx * client_width));
-            int y = static_cast<int>(roundf(ny * client_height));
+            int y = static_cast<int>(roundf(ny * client_height + scroll_y + scroll_dy));
             litehtml::position::vector redraw_boxes;
             doc->on_mouse_over(x, y, x, y, redraw_boxes);
             doc->on_lbutton_down(x, y, x, y, redraw_boxes);
             last_lbutton_down_element = doc->root()->get_element_by_point(x, y, x, y);
+        }
+        if (over_element(nx, ny)) {
+            mouse_down = true;
+            mouse_down_nx = nx;
+            mouse_down_ny = ny;
         }
     }
     void on_lbutton_up(float nx, float ny) {
         if (doc) {
             litehtml::position::vector redraw_boxes;
             int x = static_cast<int>(roundf(nx * client_width));
-            int y = static_cast<int>(roundf(ny * client_height));
+            int y = static_cast<int>(roundf(ny * client_height + scroll_y + scroll_dy));
             if (last_lbutton_down_element == doc->root()->get_element_by_point(x, y, x, y)) {
                 doc->on_mouse_over(x, y, x, y, redraw_boxes);
-                doc->on_lbutton_up(x, y, x, y, redraw_boxes);
+                if (mouse_dragging == false) {
+                    doc->on_lbutton_up(x, y, x, y, redraw_boxes);
+                }
             }
             last_lbutton_down_element.reset();
         }
+        mouse_down = false;
+        mouse_dragging = false;
+        scroll_y += scroll_dy;
+        scroll_dy = 0;
     }
     void on_over(float nx, float ny) {
         if (doc) {
-            litehtml::position::vector redraw_boxes;
-            int x = static_cast<int>(roundf(nx * client_width));
-            int y = static_cast<int>(roundf(ny * client_height));
-            doc->on_mouse_over(x, y, x, y, redraw_boxes);
+            // too slow to execute in render frame basis...
+            // litehtml::position::vector redraw_boxes;
+            // int x = static_cast<int>(roundf(nx * client_width));
+            // int y = static_cast<int>(roundf(ny * client_height)) + scroll_y;
+            // doc->on_mouse_over(x, y, x, y, redraw_boxes);
+        }
+        if (mouse_down) {
+            float dny = ny - mouse_down_ny;
+            if (mouse_dragging || fabsf(dny) > 0.01f) {
+                mouse_dragging = true;
+                scroll_dy = -dny * client_height;
+            }
         }
     }
     void set_next_html_path(const char* html_path) {
@@ -177,7 +205,7 @@ public:
     bool over_element(float nx, float ny) {
         if (doc) {
             int x = static_cast<int>(roundf(nx * client_width));
-            int y = static_cast<int>(roundf(ny * client_height));
+            int y = static_cast<int>(roundf(ny * client_height + scroll_y + scroll_dy));
             auto over_el = doc->root()->get_element_by_point(x, y, x, y);
             while (over_el) {
                 const auto over_el_bg = over_el->get_background();
@@ -220,7 +248,7 @@ public:
     void get_touch_rect(int index, double* start, float* x, float* y, float* z, float* width, float* height, float* extend_width, float* extend_height, mat4x4 view, mat4x4 proj) const {
         *start = touch_rect[index].start;
         *x = touch_rect[index].x;
-        *y = touch_rect[index].y;
+        *y = touch_rect[index].y + scroll_y;
         *z = touch_rect[index].z;
         *width = touch_rect[index].width;
         *height = touch_rect[index].height;
@@ -229,7 +257,27 @@ public:
         mat4x4_dup(view, touch_rect[index].view);
         mat4x4_dup(proj, touch_rect[index].proj);
     }
-    void render_render_commands() { container.render_render_commands(pLwc); }
+    void render_render_commands() { container.render_render_commands(pLwc, scroll_y + scroll_dy); }
+    void update_on_render_thread() {
+        const float retraction = 3.0f;
+        if (mouse_dragging == false) {
+            if (scroll_y < 0) {
+                // trying to scroll to top of scroll view
+                // interpolate scroll_y to '0'
+                scroll_y += (0 - scroll_y) / retraction;
+                if (scroll_y > 0) {
+                    scroll_y = 0;
+                }
+            } else if (scroll_y > document_size.height - client_height) {
+                // trying to scroll to bottom of scroll view
+                // interpolate scroll_y to 'document_size.height - client_height'
+                scroll_y += ((document_size.height - client_height) - scroll_y) / retraction;
+                if (scroll_y < document_size.height - client_height) {
+                    scroll_y = document_size.height - client_height;
+                }
+            }
+        }
+    }
 private:
     LWHTMLUI();
     LWHTMLUI(const LWHTMLUI&);
@@ -255,6 +303,13 @@ private:
         }
     };
     std::vector<TOUCHRECT> touch_rect;
+    float scroll_y;
+    float scroll_dy;
+    bool mouse_down;
+    float mouse_down_nx;
+    float mouse_down_ny;
+    bool mouse_dragging;
+    litehtml::size document_size;
 };
 
 void* htmlui_new(LWCONTEXT* pLwc) {
@@ -398,4 +453,9 @@ void htmlui_get_touch_rect(void* c, int index, double* start, float* x, float* y
 void htmlui_render_render_commands(void* c) {
     LWHTMLUI* htmlui = (LWHTMLUI*)c;
     htmlui->render_render_commands();
+}
+
+void htmlui_update_on_render_thread(void* c) {
+    LWHTMLUI* htmlui = (LWHTMLUI*)c;
+    htmlui->update_on_render_thread();
 }

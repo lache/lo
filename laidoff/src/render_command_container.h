@@ -52,7 +52,7 @@ namespace litehtml {
         void set_client_size(int client_width, int client_height);
         void on_anchor_click_ex(const litehtml::tchar_t* url, const litehtml::element::ptr& el, bool add_touch_rect);
         void clear_render_command_queue() { render_command_queue.clear(); }
-        void render_render_commands(const LWCONTEXT* pLwc) { render_command_queue.render(pLwc); }
+        void render_render_commands(const LWCONTEXT* pLwc, int scroll_y) { render_command_queue.render(pLwc, scroll_y); }
 	private:
         void draw_border_rect(const litehtml::border& border, int x, int y, int w, int h, LW_VBO_TYPE lvt, const litehtml::web_color& color);
         float conv_size_x(int x) const { return static_cast<float>(x); }
