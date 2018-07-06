@@ -2086,7 +2086,7 @@ void lwttl_update_view_proj(const LWTTLFIELDVIEWPORT* vp,
     const float aspect_ratio = (float)viewport_width / viewport_height;
     // half_height := (how many cells in vertical axis) / 2
     // (relative to main viewport height)
-    float half_height = 2.0f * (float)viewport_height / vp0->field_viewport_height;
+    float half_height = 5.0f * (float)viewport_height / vp0->field_viewport_height;
     float near_z = 0.1f;
     float far_z = 1000.0f;
     // eye(camera) position
