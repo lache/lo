@@ -21,7 +21,7 @@ const receive = async (seaUdpClient, buf, remote) => {
       row.name,
       row.x,
       row.y,
-      row.owner_id,
+      row.user_id,
       row.seaport_type
     )
     portCount++
@@ -38,7 +38,7 @@ const receive = async (seaUdpClient, buf, remote) => {
       row.name,
       row.x,
       row.y,
-      row.owner_id
+      row.user_id
     )
     shipyardCount++
   }

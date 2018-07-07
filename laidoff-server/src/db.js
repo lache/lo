@@ -1,5 +1,4 @@
 const raname = require('random-name')
-const queryMission = require('./query/mission')
 const querySeaport = require('./query/seaport')
 const queryShip = require('./query/ship')
 const queryShiproute = require('./query/shiproute')

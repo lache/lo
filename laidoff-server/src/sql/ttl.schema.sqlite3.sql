@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS `user` (
 DROP TABLE IF EXISTS `shipyard`;
 CREATE TABLE IF NOT EXISTS `shipyard` (
 	`shipyard_id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-	`owner_id`	INTEGER,
+	`user_id`	INTEGER,
 	`name`	TEXT,
 	`x`	REAL,
 	`y`	REAL
@@ -50,24 +50,15 @@ CREATE TABLE IF NOT EXISTS `seaport` (
 	`name`	VARCHAR ( 80 ) NOT NULL,
 	`x`	REAL NOT NULL,
 	`y`	REAL NOT NULL,
-	`owner_id`	INTEGER,
+	`user_id`	INTEGER,
 	`seaport_type`	INTEGER
-);
-DROP TABLE IF EXISTS `mission`;
-CREATE TABLE IF NOT EXISTS `mission` (
-	`mission_id`	INTEGER PRIMARY KEY AUTOINCREMENT,
-	`departure_id`	INTEGER NOT NULL,
-	`arrival_id`	INTEGER NOT NULL,
-	`reward`	INTEGER NOT NULL,
-	`expired`	DATETIME DEFAULT CURRENT_TIMESTAMP,
-	`updated`	DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 DROP TABLE IF EXISTS `captain`;
 CREATE TABLE IF NOT EXISTS `captain` (
 	`captain_id`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
 	`name`	TEXT,
 	`template_id`	INTEGER,
-	`owner_user_id`	INTEGER
+	`user_id`	INTEGER
 );
 DROP INDEX IF EXISTS `ux_guid`;
 CREATE UNIQUE INDEX IF NOT EXISTS `ux_guid` ON `user` (
