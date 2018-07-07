@@ -65,4 +65,5 @@ void sea_object::fill_packet(LWPTTLROUTEOBJECT& p) const {
     } else if (state == SOS_BREAKDOWN) {
         p.route_flags.breakdown = 1;
     }
+    p.template_id = template_id;
 }

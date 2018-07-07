@@ -2,6 +2,8 @@
 #include "sea_object.hpp"
 #include "cargo.h"
 
+struct spawn_ship_command;
+
 namespace ss {
     namespace bg = boost::geometry;
     namespace bgi = boost::geometry::index;
@@ -16,7 +18,8 @@ namespace ss {
 
     public:
         sea(boost::asio::io_service& io_service);
-        int spawn(int db_id, float x, float y, float w, float h, int expect_land);
+        int spawn(int db_id, float x, float y, float w, float h, int expect_land, int template_id);
+        int spawn(const spawn_ship_command& spawn_ship_cmd);
         void despawn(int type);
         void teleport_to(int id, float x, float y, float vx = 0, float vy = 0);
         void query_near_lng_lat_to_packet(float lng, float lat, float ex_lng, float ex_lat, std::vector<sea_object>& sop_list) const;

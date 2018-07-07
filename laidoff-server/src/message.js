@@ -66,6 +66,7 @@ const SpawnShipStruct = Struct()
   .word32Sle('port2Id')
   .word32Sle('replyId')
   .word32Sle('expectLand')
+  .word32Sle('shipTemplateId')
 SpawnShipStruct.allocate()
 
 const SpawnShipReplyStruct = Struct()

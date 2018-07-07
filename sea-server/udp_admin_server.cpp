@@ -8,6 +8,7 @@
 #include "udp_server.hpp"
 #include "packet.h"
 #include "shipyard.hpp"
+#include "adminmessage.h"
 using namespace ss;
 
 static std::string make_daytime_string() {
@@ -54,118 +55,6 @@ void udp_admin_server::handle_send(const boost::system::error_code & error, std:
     }
 }
 
-struct command {
-    char type;
-    char padding0;
-    char padding1;
-    char padding2;
-};
-
-struct spawn_command {
-    command _;
-    int expected_db_id;
-    float x;
-    float y;
-};
-
-struct travel_to_command {
-    command _;
-    char guid[64];
-    float x;
-    float y;
-};
-
-struct teleport_to_command {
-    command _;
-    char guid[64];
-    float x;
-    float y;
-};
-
-struct spawn_ship_command {
-    command _;
-    int expected_db_id;
-    float x;
-    float y;
-    int port1_id;
-    int port2_id;
-    int reply_id;
-    int expect_land;
-};
-
-struct spawn_ship_command_reply {
-    command _;
-    int db_id;
-    int port1_id;
-    int port2_id;
-    int routed;
-    int reply_id;
-};
-
-struct delete_ship_command {
-    command _;
-    int ship_id;
-};
-
-struct spawn_port_command {
-    command _;
-    int expected_db_id; // DB key
-    char name[64];
-    int xc;
-    int yc;
-    int owner_id;
-    int reply_id;
-    int expect_land;
-};
-
-struct spawn_port_command_reply {
-    command _;
-    int db_id; // DB key
-    int reply_id;
-    int existing;
-    int too_close;
-};
-
-struct delete_port_command {
-    command _;
-    int port_id;
-};
-
-struct spawn_shipyard_command {
-    command _;
-    int expected_db_id; // DB key
-    char name[64];
-    int xc;
-    int yc;
-    int owner_id;
-    int reply_id;
-};
-
-struct spawn_shipyard_command_reply {
-    command _;
-    int db_id; // DB key
-    int reply_id;
-    int existing;
-};
-
-struct delete_shipyard_command {
-    command _;
-    int shipyard_id;
-};
-
-struct query_nearest_shipyard_for_ship_command {
-    command _;
-    int ship_id;
-    int reply_id;
-};
-
-struct query_nearest_shipyard_for_ship_command_reply {
-    command _;
-    int reply_id;
-    int ship_id;
-    int shipyard_id;
-};
-
 void udp_admin_server::handle_receive(const boost::system::error_code& error, std::size_t bytes_transferred) {
     if (!error || error == boost::asio::error::message_size) {
         command* cp = reinterpret_cast<command*>(recv_buffer_.data());
@@ -189,11 +78,11 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
         {
             assert(bytes_transferred == sizeof(spawn_ship_command));
             LOGIx("Spawn Ship type: %1%", static_cast<int>(cp->type));
-            const spawn_ship_command* spawn = reinterpret_cast<spawn_ship_command*>(recv_buffer_.data());
+            const ::spawn_ship_command* spawn = reinterpret_cast<::spawn_ship_command*>(recv_buffer_.data());
             int reply_id = spawn->reply_id;
             int expect_land = spawn->expect_land;
-            xy32 spawn_pos = { static_cast<int>(spawn->x), static_cast<int>(spawn->y) };
-            int id = sea_->spawn(spawn->expected_db_id, spawn->x, spawn->y, 1, 1, spawn->expect_land);
+            //xy32 spawn_pos = { static_cast<int>(spawn->x), static_cast<int>(spawn->y) };
+            int id = sea_->spawn(*spawn);
             udp_server_->gold_used(static_cast<int>(spawn->x), static_cast<int>(spawn->y), 1000);
             int id1 = spawn->port1_id;
             int id2 = spawn->port2_id;

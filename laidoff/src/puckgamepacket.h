@@ -279,6 +279,7 @@ typedef struct _LWPTTLROUTEBITFIELD {
 
 typedef struct _LWPTTLROUTEOBJECT {
     int db_id;
+    int template_id;
     float route_param;
     float route_speed;
     LWPTTLROUTEBITFIELD route_flags;

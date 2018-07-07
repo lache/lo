@@ -9,10 +9,12 @@ const execCreateShipWithRoute = async (
   yc0,
   expectLand,
   r0,
-  r1
+  r1,
+  shipTemplateId
 ) => {
   const shipName = `${raname.middle()} ${raname.middle()}`
   const dbId = db.createShip(userId, shipName, expectLand)
+  db.setShipTemplateId(dbId, shipTemplateId)
   const p0 = db.findPort(r0)
   const p1 = db.findPort(r1)
   if (p0 && p1) {
@@ -23,7 +25,8 @@ const execCreateShipWithRoute = async (
       yc0,
       p0.seaport_id,
       p1.seaport_id,
-      expectLand
+      expectLand,
+      shipTemplateId
     )
     if (reply.dbId === dbId) {
       return dbId

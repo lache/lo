@@ -274,8 +274,9 @@ static void render_vehicle(const LWCONTEXT* pLwc,
     glDrawArrays(GL_TRIANGLES, 0, vbo->vertex_count);
 }
 
-static void render_ship(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp, float x, float y, float z, float rot_z, LWTTLRENDERCONTEXT* render_context, int db_id) {
-    render_vehicle(pLwc, vp, x, y, z, rot_z, LWST_DEFAULT_NORMAL_COLOR, LVT_SHIP1, LAE_DONTCARE, 0.075f, render_context, db_id);
+static void render_ship(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp, float x, float y, float z, float rot_z, LWTTLRENDERCONTEXT* render_context, int db_id, int template_id) {
+    int lvt = template_id == 1 ? LVT_SHIP1 : LVT_SHIP;
+    render_vehicle(pLwc, vp, x, y, z, rot_z, LWST_DEFAULT_NORMAL_COLOR, lvt, LAE_DONTCARE, 0.075f, render_context, db_id);
 }
 
 static void render_truck(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp, float x, float y, float z, float rot_z, LWTTLRENDERCONTEXT* render_context, int db_id) {
@@ -1147,7 +1148,15 @@ static void render_sea_objects_nameplate(const LWCONTEXT* pLwc, const LWTTLFIELD
         char obj_nameplate[256];
         obj_nameplate[0] = 0;
         const char* route_state = lwttl_route_state(&ttl_dynamic_state->obj[i]);
-        if (view_scale <= 4) {
+        if (view_scale == 1) {
+            if (ttl_dynamic_state->obj[i].route_flags.breakdown) {
+                sprintf(obj_nameplate, "%s%s", LW_UTF8_TTL_CHAR_ICON_BREAKDOWN, route_state);
+            } else if (ttl_dynamic_state->obj[i].route_flags.sailing) {
+                sprintf(obj_nameplate, "%s%.1f", LW_UTF8_TTL_CHAR_ICON_SHIP, ttl_dynamic_state->obj[i].route_param);
+            } else {
+                sprintf(obj_nameplate, "%s", route_state);
+            }
+        } else if (view_scale <= 4) {
             if (ttl_dynamic_state->obj[i].route_flags.breakdown) {
                 sprintf(obj_nameplate, "%s%s", LW_UTF8_TTL_CHAR_ICON_BREAKDOWN, route_state);
             } else if (ttl_dynamic_state->obj[i].route_flags.sailing) {
@@ -1235,7 +1244,8 @@ static void render_sea_objects(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* 
                         0,
                         rot_z,
                         render_context,
-                        obj->db_id);
+                        obj->db_id,
+                        obj->template_id);
         } else {
             render_truck(pLwc,
                          vp,

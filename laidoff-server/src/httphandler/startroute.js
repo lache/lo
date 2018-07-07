@@ -24,7 +24,8 @@ module.exports = app => {
             0,
             shiproute.port1_id,
             shiproute.port2_id,
-            shiproute.ship_type
+            shiproute.ship_type,
+            shiproute.template_id
           )
         } else {
           errMsg = '정박중인 선박 아님'

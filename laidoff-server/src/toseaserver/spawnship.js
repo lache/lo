@@ -8,7 +8,8 @@ const send = async (
   y,
   port1Id,
   port2Id,
-  expectLand
+  expectLand,
+  shipTemplateId
 ) => {
   const buf = message.SpawnShipStruct.buffer()
   for (let i = 0; i < buf.length; i++) {
@@ -23,6 +24,7 @@ const send = async (
   message.SpawnShipStruct.fields.port2Id = port2Id
   message.SpawnShipStruct.fields.replyId = replyId
   message.SpawnShipStruct.fields.expectLand = expectLand
+  message.SpawnShipStruct.fields.shipTemplateId = shipTemplateId
   return replyWaiter.sendAndReplyFromSea(seaUdpClient, buf, replyId, err => {
     if (err) {
       console.error('sea udp SpawnShipStruct client error:', err)

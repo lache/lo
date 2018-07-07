@@ -57,7 +57,8 @@ const receive = async (seaUdpClient, buf, remote) => {
         0,
         row.port1_id,
         row.port2_id,
-        row.ship_type
+        row.ship_type,
+        row.template_id
       )
       shipShiprouteCount++
     } else {

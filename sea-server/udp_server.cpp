@@ -119,7 +119,9 @@ void udp_server::send_route_state(float lng, float lat, float ex_lng, float ex_l
     size_t reply_obj_index = 0;
     for (sea_object const& v : sop_list) {
         auto& o = reply->obj[reply_obj_index];
+        // ship info
         v.fill_packet(o);
+        // route info
         auto it = route_map_.find(v.get_db_id());
         if (it != route_map_.end() && it->second) {
             o.route_param = it->second->get_param();

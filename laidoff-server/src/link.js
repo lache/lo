@@ -36,7 +36,8 @@ const link = async (req, res, expectLand) => {
         yc0,
         expectLand,
         r0.seaportId,
-        r1.seaportId
+        r1.seaportId,
+        1
       )
       if (shipDbId > 0) {
         resultMsg = '새 항로 등록 성공'
