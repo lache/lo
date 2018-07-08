@@ -42,7 +42,7 @@ void set_tex_filter(int min_filter, int mag_filter);
 void bind_all_fvertex_attrib(const LWCONTEXT* pLwc, int fvbo_index);
 void bind_all_vertex_attrib(const LWCONTEXT* pLwc, int vbo_index);
 void bind_all_color_vertex_attrib(const LWCONTEXT* pLwc, int vbo_index);
-void bind_all_vertex_attrib_font(const LWCONTEXT* pLwc, int vbo_index);
+void bind_all_vertex_attrib_font(const LWCONTEXT* pLwc, int vbo_index, int shader_index);
 void bind_all_vertex_attrib_etc1_with_alpha(const LWCONTEXT* pLwc, int vbo_index);
 void bind_all_skin_vertex_attrib(const LWCONTEXT* pLwc, int vbo_index);
 void bind_all_fan_vertex_attrib(const LWCONTEXT* pLwc, int vbo_index);

@@ -10,13 +10,13 @@ CREATE TABLE IF NOT EXISTS `mission` (
   PRIMARY KEY (`mission_id`)
 ) ENGINE=InnoDB CHARSET=utf8mb4;
 
--- DROP TABLE IF EXISTS `region`;
-CREATE TABLE IF NOT EXISTS `region` (
-  `region_id` int(11) NOT NULL AUTO_INCREMENT,
+-- DROP TABLE IF EXISTS `seaport`;
+CREATE TABLE IF NOT EXISTS `seaport` (
+  `seaport_id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(80) NOT NULL,
   `x` float NOT NULL,
   `y` float NOT NULL,
-  PRIMARY KEY (`region_id`)
+  PRIMARY KEY (`seaport_id`)
 ) ENGINE=InnoDB CHARSET=utf8mb4;
 
 -- DROP TABLE IF EXISTS `ship`;

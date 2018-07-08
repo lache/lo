@@ -10,6 +10,7 @@ namespace ss {
 
         route(const std::vector<xy32>& waypoints, int seaport1_id, int seaport2_id, int expectLand);
         void set_velocity(float v) { velocity = v; }
+        float get_velocity() const { return velocity; }
         void update(float delta_time);
         void update_breakdown(float delta_time);
         fxfyvxvy get_pos(bool& finished) const;

@@ -16,8 +16,11 @@
 #include "remtex.h"
 #include "logic.h"
 
+extern "C" unsigned long hash(const unsigned char *str);
+
 litehtml::text_container::text_container(LWCONTEXT* pLwc, int w, int h)
-    : pLwc(pLwc) {
+    : pLwc(pLwc)
+    , font_handle_seq(0) {
     set_client_size(w, h);
 }
 
@@ -25,9 +28,10 @@ litehtml::text_container::~text_container() {
 }
 
 litehtml::uint_ptr litehtml::text_container::create_font(const litehtml::tchar_t * faceName, int size, int weight, litehtml::font_style italic, unsigned int decoration, litehtml::font_metrics * fm) {
-    LOGIx("create_font: faceName=%s, size=%d, weight=%d\n", faceName, size, weight);
-    size_t font_idx = font_sizes.size();
-    font_sizes.push_back(size);
+    font_handle_seq++;
+    litehtml::uint_ptr font_handle = reinterpret_cast<litehtml::uint_ptr>(font_handle_seq);
+    LOGIx("create_font: faceName=%s, size=%d, weight=%d --> font handle %d", faceName, size, weight, font_handle);
+    font_sizes[font_handle] = size;
     if (client_aspect_ratio > 1) {
         //fm->height = static_cast<int>(roundf(size * 0.8f * client_height / 720.0f));
         //fm->descent = static_cast<int>(roundf(size * 0.1f * client_height / 720.0f));
@@ -35,13 +39,15 @@ litehtml::uint_ptr litehtml::text_container::create_font(const litehtml::tchar_t
         //fm->height = static_cast<int>(roundf(size * 0.8f * client_width / 1280.0f));
         //fm->descent = static_cast<int>(roundf(size * 0.1f * client_width / 1280.0f));
     }
-    fm->height = static_cast<int>(size / 5.5f);// static_cast<int>(roundf(size * 0.8f * client_height / 720.0f));
+    fm->height = static_cast<int>(font_sizes[font_handle] / 5.5f);// static_cast<int>(roundf(size * 0.8f * client_height / 720.0f));
     fm->descent = static_cast<int>(fm->height / 4.5f);
     //fm->ascent = fm->height / 4;
-    return litehtml::uint_ptr(font_idx);// litehtml::uint_ptr();
+    return font_handle;
 }
 
 void litehtml::text_container::delete_font(litehtml::uint_ptr hFont) {
+    LOGIx("delete_font: font handle %d", hFont);
+    font_sizes.erase(hFont);
 }
 
 void litehtml::text_container::fill_text_block(LWTEXTBLOCK* text_block, int x, int y, const char* text, int size, const litehtml::web_color& color) {
@@ -66,21 +72,21 @@ void litehtml::text_container::fill_text_block(LWTEXTBLOCK* text_block, int x, i
 int litehtml::text_container::text_width(const litehtml::tchar_t * text, litehtml::uint_ptr hFont) {
     LWTEXTBLOCK text_block;
     LWTEXTBLOCKQUERYRESULT query_result;
-    int size = font_sizes[(int)(size_t)hFont];
+    int size = font_sizes[hFont];
     litehtml::web_color c;
     fill_text_block(&text_block, 0, 0, text, size, c);
-    render_query_only_text_block(pLwc, &text_block, &query_result);
+    lwtextblock_query_only_text_block(pLwc, &text_block, &query_result);
     //return static_cast<int>(query_result.total_glyph_width / (2 * client_rt_x) * client_width);
     return static_cast<int>(query_result.total_glyph_width);
 }
 
 void litehtml::text_container::draw_text(litehtml::uint_ptr hdc, const litehtml::tchar_t * text, litehtml::uint_ptr hFont, litehtml::web_color color, const litehtml::position & pos) {
     //wprintf(_t("draw_text: '%s' (x=%d,y=%d,color=0x%02X%02X%02X|%02X)\n"), text, pos.x, pos.y, color.red, color.green, color.blue, color.alpha);
-    int size = font_sizes[(int)(size_t)hFont];
+    int size = font_sizes[hFont];
     LWTEXTBLOCK text_block;
     fill_text_block(&text_block, pos.x, pos.y, text, size, color);
     //render_text_block(pLwc, &text_block);
-    render_text_block_two_pass(pLwc, &text_block);
+    render_text_block_two_pass_color(pLwc, &text_block);
 }
 
 int litehtml::text_container::pt_to_px(int pt) {
@@ -98,10 +104,12 @@ const litehtml::tchar_t * litehtml::text_container::get_default_font_name() cons
 
 void litehtml::text_container::draw_list_marker(litehtml::uint_ptr hdc, const litehtml::list_marker & marker) {
     LOGIx("draw_list_marker");
-    int size = font_sizes[0];
-    LWTEXTBLOCK text_block;
-    fill_text_block(&text_block, marker.pos.x + marker.pos.width, marker.pos.y + marker.pos.height, "*", size, marker.color);
-    render_text_block(pLwc, &text_block);
+    if (font_sizes.begin() != font_sizes.end()) {
+        int size = font_sizes.begin()->second;
+        LWTEXTBLOCK text_block;
+        fill_text_block(&text_block, marker.pos.x + marker.pos.width, marker.pos.y + marker.pos.height, "*", size, marker.color);
+        render_text_block(pLwc, &text_block);
+    }
 }
 
 void litehtml::text_container::load_image(const litehtml::tchar_t * src, const litehtml::tchar_t * baseurl, bool redraw_on_ready) {
@@ -127,12 +135,12 @@ static LWATLASSPRITEPTR atlas_sprite_ptr_from_url(const LWCONTEXT* pLwc, const s
     return atlas_sprite_ptr;
 }
 
-bool has_separate_alpha_texture(const char* remtex_name) {
+static bool has_separate_alpha_texture(const char* remtex_name) {
     return strncmp(remtex_name + strlen(remtex_name) - 2, "-a", 2) == 0
         || strncmp(remtex_name + strlen(remtex_name) - 5, "-amip", 5) == 0;
 }
 
-void separate_alpha_texture(const char* src, char* alpha_src, size_t max_alpha_src_len) {
+static void separate_alpha_texture(const char* src, char* alpha_src, size_t max_alpha_src_len) {
     size_t copy_len = LWMIN(strlen(src) - 4, max_alpha_src_len - 1);
     strncpy(alpha_src, src, copy_len);
     alpha_src[copy_len] = 0;

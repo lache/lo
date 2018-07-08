@@ -66,6 +66,7 @@ const SpawnShipStruct = Struct()
   .word32Sle('port2Id')
   .word32Sle('replyId')
   .word32Sle('expectLand')
+  .word32Sle('shipTemplateId')
 SpawnShipStruct.allocate()
 
 const SpawnShipReplyStruct = Struct()
@@ -173,6 +174,25 @@ const DeleteShipyardStruct = Struct()
   .word32Sle('shipyardId')
 DeleteShipyardStruct.allocate()
 
+const QueryNearestShipyardForShipStruct = Struct()
+  .word8Sle('type')
+  .word8Sle('padding0')
+  .word8Sle('padding1')
+  .word8Sle('padding2')
+  .word32Sle('shipId')
+  .word32Sle('replyId')
+QueryNearestShipyardForShipStruct.allocate()
+
+const QueryNearestShipyardForShipReplyStruct = Struct()
+  .word8Sle('type')
+  .word8Sle('padding0')
+  .word8Sle('padding1')
+  .word8Sle('padding2')
+  .word32Sle('replyId')
+  .word32Sle('shipId')
+  .word32Sle('shipyardId')
+QueryNearestShipyardForShipReplyStruct.allocate()
+
 module.exports = {
   SpawnStruct,
   TravelToStruct,
@@ -187,5 +207,7 @@ module.exports = {
   DeletePortStruct,
   SpawnShipyardStruct,
   SpawnShipyardReplyStruct,
-  DeleteShipyardStruct
+  DeleteShipyardStruct,
+  QueryNearestShipyardForShipStruct,
+  QueryNearestShipyardForShipReplyStruct
 }

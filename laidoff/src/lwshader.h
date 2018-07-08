@@ -9,6 +9,7 @@ typedef struct _LWCONTEXT LWCONTEXT;
 typedef enum _LW_SHADER_TYPE {
 	LWST_DEFAULT,
 	LWST_FONT,
+    LWST_PIXEL_FONT,
 	LWST_ETC1,
 	LWST_SKIN,
 	LWST_FAN,
@@ -36,7 +37,8 @@ typedef struct _LWSHADERFILENAME {
 } LWSHADERFILENAME;
 static const LWSHADERFILENAME shader_filename[] = {
 	{ LWST_DEFAULT,                 "Default Shader",               LWVS_DEFAULT,				LWFS_DEFAULT,},
-	{ LWST_FONT,                    "Font Shader",                  LWVS_DEFAULT,				LWFS_FONT,},
+	{ LWST_FONT,                    "Outline Font Shader",          LWVS_DEFAULT,				LWFS_FONT,},
+    { LWST_PIXEL_FONT,              "Pixel Font Shader",            LWVS_DEFAULT,               LWFS_PIXEL_FONT,},
 	{ LWST_ETC1,                    "ETC1 with Alpha Shader",       LWVS_DEFAULT,				LWFS_ETC1,},
 	{ LWST_SKIN,                    "Skin Shader",                  LWVS_SKIN,					LWFS_DEFAULT,},
 	{ LWST_FAN,                     "Fan Shader",                   LWVS_FAN,					LWFS_FAN,},

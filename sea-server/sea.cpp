@@ -4,6 +4,7 @@
 #include "udp_admin_server.hpp"
 #include "seaport.hpp"
 #include "udp_server.hpp"
+#include "adminmessage.h"
 using namespace ss;
 
 sea::sea(boost::asio::io_service& io_service)
@@ -21,7 +22,7 @@ float sea::lat_to_yc(float lat) const {
     return res_height / 2.0f - lat / 90.0f * res_height / 2.0f;
 }
 
-int sea::spawn(int expected_db_id, float x, float y, float w, float h, int expect_land) {
+int sea::spawn(int expected_db_id, float x, float y, float w, float h, int expect_land, int template_id) {
     auto obj = get_by_db_id(expected_db_id);
     if (obj) {
         LOGEP("Spawn duplicated ID %|| requested; returning the previous instance", expected_db_id);
@@ -29,10 +30,28 @@ int sea::spawn(int expected_db_id, float x, float y, float w, float h, int expec
     }
     box b(point(x, y), point(x + w, y + h));
     auto rtree_value = std::make_pair(b, expected_db_id);
+    auto sobj = std::shared_ptr<sea_object>(new sea_object(expected_db_id,
+                                                           x,
+                                                           y,
+                                                           w,
+                                                           h,
+                                                           rtree_value,
+                                                           expect_land,
+                                                           template_id));
     sea_objects.emplace(std::make_pair(expected_db_id,
-                                       std::shared_ptr<sea_object>(new sea_object(expected_db_id, x, y, w, h, rtree_value, expect_land))));
+                                       sobj));
     rtree.insert(rtree_value);
     return expected_db_id;
+}
+
+int sea::spawn(const spawn_ship_command& spawn_ship_cmd) {
+    return spawn(spawn_ship_cmd.expected_db_id,
+                 spawn_ship_cmd.x,
+                 spawn_ship_cmd.y,
+                 1,
+                 1,
+                 spawn_ship_cmd.expect_land,
+                 spawn_ship_cmd.ship_template_id);
 }
 
 void sea::despawn(int db_id) {

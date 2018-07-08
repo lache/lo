@@ -371,3 +371,24 @@ function on_ttl_ship_selected(ship_id)
         end
     end
 end
+
+function move_to_nearest_shipyard(ship_id)
+    print('move_to_nearest_shipyard')
+    lo.htmlui_execute_anchor_click(c.htmlui, string.format('/moveToNearestShipyard?shipId=%d', ship_id))
+end
+
+function open_hire_captain(ship_id)
+    print('open_hire_captain')
+    execute_anchor_click_with_history(string.format('/openHireCaptain?shipId=%d', ship_id))
+end
+
+function confirm_hire_captain(ship_id, captain_template_id)
+    --lo.show_sys_msg(c.def_sys_msg, '히힛 미구현 기능...')
+    print('confirm_hire_captain')
+    lo.htmlui_execute_anchor_click(c.htmlui, string.format('/confirmHireCaptain?shipId=%d&captainTemplateId=%d', ship_id, captain_template_id))
+end
+
+function fire_captain(ship_id)
+    print('fire_captain')
+    lo.htmlui_execute_anchor_click(c.htmlui, string.format('/fireCaptain?shipId=%d', ship_id))
+end

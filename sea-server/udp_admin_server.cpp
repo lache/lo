@@ -8,6 +8,7 @@
 #include "udp_server.hpp"
 #include "packet.h"
 #include "shipyard.hpp"
+#include "adminmessage.h"
 using namespace ss;
 
 static std::string make_daytime_string() {
@@ -54,105 +55,6 @@ void udp_admin_server::handle_send(const boost::system::error_code & error, std:
     }
 }
 
-struct command {
-    char type;
-    char padding0;
-    char padding1;
-    char padding2;
-};
-
-struct spawn_command {
-    command _;
-    int expected_db_id;
-    float x;
-    float y;
-};
-
-struct travel_to_command {
-    command _;
-    char guid[64];
-    float x;
-    float y;
-};
-
-struct teleport_to_command {
-    command _;
-    char guid[64];
-    float x;
-    float y;
-};
-
-struct spawn_ship_command {
-    command _;
-    int expected_db_id;
-    float x;
-    float y;
-    int port1_id;
-    int port2_id;
-    int reply_id;
-    int expect_land;
-};
-
-struct spawn_ship_command_reply {
-    command _;
-    int db_id;
-    int port1_id;
-    int port2_id;
-    int routed;
-    int reply_id;
-};
-
-struct delete_ship_command {
-    command _;
-    int ship_id;
-};
-
-struct spawn_port_command {
-    command _;
-    int expected_db_id; // DB key
-    char name[64];
-    int xc;
-    int yc;
-    int owner_id;
-    int reply_id;
-    int expect_land;
-};
-
-struct spawn_port_command_reply {
-    command _;
-    int db_id; // DB key
-    int reply_id;
-    int existing;
-    int too_close;
-};
-
-struct delete_port_command {
-    command _;
-    int port_id;
-};
-
-struct spawn_shipyard_command {
-    command _;
-    int expected_db_id; // DB key
-    char name[64];
-    int xc;
-    int yc;
-    int owner_id;
-    int reply_id;
-};
-
-struct spawn_shipyard_command_reply {
-    command _;
-    int db_id; // DB key
-    int reply_id;
-    int existing;
-};
-
-struct delete_shipyard_command {
-    command _;
-    int shipyard_id;
-};
-
 void udp_admin_server::handle_receive(const boost::system::error_code& error, std::size_t bytes_transferred) {
     if (!error || error == boost::asio::error::message_size) {
         command* cp = reinterpret_cast<command*>(recv_buffer_.data());
@@ -176,31 +78,31 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
         {
             assert(bytes_transferred == sizeof(spawn_ship_command));
             LOGIx("Spawn Ship type: %1%", static_cast<int>(cp->type));
-            const spawn_ship_command* spawn = reinterpret_cast<spawn_ship_command*>(recv_buffer_.data());
+            const ::spawn_ship_command* spawn = reinterpret_cast<::spawn_ship_command*>(recv_buffer_.data());
             int reply_id = spawn->reply_id;
             int expect_land = spawn->expect_land;
-            xy32 spawn_pos = { static_cast<int>(spawn->x), static_cast<int>(spawn->y) };
-            int id = sea_->spawn(spawn->expected_db_id, spawn->x, spawn->y, 1, 1, spawn->expect_land);
+            //xy32 spawn_pos = { static_cast<int>(spawn->x), static_cast<int>(spawn->y) };
+            int id = sea_->spawn(*spawn);
             udp_server_->gold_used(static_cast<int>(spawn->x), static_cast<int>(spawn->y), 1000);
             int id1 = spawn->port1_id;
             int id2 = spawn->port2_id;
             //boost::asio::spawn([this, reply_id, expect_land, id, id1, id2](boost::asio::yield_context yield) {
-                spawn_ship_command_reply reply;
-                memset(&reply, 0, sizeof(spawn_ship_command_reply));
-                reply._.type = 1;
-                reply.reply_id = reply_id;
-                reply.db_id = id;
-                reply.port1_id = id1;
-                reply.port2_id = id2;
-                if (id1 > 0 && id2 > 0) {
-                    reply.routed = udp_server_->set_route(id, id1, id2, expect_land, std::shared_ptr<astarrtree::coro_context>());
-                } else {
-                    LOGEP("Route endpoints not specified! port1_id=%1%, port2_id=%2%", id1, id2);
-                }
-                socket_.async_send_to(boost::asio::buffer(&reply, sizeof(spawn_ship_command_reply)), remote_endpoint_,
-                                      boost::bind(&udp_admin_server::handle_send, this,
-                                                  boost::asio::placeholders::error,
-                                                  boost::asio::placeholders::bytes_transferred));
+            spawn_ship_command_reply reply;
+            memset(&reply, 0, sizeof(spawn_ship_command_reply));
+            reply._.type = 1;
+            reply.reply_id = reply_id;
+            reply.db_id = id;
+            reply.port1_id = id1;
+            reply.port2_id = id2;
+            if (id1 > 0 && id2 > 0) {
+                reply.routed = udp_server_->set_route(id, id1, id2, expect_land, std::shared_ptr<astarrtree::coro_context>());
+            } else {
+                LOGEP("Route endpoints not specified! port1_id=%1%, port2_id=%2%", id1, id2);
+            }
+            socket_.async_send_to(boost::asio::buffer(&reply, sizeof(spawn_ship_command_reply)), remote_endpoint_,
+                                  boost::bind(&udp_admin_server::handle_send, this,
+                                              boost::asio::placeholders::error,
+                                              boost::asio::placeholders::bytes_transferred));
             //});
             break;
         }
@@ -301,7 +203,7 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
             break;
         }
         case 9: // Spawn Shipyard
-        {   
+        {
             assert(bytes_transferred == sizeof(spawn_shipyard_command));
             LOGI("Spawn Shipyard type: %1%", static_cast<int>(cp->type));
             const spawn_shipyard_command* spawn = reinterpret_cast<spawn_shipyard_command*>(recv_buffer_.data());
@@ -370,6 +272,32 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
             LOGI("Delete Shipyard type: %1%", static_cast<int>(cp->type));
             const delete_shipyard_command* spawn = reinterpret_cast<delete_shipyard_command*>(recv_buffer_.data());
             shipyard_->despawn(spawn->shipyard_id);
+            break;
+        }
+        case 11: // Query Nearest Shipyard For Ship
+        {
+            assert(bytes_transferred == sizeof(query_nearest_shipyard_for_ship_command));
+            LOGI("Query Nearest Shipyard For Ship type: %1%", static_cast<int>(cp->type));
+            const query_nearest_shipyard_for_ship_command* cmd = reinterpret_cast<query_nearest_shipyard_for_ship_command*>(recv_buffer_.data());
+            const auto& ship = sea_->get_by_db_id(cmd->ship_id);
+            int nearest_shipyard_id = -1;
+            if (ship) {
+                float fx, fy;
+                ship->get_xy(fx, fy);
+                nearest_shipyard_id = shipyard_->get_nearest(xy32{ static_cast<int>(fx), static_cast<int>(fy) });
+            }
+            query_nearest_shipyard_for_ship_command_reply reply;
+            memset(&reply, 0, sizeof(query_nearest_shipyard_for_ship_command_reply));
+            reply._.type = 6;
+            reply.reply_id = cmd->reply_id;
+            reply.ship_id = cmd->ship_id;
+            reply.shipyard_id = nearest_shipyard_id;
+            socket_.async_send_to(boost::asio::buffer(&reply,
+                                                      sizeof(spawn_shipyard_command_reply)),
+                                  remote_endpoint_,
+                                  boost::bind(&udp_admin_server::handle_send, this,
+                                              boost::asio::placeholders::error,
+                                              boost::asio::placeholders::bytes_transferred));
             break;
         }
         default:

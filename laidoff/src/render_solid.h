@@ -1,7 +1,11 @@
 #pragma once
 #ifdef __cplusplus
-extern "C" {
+extern "C" {;
 #endif
+#include "lwvbotype.h"
+
+typedef struct _LWCONTEXT LWCONTEXT;
+
 void render_solid_box_ui_lvt_flip_y_uv(const LWCONTEXT* pLwc,
                                        float x,
                                        float y,
@@ -193,6 +197,27 @@ void render_solid_vb_uv_shader_rot_view_proj(const LWCONTEXT* pLwc,
                                              float rot_z,
                                              const mat4x4 view,
                                              const mat4x4 proj);
+void render_solid_general(const LWCONTEXT* pLwc,
+                          float x,
+                          float y,
+                          float z,
+                          float sx,
+                          float sy,
+                          float sz,
+                          GLuint tex_index,
+                          GLuint tex_alpha_index,
+                          int lvt,
+                          float alpha_multiplier,
+                          float over_r,
+                          float over_g,
+                          float over_b,
+                          float oratio,
+                          const float* uv_offset,
+                          const float* uv_scale,
+                          int shader_index,
+                          float rot_z,
+                          const mat4x4 view,
+                          const mat4x4 proj);
 void lwc_enable_additive_blending();
 void lwc_disable_additive_blending();
 #ifdef __cplusplus

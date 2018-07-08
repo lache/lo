@@ -17,7 +17,7 @@ html
       if p1 && p2
         h3 비용
         h2 10,000원
-        a.dpinblk.red.pad3(href='/purchase_new_ship_with_ports?u=' + user.guid + '&p1=' + p1.region_id + '&p2=' + p2.region_id)
+        a.dpinblk.red.pad3(href='/purchase_new_ship_with_ports?u=' + user.guid + '&p1=' + p1.seaport_id + '&p2=' + p2.seaport_id)
           | 생성하기
       else
         div 항구 두 개를 선택한 후 다시 눌러주세요.

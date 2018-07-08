@@ -221,45 +221,27 @@ void render_solid_vb_uv_shader_rot_view_proj(const LWCONTEXT* pLwc,
                                              float rot_z,
                                              const mat4x4 view,
                                              const mat4x4 proj) {
-    lazy_glUseProgram(pLwc, shader_index);
-    glUniform2fv(pLwc->shader[shader_index].vuvoffset_location, 1, uv_offset);
-    glUniform2fv(pLwc->shader[shader_index].vuvscale_location, 1, uv_scale);
-    glUniform1f(pLwc->shader[shader_index].alpha_multiplier_location, alpha_multiplier);
-    glUniform1i(pLwc->shader[shader_index].diffuse_location, 0); // 0 means GL_TEXTURE0
-    glUniform1i(pLwc->shader[shader_index].alpha_only_location, 1); // 1 means GL_TEXTURE1
-    glUniform3f(pLwc->shader[shader_index].overlay_color_location, over_r, over_g, over_b);
-    glUniform1f(pLwc->shader[shader_index].overlay_color_ratio_location, oratio);
-    glUniformMatrix4fv(pLwc->shader[shader_index].mvp_location, 1, GL_FALSE, (const GLfloat*)proj);
-
-    mat4x4 model_translate;
-    mat4x4 model;
-    mat4x4 view_model;
-    mat4x4 proj_view_model;
-    mat4x4 model_scale;
-    mat4x4 model_rotate;
-    mat4x4 model_scale_rotate;
-
-    mat4x4_identity(model_scale);
-    mat4x4_identity(model_rotate);
-    mat4x4_scale_aniso(model_scale, model_scale, sx, sy, sz);
-    mat4x4_rotate_Z(model_rotate, model_rotate, rot_z);
-    mat4x4_mul(model_scale_rotate, model_rotate, model_scale);
-    mat4x4_translate(model_translate, x, y, z);
-    mat4x4_identity(model);
-    mat4x4_mul(model, model_translate, model_scale_rotate);
-    mat4x4_mul(view_model, view, model);
-    mat4x4_identity(proj_view_model);
-    mat4x4_mul(proj_view_model, proj, view_model);
-
-    lazy_glBindBuffer(pLwc, lvt);
-    bind_all_vertex_attrib(pLwc, lvt);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, tex_index);
-    //assert(tex_index);
-    set_tex_filter(GL_LINEAR, GL_LINEAR);
-    //set_tex_filter(GL_NEAREST, GL_NEAREST);
-    glUniformMatrix4fv(pLwc->shader[shader_index].mvp_location, 1, GL_FALSE, (const GLfloat*)proj_view_model);
-    glDrawArrays(GL_TRIANGLES, 0, pLwc->vertex_buffer[lvt].vertex_count);
+    render_solid_general(pLwc,
+                         x,
+                         y,
+                         z,
+                         sx,
+                         sy,
+                         sz,
+                         tex_index,
+                         0,
+                         lvt,
+                         alpha_multiplier,
+                         over_r,
+                         over_g,
+                         over_b,
+                         oratio,
+                         uv_offset,
+                         uv_scale,
+                         shader_index,
+                         rot_z,
+                         view,
+                         proj);
 }
 
 void render_solid_vb_ui_uv_shader_rot_view_proj(const LWCONTEXT* pLwc,
@@ -387,54 +369,29 @@ void render_solid_vb_ui_alpha_uv_shader_view_proj(const LWCONTEXT* pLwc,
                                                   int shader_index,
                                                   const mat4x4 view,
                                                   const mat4x4 proj) {
-
-    const LWSHADER* shader = &pLwc->shader[shader_index];
-
-    lazy_glUseProgram(pLwc, shader_index);
-    glUniform2fv(shader->vuvoffset_location, 1, uv_offset);
-    glUniform2fv(shader->vuvscale_location, 1, uv_scale);
-    glUniform2fv(shader->vs9offset_location, 1, default_uv_offset);
-    glUniform1f(shader->alpha_multiplier_location, alpha_multiplier);
-    glUniform1i(shader->diffuse_location, 0); // 0 means GL_TEXTURE0
-    glUniform1i(shader->alpha_only_location, 1); // 1 means GL_TEXTURE1
-    glUniform3f(shader->overlay_color_location, over_r, over_g, over_b);
-    glUniform1f(shader->overlay_color_ratio_location, oratio);
-    glUniformMatrix4fv(shader->mvp_location, 1, GL_FALSE, (const GLfloat*)proj);
-
-    float ui_scale_x = w / 2;
-    float ui_scale_y = h / 2;
-
-    mat4x4 model_translate;
-    mat4x4 model;
-    mat4x4 view_model;
-    mat4x4 proj_view_model;
-    mat4x4 model_scale;
-
-    mat4x4_identity(model_scale);
-    mat4x4_scale_aniso(model_scale, model_scale, ui_scale_x, ui_scale_y, 1.0f);
-    mat4x4_translate(model_translate, x, y, 0);
-    mat4x4_identity(model);
-    mat4x4_mul(model, model_translate, model_scale);
-    mat4x4_mul(view_model, view, model);
-    mat4x4_identity(proj_view_model);
-    mat4x4_mul(proj_view_model, proj, view_model);
-
-    lazy_glBindBuffer(pLwc, lvt);
-    bind_all_vertex_attrib_etc1_with_alpha(pLwc, lvt);
-    glActiveTexture(GL_TEXTURE0);
-    assert(tex_index);
-    glBindTexture(GL_TEXTURE_2D, tex_index);
-    set_tex_filter(GL_LINEAR, GL_LINEAR);
-    if (shader_index == LWST_ETC1) {
-        glActiveTexture(GL_TEXTURE1);
-        assert(tex_alpha_index);
-        glBindTexture(GL_TEXTURE_2D, tex_alpha_index);
-        set_tex_filter(GL_LINEAR, GL_LINEAR);
-    } else {
-        assert(tex_alpha_index == 0);
-    }
-    glUniformMatrix4fv(shader->mvp_location, 1, GL_FALSE, (const GLfloat*)proj_view_model);
-    glDrawArrays(GL_TRIANGLES, 0, pLwc->vertex_buffer[lvt].vertex_count);
+    const float sx = w / 2;
+    const float sy = h / 2;
+    render_solid_general(pLwc,
+                         x,
+                         y,
+                         0,
+                         sx,
+                         sy,
+                         1.0f,
+                         tex_index,
+                         tex_alpha_index,
+                         lvt,
+                         alpha_multiplier,
+                         over_r,
+                         over_g,
+                         over_b,
+                         oratio,
+                         uv_offset,
+                         uv_scale,
+                         shader_index,
+                         0,
+                         view,
+                         proj);
 }
 
 void render_solid_vb_ui_alpha_uv_shader(const LWCONTEXT* pLwc,
@@ -494,4 +451,80 @@ void lwc_enable_additive_blending() {
 void lwc_disable_additive_blending() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDepthMask(GL_TRUE);
+}
+
+void render_solid_general(const LWCONTEXT* pLwc,
+                          float x,
+                          float y,
+                          float z,
+                          float sx,
+                          float sy,
+                          float sz,
+                          GLuint tex_index,
+                          GLuint tex_alpha_index,
+                          int lvt,
+                          float alpha_multiplier,
+                          float over_r,
+                          float over_g,
+                          float over_b,
+                          float oratio,
+                          const float* uv_offset,
+                          const float* uv_scale,
+                          int shader_index,
+                          float rot_z,
+                          const mat4x4 view,
+                          const mat4x4 proj) {
+    const LWSHADER* shader = &pLwc->shader[shader_index];
+    lazy_glUseProgram(pLwc, shader_index);
+    glUniform2fv(shader->vuvoffset_location, 1, uv_offset);
+    glUniform2fv(shader->vuvscale_location, 1, uv_scale);
+    glUniform2fv(shader->vs9offset_location, 1, default_uv_offset);
+    glUniform1f(shader->alpha_multiplier_location, alpha_multiplier);
+    glUniform1i(shader->diffuse_location, 0); // 0 means GL_TEXTURE0
+    glUniform1i(shader->alpha_only_location, 1); // 1 means GL_TEXTURE1
+    glUniform3f(shader->overlay_color_location, over_r, over_g, over_b);
+    glUniform1f(shader->overlay_color_ratio_location, oratio);
+    glUniformMatrix4fv(shader->mvp_location, 1, GL_FALSE, (const GLfloat*)proj);
+
+    mat4x4 model_translate;
+    mat4x4 model;
+    mat4x4 view_model;
+    mat4x4 proj_view_model;
+    mat4x4 model_scale;
+    mat4x4 model_rotate;
+    mat4x4 model_scale_rotate;
+
+    mat4x4_identity(model_scale);
+    mat4x4_identity(model_rotate);
+    mat4x4_scale_aniso(model_scale, model_scale, sx, sy, sz);
+    mat4x4_rotate_Z(model_rotate, model_rotate, rot_z);
+    mat4x4_mul(model_scale_rotate, model_rotate, model_scale);
+    mat4x4_translate(model_translate, x, y, z);
+    mat4x4_identity(model);
+    mat4x4_mul(model, model_translate, model_scale_rotate);
+    mat4x4_mul(view_model, view, model);
+    mat4x4_identity(proj_view_model);
+    mat4x4_mul(proj_view_model, proj, view_model);
+
+    lazy_glBindBuffer(pLwc, lvt);
+    if (shader_index == LWST_ETC1) {
+        bind_all_vertex_attrib_etc1_with_alpha(pLwc, lvt);
+        assert(tex_index);
+    } else {
+        bind_all_vertex_attrib(pLwc, lvt);
+    }
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, tex_index);
+    set_tex_filter(GL_LINEAR, GL_LINEAR);
+    //set_tex_filter(GL_NEAREST, GL_NEAREST);
+    if (shader_index == LWST_ETC1) {
+        glActiveTexture(GL_TEXTURE1);
+        assert(tex_alpha_index);
+        glBindTexture(GL_TEXTURE_2D, tex_alpha_index);
+        set_tex_filter(GL_LINEAR, GL_LINEAR);
+    } else {
+        assert(tex_alpha_index == 0);
+    }
+    glUniformMatrix4fv(shader->mvp_location, 1, GL_FALSE, (const GLfloat*)proj_view_model);
+    glDrawArrays(GL_TRIANGLES, 0, pLwc->vertex_buffer[lvt].vertex_count);
 }

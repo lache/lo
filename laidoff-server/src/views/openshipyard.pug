@@ -1,0 +1,30 @@
+html
+  include ./includes/head.pug
+  body.mar00.fwht.bsea.f1
+    include ./includes/actionresult.pug
+    a.dpinblk.red.pad2(href='script:ttl_go_back()') 뒤로
+    h2.semitransblack.tc &#12307;#{shipyard.name}
+    div.tc 최대 정박 가능 선박 수: 4
+    if dockedShips.length > 0
+      h3.semitransblack.tc 정박중
+    div.tc
+      //a.dpinblk.red.pad1(href='script:enable_water_way()') 판매
+      //a.dpinblk.red.pad1(href='script:enable_water_way()') 항로지정
+      br
+      each dockedShip in dockedShips
+        a.dpinblk.red.pad1(href='script:open_ship(' + dockedShip.ship_id + ')')
+          img(src='atlas/flags-mini/au.png')
+          p #{dockedShip.name}
+          //a.dpinblk.red.pad1(href='script:enable_water_way()') 선택
+    h3.semitransblack.tc 새 선박 구입
+    div.tc
+      - var i = 0;
+      while i < shipData.keys.length
+        div.dpinblk.semitransblack
+          - var shipTemplate = shipData.data[shipData.keys[i]];
+          p #{shipTemplate.modelName}
+          img(src=shipTemplate.portrait)
+          a.dpinblk.red.pad1(href='script:purchase_ship_at_shipyard(' + shipyard.shipyard_id + ',' + shipTemplate.id + ')') 구입
+        - i++
+  div.tc
+    a.dpinblk.red.pad2(href='script:ttl_go_back()') 닫기

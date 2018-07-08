@@ -11,7 +11,7 @@ namespace ss {
         std::vector<shipyard_object> query_near_to_packet(int xc, int yc, float ex_lng, float ex_lat) const;
         const char* get_shipyard_name(int id) const;
         shipyard_object::point get_shipyard_point(int id) const;
-        int get_nearest_two(const xy32& pos, int& id1, std::string& name1, int& id2, std::string& name2) const;
+        int get_nearest(const xy32& pos) const;
         int lng_to_xc(float lng) const;
         int lat_to_yc(float lat) const;
         int spawn(int expected_db_id, const char* name, int xc0, int yc0, int owner_id, int gold_amount, bool& existing);

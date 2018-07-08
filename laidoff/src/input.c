@@ -237,12 +237,13 @@ void lw_trigger_mouse_move(LWCONTEXT* pLwc, float nx, float ny, int pointer_id) 
         }
     }
 
-    if (pLwc->game_scene == LGS_TTL) {
-        // TOO SLOW ON MANY HTML TAGS
-
-    /*htmlui_on_over(pLwc->htmlui,
-        (x + pLwc->viewport_aspect_ratio) / (2.0f * pLwc->viewport_aspect_ratio),
-                         (1.0f - y) / 2.0f);*/
+    if (pLwc->htmlui) {
+        if (pLwc->game_scene == LGS_TTL
+            || (pLwc->game_scene == LGS_PUCK_GAME && pLwc->puck_game->show_html_ui)) {
+            const float nx = (x + pLwc->viewport_rt_x) / (2.0f * pLwc->viewport_rt_x);
+            const float ny = (pLwc->viewport_rt_y - y) / (2.0f * pLwc->viewport_rt_y);
+            htmlui_on_over(pLwc->htmlui, nx, ny);
+        }
     }
 
     if (lw_pinch() == 0) {

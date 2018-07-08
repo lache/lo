@@ -1,0 +1,10 @@
+html
+  include ./includes/head.pug
+  body.mar00.fwht.bsea.f1
+    //include ./includes/stat.pug
+    //include ./includes/topmenu.pug
+    center
+      h3 새 항구 발견!
+      img.pictureborder(src=seaport.img, width='60pt', height='60pt')
+      h2 #{seaport.name}
+      div: a.dpinblk.red.pad5(href='/idle?u=' + user.guid) 확인

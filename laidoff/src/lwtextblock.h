@@ -1,6 +1,8 @@
 #pragma once
 #include "lwuialign.h"
 
+typedef struct _LWCONTEXT LWCONTEXT;
+
 typedef struct _LWTEXTBLOCK {
 	const char* text;
 	int text_bytelen;
@@ -17,6 +19,7 @@ typedef struct _LWTEXTBLOCK {
 	float color_emp_outline[4];
 	LW_UI_ALIGN align;
 	int multiline;
+    int pixel_perfect;
 } LWTEXTBLOCK;
 
 typedef struct _LWTEXTBLOCKQUERYRESULT {
@@ -41,3 +44,11 @@ typedef struct _LWTEXTBLOCKQUERYRESULT {
 #define DEFAULT_TEXT_BLOCK_SIZE_D (DEFAULT_TEXT_BLOCK_SIZE*0.60f)
 #define DEFAULT_TEXT_BLOCK_SIZE_E (DEFAULT_TEXT_BLOCK_SIZE*0.55f)
 #define DEFAULT_TEXT_BLOCK_SIZE_F (DEFAULT_TEXT_BLOCK_SIZE*0.40f)
+
+#ifdef __cplusplus
+extern "C" {;
+#endif
+void lwtextblock_query_only_text_block(const LWCONTEXT* pLwc, const LWTEXTBLOCK* text_block, LWTEXTBLOCKQUERYRESULT* query_result);
+#ifdef __cplusplus
+}
+#endif

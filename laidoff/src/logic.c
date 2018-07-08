@@ -1051,6 +1051,21 @@ static void parse_countries(LWCONTEXT* pLwc, LWCOUNTRYARRAY* country_array, cons
     char *conf_str = create_string_from_file(conf_path);
     if (conf_str) {
         int token_count = jsmn_parse(&conf_parser, conf_str, strlen(conf_str), conf_token, LW_MAX_CONF_TOKEN);
+        if (token_count == JSMN_ERROR_NOMEM) {
+            LOGE("Conf file NOMEM error...");
+            fflush(stdout);
+            exit(-1);
+        }
+        if (token_count == JSMN_ERROR_INVAL) {
+            LOGE("Conf file INVALID CHARACTER error... : check for '\\c' kind of thing in json file");
+            fflush(stdout);
+            exit(-1);
+        }
+        if (token_count == JSMN_ERROR_PART) {
+            LOGE("Conf file NOT COMPLETE error...");
+            fflush(stdout);
+            exit(-1);
+        }
         jsmntok_t* t = conf_token;
         if (token_count < 1 || t[0].type != JSMN_ARRAY) {
             LOGE("Conf file broken...");
@@ -1103,6 +1118,21 @@ static void parse_atlas_conf(LWCONTEXT* pLwc, LWATLASSPRITEARRAY* atlas_array, c
     char *conf_str = create_string_from_file(conf_path);
     if (conf_str) {
         int token_count = jsmn_parse(&conf_parser, conf_str, strlen(conf_str), conf_token, LW_MAX_CONF_TOKEN);
+        if (token_count == JSMN_ERROR_NOMEM) {
+            LOGE("Conf file NOMEM error...");
+            fflush(stdout);
+            exit(-1);
+        }
+        if (token_count == JSMN_ERROR_INVAL) {
+            LOGE("Conf file INVALID CHARACTER error... : check for '\\c' kind of thing in json file");
+            fflush(stdout);
+            exit(-1);
+        }
+        if (token_count == JSMN_ERROR_PART) {
+            LOGE("Conf file NOT COMPLETE error...");
+            fflush(stdout);
+            exit(-1);
+        }
         jsmntok_t* t = conf_token;
         if (token_count < 1 || t[0].type != JSMN_OBJECT) {
             LOGE("Conf file broken...");
@@ -1248,6 +1278,21 @@ static void parse_conf(LWCONTEXT* pLwc) {
     }
     if (conf_str) {
         int token_count = jsmn_parse(&conf_parser, conf_str, strlen(conf_str), conf_token, LW_MAX_CONF_TOKEN);
+        if (token_count == JSMN_ERROR_NOMEM) {
+            LOGE("Conf file NOMEM error...");
+            fflush(stdout);
+            exit(-1);
+        }
+        if (token_count == JSMN_ERROR_INVAL) {
+            LOGE("Conf file INVALID CHARACTER error... : check for '\\c' kind of thing in json file");
+            fflush(stdout);
+            exit(-1);
+        }
+        if (token_count == JSMN_ERROR_PART) {
+            LOGE("Conf file NOT COMPLETE error...");
+            fflush(stdout);
+            exit(-1);
+        }
         jsmntok_t* t = conf_token;
         if (token_count < 1 || t[0].type != JSMN_OBJECT) {
             LOGE("Conf file broken...");

@@ -64,26 +64,13 @@ shipyard_object::point shipyard::get_shipyard_point(int id) const {
     return shipyard_object::point(-1, -1);
 }
 
-int shipyard::get_nearest_two(const xy32& pos, int& id1, std::string& name1, int& id2, std::string& name2) const {
-    id1 = -1;
-    id2 = -1;
+int shipyard::get_nearest(const xy32& pos) const {
     shipyard_object::point p = { boost::numeric_cast<int>(pos.x), boost::numeric_cast<int>(pos.y) };
     int count = 0;
-    for (auto it = rtree.qbegin(bgi::nearest(p, 2)); it != rtree.qend(); it++) {
-        if (count == 0) {
-            id1 = it->second;
-            name1 = get_shipyard_name(it->second);
-            LOGI("Nearest 1: %1% (%2%,%3%)", name1, it->first.get<0>(), it->first.get<1>());
-            count++;
-        } else if (count == 1) {
-            id2 = it->second;
-            name2 = get_shipyard_name(it->second);
-            LOGI("Nearest 2: %1% (%2%,%3%)", name2, it->first.get<0>(), it->first.get<1>());
-            count++;
-            return count;
-        }
+    for (auto it = rtree.qbegin(bgi::nearest(p, 1)); it != rtree.qend(); it++) {
+        return it->second;
     }
-    return 0;
+    return -1;
 }
 
 void shipyard::update_chunk_key_ts(int xc0, int yc0) {

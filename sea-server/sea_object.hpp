@@ -38,7 +38,7 @@ namespace ss {
             , cargo_origin_seaport_id(-1)
             , cargo_origin_xy({ 0,0 }) {
         }
-        sea_object(int db_id, float fx, float fy, float fw, float fh, const value& rtree_value, int expect_land)
+        sea_object(int db_id, float fx, float fy, float fw, float fh, const value& rtree_value, int expect_land, int template_id)
             : db_id(db_id)
             , fx(fx)
             , fy(fy)
@@ -52,7 +52,8 @@ namespace ss {
             , cargo(0)
             , cargo_origin_seaport_id(-1)
             , cargo_origin_xy({ 0,0 })
-            , expect_land(expect_land) {
+            , expect_land(expect_land)
+            , template_id(template_id) {
         }
         void fill_sop(sea_object& sop) const {
             sop = *this;
@@ -112,5 +113,6 @@ namespace ss {
         int cargo_origin_seaport_id;
         xy32 cargo_origin_xy;
         int expect_land;
+        int template_id;
     };
 }

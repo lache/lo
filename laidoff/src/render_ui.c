@@ -266,6 +266,7 @@ static void s_render_scrap(const LWCONTEXT* pLwc, LWBUTTONLIST* button_list) {
     text_block.text_block_x = scrap_bg_x_nor + scrap_bg_size_nor;
     text_block.text_block_y = scrap_bg_y_nor - (scrap_bg_size_nor / 2);
     text_block.multiline = 1;
+    text_block.pixel_perfect = 0;
     render_text_block(pLwc, &text_block);
 }
 
@@ -315,6 +316,7 @@ static void s_render_tower_button(const LWCONTEXT* pLwc, LWBUTTONLIST* button_li
         text_block.text_block_x = btn_bg_x_nor + (tower_button_width) * btn_bg_size_nor;
         text_block.text_block_y = btn_bg_y_nor - tower_button_tag_height / 2 * btn_bg_size_nor;
         text_block.multiline = 1;
+        text_block.pixel_perfect = 0;
         render_text_block(pLwc, &text_block);
         // Register as a button
         char btn_id[32];
@@ -379,6 +381,7 @@ static void s_render_full_panel(const LWCONTEXT* pLwc, LWBUTTONLIST* button_list
     text_block.text_block_x = -pLwc->viewport_aspect_ratio;
     text_block.text_block_y = 0.75f;
     text_block.multiline = 0;
+    text_block.pixel_perfect = 0;
     render_text_block(pLwc, &text_block);
     // Properties & Values
     text_block.align = LTBA_LEFT_CENTER;
