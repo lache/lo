@@ -427,6 +427,7 @@ static void render_timer(const LWCONTEXT* pLwc, float remain_sec, float total_se
     text_block.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_F;
     text_block.size = DEFAULT_TEXT_BLOCK_SIZE_D;
     text_block.multiline = 1;
+    text_block.pixel_perfect = 0;
     SET_COLOR_RGBA_FLOAT(text_block.color_normal_glyph, 1, 1, 1, ui_alpha);
     SET_COLOR_RGBA_FLOAT(text_block.color_normal_outline, 0, 0, 0, ui_alpha);
     SET_COLOR_RGBA_FLOAT(text_block.color_emp_glyph, 1, 1, 0, ui_alpha);
@@ -486,6 +487,7 @@ static void render_tutorial_guide(const LWCONTEXT* pLwc, const LWPUCKGAME* puck_
         text_block.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_E;
         text_block.size = pLwc->viewport_aspect_ratio > 1 ? DEFAULT_TEXT_BLOCK_SIZE_B : DEFAULT_TEXT_BLOCK_SIZE_D;
         text_block.multiline = 1;
+        text_block.pixel_perfect = 0;
         SET_COLOR_RGBA_FLOAT(text_block.color_normal_glyph, 1, 1, 1, ui_alpha);
         SET_COLOR_RGBA_FLOAT(text_block.color_normal_outline, 0, 0, 0, ui_alpha);
         SET_COLOR_RGBA_FLOAT(text_block.color_emp_glyph, 1, 1, 0, ui_alpha);
@@ -548,6 +550,7 @@ static void render_searching_state(const LWCONTEXT* pLwc, const LWPUCKGAME* puck
     text_block.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_E;
     text_block.size = DEFAULT_TEXT_BLOCK_SIZE_C;
     text_block.multiline = 1;
+    text_block.pixel_perfect = 0;
     SET_COLOR_RGBA_FLOAT(text_block.color_normal_glyph, 1, 1, 1, ui_alpha);
     SET_COLOR_RGBA_FLOAT(text_block.color_normal_outline, 0, 0, 0, ui_alpha);
     SET_COLOR_RGBA_FLOAT(text_block.color_emp_glyph, 1, 1, 0, ui_alpha);
@@ -578,6 +581,7 @@ static void render_nickname_score(const LWCONTEXT* pLwc,
     text_block.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_E;
     text_block.size = DEFAULT_TEXT_BLOCK_SIZE_E;
     text_block.multiline = 1;
+    text_block.pixel_perfect = 0;
     SET_COLOR_RGBA_FLOAT(text_block.color_normal_glyph, 1, 1, 1, ui_alpha);
     SET_COLOR_RGBA_FLOAT(text_block.color_normal_outline, 0, 0, 0, ui_alpha);
     SET_COLOR_RGBA_FLOAT(text_block.color_emp_glyph, 1, 1, 0, ui_alpha);
@@ -1247,6 +1251,7 @@ static void render_battle_result_popup(const LWCONTEXT* pLwc,
         text_block.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_E;
         text_block.size = DEFAULT_TEXT_BLOCK_SIZE_A;
         text_block.multiline = 1;
+        text_block.pixel_perfect = 0;
         SET_COLOR_RGBA_FLOAT(text_block.color_normal_glyph, 1, 1, 0, 1);
         SET_COLOR_RGBA_FLOAT(text_block.color_normal_outline, 0, 0, 0, 1);
         SET_COLOR_RGBA_FLOAT(text_block.color_emp_glyph, 1, 1, 0, 1);
@@ -1296,6 +1301,7 @@ void render_caution_popup(const LWCONTEXT* pLwc, const char* str) {
     text_block.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_E;
     text_block.size = DEFAULT_TEXT_BLOCK_SIZE_E;
     text_block.multiline = 1;
+    text_block.pixel_perfect = 0;
     SET_COLOR_RGBA_FLOAT(text_block.color_normal_glyph, 1, 1, 0, 1);
     SET_COLOR_RGBA_FLOAT(text_block.color_normal_outline, 0, 0, 0, 0);
     SET_COLOR_RGBA_FLOAT(text_block.color_emp_glyph, 1, 1, 0, 1);
@@ -1440,6 +1446,7 @@ static void render_icon_amount(const LWCONTEXT* pLwc,
     text_block.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_F;
     text_block.size = DEFAULT_TEXT_BLOCK_SIZE_C;
     text_block.multiline = 1;
+    text_block.pixel_perfect = 0;
     SET_COLOR_RGBA_FLOAT(text_block.color_normal_glyph, font_r, font_g, font_b, puck_game->main_menu_ui_alpha);
     SET_COLOR_RGBA_FLOAT(text_block.color_normal_outline, 0, 0, 0, puck_game->main_menu_ui_alpha);
     SET_COLOR_RGBA_FLOAT(text_block.color_emp_glyph, 1, 1, 0, puck_game->main_menu_ui_alpha);

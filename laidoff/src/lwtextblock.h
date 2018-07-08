@@ -19,6 +19,7 @@ typedef struct _LWTEXTBLOCK {
 	float color_emp_outline[4];
 	LW_UI_ALIGN align;
 	int multiline;
+    int pixel_perfect;
 } LWTEXTBLOCK;
 
 typedef struct _LWTEXTBLOCKQUERYRESULT {

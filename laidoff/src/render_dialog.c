@@ -184,6 +184,8 @@ void lwc_render_dialog(const LWCONTEXT* pLwc) {
     text_block.text_block_width = 0.70f * 2 * pLwc->viewport_aspect_ratio;
     text_block.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_A;
     text_block.size = DEFAULT_TEXT_BLOCK_SIZE_A;
+    text_block.multiline = 1;
+    text_block.pixel_perfect = 0;
     SET_COLOR_RGBA_FLOAT(text_block.color_normal_glyph, 1, 1, 1, 1);
     SET_COLOR_RGBA_FLOAT(text_block.color_normal_outline, 0, 0, 0, 1);
     SET_COLOR_RGBA_FLOAT(text_block.color_emp_glyph, 1, 1, 0, 1);

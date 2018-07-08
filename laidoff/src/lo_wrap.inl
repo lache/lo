@@ -9541,17 +9541,20 @@ static int _wrap_bind_all_vertex_attrib_font(lua_State* L) {
   int SWIG_arg = 0;
   LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
   int arg2 ;
+  int arg3 ;
   
-  SWIG_check_num_args("bind_all_vertex_attrib_font",2,2)
+  SWIG_check_num_args("bind_all_vertex_attrib_font",3,3)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("bind_all_vertex_attrib_font",1,"LWCONTEXT const *");
   if(!lua_isnumber(L,2)) SWIG_fail_arg("bind_all_vertex_attrib_font",2,"int");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("bind_all_vertex_attrib_font",3,"int");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
     SWIG_fail_ptr("bind_all_vertex_attrib_font",1,SWIGTYPE_p__LWCONTEXT);
   }
   
   arg2 = (int)lua_tonumber(L, 2);
-  bind_all_vertex_attrib_font((struct _LWCONTEXT const *)arg1,arg2);
+  arg3 = (int)lua_tonumber(L, 3);
+  bind_all_vertex_attrib_font((struct _LWCONTEXT const *)arg1,arg2,arg3);
   
   return SWIG_arg;
   
@@ -39681,6 +39684,56 @@ fail:
 }
 
 
+static int _wrap_LWTEXTBLOCK_pixel_perfect_set(lua_State* L) {
+  int SWIG_arg = 0;
+  struct _LWTEXTBLOCK *arg1 = (struct _LWTEXTBLOCK *) 0 ;
+  int arg2 ;
+  
+  SWIG_check_num_args("_LWTEXTBLOCK::pixel_perfect",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTEXTBLOCK::pixel_perfect",1,"struct _LWTEXTBLOCK *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWTEXTBLOCK::pixel_perfect",2,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTEXTBLOCK,0))){
+    SWIG_fail_ptr("LWTEXTBLOCK_pixel_perfect_set",1,SWIGTYPE_p__LWTEXTBLOCK);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  if (arg1) (arg1)->pixel_perfect = arg2;
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_LWTEXTBLOCK_pixel_perfect_get(lua_State* L) {
+  int SWIG_arg = 0;
+  struct _LWTEXTBLOCK *arg1 = (struct _LWTEXTBLOCK *) 0 ;
+  int result;
+  
+  SWIG_check_num_args("_LWTEXTBLOCK::pixel_perfect",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTEXTBLOCK::pixel_perfect",1,"struct _LWTEXTBLOCK *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTEXTBLOCK,0))){
+    SWIG_fail_ptr("LWTEXTBLOCK_pixel_perfect_get",1,SWIGTYPE_p__LWTEXTBLOCK);
+  }
+  
+  result = (int) ((arg1)->pixel_perfect);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_new_LWTEXTBLOCK(lua_State* L) {
   int SWIG_arg = 0;
   struct _LWTEXTBLOCK *result = 0 ;
@@ -39726,6 +39779,7 @@ static swig_lua_attribute swig_LWTEXTBLOCK_attributes[] = {
     { "color_emp_outline", _wrap_LWTEXTBLOCK_color_emp_outline_get, _wrap_LWTEXTBLOCK_color_emp_outline_set },
     { "align", _wrap_LWTEXTBLOCK_align_get, _wrap_LWTEXTBLOCK_align_set },
     { "multiline", _wrap_LWTEXTBLOCK_multiline_get, _wrap_LWTEXTBLOCK_multiline_set },
+    { "pixel_perfect", _wrap_LWTEXTBLOCK_pixel_perfect_get, _wrap_LWTEXTBLOCK_pixel_perfect_set },
     {0,0,0}
 };
 static swig_lua_method swig_LWTEXTBLOCK_methods[]= {
@@ -50375,7 +50429,7 @@ static int _wrap_render_solid_general(lua_State* L) {
   float arg7 ;
   GLuint arg8 ;
   GLuint arg9 ;
-  enum _LW_VBO_TYPE arg10 ;
+  int arg10 ;
   float arg11 ;
   float arg12 ;
   float arg13 ;
@@ -50400,7 +50454,7 @@ static int _wrap_render_solid_general(lua_State* L) {
   if(!lua_isnumber(L,7)) SWIG_fail_arg("render_solid_general",7,"float");
   if(!lua_isuserdata(L,8)) SWIG_fail_arg("render_solid_general",8,"GLuint");
   if(!lua_isuserdata(L,9)) SWIG_fail_arg("render_solid_general",9,"GLuint");
-  if(!lua_isnumber(L,10)) SWIG_fail_arg("render_solid_general",10,"enum _LW_VBO_TYPE");
+  if(!lua_isnumber(L,10)) SWIG_fail_arg("render_solid_general",10,"int");
   if(!lua_isnumber(L,11)) SWIG_fail_arg("render_solid_general",11,"float");
   if(!lua_isnumber(L,12)) SWIG_fail_arg("render_solid_general",12,"float");
   if(!lua_isnumber(L,13)) SWIG_fail_arg("render_solid_general",13,"float");
@@ -50435,7 +50489,7 @@ static int _wrap_render_solid_general(lua_State* L) {
   }
   arg9 = *argp9;
   
-  arg10 = (enum _LW_VBO_TYPE)(int)lua_tonumber(L, 10);
+  arg10 = (int)lua_tonumber(L, 10);
   arg11 = (float)lua_tonumber(L, 11);
   arg12 = (float)lua_tonumber(L, 12);
   arg13 = (float)lua_tonumber(L, 13);
@@ -79780,6 +79834,56 @@ fail:
 }
 
 
+static int _wrap_LWPTTLROUTEOBJECT_template_id_set(lua_State* L) {
+  int SWIG_arg = 0;
+  struct _LWPTTLROUTEOBJECT *arg1 = (struct _LWPTTLROUTEOBJECT *) 0 ;
+  int arg2 ;
+  
+  SWIG_check_num_args("_LWPTTLROUTEOBJECT::template_id",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWPTTLROUTEOBJECT::template_id",1,"struct _LWPTTLROUTEOBJECT *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWPTTLROUTEOBJECT::template_id",2,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWPTTLROUTEOBJECT,0))){
+    SWIG_fail_ptr("LWPTTLROUTEOBJECT_template_id_set",1,SWIGTYPE_p__LWPTTLROUTEOBJECT);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  if (arg1) (arg1)->template_id = arg2;
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_LWPTTLROUTEOBJECT_template_id_get(lua_State* L) {
+  int SWIG_arg = 0;
+  struct _LWPTTLROUTEOBJECT *arg1 = (struct _LWPTTLROUTEOBJECT *) 0 ;
+  int result;
+  
+  SWIG_check_num_args("_LWPTTLROUTEOBJECT::template_id",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWPTTLROUTEOBJECT::template_id",1,"struct _LWPTTLROUTEOBJECT *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWPTTLROUTEOBJECT,0))){
+    SWIG_fail_ptr("LWPTTLROUTEOBJECT_template_id_get",1,SWIGTYPE_p__LWPTTLROUTEOBJECT);
+  }
+  
+  result = (int) ((arg1)->template_id);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_LWPTTLROUTEOBJECT_route_param_set(lua_State* L) {
   int SWIG_arg = 0;
   struct _LWPTTLROUTEOBJECT *arg1 = (struct _LWPTTLROUTEOBJECT *) 0 ;
@@ -79965,6 +80069,7 @@ static int _proxy__wrap_new_LWPTTLROUTEOBJECT(lua_State *L) {
 }
 static swig_lua_attribute swig_LWPTTLROUTEOBJECT_attributes[] = {
     { "db_id", _wrap_LWPTTLROUTEOBJECT_db_id_get, _wrap_LWPTTLROUTEOBJECT_db_id_set },
+    { "template_id", _wrap_LWPTTLROUTEOBJECT_template_id_get, _wrap_LWPTTLROUTEOBJECT_template_id_set },
     { "route_param", _wrap_LWPTTLROUTEOBJECT_route_param_get, _wrap_LWPTTLROUTEOBJECT_route_param_set },
     { "route_speed", _wrap_LWPTTLROUTEOBJECT_route_speed_get, _wrap_LWPTTLROUTEOBJECT_route_speed_set },
     { "route_flags", _wrap_LWPTTLROUTEOBJECT_route_flags_get, _wrap_LWPTTLROUTEOBJECT_route_flags_set },
@@ -104350,6 +104455,44 @@ fail:
 }
 
 
+static int _wrap_htmlui_render_render_commands(lua_State* L) {
+  int SWIG_arg = 0;
+  void *arg1 = (void *) 0 ;
+  
+  SWIG_check_num_args("htmlui_render_render_commands",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("htmlui_render_render_commands",1,"void *");
+  arg1=(void *)SWIG_MustGetPtr(L,1,0,0,1,"htmlui_render_render_commands");
+  htmlui_render_render_commands(arg1);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_htmlui_update_on_render_thread(lua_State* L) {
+  int SWIG_arg = 0;
+  void *arg1 = (void *) 0 ;
+  
+  SWIG_check_num_args("htmlui_update_on_render_thread",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("htmlui_update_on_render_thread",1,"void *");
+  arg1=(void *)SWIG_MustGetPtr(L,1,0,0,1,"htmlui_update_on_render_thread");
+  htmlui_update_on_render_thread(arg1);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_LWTTLLNGLAT_lng_set(lua_State* L) {
   int SWIG_arg = 0;
   struct _LWTTLLNGLAT *arg1 = (struct _LWTTLLNGLAT *) 0 ;
@@ -110867,6 +111010,7 @@ static swig_lua_const_info swig_SwigModule_constants[]= {
     {SWIG_LUA_CONSTTAB_INT("LPT_COUNT", LPT_COUNT)},
     {SWIG_LUA_CONSTTAB_INT("LWST_DEFAULT", LWST_DEFAULT)},
     {SWIG_LUA_CONSTTAB_INT("LWST_FONT", LWST_FONT)},
+    {SWIG_LUA_CONSTTAB_INT("LWST_PIXEL_FONT", LWST_PIXEL_FONT)},
     {SWIG_LUA_CONSTTAB_INT("LWST_ETC1", LWST_ETC1)},
     {SWIG_LUA_CONSTTAB_INT("LWST_SKIN", LWST_SKIN)},
     {SWIG_LUA_CONSTTAB_INT("LWST_FAN", LWST_FAN)},
@@ -111925,6 +112069,8 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "htmlui_add_touch_rect", _wrap_htmlui_add_touch_rect},
     { "htmlui_get_touch_rect_count", _wrap_htmlui_get_touch_rect_count},
     { "htmlui_get_touch_rect", _wrap_htmlui_get_touch_rect},
+    { "htmlui_render_render_commands", _wrap_htmlui_render_render_commands},
+    { "htmlui_update_on_render_thread", _wrap_htmlui_update_on_render_thread},
     { "lwttl_new", _wrap_lwttl_new},
     { "lwttl_destroy", _wrap_lwttl_destroy},
     { "lwttl_worldmap_smooth_scroll_to", _wrap_lwttl_worldmap_smooth_scroll_to},

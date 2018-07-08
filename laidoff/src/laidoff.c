@@ -648,7 +648,8 @@ static void init_gl_context(LWCONTEXT* pLwc) {
     // load all textures
     init_load_textures(pLwc);
     // load font metadata
-    pLwc->pFnt = load_fnt(ASSETS_BASE_PATH "fnt" PATH_SEPARATOR "test7.fnt");
+    //pLwc->pFnt = load_fnt(ASSETS_BASE_PATH "fnt" PATH_SEPARATOR "test7.fnt");
+    pLwc->pFnt = load_fnt(ASSETS_BASE_PATH "fnt" PATH_SEPARATOR "neo.fnt");
     // Enable culling (CCW is default)
     glEnable(GL_CULL_FACE);
     // set default clear color
@@ -715,6 +716,7 @@ static void render_stat(const LWCONTEXT* pLwc) {
     text_block.text_block_x = +pLwc->viewport_rt_x;
     text_block.text_block_y = -pLwc->viewport_rt_y;
     text_block.multiline = 1;
+    text_block.pixel_perfect = 0;
     render_text_block(pLwc, &text_block);
 }
 
@@ -743,6 +745,7 @@ void render_addr(const LWCONTEXT* pLwc) {
     text_block.text_block_x = -pLwc->viewport_rt_x;
     text_block.text_block_y = -pLwc->viewport_rt_y;
     text_block.multiline = 1;
+    text_block.pixel_perfect = 0;
     render_text_block(pLwc, &text_block);
 }
 
@@ -1294,8 +1297,8 @@ void bind_all_color_vertex_attrib(const LWCONTEXT* pLwc, int vbo_index) {
     bind_all_vertex_attrib_shader(pLwc, LWST_DEFAULT_NORMAL_COLOR, vbo_index);
 }
 
-void bind_all_vertex_attrib_font(const LWCONTEXT* pLwc, int vbo_index) {
-    bind_all_vertex_attrib_shader(pLwc, LWST_FONT, vbo_index);
+void bind_all_vertex_attrib_font(const LWCONTEXT* pLwc, int vbo_index, int shader_index) {
+    bind_all_vertex_attrib_shader(pLwc, shader_index, vbo_index);
 }
 
 void bind_all_vertex_attrib_etc1_with_alpha(const LWCONTEXT* pLwc, int vbo_index) {

@@ -1,0 +1,57 @@
+# AngelCode Bitmap Font Generator configuration file
+fileVersion=1
+
+# font settings
+fontName=NeoDunggeunmo
+fontFile=
+charSet=0
+fontSize=18
+aa=1
+scaleH=100
+useSmoothing=0
+isBold=0
+isItalic=0
+useUnicode=1
+disableBoxChars=1
+outputInvalidCharGlyph=0
+dontIncludeKerningPairs=0
+useHinting=1
+renderFromOutline=0
+useClearType=1
+
+# character alignment
+paddingDown=0
+paddingUp=0
+paddingRight=0
+paddingLeft=0
+spacingHoriz=1
+spacingVert=1
+useFixedHeight=0
+forceZero=0
+
+# output file
+outWidth=1024
+outHeight=1024
+outBitDepth=8
+fontDescFormat=0
+fourChnlPacked=0
+textureFormat=tga
+textureCompression=0
+alphaChnl=1
+redChnl=0
+greenChnl=0
+blueChnl=0
+invA=0
+invR=0
+invG=0
+invB=0
+
+# outline
+outlineThickness=0
+
+# selected chars
+chars=0-127,160-172,174-255,4352-4370,4449-4469,4520-4546,9472-9631,9776-9783,10240-10495,12593-12643
+chars=44032-55203,57504-57506,57520-57523,68096-68099,68101-68102,68108-68115,68117-68119,68121-68147
+chars=68152-68154,68159-68167,68176-68184,119155-119162,917505,917536-917631
+
+# imported icon images

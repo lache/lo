@@ -33,8 +33,8 @@
 #define LwChangeDirectory(x) chdir(x)
 #endif
 
-#define INITIAL_SCREEN_RESOLUTION_X 450 //(360*2) //(1080)
-#define INITIAL_SCREEN_RESOLUTION_Y 800 //(640*2) //(1920)
+#define INITIAL_SCREEN_RESOLUTION_X 450//2100 //450 //(360*2) //(1080)
+#define INITIAL_SCREEN_RESOLUTION_Y 800//1200 //800 //(640*2) //(1920)
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
@@ -164,7 +164,7 @@ int main(int argc, char* argv[]) {
     glfwWindowHint(GLFW_DEPTH_BITS, 16);
 
     // enable supersampling (fullscreen antialiasing)
-    glfwWindowHint(GLFW_SAMPLES, 8);
+    //glfwWindowHint(GLFW_SAMPLES, 8);
 
 #if LW_PLATFORM_RPI
     glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);

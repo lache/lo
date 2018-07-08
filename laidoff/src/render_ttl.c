@@ -1179,6 +1179,7 @@ static void render_sea_objects_nameplate(const LWCONTEXT* pLwc, const LWTTLFIELD
         test_text_block.begin_index = 0;
         test_text_block.end_index = test_text_block.text_bytelen;
         test_text_block.multiline = 1;
+        test_text_block.pixel_perfect = 0;
         test_text_block.text_block_x = ui_point[0];
         test_text_block.text_block_y = ui_point[1];
         test_text_block.align = LTBA_LEFT_TOP;
@@ -1739,6 +1740,7 @@ static void render_single_cell_text(const LWCONTEXT* pLwc,
     tb.begin_index = 0;
     tb.end_index = tb.text_bytelen;
     tb.multiline = 1;
+    tb.pixel_perfect = 0;
     tb.text_block_x = ui_point[0];
     tb.text_block_y = ui_point[1];// +0.05f / lwttl_viewport_view_scale(vp);
     tb.align = align;
@@ -2011,6 +2013,7 @@ static void render_world_text(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* v
         test_text_block.begin_index = 0;
         test_text_block.end_index = test_text_block.text_bytelen;
         test_text_block.multiline = 1;
+        test_text_block.pixel_perfect = 0;
         test_text_block.text_block_x = ui_point_x;
         test_text_block.text_block_y = ui_point_y;
         test_text_block.align = LTBA_CENTER_CENTER;
@@ -2050,6 +2053,7 @@ static void render_coords(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp) {
     test_text_block.begin_index = 0;
     test_text_block.end_index = test_text_block.text_bytelen;
     test_text_block.multiline = 1;
+    test_text_block.pixel_perfect = 0;
     test_text_block.text_block_x = -lwttl_viewport_rt_x(vp);
     test_text_block.text_block_y = +lwttl_viewport_rt_y(vp);
     test_text_block.align = LTBA_LEFT_TOP;
@@ -2085,6 +2089,7 @@ static void render_coords_dms(const LWCONTEXT* pLwc, const LWTTLLNGLAT* lng_lat_
     test_text_block.begin_index = 0;
     test_text_block.end_index = test_text_block.text_bytelen;
     test_text_block.multiline = 1;
+    test_text_block.pixel_perfect = 0;
     test_text_block.text_block_x = -pLwc->viewport_rt_x + 0.3f;
     test_text_block.text_block_y = 0;
     test_text_block.align = LTBA_LEFT_TOP;
@@ -2101,6 +2106,7 @@ static void render_region_name(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* 
     test_text_block.begin_index = 0;
     test_text_block.end_index = test_text_block.text_bytelen;
     test_text_block.multiline = 1;
+    test_text_block.pixel_perfect = 0;
     test_text_block.text_block_x = -lwttl_viewport_rt_x(vp) + UI_SCREEN_EDGE_MARGIN;
     test_text_block.text_block_y = -lwttl_viewport_rt_y(vp) + UI_SCREEN_EDGE_MARGIN;
     test_text_block.align = LTBA_LEFT_BOTTOM;
@@ -2128,6 +2134,7 @@ static void render_ttl_stat(const LWTTL* ttl, const LWCONTEXT* pLwc) {
     test_text_block.begin_index = 0;
     test_text_block.end_index = test_text_block.text_bytelen;
     test_text_block.multiline = 1;
+    test_text_block.pixel_perfect = 0;
     test_text_block.text_block_x = -pLwc->viewport_rt_x + UI_SCREEN_EDGE_MARGIN;
     test_text_block.text_block_y = +pLwc->viewport_rt_y - UI_SCREEN_EDGE_MARGIN;
     test_text_block.align = LTBA_LEFT_TOP;
