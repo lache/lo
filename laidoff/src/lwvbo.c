@@ -78,13 +78,13 @@ void lw_setup_vao(LWCONTEXT* pLwc, int lvt) {
         assert(pLwc->vertex_buffer[lvt].vertex_buffer);
         glBindBuffer(GL_ARRAY_BUFFER, pLwc->vertex_buffer[lvt].vertex_buffer);
         //assert(pLwc->shader[vbo_filename[lvt].shader_index].program);
-		if (vbo_filename[lvt].shader_index != LWST_DEFAULT_NORMAL_COLOR) {
-			set_vertex_attrib_pointer(pLwc, vbo_filename[lvt].shader_index);
-		} else {
-			set_color_vertex_attrib_pointer(pLwc, vbo_filename[lvt].shader_index);
-		}
+        if (vbo_filename[lvt].shader_index != LWST_DEFAULT_NORMAL_COLOR) {
+            set_vertex_attrib_pointer(pLwc, vbo_filename[lvt].shader_index);
+        } else {
+            set_color_vertex_attrib_pointer(pLwc, vbo_filename[lvt].shader_index);
+        }
         pLwc->vao_ready[lvt] = 1;
-	}
+    }
 #endif
 }
 

@@ -24,8 +24,8 @@ static float get_proportional_font_size(int width, int height, float font_size) 
     } else {
         return (float)width / (360.0f) * font_size;
     }
-	
-	//return font_size;
+    
+    //return font_size;
 }
 
 static void render_font_glyph(const LWCONTEXT* pLwc,
@@ -246,110 +246,110 @@ static void render_font_glyph(const LWCONTEXT* pLwc,
 }
 
 void render_text_block(const LWCONTEXT* pLwc, const LWTEXTBLOCK* text_block) {
-	render_text_block_alpha(pLwc, text_block, 1.0f);
+    render_text_block_alpha(pLwc, text_block, 1.0f);
 }
 
 void render_text_block_alpha(const LWCONTEXT* pLwc, const LWTEXTBLOCK* text_block, float ui_alpha) {
-	render_query_text_block_alpha(pLwc, text_block, ui_alpha, 0, 0);
+    render_query_text_block_alpha(pLwc, text_block, ui_alpha, 0, 0);
 }
 
 void render_query_text_block_alpha(const LWCONTEXT* pLwc, const LWTEXTBLOCK* text_block, float ui_alpha, LWTEXTBLOCKQUERYRESULT* query_result, int query_only) {
-	// Font data not ready
-	if (!pLwc->pFnt) {
-		return;
-	}
+    // Font data not ready
+    if (!pLwc->pFnt) {
+        return;
+    }
 
-	int shader_index = LWST_PIXEL_FONT;
-	LW_VBO_TYPE lvt = LVT_DONTCARE;
-	if (query_only == 0) {
-		lazy_glUseProgram(pLwc, shader_index);
+    int shader_index = LWST_PIXEL_FONT;
+    LW_VBO_TYPE lvt = LVT_DONTCARE;
+    if (query_only == 0) {
+        lazy_glUseProgram(pLwc, shader_index);
 
-		glUniform2fv(pLwc->shader[shader_index].vuvoffset_location, 1, default_uv_offset);
-		glUniform2fv(pLwc->shader[shader_index].vuvscale_location, 1, default_uv_scale);
-		glUniform1f(pLwc->shader[shader_index].alpha_multiplier_location, ui_alpha);
+        glUniform2fv(pLwc->shader[shader_index].vuvoffset_location, 1, default_uv_offset);
+        glUniform2fv(pLwc->shader[shader_index].vuvscale_location, 1, default_uv_scale);
+        glUniform1f(pLwc->shader[shader_index].alpha_multiplier_location, ui_alpha);
 
-		glActiveTexture(GL_TEXTURE0);
-		// 0 means GL_TEXTURE0
-		glUniform1i(pLwc->shader[shader_index].diffuse_location, 0);
-		// default texture param
-		glBindTexture(GL_TEXTURE_2D, pLwc->tex_font_atlas[0]);
+        glActiveTexture(GL_TEXTURE0);
+        // 0 means GL_TEXTURE0
+        glUniform1i(pLwc->shader[shader_index].diffuse_location, 0);
+        // default texture param
+        glBindTexture(GL_TEXTURE_2D, pLwc->tex_font_atlas[0]);
 
-		glUniformMatrix4fv(pLwc->shader[shader_index].mvp_location, 1, GL_FALSE,
-			(const GLfloat *)pLwc->proj);
+        glUniformMatrix4fv(pLwc->shader[shader_index].mvp_location, 1, GL_FALSE,
+            (const GLfloat *)pLwc->proj);
 
 
-		lvt = LVT_LEFT_TOP_ANCHORED_SQUARE + (text_block->align - LTBA_LEFT_TOP);
+        lvt = LVT_LEFT_TOP_ANCHORED_SQUARE + (text_block->align - LTBA_LEFT_TOP);
 
-		lazy_glBindBuffer(pLwc, lvt);
-		bind_all_vertex_attrib_font(pLwc, lvt, shader_index);
-		glUniform2fv(pLwc->shader[shader_index].vuvoffset_location, 1, default_uv_offset);
-		glUniform2fv(pLwc->shader[shader_index].vuvscale_location, 1, default_uv_scale);
-	}
+        lazy_glBindBuffer(pLwc, lvt);
+        bind_all_vertex_attrib_font(pLwc, lvt, shader_index);
+        glUniform2fv(pLwc->shader[shader_index].vuvoffset_location, 1, default_uv_offset);
+        glUniform2fv(pLwc->shader[shader_index].vuvscale_location, 1, default_uv_scale);
+    }
 #define MAX_UNICODE_STRLEN (1024)
 
-	unsigned int unicode_str[MAX_UNICODE_STRLEN];
-	size_t unicode_strlen = u8_toucs(
-		unicode_str,
-		ARRAY_SIZE(unicode_str),
-		text_block->text + text_block->begin_index,
-		text_block->end_index - text_block->begin_index
-	);
+    unsigned int unicode_str[MAX_UNICODE_STRLEN];
+    size_t unicode_strlen = u8_toucs(
+        unicode_str,
+        ARRAY_SIZE(unicode_str),
+        text_block->text + text_block->begin_index,
+        text_block->end_index - text_block->begin_index
+    );
 
-	if (unicode_strlen >= MAX_UNICODE_STRLEN) {
-		LOGE("CRITICAL RUNTIME ERROR! unicode_strlen overflow");
-	}
-	unicode_str[MAX_UNICODE_STRLEN - 1] = '\0';
+    if (unicode_strlen >= MAX_UNICODE_STRLEN) {
+        LOGE("CRITICAL RUNTIME ERROR! unicode_strlen overflow");
+    }
+    unicode_str[MAX_UNICODE_STRLEN - 1] = '\0';
 
-	const BMF_CHAR* bc[MAX_UNICODE_STRLEN];
-	// Calculate total font block size
-	float width_sum = 0;
-	float first_width = 0;
-	int first_width_set = 0;
-	for (size_t i = 0; i < unicode_strlen; i++) {
-		bc[i] = font_binary_search_char(pLwc->pFnt, unicode_str[i]);
-		if (unicode_str[i] == '<' || unicode_str[i] == '>') {
-			continue;
-		}
-		if (bc[i]) {
-			const float width = bc[i]->xadvance; // : bc[i]->width);
-			width_sum += width;
+    const BMF_CHAR* bc[MAX_UNICODE_STRLEN];
+    // Calculate total font block size
+    float width_sum = 0;
+    float first_width = 0;
+    int first_width_set = 0;
+    for (size_t i = 0; i < unicode_strlen; i++) {
+        bc[i] = font_binary_search_char(pLwc->pFnt, unicode_str[i]);
+        if (unicode_str[i] == '<' || unicode_str[i] == '>') {
+            continue;
+        }
+        if (bc[i]) {
+            const float width = bc[i]->xadvance; // : bc[i]->width);
+            width_sum += width;
 
-			if (!first_width_set) {
-				first_width = width;
-				first_width_set = 1;
-			}
-		}
-	}
-	bc[unicode_strlen] = 0;
+            if (!first_width_set) {
+                first_width = width;
+                first_width_set = 1;
+            }
+        }
+    }
+    bc[unicode_strlen] = 0;
 
     float prop_font_size = 1.0f;
     if (text_block->pixel_perfect == 0) {
         prop_font_size = get_proportional_font_size(pLwc->viewport_width, pLwc->viewport_height, text_block->size);
     }
-	float size_scaled_xadvance_accum = 0;
-	float color_normal_outline_null[4];
-	float color_emp_outline_null[4];
-	memcpy(color_normal_outline_null, text_block->color_normal_glyph, sizeof(color_normal_outline_null));
-	memcpy(color_emp_outline_null, text_block->color_emp_glyph, sizeof(color_emp_outline_null));
-	color_normal_outline_null[3] *= 0;
-	color_emp_outline_null[3] *= 0;
-	const float* colors[][4] = {
-		{
-			text_block->color_normal_glyph,
-			text_block->color_normal_outline,
-			text_block->color_emp_glyph,
-			text_block->color_emp_outline,
-		},
-		{
-			text_block->color_normal_glyph,
-			color_normal_outline_null,
-			text_block->color_emp_glyph,
-			color_emp_outline_null,
-		},
-	};
-	for (int i = 0; i < 1; i++) {
-		// render glyph
-		render_font_glyph(pLwc,
+    float size_scaled_xadvance_accum = 0;
+    float color_normal_outline_null[4];
+    float color_emp_outline_null[4];
+    memcpy(color_normal_outline_null, text_block->color_normal_glyph, sizeof(color_normal_outline_null));
+    memcpy(color_emp_outline_null, text_block->color_emp_glyph, sizeof(color_emp_outline_null));
+    color_normal_outline_null[3] *= 0;
+    color_emp_outline_null[3] *= 0;
+    const float* colors[][4] = {
+        {
+            text_block->color_normal_glyph,
+            text_block->color_normal_outline,
+            text_block->color_emp_glyph,
+            text_block->color_emp_outline,
+        },
+        {
+            text_block->color_normal_glyph,
+            color_normal_outline_null,
+            text_block->color_emp_glyph,
+            color_emp_outline_null,
+        },
+    };
+    for (int i = 0; i < 1; i++) {
+        // render glyph
+        render_font_glyph(pLwc,
                           text_block,
                           unicode_strlen,
                           unicode_str,
@@ -366,63 +366,63 @@ void render_query_text_block_alpha(const LWCONTEXT* pLwc, const LWTEXTBLOCK* tex
                           colors[i][2],
                           colors[i][3],
                           query_only);
-	}
+    }
 
-	if (query_only == 0) {
-		glUniform1f(pLwc->shader[shader_index].overlay_color_ratio_location, 0);
+    if (query_only == 0) {
+        glUniform1f(pLwc->shader[shader_index].overlay_color_ratio_location, 0);
 
-		// Render text block debug indicator
-		if (pLwc->font_texture_texture_mode) {
-			const float width_pixels = (float)(2 * pLwc->viewport_rt_x) / pLwc->viewport_width;
-			const float height_pixels = (float)(2 * pLwc->viewport_rt_y) / pLwc->viewport_height;
+        // Render text block debug indicator
+        if (pLwc->font_texture_texture_mode) {
+            const float width_pixels = (float)(2 * pLwc->viewport_rt_x) / pLwc->viewport_width;
+            const float height_pixels = (float)(2 * pLwc->viewport_rt_y) / pLwc->viewport_height;
 
-			//const float w = 2 * width_pixels;
-			const float h = 2 * height_pixels;
+            //const float w = 2 * width_pixels;
+            const float h = 2 * height_pixels;
 
-			// text total width debug indicator
-			render_solid_vb_ui(
-				pLwc,
-				text_block->text_block_x,
-				text_block->text_block_y,
-				prop_font_size * size_scaled_xadvance_accum * pLwc->viewport_rt_x / pLwc->viewport_width * 2,
-				h,
-				pLwc->tex_programmed[LPT_SOLID_RED],
-				lvt,
-				1,
-				0,
-				0,
-				0,
-				0
-			);
+            // text total width debug indicator
+            render_solid_vb_ui(
+                pLwc,
+                text_block->text_block_x,
+                text_block->text_block_y,
+                prop_font_size * size_scaled_xadvance_accum * pLwc->viewport_rt_x / pLwc->viewport_width * 2,
+                h,
+                pLwc->tex_programmed[LPT_SOLID_RED],
+                lvt,
+                1,
+                0,
+                0,
+                0,
+                0
+            );
 
-			const float w2 = 2 * width_pixels;
-			const float h2 = 2 * height_pixels;
+            const float w2 = 2 * width_pixels;
+            const float h2 = 2 * height_pixels;
 
-			// text origin point debug indicator
-			render_solid_vb_ui(
-				pLwc,
-				text_block->text_block_x,
-				text_block->text_block_y,
-				w2,
-				h2,
-				pLwc->tex_programmed[LPT_SOLID_YELLOW],
-				LVT_CENTER_CENTER_ANCHORED_SQUARE,
-				1,
-				0,
-				0,
-				0,
-				0
-			);
-		}
-	}
+            // text origin point debug indicator
+            render_solid_vb_ui(
+                pLwc,
+                text_block->text_block_x,
+                text_block->text_block_y,
+                w2,
+                h2,
+                pLwc->tex_programmed[LPT_SOLID_YELLOW],
+                LVT_CENTER_CENTER_ANCHORED_SQUARE,
+                1,
+                0,
+                0,
+                0,
+                0
+            );
+        }
+    }
 
-	if (query_result) {
+    if (query_result) {
         query_result->total_glyph_width = prop_font_size * size_scaled_xadvance_accum;
         if (text_block->pixel_perfect == 0) {
           query_result->total_glyph_width *= pLwc->viewport_rt_x / pLwc->viewport_width * 2;
         }
-		query_result->glyph_height = text_block->text_block_line_height;
-	}
+        query_result->glyph_height = text_block->text_block_line_height;
+    }
 }
 
 // avoid outline overlapping by rendering the same text block twice:

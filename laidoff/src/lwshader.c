@@ -95,7 +95,7 @@ int lw_create_shader_program(const char* shader_name, LWSHADER* pShader, GLuint 
 
     // Attribs
     pShader->vpos_location = glGetAttribLocation(pShader->program, "vPos");
-	pShader->vnor_location = glGetAttribLocation(pShader->program, "vNor");
+    pShader->vnor_location = glGetAttribLocation(pShader->program, "vNor");
     pShader->vcol_location = glGetAttribLocation(pShader->program, "vCol");
     pShader->vuv_location = glGetAttribLocation(pShader->program, "vUv");
     pShader->vs9_location = glGetAttribLocation(pShader->program, "vS9");

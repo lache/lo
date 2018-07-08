@@ -5,20 +5,20 @@
 
 #if !LW_PLATFORM_WIN32
 int WSAGetLastError() {
-	return -1;
+    return -1;
 }
 #endif
 
 static int make_socket_nonblocking(int sock) {
 #if defined(WIN32) || defined(_WIN32) || defined(IMN_PIM)
-	unsigned long arg = 1;
-	return ioctlsocket(sock, FIONBIO, &arg) == 0;
+    unsigned long arg = 1;
+    return ioctlsocket(sock, FIONBIO, &arg) == 0;
 #elif defined(VXWORKS)
-	int arg = 1;
-	return ioctl(sock, FIONBIO, (int)&arg) == 0;
+    int arg = 1;
+    return ioctl(sock, FIONBIO, (int)&arg) == 0;
 #else
-	int curFlags = fcntl(sock, F_GETFL, 0);
-	return fcntl(sock, F_SETFL, curFlags | O_NONBLOCK) >= 0;
+    int curFlags = fcntl(sock, F_GETFL, 0);
+    return fcntl(sock, F_SETFL, curFlags | O_NONBLOCK) >= 0;
 #endif
 }
 
@@ -133,8 +133,8 @@ LWTCP* new_tcp(LWCONTEXT* pLwc,
                const LWHOSTADDR* host_addr,
                LWTCP_ON_CONNECT on_connect,
                LWTCP_ON_RECV_PACKETS on_recv_packets) {
-	LWTCP* tcp = (LWTCP*)malloc(sizeof(LWTCP));
-	memset(tcp, 0, sizeof(LWTCP));
+    LWTCP* tcp = (LWTCP*)malloc(sizeof(LWTCP));
+    memset(tcp, 0, sizeof(LWTCP));
     tcp->hints.ai_family = AF_UNSPEC;
     tcp->hints.ai_socktype = SOCK_STREAM;
     tcp->hints.ai_protocol = IPPROTO_TCP;
@@ -163,26 +163,26 @@ LWTCP* new_tcp(LWCONTEXT* pLwc,
         tcp->on_connect(tcp, path_prefix);
     }
     
-	return tcp;
+    return tcp;
 }
 
 void destroy_tcp(LWTCP** tcp) {
-	if (*tcp) {
+    if (*tcp) {
         freeaddrinfo((*tcp)->result);
-		free(*tcp);
-		*tcp = 0;
-	}
+        free(*tcp);
+        *tcp = 0;
+    }
 }
 
 void tcp_update(LWTCP* tcp) {
-	if (!tcp) {
-		return;
-	}
-	if (LW_TCP_BUFLEN - tcp->recv_buf_not_parsed <= 0) {
-		LOGE("TCP receive buffer overrun!!!");
-	}
-	int n = (int)recv(tcp->connect_socket, tcp->recv_buf + tcp->recv_buf_not_parsed, LW_TCP_BUFLEN - tcp->recv_buf_not_parsed, 0);
-	if (n > 0) {
+    if (!tcp) {
+        return;
+    }
+    if (LW_TCP_BUFLEN - tcp->recv_buf_not_parsed <= 0) {
+        LOGE("TCP receive buffer overrun!!!");
+    }
+    int n = (int)recv(tcp->connect_socket, tcp->recv_buf + tcp->recv_buf_not_parsed, LW_TCP_BUFLEN - tcp->recv_buf_not_parsed, 0);
+    if (n > 0) {
         if (tcp->on_recv_packets) {
             LOGI("TCP received: %d bytes", n);
             tcp->recv_buf_not_parsed += n;

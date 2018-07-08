@@ -239,9 +239,9 @@ static void init_vbo(LWCONTEXT* pLwc) {
     // === STATIC MESHES ===
     //lw_load_all_vbo(pLwc);
     
-    // LVT_LEFT_TOP_ANCHORED_SQUARE,	LVT_CENTER_TOP_ANCHORED_SQUARE,		LVT_RIGHT_TOP_ANCHORED_SQUARE,
-	// LVT_LEFT_CENTER_ANCHORED_SQUARE,	LVT_CENTER_CENTER_ANCHORED_SQUARE,	LVT_RIGHT_CENTER_ANCHORED_SQUARE,
-	// LVT_LEFT_BOTTOM_ANCHORED_SQUARE,	LVT_CENTER_BOTTOM_ANCHORED_SQUARE,	LVT_RIGHT_BOTTOM_ANCHORED_SQUARE,
+    // LVT_LEFT_TOP_ANCHORED_SQUARE,    LVT_CENTER_TOP_ANCHORED_SQUARE,     LVT_RIGHT_TOP_ANCHORED_SQUARE,
+    // LVT_LEFT_CENTER_ANCHORED_SQUARE, LVT_CENTER_CENTER_ANCHORED_SQUARE,  LVT_RIGHT_CENTER_ANCHORED_SQUARE,
+    // LVT_LEFT_BOTTOM_ANCHORED_SQUARE, LVT_CENTER_BOTTOM_ANCHORED_SQUARE,  LVT_RIGHT_BOTTOM_ANCHORED_SQUARE,
     // 9 anchored squares...
     const float anchored_square_offset[][2] = {
         { +1, -1 },{ +0, -1 },{ -1, -1 },
@@ -367,25 +367,25 @@ void set_vertex_attrib_pointer(const LWCONTEXT* pLwc, int shader_index) {
 }
 
 void set_color_vertex_attrib_pointer(const LWCONTEXT* pLwc, int shader_index) {
-	lw_create_lazy_shader_program(pLwc, (LW_SHADER_TYPE)shader_index);
-	// vertex coordinates
-	if (pLwc->shader[shader_index].vpos_location >= 0) {
-		glEnableVertexAttribArray((GLuint)pLwc->shader[shader_index].vpos_location);
-		glVertexAttribPointer((GLuint)pLwc->shader[shader_index].vpos_location, 3, GL_FLOAT, GL_FALSE,
+    lw_create_lazy_shader_program(pLwc, (LW_SHADER_TYPE)shader_index);
+    // vertex coordinates
+    if (pLwc->shader[shader_index].vpos_location >= 0) {
+        glEnableVertexAttribArray((GLuint)pLwc->shader[shader_index].vpos_location);
+        glVertexAttribPointer((GLuint)pLwc->shader[shader_index].vpos_location, 3, GL_FLOAT, GL_FALSE,
                               lwcolorvertex_stride_in_bytes, (void *)0);
-	}
-	// vertex normal
-	if (pLwc->shader[shader_index].vnor_location >= 0) {
-		glEnableVertexAttribArray((GLuint)pLwc->shader[shader_index].vnor_location);
-		glVertexAttribPointer((GLuint)pLwc->shader[shader_index].vnor_location, 3, GL_FLOAT, GL_FALSE,
+    }
+    // vertex normal
+    if (pLwc->shader[shader_index].vnor_location >= 0) {
+        glEnableVertexAttribArray((GLuint)pLwc->shader[shader_index].vnor_location);
+        glVertexAttribPointer((GLuint)pLwc->shader[shader_index].vnor_location, 3, GL_FLOAT, GL_FALSE,
                               lwcolorvertex_stride_in_bytes, (void *)(sizeof(float) * 3));
-	}
-	// vertex color
-	if (pLwc->shader[shader_index].vcol_location >= 0) {
-		glEnableVertexAttribArray((GLuint)pLwc->shader[shader_index].vcol_location);
-		glVertexAttribPointer((GLuint)pLwc->shader[shader_index].vcol_location, 3, GL_FLOAT, GL_FALSE,
-							  lwcolorvertex_stride_in_bytes, (void *)(sizeof(float) * (3 + 3)));
-	}
+    }
+    // vertex color
+    if (pLwc->shader[shader_index].vcol_location >= 0) {
+        glEnableVertexAttribArray((GLuint)pLwc->shader[shader_index].vcol_location);
+        glVertexAttribPointer((GLuint)pLwc->shader[shader_index].vcol_location, 3, GL_FLOAT, GL_FALSE,
+                              lwcolorvertex_stride_in_bytes, (void *)(sizeof(float) * (3 + 3)));
+    }
 }
 
 void set_skin_vertex_attrib_pointer(const LWCONTEXT* pLwc, int shader_index) {
@@ -461,15 +461,15 @@ void set_ps_vertex_attrib_pointer(const LWCONTEXT* pLwc, int shader_index) {
 }
 
 void set_ps0_vertex_attrib_pointer(const LWCONTEXT* pLwc, int shader_index) {
-	lw_create_lazy_shader_program(pLwc, (LW_SHADER_TYPE)shader_index);
-	if (pLwc->shader[shader_index].theta_location >= 0) {
-		glEnableVertexAttribArray(pLwc->shader[shader_index].theta_location);
-		glVertexAttribPointer(pLwc->shader[shader_index].theta_location, 1, GL_FLOAT, GL_FALSE, sizeof(LWPARTICLE), (void*)LWOFFSETOF(LWPARTICLE, theta));
-	}
-	if (pLwc->shader[shader_index].shade_location >= 0) {
-		glEnableVertexAttribArray(pLwc->shader[shader_index].shade_location);
-		glVertexAttribPointer(pLwc->shader[shader_index].shade_location, 3, GL_FLOAT, GL_FALSE, sizeof(LWPARTICLE), (void*)LWOFFSETOF(LWPARTICLE, shade));
-	}
+    lw_create_lazy_shader_program(pLwc, (LW_SHADER_TYPE)shader_index);
+    if (pLwc->shader[shader_index].theta_location >= 0) {
+        glEnableVertexAttribArray(pLwc->shader[shader_index].theta_location);
+        glVertexAttribPointer(pLwc->shader[shader_index].theta_location, 1, GL_FLOAT, GL_FALSE, sizeof(LWPARTICLE), (void*)LWOFFSETOF(LWPARTICLE, theta));
+    }
+    if (pLwc->shader[shader_index].shade_location >= 0) {
+        glEnableVertexAttribArray(pLwc->shader[shader_index].shade_location);
+        glVertexAttribPointer(pLwc->shader[shader_index].shade_location, 3, GL_FLOAT, GL_FALSE, sizeof(LWPARTICLE), (void*)LWOFFSETOF(LWPARTICLE, shade));
+    }
 }
 
 void set_line_vertex_attrib_pointer(const LWCONTEXT* pLwc, int shader_index) {
@@ -573,18 +573,18 @@ static void init_ps_vao(LWCONTEXT* pLwc, int shader_index) {
 }
 
 static void init_ps0_vao(LWCONTEXT* pLwc, int shader_index) {
-	// Particle System 0 (rose emitter) Vertex Array Objects
+    // Particle System 0 (rose emitter) Vertex Array Objects
 #if LW_SUPPORT_VAO
-	assert(PS0_VERTEX_BUFFER_COUNT == 1);
-	glGenVertexArrays(PS0_VERTEX_BUFFER_COUNT, pLwc->ps0_vao);
-	for (int i = 0; i < PS0_VERTEX_BUFFER_COUNT; i++) {
-		glBindVertexArray(pLwc->ps0_vao[i]);
-		glBindBuffer(GL_ARRAY_BUFFER, pLwc->particle_buffer);
-		set_ps0_vertex_attrib_pointer(pLwc, shader_index);
-	}
+    assert(PS0_VERTEX_BUFFER_COUNT == 1);
+    glGenVertexArrays(PS0_VERTEX_BUFFER_COUNT, pLwc->ps0_vao);
+    for (int i = 0; i < PS0_VERTEX_BUFFER_COUNT; i++) {
+        glBindVertexArray(pLwc->ps0_vao[i]);
+        glBindBuffer(GL_ARRAY_BUFFER, pLwc->particle_buffer);
+        set_ps0_vertex_attrib_pointer(pLwc, shader_index);
+    }
 
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 #endif
 }
 
@@ -642,7 +642,7 @@ static void init_gl_context(LWCONTEXT* pLwc) {
     init_skin_vao(pLwc, LWST_SKIN);
     init_fan_vao(pLwc, LWST_FAN);
     init_ps_vao(pLwc, LWST_EMITTER2);
-	init_ps0_vao(pLwc, LWST_EMITTER);
+    init_ps0_vao(pLwc, LWST_EMITTER);
     init_line_vao(pLwc, LWST_LINE);
     init_morph_vao(pLwc, LWST_MORPH);
     // load all textures
@@ -1227,10 +1227,10 @@ static void bind_all_fvertex_attrib_shader(const LWCONTEXT* pLwc, int shader_ind
 
 static void bind_all_vertex_attrib_shader(const LWCONTEXT* pLwc, int shader_index, int vbo_index) {
 #if LW_PLATFORM_WIN32 || LW_PLATFORM_OSX
-	glBindVertexArray(pLwc->vao[vbo_index]);
+    glBindVertexArray(pLwc->vao[vbo_index]);
 #else
-	if (shader_index != LWST_DEFAULT_NORMAL_COLOR) {
-		set_vertex_attrib_pointer(pLwc, shader_index);
+    if (shader_index != LWST_DEFAULT_NORMAL_COLOR) {
+        set_vertex_attrib_pointer(pLwc, shader_index);
     } else {
         set_color_vertex_attrib_pointer(pLwc, shader_index);
     }
@@ -1263,9 +1263,9 @@ static void bind_all_ps_vertex_attrib_shader(const LWCONTEXT* pLwc, int shader_i
 
 static void bind_all_ps0_vertex_attrib_shader(const LWCONTEXT* pLwc, int shader_index, int vbo_index) {
 #if LW_PLATFORM_WIN32 || LW_PLATFORM_OSX
-	glBindVertexArray(pLwc->ps0_vao[vbo_index]);
+    glBindVertexArray(pLwc->ps0_vao[vbo_index]);
 #else
-	set_ps0_vertex_attrib_pointer(pLwc, shader_index);
+    set_ps0_vertex_attrib_pointer(pLwc, shader_index);
 #endif
 }
 
@@ -1318,7 +1318,7 @@ void bind_all_ps_vertex_attrib(const LWCONTEXT* pLwc, int vbo_index) {
 }
 
 void bind_all_ps0_vertex_attrib(const LWCONTEXT* pLwc, int vbo_index) {
-	bind_all_ps0_vertex_attrib_shader(pLwc, LWST_EMITTER, vbo_index);
+    bind_all_ps0_vertex_attrib_shader(pLwc, LWST_EMITTER, vbo_index);
 }
 
 void bind_all_line_vertex_attrib(const LWCONTEXT* pLwc) {
@@ -1551,7 +1551,7 @@ LWCONTEXT* lw_init_initial_size(int width, int height) {
                  0.1f,
                  0.2f);
 
-	pLwc->htmlui = htmlui_new(pLwc);
+    pLwc->htmlui = htmlui_new(pLwc);
 
     pLwc->ttl = lwttl_new(pLwc->viewport_aspect_ratio);
 
@@ -1739,7 +1739,7 @@ void lw_deinit(LWCONTEXT* pLwc) {
     glDeleteVertexArrays(SKIN_VERTEX_BUFFER_COUNT, pLwc->skin_vao);
     glDeleteVertexArrays(FAN_VERTEX_BUFFER_COUNT, pLwc->fan_vao);
     glDeleteVertexArrays(PS_VERTEX_BUFFER_COUNT, pLwc->ps_vao);
-	glDeleteVertexArrays(PS0_VERTEX_BUFFER_COUNT, pLwc->ps0_vao);
+    glDeleteVertexArrays(PS0_VERTEX_BUFFER_COUNT, pLwc->ps0_vao);
     glDeleteVertexArrays(LINE_VERTEX_BUFFER_COUNT, pLwc->line_vao);
 #endif
     
@@ -1765,7 +1765,7 @@ void lw_deinit(LWCONTEXT* pLwc) {
     
     delete_puck_game(&pLwc->puck_game);
 
-	htmlui_destroy(&pLwc->htmlui);
+    htmlui_destroy(&pLwc->htmlui);
 
     ps_destroy_context(&pLwc->ps_context);
 

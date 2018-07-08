@@ -22,15 +22,15 @@
 
 //  Structure of our class
 struct _kvmsg {
-	//  Presence indicators for each frame
-	int present[KVMSG_FRAMES];
-	//  Corresponding 0MQ message frames, if any
-	zmq_msg_t frame[KVMSG_FRAMES];
-	//  Key, copied into safe C string
-	char key[KVMSG_KEY_MAX + 1];
-	//  List of properties, as name=value strings
-	zlist_t *props;
-	size_t props_size;
+    //  Presence indicators for each frame
+    int present[KVMSG_FRAMES];
+    //  Corresponding 0MQ message frames, if any
+    zmq_msg_t frame[KVMSG_FRAMES];
+    //  Key, copied into safe C string
+    char key[KVMSG_KEY_MAX + 1];
+    //  List of properties, as name=value strings
+    zlist_t *props;
+    size_t props_size;
 };
 
 //  .split property encoding
@@ -39,40 +39,40 @@ struct _kvmsg {
 
 static void
 s_encode_props(kvmsg_t *self) {
-	zmq_msg_t *msg = &self->frame[FRAME_PROPS];
-	if (self->present[FRAME_PROPS])
-		zmq_msg_close(msg);
+    zmq_msg_t *msg = &self->frame[FRAME_PROPS];
+    if (self->present[FRAME_PROPS])
+        zmq_msg_close(msg);
 
-	zmq_msg_init_size(msg, self->props_size);
-	char *prop = zlist_first(self->props);
-	char *dest = (char *)zmq_msg_data(msg);
-	while (prop) {
-		strcpy(dest, prop);
-		dest += strlen(prop);
-		*dest++ = '\n';
-		prop = zlist_next(self->props);
-	}
-	self->present[FRAME_PROPS] = 1;
+    zmq_msg_init_size(msg, self->props_size);
+    char *prop = zlist_first(self->props);
+    char *dest = (char *)zmq_msg_data(msg);
+    while (prop) {
+        strcpy(dest, prop);
+        dest += strlen(prop);
+        *dest++ = '\n';
+        prop = zlist_next(self->props);
+    }
+    self->present[FRAME_PROPS] = 1;
 }
 
 static void
 s_decode_props(kvmsg_t *self) {
-	zmq_msg_t *msg = &self->frame[FRAME_PROPS];
-	self->props_size = 0;
-	while (zlist_size(self->props))
-		free(zlist_pop(self->props));
+    zmq_msg_t *msg = &self->frame[FRAME_PROPS];
+    self->props_size = 0;
+    while (zlist_size(self->props))
+        free(zlist_pop(self->props));
 
-	size_t remainder = zmq_msg_size(msg);
-	char *prop = (char *)zmq_msg_data(msg);
-	char *eoln = memchr(prop, '\n', remainder);
-	while (eoln) {
-		*eoln = 0;
-		zlist_append(self->props, strdup(prop));
-		self->props_size += strlen(prop) + 1;
-		remainder -= strlen(prop) + 1;
-		prop = eoln + 1;
-		eoln = memchr(prop, '\n', remainder);
-	}
+    size_t remainder = zmq_msg_size(msg);
+    char *prop = (char *)zmq_msg_data(msg);
+    char *eoln = memchr(prop, '\n', remainder);
+    while (eoln) {
+        *eoln = 0;
+        zlist_append(self->props, strdup(prop));
+        self->props_size += strlen(prop) + 1;
+        remainder -= strlen(prop) + 1;
+        prop = eoln + 1;
+        eoln = memchr(prop, '\n', remainder);
+    }
 }
 
 //  .split constructor and destructor
@@ -81,44 +81,44 @@ s_decode_props(kvmsg_t *self) {
 //  Constructor, takes a sequence number for the new kvmsg instance:
 kvmsg_t *
 kvmsg_new(int64_t sequence) {
-	kvmsg_t
-		*self;
+    kvmsg_t
+        *self;
 
-	self = (kvmsg_t *)zmalloc(sizeof(kvmsg_t));
-	self->props = zlist_new();
-	kvmsg_set_sequence(self, sequence);
-	return self;
+    self = (kvmsg_t *)zmalloc(sizeof(kvmsg_t));
+    self->props = zlist_new();
+    kvmsg_set_sequence(self, sequence);
+    return self;
 }
 
 //  zhash_free_fn callback helper that does the low level destruction:
 void
 kvmsg_free(void *ptr) {
-	if (ptr) {
-		kvmsg_t *self = (kvmsg_t *)ptr;
-		//  Destroy message frames if any
-		int frame_nbr;
-		for (frame_nbr = 0; frame_nbr < KVMSG_FRAMES; frame_nbr++)
-			if (self->present[frame_nbr])
-				zmq_msg_close(&self->frame[frame_nbr]);
+    if (ptr) {
+        kvmsg_t *self = (kvmsg_t *)ptr;
+        //  Destroy message frames if any
+        int frame_nbr;
+        for (frame_nbr = 0; frame_nbr < KVMSG_FRAMES; frame_nbr++)
+            if (self->present[frame_nbr])
+                zmq_msg_close(&self->frame[frame_nbr]);
 
-		//  Destroy property list
-		while (zlist_size(self->props))
-			free(zlist_pop(self->props));
-		zlist_destroy(&self->props);
+        //  Destroy property list
+        while (zlist_size(self->props))
+            free(zlist_pop(self->props));
+        zlist_destroy(&self->props);
 
-		//  Free object itself
-		free(self);
-	}
+        //  Free object itself
+        free(self);
+    }
 }
 
 //  Destructor
 void
 kvmsg_destroy(kvmsg_t **self_p) {
-	assert(self_p);
-	if (*self_p) {
-		kvmsg_free(*self_p);
-		*self_p = NULL;
-	}
+    assert(self_p);
+    if (*self_p) {
+        kvmsg_free(*self_p);
+        *self_p = NULL;
+    }
 }
 
 //  .split recv method
@@ -127,54 +127,54 @@ kvmsg_destroy(kvmsg_t **self_p) {
 
 kvmsg_t *
 kvmsg_recv(void *socket) {
-	//  This method is almost unchanged from kvsimple
-	//  .skip
-	assert(socket);
-	kvmsg_t *self = kvmsg_new(0);
+    //  This method is almost unchanged from kvsimple
+    //  .skip
+    assert(socket);
+    kvmsg_t *self = kvmsg_new(0);
 
-	//  Read all frames off the wire, reject if bogus
-	int frame_nbr;
-	for (frame_nbr = 0; frame_nbr < KVMSG_FRAMES; frame_nbr++) {
-		if (self->present[frame_nbr])
-			zmq_msg_close(&self->frame[frame_nbr]);
-		zmq_msg_init(&self->frame[frame_nbr]);
-		self->present[frame_nbr] = 1;
-		if (zmq_msg_recv(&self->frame[frame_nbr], socket, 0) == -1) {
-			kvmsg_destroy(&self);
-			break;
-		}
-		//  Verify multipart framing
-		int rcvmore = (frame_nbr < KVMSG_FRAMES - 1) ? 1 : 0;
-		if (zsock_rcvmore(socket) != rcvmore) {
-			kvmsg_destroy(&self);
-			break;
-		}
-	}
-	//  .until
-	if (self)
-		s_decode_props(self);
-	return self;
+    //  Read all frames off the wire, reject if bogus
+    int frame_nbr;
+    for (frame_nbr = 0; frame_nbr < KVMSG_FRAMES; frame_nbr++) {
+        if (self->present[frame_nbr])
+            zmq_msg_close(&self->frame[frame_nbr]);
+        zmq_msg_init(&self->frame[frame_nbr]);
+        self->present[frame_nbr] = 1;
+        if (zmq_msg_recv(&self->frame[frame_nbr], socket, 0) == -1) {
+            kvmsg_destroy(&self);
+            break;
+        }
+        //  Verify multipart framing
+        int rcvmore = (frame_nbr < KVMSG_FRAMES - 1) ? 1 : 0;
+        if (zsock_rcvmore(socket) != rcvmore) {
+            kvmsg_destroy(&self);
+            break;
+        }
+    }
+    //  .until
+    if (self)
+        s_decode_props(self);
+    return self;
 }
 
 //  Send key-value message to socket; any empty frames are sent as such.
 void
 kvmsg_send(kvmsg_t *self, void *socket) {
-	assert(self);
-	assert(socket);
+    assert(self);
+    assert(socket);
 
-	s_encode_props(self);
-	//  The rest of the method is unchanged from kvsimple
-	//  .skip
-	int frame_nbr;
-	for (frame_nbr = 0; frame_nbr < KVMSG_FRAMES; frame_nbr++) {
-		zmq_msg_t copy;
-		zmq_msg_init(&copy);
-		if (self->present[frame_nbr])
-			zmq_msg_copy(&copy, &self->frame[frame_nbr]);
-		zmq_msg_send(&copy, socket,
-			(frame_nbr < KVMSG_FRAMES - 1) ? ZMQ_SNDMORE : 0);
-		zmq_msg_close(&copy);
-	}
+    s_encode_props(self);
+    //  The rest of the method is unchanged from kvsimple
+    //  .skip
+    int frame_nbr;
+    for (frame_nbr = 0; frame_nbr < KVMSG_FRAMES; frame_nbr++) {
+        zmq_msg_t copy;
+        zmq_msg_init(&copy);
+        if (self->present[frame_nbr])
+            zmq_msg_copy(&copy, &self->frame[frame_nbr]);
+        zmq_msg_send(&copy, socket,
+            (frame_nbr < KVMSG_FRAMES - 1) ? ZMQ_SNDMORE : 0);
+        zmq_msg_close(&copy);
+    }
 }
 //  .until
 
@@ -183,25 +183,25 @@ kvmsg_send(kvmsg_t *self, void *socket) {
 
 kvmsg_t *
 kvmsg_dup(kvmsg_t *self) {
-	kvmsg_t *kvmsg = kvmsg_new(0);
-	int frame_nbr;
-	for (frame_nbr = 0; frame_nbr < KVMSG_FRAMES; frame_nbr++) {
-		if (self->present[frame_nbr]) {
-			zmq_msg_t *src = &self->frame[frame_nbr];
-			zmq_msg_t *dst = &kvmsg->frame[frame_nbr];
-			zmq_msg_init_size(dst, zmq_msg_size(src));
-			memcpy(zmq_msg_data(dst),
-				zmq_msg_data(src), zmq_msg_size(src));
-			kvmsg->present[frame_nbr] = 1;
-		}
-	}
-	kvmsg->props_size = zlist_size(self->props);
-	char *prop = (char *)zlist_first(self->props);
-	while (prop) {
-		zlist_append(kvmsg->props, strdup(prop));
-		prop = (char *)zlist_next(self->props);
-	}
-	return kvmsg;
+    kvmsg_t *kvmsg = kvmsg_new(0);
+    int frame_nbr;
+    for (frame_nbr = 0; frame_nbr < KVMSG_FRAMES; frame_nbr++) {
+        if (self->present[frame_nbr]) {
+            zmq_msg_t *src = &self->frame[frame_nbr];
+            zmq_msg_t *dst = &kvmsg->frame[frame_nbr];
+            zmq_msg_init_size(dst, zmq_msg_size(src));
+            memcpy(zmq_msg_data(dst),
+                zmq_msg_data(src), zmq_msg_size(src));
+            kvmsg->present[frame_nbr] = 1;
+        }
+    }
+    kvmsg->props_size = zlist_size(self->props);
+    char *prop = (char *)zlist_first(self->props);
+    while (prop) {
+        zlist_append(kvmsg->props, strdup(prop));
+        prop = (char *)zlist_next(self->props);
+    }
+    return kvmsg;
 }
 
 //  The key, sequence, body, and size methods are the same as in kvsimple.
@@ -210,131 +210,131 @@ kvmsg_dup(kvmsg_t *self) {
 //  Return key from last read message, if any, else NULL
 char *
 kvmsg_key(kvmsg_t *self) {
-	assert(self);
-	if (self->present[FRAME_KEY]) {
-		if (!*self->key) {
-			size_t size = zmq_msg_size(&self->frame[FRAME_KEY]);
-			if (size > KVMSG_KEY_MAX)
-				size = KVMSG_KEY_MAX;
-			memcpy(self->key,
-				zmq_msg_data(&self->frame[FRAME_KEY]), size);
-			self->key[size] = 0;
-		}
-		return self->key;
-	} else
-		return NULL;
+    assert(self);
+    if (self->present[FRAME_KEY]) {
+        if (!*self->key) {
+            size_t size = zmq_msg_size(&self->frame[FRAME_KEY]);
+            if (size > KVMSG_KEY_MAX)
+                size = KVMSG_KEY_MAX;
+            memcpy(self->key,
+                zmq_msg_data(&self->frame[FRAME_KEY]), size);
+            self->key[size] = 0;
+        }
+        return self->key;
+    } else
+        return NULL;
 }
 
 //  Set message key as provided
 void
 kvmsg_set_key(kvmsg_t *self, char *key) {
-	assert(self);
-	zmq_msg_t *msg = &self->frame[FRAME_KEY];
-	if (self->present[FRAME_KEY])
-		zmq_msg_close(msg);
-	zmq_msg_init_size(msg, strlen(key));
-	memcpy(zmq_msg_data(msg), key, strlen(key));
-	self->present[FRAME_KEY] = 1;
+    assert(self);
+    zmq_msg_t *msg = &self->frame[FRAME_KEY];
+    if (self->present[FRAME_KEY])
+        zmq_msg_close(msg);
+    zmq_msg_init_size(msg, strlen(key));
+    memcpy(zmq_msg_data(msg), key, strlen(key));
+    self->present[FRAME_KEY] = 1;
 }
 
 //  Set message key using printf format
 void
 kvmsg_fmt_key(kvmsg_t *self, char *format, ...) {
-	char value[KVMSG_KEY_MAX + 1];
-	va_list args;
+    char value[KVMSG_KEY_MAX + 1];
+    va_list args;
 
-	assert(self);
-	va_start(args, format);
-	vsnprintf(value, KVMSG_KEY_MAX, format, args);
-	va_end(args);
-	kvmsg_set_key(self, value);
+    assert(self);
+    va_start(args, format);
+    vsnprintf(value, KVMSG_KEY_MAX, format, args);
+    va_end(args);
+    kvmsg_set_key(self, value);
 }
 
 //  Return sequence nbr from last read message, if any
 int64_t
 kvmsg_sequence(kvmsg_t *self) {
-	assert(self);
-	if (self->present[FRAME_SEQ]) {
-		assert(zmq_msg_size(&self->frame[FRAME_SEQ]) == 8);
-		byte *source = zmq_msg_data(&self->frame[FRAME_SEQ]);
-		int64_t sequence = ((int64_t)(source[0]) << 56)
-			+ ((int64_t)(source[1]) << 48)
-			+ ((int64_t)(source[2]) << 40)
-			+ ((int64_t)(source[3]) << 32)
-			+ ((int64_t)(source[4]) << 24)
-			+ ((int64_t)(source[5]) << 16)
-			+ ((int64_t)(source[6]) << 8)
-			+ (int64_t)(source[7]);
-		return sequence;
-	} else
-		return 0;
+    assert(self);
+    if (self->present[FRAME_SEQ]) {
+        assert(zmq_msg_size(&self->frame[FRAME_SEQ]) == 8);
+        byte *source = zmq_msg_data(&self->frame[FRAME_SEQ]);
+        int64_t sequence = ((int64_t)(source[0]) << 56)
+            + ((int64_t)(source[1]) << 48)
+            + ((int64_t)(source[2]) << 40)
+            + ((int64_t)(source[3]) << 32)
+            + ((int64_t)(source[4]) << 24)
+            + ((int64_t)(source[5]) << 16)
+            + ((int64_t)(source[6]) << 8)
+            + (int64_t)(source[7]);
+        return sequence;
+    } else
+        return 0;
 }
 
 //  Set message sequence number
 void
 kvmsg_set_sequence(kvmsg_t *self, int64_t sequence) {
-	assert(self);
-	zmq_msg_t *msg = &self->frame[FRAME_SEQ];
-	if (self->present[FRAME_SEQ])
-		zmq_msg_close(msg);
-	zmq_msg_init_size(msg, 8);
+    assert(self);
+    zmq_msg_t *msg = &self->frame[FRAME_SEQ];
+    if (self->present[FRAME_SEQ])
+        zmq_msg_close(msg);
+    zmq_msg_init_size(msg, 8);
 
-	byte *source = zmq_msg_data(msg);
-	source[0] = (byte)((sequence >> 56) & 255);
-	source[1] = (byte)((sequence >> 48) & 255);
-	source[2] = (byte)((sequence >> 40) & 255);
-	source[3] = (byte)((sequence >> 32) & 255);
-	source[4] = (byte)((sequence >> 24) & 255);
-	source[5] = (byte)((sequence >> 16) & 255);
-	source[6] = (byte)((sequence >> 8) & 255);
-	source[7] = (byte)((sequence) & 255);
+    byte *source = zmq_msg_data(msg);
+    source[0] = (byte)((sequence >> 56) & 255);
+    source[1] = (byte)((sequence >> 48) & 255);
+    source[2] = (byte)((sequence >> 40) & 255);
+    source[3] = (byte)((sequence >> 32) & 255);
+    source[4] = (byte)((sequence >> 24) & 255);
+    source[5] = (byte)((sequence >> 16) & 255);
+    source[6] = (byte)((sequence >> 8) & 255);
+    source[7] = (byte)((sequence) & 255);
 
-	self->present[FRAME_SEQ] = 1;
+    self->present[FRAME_SEQ] = 1;
 }
 
 //  Return body from last read message, if any, else NULL
 byte *
 kvmsg_body(kvmsg_t *self) {
-	assert(self);
-	if (self->present[FRAME_BODY])
-		return (byte *)zmq_msg_data(&self->frame[FRAME_BODY]);
-	else
-		return NULL;
+    assert(self);
+    if (self->present[FRAME_BODY])
+        return (byte *)zmq_msg_data(&self->frame[FRAME_BODY]);
+    else
+        return NULL;
 }
 
 //  Set message body
 void
 kvmsg_set_body(kvmsg_t *self, byte *body, size_t size) {
-	assert(self);
-	zmq_msg_t *msg = &self->frame[FRAME_BODY];
-	if (self->present[FRAME_BODY])
-		zmq_msg_close(msg);
-	self->present[FRAME_BODY] = 1;
-	zmq_msg_init_size(msg, size);
-	memcpy(zmq_msg_data(msg), body, size);
+    assert(self);
+    zmq_msg_t *msg = &self->frame[FRAME_BODY];
+    if (self->present[FRAME_BODY])
+        zmq_msg_close(msg);
+    self->present[FRAME_BODY] = 1;
+    zmq_msg_init_size(msg, size);
+    memcpy(zmq_msg_data(msg), body, size);
 }
 
 //  Set message body using printf format
 void
 kvmsg_fmt_body(kvmsg_t *self, char *format, ...) {
-	char value[255 + 1];
-	va_list args;
+    char value[255 + 1];
+    va_list args;
 
-	assert(self);
-	va_start(args, format);
-	vsnprintf(value, 255, format, args);
-	va_end(args);
-	kvmsg_set_body(self, (byte *)value, strlen(value));
+    assert(self);
+    va_start(args, format);
+    vsnprintf(value, 255, format, args);
+    va_end(args);
+    kvmsg_set_body(self, (byte *)value, strlen(value));
 }
 
 //  Return body size from last read message, if any, else zero
 size_t
 kvmsg_size(kvmsg_t *self) {
-	assert(self);
-	if (self->present[FRAME_BODY])
-		return zmq_msg_size(&self->frame[FRAME_BODY]);
-	else
-		return 0;
+    assert(self);
+    if (self->present[FRAME_BODY])
+        return zmq_msg_size(&self->frame[FRAME_BODY]);
+    else
+        return 0;
 }
 //  .until
 
@@ -343,26 +343,26 @@ kvmsg_size(kvmsg_t *self) {
 
 byte *
 kvmsg_uuid(kvmsg_t *self) {
-	assert(self);
-	if (self->present[FRAME_UUID]
-		&& zmq_msg_size(&self->frame[FRAME_UUID]) == 16 /*sizeof(uuid_t)*/)
-		return (byte *)zmq_msg_data(&self->frame[FRAME_UUID]);
-	else
-		return NULL;
+    assert(self);
+    if (self->present[FRAME_UUID]
+        && zmq_msg_size(&self->frame[FRAME_UUID]) == 16 /*sizeof(uuid_t)*/)
+        return (byte *)zmq_msg_data(&self->frame[FRAME_UUID]);
+    else
+        return NULL;
 }
 
 //  Sets the UUID to a randomly generated value
 void
 kvmsg_set_uuid(kvmsg_t *self) {
-	assert(self);
-	zmq_msg_t *msg = &self->frame[FRAME_UUID];
-	zuuid_t* uuid = zuuid_new();
-	if (self->present[FRAME_UUID])
-		zmq_msg_close(msg);
-	zmq_msg_init_size(msg, zuuid_size(uuid));
-	memcpy(zmq_msg_data(msg), zuuid_data(uuid), zuuid_size(uuid));
-	self->present[FRAME_UUID] = 1;
-	zuuid_destroy(&uuid);
+    assert(self);
+    zmq_msg_t *msg = &self->frame[FRAME_UUID];
+    zuuid_t* uuid = zuuid_new();
+    if (self->present[FRAME_UUID])
+        zmq_msg_close(msg);
+    zmq_msg_init_size(msg, zuuid_size(uuid));
+    memcpy(zmq_msg_data(msg), zuuid_data(uuid), zuuid_size(uuid));
+    self->present[FRAME_UUID] = 1;
+    zuuid_destroy(&uuid);
 }
 
 //  .split property methods
@@ -371,51 +371,51 @@ kvmsg_set_uuid(kvmsg_t *self) {
 //  Get message property, return "" if no such property is defined.
 char *
 kvmsg_get_prop(kvmsg_t *self, char *name) {
-	assert(strchr(name, '=') == NULL);
-	char *prop = zlist_first(self->props);
-	size_t namelen = strlen(name);
-	while (prop) {
-		if (strlen(prop) > namelen
-			&&  memcmp(prop, name, namelen) == 0
-			&& prop[namelen] == '=')
-			return prop + namelen + 1;
-		prop = zlist_next(self->props);
-	}
-	return "";
+    assert(strchr(name, '=') == NULL);
+    char *prop = zlist_first(self->props);
+    size_t namelen = strlen(name);
+    while (prop) {
+        if (strlen(prop) > namelen
+            &&  memcmp(prop, name, namelen) == 0
+            && prop[namelen] == '=')
+            return prop + namelen + 1;
+        prop = zlist_next(self->props);
+    }
+    return "";
 }
 
 //  Set message property. Property name cannot contain '='. Max length of
 //  value is 255 chars.
 void
 kvmsg_set_prop(kvmsg_t *self, char *name, char *format, ...) {
-	assert(strchr(name, '=') == NULL);
+    assert(strchr(name, '=') == NULL);
 
-	char value[255 + 1];
-	va_list args;
-	assert(self);
-	va_start(args, format);
-	vsnprintf(value, 255, format, args);
-	va_end(args);
+    char value[255 + 1];
+    va_list args;
+    assert(self);
+    va_start(args, format);
+    vsnprintf(value, 255, format, args);
+    va_end(args);
 
-	//  Allocate name=value string
-	char *prop = malloc(strlen(name) + strlen(value) + 2);
+    //  Allocate name=value string
+    char *prop = malloc(strlen(name) + strlen(value) + 2);
 
-	//  Remove existing property if any
-	sprintf(prop, "%s=", name);
-	char *existing = zlist_first(self->props);
-	while (existing) {
-		if (memcmp(prop, existing, strlen(prop)) == 0) {
-			self->props_size -= strlen(existing) + 1;
-			zlist_remove(self->props, existing);
-			free(existing);
-			break;
-		}
-		existing = zlist_next(self->props);
-	}
-	//  Add new name=value property string
-	strcat(prop, value);
-	zlist_append(self->props, prop);
-	self->props_size += strlen(prop) + 1;
+    //  Remove existing property if any
+    sprintf(prop, "%s=", name);
+    char *existing = zlist_first(self->props);
+    while (existing) {
+        if (memcmp(prop, existing, strlen(prop)) == 0) {
+            self->props_size -= strlen(existing) + 1;
+            zlist_remove(self->props, existing);
+            free(existing);
+            break;
+        }
+        existing = zlist_next(self->props);
+    }
+    //  Add new name=value property string
+    strcat(prop, value);
+    zlist_append(self->props, prop);
+    self->props_size += strlen(prop) + 1;
 }
 
 //  .split store method
@@ -425,21 +425,21 @@ kvmsg_set_prop(kvmsg_t *self, char *name, char *format, ...) {
 
 void
 kvmsg_store(kvmsg_t **self_p, zhash_t *hash) {
-	assert(self_p);
-	if (*self_p) {
-		kvmsg_t *self = *self_p;
-		assert(self);
-		if (kvmsg_size(self)) {
-			if (self->present[FRAME_KEY]
-				&& self->present[FRAME_BODY]) {
-				zhash_update(hash, kvmsg_key(self), self);
-				zhash_freefn(hash, kvmsg_key(self), kvmsg_free);
-			}
-		} else
-			zhash_delete(hash, kvmsg_key(self));
+    assert(self_p);
+    if (*self_p) {
+        kvmsg_t *self = *self_p;
+        assert(self);
+        if (kvmsg_size(self)) {
+            if (self->present[FRAME_KEY]
+                && self->present[FRAME_BODY]) {
+                zhash_update(hash, kvmsg_key(self), self);
+                zhash_freefn(hash, kvmsg_key(self), kvmsg_free);
+            }
+        } else
+            zhash_delete(hash, kvmsg_key(self));
 
-		*self_p = NULL;
-	}
+        *self_p = NULL;
+    }
 }
 
 //  .split dump method
@@ -448,34 +448,34 @@ kvmsg_store(kvmsg_t **self_p, zhash_t *hash) {
 
 void
 kvmsg_dump(kvmsg_t *self) {
-	//  .skip
-	if (self) {
-		if (!self) {
-			fprintf(stderr, "NULL");
-			return;
-		}
-		size_t size = kvmsg_size(self);
-		byte  *body = kvmsg_body(self);
-		fprintf(stderr, "[seq:%" PRId64 "]", kvmsg_sequence(self));
-		fprintf(stderr, "[key:%s]", kvmsg_key(self));
-		//  .until
-		fprintf(stderr, "[size:%zd] ", size);
-		if (zlist_size(self->props)) {
-			fprintf(stderr, "[");
-			char *prop = zlist_first(self->props);
-			while (prop) {
-				fprintf(stderr, "%s;", prop);
-				prop = zlist_next(self->props);
-			}
-			fprintf(stderr, "]");
-		}
-		//  .skip
-		int char_nbr;
-		for (char_nbr = 0; char_nbr < (int)size; char_nbr++)
-			fprintf(stderr, "%02X", body[char_nbr]);
-		fprintf(stderr, "\n");
-	} else
-		fprintf(stderr, "NULL message\n");
+    //  .skip
+    if (self) {
+        if (!self) {
+            fprintf(stderr, "NULL");
+            return;
+        }
+        size_t size = kvmsg_size(self);
+        byte  *body = kvmsg_body(self);
+        fprintf(stderr, "[seq:%" PRId64 "]", kvmsg_sequence(self));
+        fprintf(stderr, "[key:%s]", kvmsg_key(self));
+        //  .until
+        fprintf(stderr, "[size:%zd] ", size);
+        if (zlist_size(self->props)) {
+            fprintf(stderr, "[");
+            char *prop = zlist_first(self->props);
+            while (prop) {
+                fprintf(stderr, "%s;", prop);
+                prop = zlist_next(self->props);
+            }
+            fprintf(stderr, "]");
+        }
+        //  .skip
+        int char_nbr;
+        for (char_nbr = 0; char_nbr < (int)size; char_nbr++)
+            fprintf(stderr, "%02X", body[char_nbr]);
+        fprintf(stderr, "\n");
+    } else
+        fprintf(stderr, "NULL message\n");
 }
 //  .until
 
@@ -485,65 +485,65 @@ kvmsg_dump(kvmsg_t *self) {
 
 int
 kvmsg_test(int verbose) {
-	//  .skip
-	kvmsg_t
-		*kvmsg;
+    //  .skip
+    kvmsg_t
+        *kvmsg;
 
-	printf(" * kvmsg: ");
+    printf(" * kvmsg: ");
 
-	//  Prepare our context and sockets
-	zsock_t *output = zsock_new(ZMQ_DEALER);
-	int rc = zsock_bind(output, "inproc://kvmsg_selftest");
-	assert(rc == 0);
-	zsock_t *input = zsock_new(ZMQ_DEALER);
-	rc = zsock_connect(input, "inproc://kvmsg_selftest");
-	assert(rc == 0);
+    //  Prepare our context and sockets
+    zsock_t *output = zsock_new(ZMQ_DEALER);
+    int rc = zsock_bind(output, "inproc://kvmsg_selftest");
+    assert(rc == 0);
+    zsock_t *input = zsock_new(ZMQ_DEALER);
+    rc = zsock_connect(input, "inproc://kvmsg_selftest");
+    assert(rc == 0);
 
-	zhash_t *kvmap = zhash_new();
+    zhash_t *kvmap = zhash_new();
 
-	//  .until
-	//  Test send and receive of simple message
-	kvmsg = kvmsg_new(1);
-	kvmsg_set_key(kvmsg, "key");
-	kvmsg_set_uuid(kvmsg);
-	kvmsg_set_body(kvmsg, (byte *) "body", 4);
-	if (verbose)
-		kvmsg_dump(kvmsg);
-	kvmsg_send(kvmsg, zsock_resolve(output));
-	kvmsg_store(&kvmsg, kvmap);
+    //  .until
+    //  Test send and receive of simple message
+    kvmsg = kvmsg_new(1);
+    kvmsg_set_key(kvmsg, "key");
+    kvmsg_set_uuid(kvmsg);
+    kvmsg_set_body(kvmsg, (byte *) "body", 4);
+    if (verbose)
+        kvmsg_dump(kvmsg);
+    kvmsg_send(kvmsg, zsock_resolve(output));
+    kvmsg_store(&kvmsg, kvmap);
 
-	kvmsg = kvmsg_recv(zsock_resolve(input));
-	if (verbose)
-		kvmsg_dump(kvmsg);
-	assert(streq(kvmsg_key(kvmsg), "key"));
-	kvmsg_store(&kvmsg, kvmap);
+    kvmsg = kvmsg_recv(zsock_resolve(input));
+    if (verbose)
+        kvmsg_dump(kvmsg);
+    assert(streq(kvmsg_key(kvmsg), "key"));
+    kvmsg_store(&kvmsg, kvmap);
 
-	//  Test send and receive of message with properties
-	kvmsg = kvmsg_new(2);
-	kvmsg_set_prop(kvmsg, "prop1", "value1");
-	kvmsg_set_prop(kvmsg, "prop2", "value1");
-	kvmsg_set_prop(kvmsg, "prop2", "value2");
-	kvmsg_set_key(kvmsg, "key");
-	kvmsg_set_uuid(kvmsg);
-	kvmsg_set_body(kvmsg, (byte *) "body", 4);
-	assert(streq(kvmsg_get_prop(kvmsg, "prop2"), "value2"));
-	if (verbose)
-		kvmsg_dump(kvmsg);
-	kvmsg_send(kvmsg, zsock_resolve(output));
-	kvmsg_destroy(&kvmsg);
+    //  Test send and receive of message with properties
+    kvmsg = kvmsg_new(2);
+    kvmsg_set_prop(kvmsg, "prop1", "value1");
+    kvmsg_set_prop(kvmsg, "prop2", "value1");
+    kvmsg_set_prop(kvmsg, "prop2", "value2");
+    kvmsg_set_key(kvmsg, "key");
+    kvmsg_set_uuid(kvmsg);
+    kvmsg_set_body(kvmsg, (byte *) "body", 4);
+    assert(streq(kvmsg_get_prop(kvmsg, "prop2"), "value2"));
+    if (verbose)
+        kvmsg_dump(kvmsg);
+    kvmsg_send(kvmsg, zsock_resolve(output));
+    kvmsg_destroy(&kvmsg);
 
-	kvmsg = kvmsg_recv(zsock_resolve(input));
-	if (verbose)
-		kvmsg_dump(kvmsg);
-	assert(streq(kvmsg_key(kvmsg), "key"));
-	assert(streq(kvmsg_get_prop(kvmsg, "prop2"), "value2"));
-	kvmsg_destroy(&kvmsg);
-	//  .skip
-	//  Shutdown and destroy all objects
-	zhash_destroy(&kvmap);
-	zsock_destroy(&input);
-	zsock_destroy(&output);
-	printf("OK\n");
-	return 0;
+    kvmsg = kvmsg_recv(zsock_resolve(input));
+    if (verbose)
+        kvmsg_dump(kvmsg);
+    assert(streq(kvmsg_key(kvmsg), "key"));
+    assert(streq(kvmsg_get_prop(kvmsg, "prop2"), "value2"));
+    kvmsg_destroy(&kvmsg);
+    //  .skip
+    //  Shutdown and destroy all objects
+    zhash_destroy(&kvmap);
+    zsock_destroy(&input);
+    zsock_destroy(&output);
+    printf("OK\n");
+    return 0;
 }
 //  .until
