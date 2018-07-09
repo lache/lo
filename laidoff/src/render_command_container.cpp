@@ -14,8 +14,8 @@
 #include "logic.h"
 #include "lwsolid.h"
 
-extern const float default_uv_offset[2];
-extern const float default_uv_scale[2];
+const static float default_uv_offset[2] = { 0, 0 };
+const static float default_uv_scale[2] = { 1, 1 };
 
 litehtml::render_command_container::render_command_container(LWCONTEXT* pLwc, int w, int h)
     : pLwc(pLwc)
@@ -28,7 +28,11 @@ litehtml::render_command_container::~render_command_container() {
 
 litehtml::uint_ptr litehtml::render_command_container::create_font(const litehtml::tchar_t * faceName, int size, int weight, litehtml::font_style italic, unsigned int decoration, litehtml::font_metrics * fm) {
     font_handle_seq++;
-    litehtml::uint_ptr font_handle = reinterpret_cast<litehtml::uint_ptr>(font_handle_seq);
+#if defined( WIN32 ) || defined( WINCE )
+    litehtml::uint_ptr font_handle = font_handle_seq;
+#else
+	litehtml::uint_ptr font_handle = reinterpret_cast<litehtml::uint_ptr>(font_handle_seq);
+#endif
     size = 1;
     LOGIx("create_font: faceName=%s, size=%d, weight=%d --> font handle %d", faceName, size, weight, font_handle);
     

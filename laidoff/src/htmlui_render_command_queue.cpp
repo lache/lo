@@ -24,10 +24,10 @@ void htmlui_render_command_queue::clear() {
     text_block_strings.clear();
 }
 
-void htmlui_render_command_queue::render(const LWCONTEXT* pLwc, int scroll_y) {
+void htmlui_render_command_queue::render(const LWCONTEXT* pLwc, float scroll_y) {
     int solid_index = 0;
     int text_block_index = 0;
-    for (int i = 0; i < render_commands.size(); i++) {
+    for (std::size_t i = 0; i < render_commands.size(); i++) {
         if (render_commands[i] == LRC_RENDER_SOLID) {
             LWSOLID* solid = &solids[solid_index];
             solid->view[3][1] = static_cast<float>(scroll_y);
