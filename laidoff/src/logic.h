@@ -7,9 +7,9 @@ typedef struct _LWCONTEXT LWCONTEXT;
 typedef struct _LWTCP LWTCP;
 
 typedef struct _LWFIELDMESH {
-	LW_VBO_TYPE vbo;
-	GLuint tex_id;
-	int tex_mip;
+    LW_VBO_TYPE vbo;
+    GLuint tex_id;
+    int tex_mip;
 } LWFIELDMESH;
 #ifdef __cplusplus
 extern "C" {;
@@ -27,7 +27,7 @@ void logic_stop_logic_update_job(LWCONTEXT* pLwc);
 void logic_start_logic_update_job_async(LWCONTEXT* pLwc);
 void logic_stop_logic_update_job_async(LWCONTEXT* pLwc);
 void logic_emit_ui_event_async(LWCONTEXT* pLwc, const char* id, float w_ratio, float h_ratio);
-void logic_emit_evalute_with_name_async(LWCONTEXT* pLwc, const char* code, size_t code_len, const char* name); 
+void logic_emit_evalute_with_name_async(LWCONTEXT* pLwc, const char* code, size_t code_len, const char* name);
 void logic_emit_evalute_async(LWCONTEXT* pLwc, const char* code, size_t code_len);
 void load_field_1_init_runtime_data(LWCONTEXT* pLwc);
 void load_field_2_init_runtime_data(LWCONTEXT* pLwc);
@@ -51,6 +51,7 @@ void change_to_puck_game(LWCONTEXT* pLwc);
 void request_player_reveal_leaderboard(LWTCP* tcp, int items_in_page);
 void request_leaderboard(LWTCP* tcp, int items_in_page, int one_based_page);
 void start_nickname_text_input_activity(LWCONTEXT* pLwc);
+void start_chat_text_input_activity(LWCONTEXT* pLwc);
 void lw_first_page(LWCONTEXT* pLwc);
 void lw_prev_page(LWCONTEXT* pLwc);
 void lw_next_page(LWCONTEXT* pLwc);

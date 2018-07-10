@@ -436,11 +436,15 @@ void lw_start_text_input_activity(LWCONTEXT* pLwc, int tag) {
               hWnd,								// owner window
               TextInputProc);					// dialog box window procedure
 }
-#else
+#else // #if LW_PLATFORM_WIN32
 void lw_start_text_input_activity(LWCONTEXT* pLwc, int tag) {
     LOGE("Not implemented yet..");
 }
 #endif
+
+void lw_start_chat_text_input_activity(LWCONTEXT* pLwc) {
+	LOGE("Not implemented yet..");
+}
 
 void lw_request_remote_notification_device_token(LWCONTEXT* pLwc) {
     LOGE("Not supported in win32");

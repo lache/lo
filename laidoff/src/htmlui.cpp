@@ -276,7 +276,7 @@ public:
                 // interpolate scroll_y to 'document_size.height - client_height'
                 scroll_y += ((document_size.height - client_height) - scroll_y) / retraction;
                 if (scroll_y < document_size.height - client_height) {
-                    scroll_y = document_size.height - client_height;
+                    scroll_y = static_cast<float>(document_size.height - client_height);
                 }
             }
         }

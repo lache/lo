@@ -29,7 +29,11 @@ litehtml::text_container::~text_container() {
 
 litehtml::uint_ptr litehtml::text_container::create_font(const litehtml::tchar_t * faceName, int size, int weight, litehtml::font_style italic, unsigned int decoration, litehtml::font_metrics * fm) {
     font_handle_seq++;
-    litehtml::uint_ptr font_handle = reinterpret_cast<litehtml::uint_ptr>(font_handle_seq);
+#if defined( WIN32 ) || defined( WINCE )
+	litehtml::uint_ptr font_handle = font_handle_seq;
+#else
+	litehtml::uint_ptr font_handle = reinterpret_cast<litehtml::uint_ptr>(font_handle_seq);
+#endif
     LOGIx("create_font: faceName=%s, size=%d, weight=%d --> font handle %d", faceName, size, weight, font_handle);
     font_sizes[font_handle] = size;
     if (client_aspect_ratio > 1) {

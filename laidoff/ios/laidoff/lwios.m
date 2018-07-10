@@ -47,6 +47,12 @@ void lw_start_text_input_activity(LWCONTEXT* pLwc, int tag) {
     rmsg_start_text_input_activity(pLwc, tag);
 }
 
+void lw_start_chat_text_input_activity(LWCONTEXT* pLwc) {
+    // post to main(render) thread to call iOS specific API
+    // (iOS API call should be called in main thread)
+    //rmsg_start_text_input_activity(pLwc, tag);
+}
+
 void lw_start_text_input_activity_ios(LWCONTEXT* pLwc, int tag) {
     pLwc->last_text_input_seq = lw_get_text_input_seq();
     lw_set_text_input_tag(tag);
