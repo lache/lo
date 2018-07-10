@@ -8,8 +8,11 @@
     <string name="error">ERROR</string>
     <string name="exit">QUIT</string>
     <string name="title_activity_text">Text</string>
-
     <string name="hello_world_main">Hello World, main</string>
     <string name="change_nickname">Change nickname</string>
     <string name="enter_new_nickname">Enter new nickname</string>
+    <string name="title_activity_chat">ChatActivity</string>
+    <string name="send">Send</string>
+    <string name="send_chat">Send chat</string>
+    <string name="type_chat_here">Type chat here</string>
 </resources>

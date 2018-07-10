@@ -335,6 +335,17 @@ public class LaidoffNativeActivity extends NativeActivity {
     }
 
     @SuppressWarnings("unused")
+    public static void startChatTextInputActivity(String dummy) {
+        INSTANCE.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(INSTANCE, ChatActivity.class);
+                INSTANCE.startActivity(intent);
+            }
+        });
+    }
+
+    @SuppressWarnings("unused")
     public static void startRewardVideo(String dummy) {
 //        INSTANCE.runOnUiThread(new Runnable() {
 //            @Override

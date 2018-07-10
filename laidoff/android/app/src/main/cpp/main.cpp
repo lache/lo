@@ -1054,6 +1054,11 @@ extern "C" void lw_start_text_input_activity(LWCONTEXT* pLwc, int tag) {
     request_void_string_command("startTextInputActivity", "dummy");
 }
 
+extern "C" void lw_start_chat_text_input_activity(LWCONTEXT* pLwc) {
+    pLwc->last_text_input_seq = lw_get_text_input_seq();
+    request_void_string_command("startChatTextInputActivity", "dummy");
+}
+
 extern "C" void lw_start_reward_video(LWCONTEXT* pLwc, int tag) {
     request_void_string_command("startRewardVideo", "dummy");
 }

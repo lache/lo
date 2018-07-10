@@ -632,6 +632,10 @@ void start_nickname_text_input_activity(LWCONTEXT* pLwc) {
     lw_start_text_input_activity(pLwc, LITI_NICKNAME);
 }
 
+void start_chat_text_input_activity(LWCONTEXT* pLwc) {
+    lw_start_chat_text_input_activity(pLwc);
+}
+
 void start_reward_video(LWCONTEXT* pLwc) {
     lw_start_reward_video(pLwc, 0);
 }
@@ -723,6 +727,7 @@ void reset_runtime_context(LWCONTEXT* pLwc) {
         { LWU("Sign In"), start_sign_in },
         { LWU("Sign Out"), start_sign_out },
         { LWU("Remtex"), change_to_remtex },
+        { LWU("Chat"), start_chat_text_input_activity },
     };
     assert(ARRAY_SIZE(handler_array) <= ARRAY_SIZE(pLwc->admin_button_command));
     for (int i = 0; i < ARRAY_SIZE(handler_array); i++) {
