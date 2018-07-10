@@ -13,6 +13,9 @@
 #import "AppDelegate.h"
 #import "UIDeviceHardware.h"
 
+GameViewController *viewController;
+
+
 @interface GameViewController () {
     
 }
@@ -43,7 +46,7 @@ char internal_data_path[1024];
     view.drawableDepthFormat = GLKViewDrawableDepthFormat16;
     view.userInteractionEnabled = YES;
     view.multipleTouchEnabled = YES;
-    
+    viewController = self;
     self.preferredFramesPerSecond = 60;
     [self setupGL];
     
@@ -215,12 +218,20 @@ int GetFingerTrackId(void *touch)
     {
         RemoveTouch((__bridge void*)touchEvent);
     }
+
 }
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
     lwc_prerender_mutable_context(self.pLwc);
     lwc_render(self.pLwc);
+}
+
+void lw_open_chat(void) {
+    UIStoryboard *sb = [UIStoryboard storyboardWithName:@"ChatStoryboard" bundle:nil];
+    UIViewController *vc = [sb instantiateInitialViewController];
+    vc.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
+    [viewController presentViewController:vc animated:YES completion:NULL];
 }
 
 @end

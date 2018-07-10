@@ -21,6 +21,8 @@
 
 static id app_delegate;
 
+void lw_open_chat(void);
+
 void set_app_delegate(id ad /*app_delegate*/) {
     app_delegate = ad;
 }
@@ -50,10 +52,14 @@ void lw_start_text_input_activity(LWCONTEXT* pLwc, int tag) {
 void lw_start_chat_text_input_activity(LWCONTEXT* pLwc) {
     // post to main(render) thread to call iOS specific API
     // (iOS API call should be called in main thread)
-    //rmsg_start_text_input_activity(pLwc, tag);
+    rmsg_start_text_input_activity(pLwc, 19850506);
 }
 
 void lw_start_text_input_activity_ios(LWCONTEXT* pLwc, int tag) {
+    if (tag == 19850506) {
+        lw_open_chat();
+        return;
+    }
     pLwc->last_text_input_seq = lw_get_text_input_seq();
     lw_set_text_input_tag(tag);
     

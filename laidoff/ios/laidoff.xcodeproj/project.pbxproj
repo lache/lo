@@ -324,6 +324,7 @@
 		6C295ED9204310700052999C /* el_text.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6C295E97204310700052999C /* el_text.cpp */; };
 		6C295EDA204310700052999C /* el_para.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6C295E9A204310700052999C /* el_para.cpp */; };
 		6C295EDB204310700052999C /* el_break.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6C295E9E204310700052999C /* el_break.cpp */; };
+		6C40DD9220F527F40055A782 /* ChatStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6C40DD9120F527F40055A782 /* ChatStoryboard.storyboard */; };
 		6C59053E207C60C500A14685 /* remtex.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C59053C207C60C400A14685 /* remtex.c */; };
 		6C59053F207C60C500A14685 /* render_remtex.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C59053D207C60C500A14685 /* render_remtex.c */; };
 		6CA16CD81EA20B5600DB7AF0 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CA16CD71EA20B5600DB7AF0 /* main.m */; };
@@ -1141,6 +1142,7 @@
 		6C295E9D204310700052999C /* stylesheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stylesheet.h; sourceTree = "<group>"; };
 		6C295E9E204310700052999C /* el_break.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = el_break.cpp; sourceTree = "<group>"; };
 		6C2A5FED1FC03260005B3DF2 /* laidoff.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = laidoff.entitlements; sourceTree = "<group>"; };
+		6C40DD9120F527F40055A782 /* ChatStoryboard.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ChatStoryboard.storyboard; sourceTree = "<group>"; };
 		6C59053A207C60C400A14685 /* remtex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = remtex.h; sourceTree = "<group>"; };
 		6C59053B207C60C400A14685 /* render_remtex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = render_remtex.h; sourceTree = "<group>"; };
 		6C59053C207C60C400A14685 /* remtex.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = remtex.c; sourceTree = "<group>"; };
@@ -2406,6 +2408,7 @@
 				56F187C01EC74DA60019312F /* libzmq */,
 				6CA16D421EA210BB00DB7AF0 /* lua-5.3.4 */,
 				6CA16DA31EA2110E00DB7AF0 /* lwios.m */,
+				6C40DD9120F527F40055A782 /* ChatStoryboard.storyboard */,
 				6CA16CE31EA20B5600DB7AF0 /* Main.storyboard */,
 				5633AC311EADDF98003F1549 /* net.c */,
 				566372621EBA52D3001DA3F4 /* ode */,
@@ -2852,6 +2855,7 @@
 				56F189881EC751950019312F /* libczmq.pc.in in Resources */,
 				56F188C21EC74DB60019312F /* libzmq.pc.in in Resources */,
 				6C295ECE204310700052999C /* litehtml.vcproj in Resources */,
+				6C40DD9220F527F40055A782 /* ChatStoryboard.storyboard in Resources */,
 				5663737C1EBA52D4001DA3F4 /* Makefile.am in Resources */,
 				56F189041EC74DB60019312F /* version.rc.in in Resources */,
 				56F189391EC7518A0019312F /* .gitignore in Resources */,
