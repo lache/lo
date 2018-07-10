@@ -1284,7 +1284,6 @@
 		6CC832A7205D50DA0031523A /* kvmsg.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = kvmsg.c; sourceTree = "<group>"; };
 		6CC832A8205D50DA0031523A /* jsmn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = jsmn.h; sourceTree = "<group>"; };
 		6CC832A9205D50DA0031523A /* lwskill.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lwskill.c; sourceTree = "<group>"; };
-		6CC832AA205D50DA0031523A /* render_physics.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = render_physics.c; sourceTree = "<group>"; };
 		6CC832AB205D50DA0031523A /* file.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = file.h; sourceTree = "<group>"; };
 		6CC832AC205D50DA0031523A /* playersm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = playersm.h; sourceTree = "<group>"; };
 		6CC832AD205D50DA0031523A /* render_admin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = render_admin.h; sourceTree = "<group>"; };
@@ -1314,7 +1313,6 @@
 		6CC832C5205D50DA0031523A /* lwdirpad.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lwdirpad.c; sourceTree = "<group>"; };
 		6CC832C6205D50DA0031523A /* lwgl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lwgl.c; sourceTree = "<group>"; };
 		6CC832C7205D50DA0031523A /* render_skin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = render_skin.c; sourceTree = "<group>"; };
-		6CC832C8205D50DA0031523A /* physics.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = physics.c; sourceTree = "<group>"; };
 		6CC832C9205D50DA0031523A /* stb_vorbis.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = stb_vorbis.c; sourceTree = "<group>"; };
 		6CC832CA205D50DA0031523A /* lwbutton.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lwbutton.c; sourceTree = "<group>"; };
 		6CC832CB205D50DA0031523A /* sysmsg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sysmsg.h; sourceTree = "<group>"; };
@@ -1379,7 +1377,6 @@
 		6CC83307205D50DA0031523A /* font.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = font.h; sourceTree = "<group>"; };
 		6CC83308205D50DA0031523A /* lwdamagetext.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lwdamagetext.c; sourceTree = "<group>"; };
 		6CC83309205D50DA0031523A /* playersm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = playersm.c; sourceTree = "<group>"; };
-		6CC8330A205D50DA0031523A /* render_physics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = render_physics.h; sourceTree = "<group>"; };
 		6CC8330B205D50DA0031523A /* render_admin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = render_admin.c; sourceTree = "<group>"; };
 		6CC8330C205D50DA0031523A /* field.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = field.c; sourceTree = "<group>"; };
 		6CC8330D205D50DA0031523A /* sprite_data.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sprite_data.h; sourceTree = "<group>"; };
@@ -1408,7 +1405,6 @@
 		6CC83324205D50DA0031523A /* render_leaderboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = render_leaderboard.h; sourceTree = "<group>"; };
 		6CC83325205D50DA0031523A /* lwgl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lwgl.h; sourceTree = "<group>"; };
 		6CC83326205D50DA0031523A /* image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = image.h; sourceTree = "<group>"; };
-		6CC83327205D50DA0031523A /* physics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = physics.h; sourceTree = "<group>"; };
 		6CC83328205D50DA0031523A /* render_skin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = render_skin.h; sourceTree = "<group>"; };
 		6CC83329205D50DA0031523A /* lwfragshader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lwfragshader.h; sourceTree = "<group>"; };
 		6CC8332A205D50DA0031523A /* extrapolator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = extrapolator.h; sourceTree = "<group>"; };
@@ -2653,8 +2649,6 @@
 				6CC832A1205D50DA0031523A /* numcomp.h */,
 				6CC83316205D50DA0031523A /* pcg_basic.c */,
 				6CC8329C205D50DA0031523A /* pcg_basic.h */,
-				6CC832C8205D50DA0031523A /* physics.c */,
-				6CC83327205D50DA0031523A /* physics.h */,
 				6CC832F2205D50DA0031523A /* platform_detection.h */,
 				6CC83309205D50DA0031523A /* playersm.c */,
 				6CC832AC205D50DA0031523A /* playersm.h */,
@@ -2688,8 +2682,6 @@
 				6CC83324205D50DA0031523A /* render_leaderboard.h */,
 				3EF18865C9E87623A8107AC5 /* render_morph.c */,
 				6CD6276120EF4B8E002A2164 /* render_morph.h */,
-				6CC832AA205D50DA0031523A /* render_physics.c */,
-				6CC8330A205D50DA0031523A /* render_physics.h */,
 				6CC8331C205D50DA0031523A /* render_ps.c */,
 				6CC832CE205D50DA0031523A /* render_ps.h */,
 				FE6E8484ADBCBB3A0251BB37 /* render_puckgame.c */,
