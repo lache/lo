@@ -9,6 +9,10 @@
 #import <UIKit/UIKit.h>
 #import <GLKit/GLKit.h>
 
+API_AVAILABLE(ios(9.0))
 @interface GameViewController : GLKViewController
+@property (weak, nonatomic) IBOutlet UIStackView *chatGroup;
+@property (weak, nonatomic) IBOutlet UITextField *chatTextField;
+
 
 @end

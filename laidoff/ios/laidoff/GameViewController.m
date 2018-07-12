@@ -13,6 +13,7 @@
 #import "AppDelegate.h"
 #import "UIDeviceHardware.h"
 
+API_AVAILABLE(ios(9.0))
 GameViewController *viewController;
 
 
@@ -21,6 +22,8 @@ GameViewController *viewController;
 }
 @property (strong, nonatomic) EAGLContext *context;
 @property (nonatomic) LWCONTEXT *pLwc;
+@property (nonatomic) UITapGestureRecognizer *tapRecognizer;
+@property (nonatomic) BOOL keyboardShown;
 
 - (void)setupGL;
 - (void)tearDownGL;
@@ -73,6 +76,15 @@ char internal_data_path[1024];
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
 
     [appDelegate setContext:self.pLwc];
+    
+    self.tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissKeyboard)];
+    
+    [viewController.chatGroup setHidden:YES];
+}
+
+-(void)dismissKeyboard
+{
+    [self.chatTextField resignFirstResponder];
 }
 
 - (void)dealloc
@@ -104,6 +116,43 @@ char internal_data_path[1024];
 
 - (BOOL)prefersStatusBarHidden {
     return YES;
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
+}
+
+#pragma mark - keyboard movements
+- (void)keyboardWillShow:(NSNotification *)notification
+{
+    CGSize keyboardSize = [[[notification userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+    
+    [UIView animateWithDuration:0.3 animations:^{
+        CGRect f = self.view.frame;
+        f.origin.y = -keyboardSize.height;
+        self.view.frame = f;
+    }];
+    [self.view addGestureRecognizer:self.tapRecognizer];
+    self.keyboardShown = YES;
+}
+
+-(void)keyboardWillHide:(NSNotification *)notification
+{
+    [UIView animateWithDuration:0.3 animations:^{
+        CGRect f = self.view.frame;
+        f.origin.y = 0.0f;
+        self.view.frame = f;
+    }];
+    [self.view removeGestureRecognizer:self.tapRecognizer];
+    self.keyboardShown = NO;
 }
 
 - (void)setupGL
@@ -170,6 +219,9 @@ int GetFingerTrackId(void *touch)
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    if (self.keyboardShown) {
+        return;
+    }
     //[super touchesBegan:touches withEvent:event];
     for (UITouch *touchEvent in touches)
     {
@@ -185,6 +237,9 @@ int GetFingerTrackId(void *touch)
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    if (self.keyboardShown) {
+        return;
+    }
     //[super touchesMoved:touches withEvent:event];
     for (UITouch *touchEvent in touches)
     {
@@ -199,6 +254,9 @@ int GetFingerTrackId(void *touch)
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    if (self.keyboardShown) {
+        return;
+    }
     //[super touchesEnded:touches withEvent:event];
     for (UITouch *touchEvent in touches)
     {
@@ -227,11 +285,33 @@ int GetFingerTrackId(void *touch)
     lwc_render(self.pLwc);
 }
 
+- (IBAction)sendChat:(id)sender {
+    [self.chatTextField setText:@""];
+}
+
+-(BOOL) textFieldShouldReturn:(UITextField *)textField
+{
+    [self sendChat:textField];
+    
+    return YES;
+}
+
 void lw_open_chat(void) {
+    if (@available(iOS 9.0, *)) {
+        BOOL hidden = [viewController.chatGroup isHidden];
+        [viewController.chatGroup setHidden:!hidden];
+        if (hidden) {
+            [viewController.chatTextField becomeFirstResponder];
+        }
+    } else {
+        // Fallback on earlier versions
+    }
+    /*
     UIStoryboard *sb = [UIStoryboard storyboardWithName:@"ChatStoryboard" bundle:nil];
     UIViewController *vc = [sb instantiateInitialViewController];
     vc.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
     [viewController presentViewController:vc animated:YES completion:NULL];
+     */
 }
 
 @end
