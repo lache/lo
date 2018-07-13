@@ -109,6 +109,7 @@ typedef struct _LWUDP LWUDP;
 typedef struct _LWTCP LWTCP;
 typedef struct _LWPSCONTEXT LWPSCONTEXT;
 typedef struct _LWTTL LWTTL;
+typedef struct _LWCHAT LWCHAT;
 
 typedef enum _LW_CONTROL_FLAGS {
     LCF_PUCK_GAME_RIGHT_DIR_PAD = 1 << 0,

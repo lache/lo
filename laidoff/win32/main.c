@@ -270,14 +270,15 @@ int main(int argc, char* argv[]) {
 
 #if LW_PLATFORM_WIN32
     lwc_start_scriptwatch_thread(pLwc);
+#endif
+#if LW_PLATFORM_WIN32 || LW_PLATFORM_OSX
     lwimgui_init(window);
 #endif
-
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
         lwc_prerender_mutable_context(pLwc);
         lwc_render(pLwc);
-#if LW_PLATFORM_WIN32
+#if LW_PLATFORM_WIN32 || LW_PLATFORM_OSX
         lwimgui_render(window);
 #endif
         glfwSwapBuffers(window);
@@ -289,7 +290,7 @@ int main(int argc, char* argv[]) {
     if (!pLwc->quit_request) {
         lw_flag_logic_actor_to_quit_and_wait(pLwc);
     }
-#if LW_PLATFORM_WIN32
+#if LW_PLATFORM_WIN32 || LW_PLATFORM_OSX
     lwimgui_shutdown();
 #endif
 

@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include "laidoff.h"
 #include "lwlog.h"
-#if LW_PLATFORM_WIN32
+#if LW_PLATFORM_WIN32 || LW_PLATFORM_OSX
 #include "lwimgui.h"
 #endif
 #include "input.h"
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
-#if LW_PLATFORM_WIN32
+#if LW_PLATFORM_WIN32 || LW_PLATFORM_OSX
 	lwimgui_mouse_button_callback(window, button, action, mods);
 	if (lwimgui_want_capture_mouse()) {
 		return;
@@ -57,7 +57,7 @@ void mouse_pos_callback(GLFWwindow* window, double xpos, double ypos) {
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
     LWCONTEXT* pLwc = (LWCONTEXT*)glfwGetWindowUserPointer(window);
-#if LW_PLATFORM_WIN32
+#if LW_PLATFORM_WIN32 || LW_PLATFORM_OSX
 	lwimgui_scroll_callback(window, xoffset, yoffset);
 	if (lwimgui_want_capture_mouse()) {
 		return;

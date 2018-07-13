@@ -173,9 +173,23 @@ elseif (APPLE)
             win32/mouse.c
             win32/sound.cpp
             win32/net.c
+            win32/lwimgui.cpp
             osx/osx_image.m
             osx/osx_sound.m
             assets # mac os executable bundles its external resources
+            )
+    set(IMGUI
+            imgui/imgui_impl_glfw_gl3.cpp
+            imgui/imgui_impl_glfw_gl3.h
+            imgui/imgui.cpp
+            imgui/imgui.h
+            imgui/imgui_demo.cpp
+            imgui/imgui_draw.cpp
+            imgui/imgui_internal.h
+            imgui/imconfig.h
+            imgui/stb_rect_pack.h
+            imgui/stb_textedit.h
+            imgui/stb_truetype.h
             )
 elseif (RPI)
 

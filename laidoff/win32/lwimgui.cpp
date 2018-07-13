@@ -1,4 +1,4 @@
-﻿#include "lwimgui.h"
+#include "lwimgui.h"
 #include <imgui.h>
 #include "imgui_impl_glfw_gl3.h"
 //#include <GLFW/glfw3.h>
@@ -7,6 +7,7 @@
 #include "lwlog.h"
 #include <stdio.h>
 #include "iconchar.h"
+#include <ctype.h> // isspace() on mac os
 static bool show_test_window = false;
 static bool show_chat_window = false;
 static bool show_another_window = true;
@@ -34,10 +35,14 @@ extern "C" void lwimgui_init(GLFWwindow* window) {
         0,
     };
 
+#if LW_PLATFORM_WIN32
+    // mac os resource finding problem not solved
     ImFont* font1 = io.Fonts->AddFontFromFileTTF("fonts" PATH_SEPARATOR "NotoSansCJKkr-Regular.otf",
                                                  18,
                                                  nullptr,
                                                  ranges);
+#endif
+    
     //ImFontConfig config;
     //config.OversampleH = 3;
     //config.OversampleV = 1;
