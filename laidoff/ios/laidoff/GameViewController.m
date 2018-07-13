@@ -134,24 +134,27 @@ char internal_data_path[1024];
 #pragma mark - keyboard movements
 - (void)keyboardWillShow:(NSNotification *)notification
 {
-    CGSize keyboardSize = [[[notification userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
-    
+    // move upward when keyboard shown
+    CGSize keyboardSize = [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
     [UIView animateWithDuration:0.3 animations:^{
         CGRect f = self.view.frame;
         f.origin.y = -keyboardSize.height;
         self.view.frame = f;
     }];
+    // register tap recognizer
     [self.view addGestureRecognizer:self.tapRecognizer];
     self.keyboardShown = YES;
 }
 
 -(void)keyboardWillHide:(NSNotification *)notification
 {
+    // move downward when keyboard hidden
     [UIView animateWithDuration:0.3 animations:^{
         CGRect f = self.view.frame;
-        f.origin.y = 0.0f;
+        f.origin.y = 0;
         self.view.frame = f;
     }];
+    // remove tap recognizer
     [self.view removeGestureRecognizer:self.tapRecognizer];
     self.keyboardShown = NO;
 }
@@ -303,6 +306,7 @@ void lw_open_chat(void) {
         [viewController.chatGroup setHidden:!hidden];
         if (hidden) {
             [viewController.chatTextField becomeFirstResponder];
+            
         }
     } else {
         // Fallback on earlier versions
