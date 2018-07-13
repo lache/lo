@@ -319,19 +319,15 @@ static int engine_init_display(struct engine* engine) {
      * Below, we select an EGLConfig with at least 8 bits per color
      * component compatible with on-screen windows
      */
-    const EGLint attribs[] = {EGL_RENDERABLE_TYPE,
-                              EGL_OPENGL_ES2_BIT,  // Request opengl ES2.0
-                              EGL_SURFACE_TYPE,
-                              EGL_WINDOW_BIT,
-                              EGL_BLUE_SIZE,
-                              5,
-                              EGL_GREEN_SIZE,
-                              6,
-                              EGL_RED_SIZE,
-                              5,
-                              EGL_DEPTH_SIZE,
-                              16,
-                              EGL_NONE};
+    const EGLint attribs[] = {
+        EGL_RENDERABLE_TYPE,  EGL_OPENGL_ES2_BIT,  // Request opengl ES2.0
+        EGL_SURFACE_TYPE,     EGL_WINDOW_BIT,
+        EGL_BLUE_SIZE,        5,
+        EGL_GREEN_SIZE,       6,
+        EGL_RED_SIZE,         5,
+        EGL_DEPTH_SIZE,       16,
+        EGL_NONE
+    };
     EGLint w, h, dummy, format;
     EGLint numConfigs;
     EGLConfig config;
