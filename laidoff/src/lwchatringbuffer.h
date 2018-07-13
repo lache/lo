@@ -9,7 +9,7 @@ typedef struct _LWCHATLINE {
 } LWCHATLINE;
 
 typedef struct _LWCHATRINGBUFFER {
-    LWCHATLINE lines[512]; // array length should be power of 2 (wrapping index by bitwise operator)
+    LWCHATLINE lines[8]; // array length should be power of 2 (wrapping index by bitwise operator)
     int top;
     int count;
     int scroll_to_bottom;

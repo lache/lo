@@ -53,7 +53,7 @@ struct engine {
     bool app_cmd_init_window_triggered;
     bool inited;
 
-    struct _LWCONTEXT* pLwc;
+    LWCONTEXT* pLwc;
 
     // 라이프사이클 플래그
     int resumed;
@@ -61,6 +61,8 @@ struct engine {
     int surface_ready;
     int window_ready;
 };
+
+extern LWCONTEXT* pLwc;
 
 static void recreate_surface(engine* pEngine);
 
@@ -666,6 +668,7 @@ static void engine_handle_cmd(struct android_app* app, int32_t cmd) {
             app->destroyRequested = 1;
             lw_on_destroy(engine->pLwc);
             engine->pLwc = 0;
+            pLwc = 0;
             break;
         case APP_CMD_SAVE_STATE:
             LOGI("APP_CMD_SAVE_STATE");
@@ -872,6 +875,7 @@ void android_main(struct android_app* state) {
                 lw_deinit(engine.pLwc);
             }
             engine.pLwc = lw_init_initial_size(engine.width, engine.height);
+            pLwc = engine.pLwc;
             engine.pLwc->internal_data_path = state->activity->internalDataPath;
             engine.pLwc->user_data_path = state->activity->internalDataPath;
 			lw_set_viewport_size(engine.pLwc, engine.width, engine.height);

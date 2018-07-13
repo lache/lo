@@ -52,6 +52,7 @@ public class LaidoffNativeActivity extends NativeActivity {
     public static native void setWindowSize(int width, int height, long pLwcLong);
 
     public static native void sendInputText(String text);
+    public static native void sendChatInputText(String text);
 
     private static LaidoffNativeActivity INSTANCE;
     public static final String LOG_TAG = "and9";

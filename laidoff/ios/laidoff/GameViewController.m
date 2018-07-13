@@ -12,6 +12,7 @@
 #import "input.h"
 #import "AppDelegate.h"
 #import "UIDeviceHardware.h"
+#include "lwttl.h"
 
 API_AVAILABLE(ios(9.0))
 GameViewController *viewController;
@@ -286,13 +287,13 @@ int GetFingerTrackId(void *touch)
 }
 
 - (IBAction)sendChat:(id)sender {
+    lwttl_udp_send_ttlchat(self.pLwc->ttl, lwttl_sea_udp(self.pLwc->ttl), [self.chatTextField.text UTF8String]);
     [self.chatTextField setText:@""];
 }
 
 -(BOOL) textFieldShouldReturn:(UITextField *)textField
 {
     [self sendChat:textField];
-    
     return YES;
 }
 

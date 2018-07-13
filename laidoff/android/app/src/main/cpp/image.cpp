@@ -14,6 +14,8 @@
 #define LOGA(...) ((void)__android_log_print(ANDROID_LOG_ASSERT, "native-activity", __VA_ARGS__))
 #endif
 #include "lwime.h"
+#include "lwttl.h"
+#include "lwcontext.h"
 
 extern "C" void init_register_asset();
 extern "C" void register_asset(const char* asset_path, int start_offset, int length);
@@ -24,11 +26,11 @@ extern "C" void set_package_version(const char* package_version);
 void request_void_string_command(const char* command_name, const char* param1);
 int request_int_string_command(const char* command_name, const char* param1);
 
-struct _LWCONTEXT;
-
 static int tex_width_pushed_from_java;
 static int tex_height_pushed_from_java;
 static char* tex_data_pushed_from_java[3]; // atlas count
+LWCONTEXT* pLwc;
+
 
 extern "C" int init_ext_image_lib()
 {
@@ -125,4 +127,10 @@ extern "C" JNIEXPORT void JNICALL Java_com_popsongremix_laidoff_LaidoffNativeAct
     env->ReleaseStringUTFChars(packageVersion, packageVersionBuffer);
 }
 
+extern "C" JNIEXPORT void JNICALL Java_com_popsongremix_laidoff_LaidoffNativeActivity_sendChatInputText(JNIEnv * env, jclass cls, jstring text) {
+    const char *buffer = env->GetStringUTFChars(text, JNI_FALSE);
 
+    lwttl_udp_send_ttlchat(pLwc->ttl, lwttl_sea_udp(pLwc->ttl), buffer);
+
+    env->ReleaseStringUTFChars(text, buffer);
+}

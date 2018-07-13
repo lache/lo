@@ -55,6 +55,7 @@ public class ChatActivity extends AppCompatActivity {
 
     public void sendChatText(View view) {
         EditText chatEditText = findViewById(R.id.chatEditText);
+        LaidoffNativeActivity.sendChatInputText(chatEditText.getText().toString());
         chatEditText.setText("");
     }
 }

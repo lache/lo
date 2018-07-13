@@ -24,6 +24,7 @@
 #include "lwtimepoint.h"
 #include <float.h>
 #include "lwttlrendercontext.h"
+#include "render_chat.h"
 #define WATER_COLOR_R (0 / 255.f)
 #define WATER_COLOR_G (94 / 255.f)
 #define WATER_COLOR_B (190 / 255.f)
@@ -2414,6 +2415,8 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
         
         // render HTML UI queued at render command queue
         htmlui_render_render_commands(pLwc->htmlui);
+        
+        lwc_render_chat(pLwc);
         
         lw_set_viewport_size((LWCONTEXT*)pLwc,
                              pLwc->window_width,

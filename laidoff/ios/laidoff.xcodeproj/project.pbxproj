@@ -324,6 +324,8 @@
 		6C295ED9204310700052999C /* el_text.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6C295E97204310700052999C /* el_text.cpp */; };
 		6C295EDA204310700052999C /* el_para.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6C295E9A204310700052999C /* el_para.cpp */; };
 		6C295EDB204310700052999C /* el_break.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6C295E9E204310700052999C /* el_break.cpp */; };
+		6C3F143920F897670021A1FD /* lwchat.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C3F143520F897660021A1FD /* lwchat.c */; };
+		6C3F143A20F897670021A1FD /* render_chat.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C3F143720F897670021A1FD /* render_chat.c */; };
 		6C40DD9220F527F40055A782 /* ChatStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6C40DD9120F527F40055A782 /* ChatStoryboard.storyboard */; };
 		6C59053E207C60C500A14685 /* remtex.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C59053C207C60C400A14685 /* remtex.c */; };
 		6C59053F207C60C500A14685 /* render_remtex.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C59053D207C60C500A14685 /* render_remtex.c */; };
@@ -1142,6 +1144,10 @@
 		6C295E9D204310700052999C /* stylesheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stylesheet.h; sourceTree = "<group>"; };
 		6C295E9E204310700052999C /* el_break.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = el_break.cpp; sourceTree = "<group>"; };
 		6C2A5FED1FC03260005B3DF2 /* laidoff.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = laidoff.entitlements; sourceTree = "<group>"; };
+		6C3F143520F897660021A1FD /* lwchat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lwchat.c; sourceTree = "<group>"; };
+		6C3F143620F897660021A1FD /* lwchat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lwchat.h; sourceTree = "<group>"; };
+		6C3F143720F897670021A1FD /* render_chat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = render_chat.c; sourceTree = "<group>"; };
+		6C3F143820F897670021A1FD /* render_chat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = render_chat.h; sourceTree = "<group>"; };
 		6C40DD9120F527F40055A782 /* ChatStoryboard.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ChatStoryboard.storyboard; sourceTree = "<group>"; };
 		6C59053A207C60C400A14685 /* remtex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = remtex.h; sourceTree = "<group>"; };
 		6C59053B207C60C400A14685 /* render_remtex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = render_remtex.h; sourceTree = "<group>"; };
@@ -2564,6 +2570,8 @@
 				6CC832CA205D50DA0031523A /* lwbutton.c */,
 				6CC83320205D50DA0031523A /* lwbutton.h */,
 				6CC8332B205D50DA0031523A /* lwbuttoncommand.h */,
+				6C3F143520F897660021A1FD /* lwchat.c */,
+				6C3F143620F897660021A1FD /* lwchat.h */,
 				EA30351E6C793142A9AC7BD3 /* lwchatringbuffer.c */,
 				6CD6276320EF4B8F002A2164 /* lwchatringbuffer.h */,
 				6CC83296205D50DA0031523A /* lwcontext.c */,
@@ -2671,6 +2679,8 @@
 				6CC83306205D50DA0031523A /* render_battle_result.h */,
 				6CC832D7205D50DA0031523A /* render_battle.c */,
 				6CC83279205D50DA0031523A /* render_battle.h */,
+				6C3F143720F897670021A1FD /* render_chat.c */,
+				6C3F143820F897670021A1FD /* render_chat.h */,
 				6CD6276C20EF4B90002A2164 /* render_command_container.cpp */,
 				6CD6276220EF4B8F002A2164 /* render_command_container.h */,
 				6CC832E8205D50DA0031523A /* render_dialog.c */,
@@ -3115,6 +3125,7 @@
 				6CC8335D205D50DA0031523A /* lwbutton.c in Sources */,
 				6CA16D9E1EA210BB00DB7AF0 /* luac.c in Sources */,
 				6CC83371205D50DA0031523A /* battlelogic.c in Sources */,
+				6C3F143A20F897670021A1FD /* render_chat.c in Sources */,
 				6C295ED1204310700052999C /* el_base.cpp in Sources */,
 				6CC83346205D50DA0031523A /* puckgame.c in Sources */,
 				56F188F31EC74DB60019312F /* tcp.cpp in Sources */,
@@ -3152,6 +3163,7 @@
 				56F188E51EC74DB60019312F /* req.cpp in Sources */,
 				6CC83373205D50DA0031523A /* rmsg.c in Sources */,
 				56F189B61EC751950019312F /* zsock_option.inc in Sources */,
+				6C3F143920F897670021A1FD /* lwchat.c in Sources */,
 				56F189051EC74DB60019312F /* vmci.cpp in Sources */,
 				56ED77B91EBB9C1C00FABA64 /* DetourNavMesh.cpp in Sources */,
 				566373531EBA52D4001DA3F4 /* dhinge.cpp in Sources */,
