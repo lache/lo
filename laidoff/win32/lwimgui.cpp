@@ -89,7 +89,7 @@ extern "C" void lwimgui_render(GLFWwindow* window) {
         if (show_chat_window) {
             static char buf[256] = "";
             static bool focus_here = false;
-            const int chat_window_height = 250;
+			const int chat_window_height = 60;// +190;
             ImGui::SetNextWindowPos(ImVec2(0, (float)pLwc->window_height - chat_window_height));
             if (!ImGui::Begin("Chat",
                               &show_chat_window,
@@ -99,10 +99,11 @@ extern "C" void lwimgui_render(GLFWwindow* window) {
                 ImGui::End();
                 return;
             }
-            ImGui::Text("%s", u8"채팅"); ImGui::SameLine();
-            if (ImGui::SmallButton(u8"모두 삭제")) {
+            ImGui::Text("%s", "Chat"); ImGui::SameLine();
+            if (ImGui::SmallButton("Clear")) {
                 lwchatringbuffer_clear(&pLwc->chat_ring_buffer);
             }
+			/*
             ImGui::BeginChild("ScrollingRegion", ImVec2(0, -ImGui::GetItemsLineHeightWithSpacing()), false, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_AlwaysVerticalScrollbar);
             ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1)); // Tighten spacing
             int chat_lines = lwchatringbuffer_count(&pLwc->chat_ring_buffer);
@@ -110,7 +111,6 @@ extern "C" void lwimgui_render(GLFWwindow* window) {
                 const LWCHATLINE* cl = lwchatringbuffer_get(&pLwc->chat_ring_buffer, i);
                 ImGui::TextUnformatted(cl->line);
                 ImGui::SameLine(ImGui::GetWindowWidth() - 130);
-                //ImGui::TextUnformatted(ctime(&cl->rawtime));
                 ImGui::TextUnformatted(cl->strtime);
             }
             if (lwchatringbuffer_flush_scroll_to_bottom(&pLwc->chat_ring_buffer)) {
@@ -119,8 +119,7 @@ extern "C" void lwimgui_render(GLFWwindow* window) {
             ImGui::PopStyleVar();
             ImGui::EndChild();
             ImGui::Separator();
-            //ImGui::Text("Mouse Position: (%.1f,%.1f)", ImGui::GetIO().MousePos.x, ImGui::GetIO().MousePos.y);
-            //ImGui::Text("%s Hello...admin", u8"으흐흐흐");
+			*/
             if (focus_here) {
                 ImGui::SetKeyboardFocusHere();
                 focus_here = false;

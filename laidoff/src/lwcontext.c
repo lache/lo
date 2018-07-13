@@ -15,6 +15,13 @@ const char* tex_font_atlas_filename[] = {
     /* neo.fnt */
     ASSETS_BASE_PATH "fnt" PATH_SEPARATOR "neo_0.tga",
     ASSETS_BASE_PATH "fnt" PATH_SEPARATOR "neo_1.tga",
+	ASSETS_BASE_PATH "fnt" PATH_SEPARATOR "neo_2.tga",
+	ASSETS_BASE_PATH "fnt" PATH_SEPARATOR "neo_3.tga",
+	ASSETS_BASE_PATH "fnt" PATH_SEPARATOR "neo_4.tga",
+	ASSETS_BASE_PATH "fnt" PATH_SEPARATOR "neo_5.tga",
+	ASSETS_BASE_PATH "fnt" PATH_SEPARATOR "neo_6.tga",
+	ASSETS_BASE_PATH "fnt" PATH_SEPARATOR "neo_7.tga",
+	ASSETS_BASE_PATH "fnt" PATH_SEPARATOR "neo_8.tga",
 };
 
 int lwcontext_safe_to_start_render(const LWCONTEXT* pLwc) {

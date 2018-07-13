@@ -72,7 +72,7 @@ LwStaticAssert(sizeof(LWMORPHVERTEX) == (GLsizei)(sizeof(float) * (3 + 3 + 2)), 
 #define MAX_TOUCHPROC_COUNT (10)
 
 extern const vec4 EXP_COLOR;
-extern const char* tex_font_atlas_filename[2];
+extern const char* tex_font_atlas_filename[9];
 
 #define MAX_TEX_FONT_ATLAS (ARRAY_SIZE(tex_font_atlas_filename))
 
