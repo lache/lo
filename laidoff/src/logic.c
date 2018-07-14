@@ -72,7 +72,8 @@ void change_to_ttl(LWCONTEXT* pLwc) {
     pLwc->next_game_scene = LGS_TTL;
     lwfbo_init(&pLwc->shared_fbo, pLwc->window_width, pLwc->window_height);
     // Render font FBO using render-to-texture
-    lwc_render_ttl_fbo(pLwc, ASSETS_BASE_PATH "html" PATH_SEPARATOR "HTMLPage1.html");
+    //lwc_render_ttl_fbo(pLwc, ASSETS_BASE_PATH "html" PATH_SEPARATOR "HTMLPage1.html");
+	lwc_render_ttl_fbo(pLwc, ASSETS_BASE_PATH "html" PATH_SEPARATOR "Gazza.html");
 }
 
 void change_to_admin(LWCONTEXT* pLwc) {

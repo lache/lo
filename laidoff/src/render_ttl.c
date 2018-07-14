@@ -2341,7 +2341,8 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     // render field viewports
-    const int viewport_max_count = lwttl_viewport_max_count(pLwc->ttl);
+    //const int viewport_max_count = lwttl_viewport_max_count(pLwc->ttl);
+	const int viewport_max_count = 0;
     for (int i = 0; i < viewport_max_count; i++) {
         LWTTLFIELDVIEWPORT* vp_copy = alloca((size_t)lwttl_sizeof_viewport());
         if (lwttl_copy_viewport_data(pLwc->ttl, i, vp_copy)) {
@@ -2396,8 +2397,10 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
     lw_set_viewport_size((LWCONTEXT*)pLwc,
                          pLwc->window_width,
                          pLwc->window_height);
-    render_ttl_stat(pLwc->ttl, pLwc);
-    //render_coords_dms(pLwc, &view_center);
+    
+	//render_ttl_stat(pLwc->ttl, pLwc);
+    
+	//render_coords_dms(pLwc, &view_center);
 //    {
 //        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 //        render_solid_box_ui_lvt_flip_y_uv(pLwc,
