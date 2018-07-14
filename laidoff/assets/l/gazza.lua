@@ -43,7 +43,6 @@ function on_nickname_change(nickname)
     print('on_nickname_change: ' .. nickname)
     gazza_add_header('Nickname', nickname)
     lo.htmlui_execute_anchor_click(c.htmlui, string.format('/register'))
-
     start_coro(function()
         while true do
             print('gaz-za!!!')
