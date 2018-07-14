@@ -2575,20 +2575,24 @@ void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc) {
                       p->port_name);
                 memcpy(&ttl->ttl_single_cell, p, sizeof(LWPTTLSINGLECELL));
                 assert((p->land_box_valid && p->water_box_valid) == 0);
-                if (p->land_box_valid) {
-                    ttl->cell_box[ttl->cell_box_count].xc0 = p->land_box[0];
-                    ttl->cell_box[ttl->cell_box_count].yc0 = p->land_box[1];
-                    ttl->cell_box[ttl->cell_box_count].xc1 = p->land_box[2];
-                    ttl->cell_box[ttl->cell_box_count].yc1 = p->land_box[3];
-                    ttl->cell_box_count++;
-                } else if (p->water_box_valid) {
-                    ttl->cell_box[ttl->cell_box_count].xc0 = p->water_box[0];
-                    ttl->cell_box[ttl->cell_box_count].yc0 = p->water_box[1];
-                    ttl->cell_box[ttl->cell_box_count].xc1 = p->water_box[2];
-                    ttl->cell_box[ttl->cell_box_count].yc1 = p->water_box[3];
-                    ttl->cell_box_count++;
-                }
-                script_evaluate_async(pLwc, "on_ttl_single_cell()", strlen("on_ttl_single_cell()"));
+				if (ttl->cell_box_count < ARRAY_SIZE(ttl->cell_box)) {
+					if (p->land_box_valid) {
+						ttl->cell_box[ttl->cell_box_count].xc0 = p->land_box[0];
+						ttl->cell_box[ttl->cell_box_count].yc0 = p->land_box[1];
+						ttl->cell_box[ttl->cell_box_count].xc1 = p->land_box[2];
+						ttl->cell_box[ttl->cell_box_count].yc1 = p->land_box[3];
+						ttl->cell_box_count++;
+					} else if (p->water_box_valid) {
+						ttl->cell_box[ttl->cell_box_count].xc0 = p->water_box[0];
+						ttl->cell_box[ttl->cell_box_count].yc0 = p->water_box[1];
+						ttl->cell_box[ttl->cell_box_count].xc1 = p->water_box[2];
+						ttl->cell_box[ttl->cell_box_count].yc1 = p->water_box[3];
+						ttl->cell_box_count++;
+					}
+					script_evaluate_async(pLwc, "on_ttl_single_cell()", strlen("on_ttl_single_cell()"));
+				} else {
+					LOGE("Cell box count exceeded!");
+				}
                 break;
             }
             case LPGP_LWPTTLGOLDEARNED:

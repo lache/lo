@@ -185,7 +185,26 @@ public:
     }
     void load_next_html_body() {
         if (refresh_html_body) {
-            lwc_render_ttl_fbo_body(pLwc, pLwc->tcp_ttl->html_body);
+			LOGIx("=== load_next_html_body ===");
+			LOGIx(pLwc->tcp_ttl->html_body);
+			if (pLwc->tcp_ttl) {
+				// online Gazza temporary code
+				//lwc_render_ttl_fbo_body(pLwc, pLwc->tcp_ttl->html_body);
+				char s[1024*512];
+				//memset(s, 0, sizeof(s));
+				//sprintf(s, "on_json_body('%s')", "{\"asdf\":\"asdf\"}");
+				sprintf(s, "on_json_body('%s')", pLwc->tcp_ttl->html_body);
+				size_t s_len = strlen(s);
+				for (size_t i = 0; i < s_len; i++) {
+					if (s[i] == '\\') {
+						s[i] = '_';
+					}
+				}
+				logic_emit_evalute_with_name_async(pLwc, s, s_len, s);
+			} else {
+				// offline
+				lwc_render_ttl_fbo_body(pLwc, last_html_str.c_str());
+			}
             refresh_html_body = 0;
         }
     }
@@ -387,6 +406,10 @@ void htmlui_clear_loop(void* c, const char* loop_name) {
 
 void htmlui_set_loop_key_value(void* c, const char* loop_name, const char* key, const char* value) {
     LWHTMLUI* htmlui = (LWHTMLUI*)c;
+	if (c == 0 || loop_name == 0 || key == 0 || value == 0) {
+		LOGE("htmlui_set_loop_key_value error!");
+		return;
+	}
     htmlui->set_loop_key_value(loop_name, key, value);
 }
 

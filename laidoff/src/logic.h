@@ -57,6 +57,7 @@ void lw_prev_page(LWCONTEXT* pLwc);
 void lw_next_page(LWCONTEXT* pLwc);
 void lw_last_page(LWCONTEXT* pLwc);
 void lw_new_tcp_ttl(LWCONTEXT* pLwc);
+void lw_new_tcp_ttl_custom(LWCONTEXT* pLwc, const char* host, const char* port_str, int port);
 #ifdef __cplusplus
 };
 #endif

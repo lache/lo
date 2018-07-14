@@ -219,4 +219,7 @@ else
 	on_ui_event('tutorial_button', 0, 0)
 end
 
+
+gazza_header = {}
+
 return 1

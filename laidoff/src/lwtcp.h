@@ -23,6 +23,7 @@
 #include "lwhostaddr.h"
 
 #define LW_TCP_BUFLEN (1024*8)
+#define LW_TCP_HTTP_RECEIVE_BUFLEN (1024*1024)
 
 typedef struct _LWCONTEXT LWCONTEXT;
 typedef struct _LWTCP LWTCP;
@@ -77,8 +78,8 @@ typedef struct _LWTCP {
     int send_fail;
     double send_fail_time;
     void (*on_leaderboard_packet)(LWCONTEXT*);
-    char html_response[1024 * 10];
-    char html_body[1024 * 100];
+    char html_response[LW_TCP_HTTP_RECEIVE_BUFLEN];
+    char html_body[LW_TCP_HTTP_RECEIVE_BUFLEN];
     int html_body_parse_start;
     int html_wait;
 } LWTCP;

@@ -73,7 +73,7 @@ void change_to_ttl(LWCONTEXT* pLwc) {
     lwfbo_init(&pLwc->shared_fbo, pLwc->window_width, pLwc->window_height);
     // Render font FBO using render-to-texture
     //lwc_render_ttl_fbo(pLwc, ASSETS_BASE_PATH "html" PATH_SEPARATOR "HTMLPage1.html");
-	lwc_render_ttl_fbo(pLwc, ASSETS_BASE_PATH "html" PATH_SEPARATOR "Gazza.html");
+	lwc_render_ttl_fbo(pLwc, ASSETS_BASE_PATH "html" PATH_SEPARATOR "GazzaHome.html");
 }
 
 void change_to_admin(LWCONTEXT* pLwc) {
@@ -893,7 +893,7 @@ void lwc_update(LWCONTEXT* pLwc, double delta_time) {
         ps_test_update(pLwc, pLwc->ps_context);
     }
 
-    if (pLwc->game_scene == LGS_FIELD || pLwc->game_scene == LGS_PUCK_GAME) {
+    if (pLwc->game_scene == LGS_FIELD || pLwc->game_scene == LGS_PUCK_GAME || pLwc->game_scene == LGS_TTL) {
         script_update(pLwc);
     }
 
@@ -916,8 +916,18 @@ void lwc_update(LWCONTEXT* pLwc, double delta_time) {
             //char nicknameMsg[256];
             //sprintf(nicknameMsg, "Changing nickname to %s...", lw_get_text_input());
             //show_sys_msg(pLwc->def_sys_msg, nicknameMsg);
-            tcp_send_setnickname(pLwc->tcp, &pLwc->tcp->user_id, lw_get_text_input());
-            break;
+			if (pLwc->tcp) {
+				tcp_send_setnickname(pLwc->tcp, &pLwc->tcp->user_id, lw_get_text_input());
+			} else if (pLwc->tcp_ttl) {
+				// Gazza temporary code
+				char s[1024];
+				sprintf(s, "on_nickname_change('%s')", lw_get_text_input());
+				logic_emit_evalute_with_name_async(pLwc, s, strlen(s), s);
+				//tcp_send_setnickname(pLwc->tcp_ttl, &pLwc->tcp_ttl->user_id, lw_get_text_input());
+			} else {
+				LOGE("No tcp! (cannot set nickname)");
+			}
+			break;
         }
         case LITI_SERVER_ADDR:
         {
@@ -1466,4 +1476,21 @@ void lw_new_tcp_ttl(LWCONTEXT* pLwc) {
     } else {
         LOGEP("tcp_ttl already set!");
     }
+}
+
+void lw_new_tcp_ttl_custom(LWCONTEXT* pLwc, const char* host, const char* port_str, int port) {
+	if (pLwc->tcp_ttl == 0) {
+		LWHOSTADDR custom_tcp_ttl_host_addr;
+		strcpy(custom_tcp_ttl_host_addr.host, host);
+		custom_tcp_ttl_host_addr.host_resolved = 0;
+		strcpy(custom_tcp_ttl_host_addr.port_str, port_str);
+		custom_tcp_ttl_host_addr.port = port;
+		pLwc->tcp_ttl = new_tcp(pLwc,
+								pLwc->user_data_path,
+								&custom_tcp_ttl_host_addr,
+								tcp_ttl_on_connect,
+								parse_recv_packets);
+	} else {
+		LOGEP("tcp_ttl already set!");
+	}
 }

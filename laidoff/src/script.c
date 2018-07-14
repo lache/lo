@@ -877,3 +877,22 @@ int script_http_header(void* L, char* header, size_t header_max_len) {
     lua_pop(L, 1); // pop returned value
     return ret;
 }
+
+int script_emit_single_string_arg(void* L, const char* func_name, const char* str_arg) {
+	int ret;
+	// push functions and arguments
+	lua_getglobal(L, func_name); // function to be called
+	lua_pushstring(L, str_arg); // push 2nd argument
+	
+								// do the call (1 arguments, 1 result)
+	if (lua_pcall(L, 1, 1, 0) != 0) {
+		LOGEP("error: %s", lua_tostring(L, -1));
+	}
+	/* retrieve result */
+	if (!lua_isnumber(L, -1)) {
+		LOGEP("error: %s", lua_tostring(L, -1));
+	}
+	ret = (int)lua_tonumber(L, -1);
+	lua_pop(L, 1); // pop returned value
+	return ret;
+}
