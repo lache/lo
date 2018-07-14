@@ -97,6 +97,7 @@ function on_json_body(json_body)
                 lo.htmlui_set_loop_key_value(c.htmlui, player_loop_key, 'user_portrait', portrait)
                 lo.htmlui_set_loop_key_value(c.htmlui, player_loop_key, 'user_hp', jb['user'..i..'-hp'])
                 lo.htmlui_set_loop_key_value(c.htmlui, player_loop_key, 'user_mp', jb['user'..i..'-mp'])
+                lo.htmlui_set_loop_key_value(c.htmlui, player_loop_key, 'user_death', jb['user'..i..'-death'])
             elseif user_count < 8 then
                 --print('GUID: ' .. jb['user'..i..'-guid'])
                 --print('NICKNAME: ' .. jb['user'..i..'-nickname'])
@@ -108,6 +109,7 @@ function on_json_body(json_body)
                 lo.htmlui_set_loop_key_value(c.htmlui, user_loop_key, 'user_portrait', portrait)
                 lo.htmlui_set_loop_key_value(c.htmlui, user_loop_key, 'user_hp', jb['user'..i..'-hp'])
                 lo.htmlui_set_loop_key_value(c.htmlui, user_loop_key, 'user_mp', jb['user'..i..'-mp'])
+                lo.htmlui_set_loop_key_value(c.htmlui, user_loop_key, 'user_death', jb['user'..i..'-death'])
                 user_count = user_count + 1
             end
         else
