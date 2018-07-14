@@ -1792,6 +1792,17 @@ void lwttl_fill_world_seaports_bookmarks(LWHTMLUI* htmlui) {
             0.0f,
             0.0f);
     htmlui_set_loop_key_value(htmlui, "world-seaport", "script", script);
+
+
+	htmlui_clear_loop(htmlui, "gazza-user");
+	for (int i = 0; i < 4; i++) {
+		char script[128];
+		sprintf(script, "script:gazza_select_user('%s%d')", "guidguidguid", i + 1);
+		htmlui_set_loop_key_value(htmlui, "gazza-user", "user_anchor", script);
+		htmlui_set_loop_key_value(htmlui, "gazza-user", "user_nickname", "nickname");
+		htmlui_set_loop_key_value(htmlui, "gazza-user", "user_portrait", "atlas/captain/01.png");
+		htmlui_set_loop_key_value(htmlui, "gazza-user", "user_hp", "100");
+	}
 }
 
 void lwttl_send_ping_now(LWTTL* ttl) {

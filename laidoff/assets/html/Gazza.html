@@ -230,6 +230,14 @@
 
 <hr class="gazza-hr"/>
 
+<div lw:loop="gazza-user">
+    <a class="ship-button" href="{{user_anchor}}">
+        <h3>{{user_nickname}}</h3>
+        <img src="{{user_portrait}}"/>
+        <div class="hp">{{user_hp}}</div>
+    </a>
+</div>
+
 <a class="ship-button" href="script:not_found()">
     <h3>대리님</h3>
     <img src="atlas/captain/01.png"/>
@@ -287,26 +295,27 @@
     <div class="mp">50</div>
 </div>
 
-<a class="act-button" href="script:act_shield()">
+<a class="act-button" href="script:gazza_act(1)">
     <h3>방어</h3>
     <div class="mp">-40</div>
     <div class="damage">0</div>
 </a>
 
-<a class="act-button" href="script:act_sword()">
+<a class="act-button" href="script:gazza_act(2)">
     <h3>칼</h3>
     <div class="mp">-10</div>
     <div class="damage">10</div>
 </a>
 
-<a class="act-button" href="script:act_pen()">
+<a class="act-button" href="script:gazza_act(3)">
     <h3>펜</h3>
     <div class="mp">-10</div>
     <div class="damage">5</div>
 </a>
 
 <script type="text/x-lua">
-	reload_require('ttl')()
+	reload_require('gazza')()
+
 	return 1234
 </script>
 </body>
