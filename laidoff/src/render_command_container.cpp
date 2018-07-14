@@ -33,7 +33,7 @@ litehtml::uint_ptr litehtml::render_command_container::create_font(const litehtm
 #else
 	litehtml::uint_ptr font_handle = reinterpret_cast<litehtml::uint_ptr>(font_handle_seq);
 #endif
-    size = 1;
+    size = 2;
     LOGIx("create_font: faceName=%s, size=%d, weight=%d --> font handle %d", faceName, size, weight, font_handle);
     
     font_sizes[font_handle] = size;
@@ -44,7 +44,7 @@ litehtml::uint_ptr litehtml::render_command_container::create_font(const litehtm
         //fm->height = static_cast<int>(roundf(size * 0.8f * client_width / 1280.0f));
         //fm->descent = static_cast<int>(roundf(size * 0.1f * client_width / 1280.0f));
     }
-    fm->height = 32;//static_cast<int>(font_sizes[font_handle] / 5.5f);// static_cast<int>(roundf(size * 0.8f * client_height / 720.0f));
+    fm->height = 64;//static_cast<int>(font_sizes[font_handle] / 5.5f);// static_cast<int>(roundf(size * 0.8f * client_height / 720.0f));
     fm->descent = static_cast<int>(fm->height / 4.5f);
     //fm->ascent = fm->height / 4;
     return font_handle;

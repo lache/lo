@@ -80,6 +80,7 @@ typedef struct _LWTCP {
     void (*on_leaderboard_packet)(LWCONTEXT*);
     char html_response[LW_TCP_HTTP_RECEIVE_BUFLEN];
     char html_body[LW_TCP_HTTP_RECEIVE_BUFLEN];
+	char html_body_escaped[LW_TCP_HTTP_RECEIVE_BUFLEN];
     int html_body_parse_start;
     int html_wait;
 } LWTCP;

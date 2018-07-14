@@ -878,8 +878,7 @@ int script_http_header(void* L, char* header, size_t header_max_len) {
     return ret;
 }
 
-int script_emit_single_string_arg(void* L, const char* func_name, const char* str_arg) {
-	int ret;
+void script_emit_single_string_arg(void* L, const char* func_name, const char* str_arg, char* output) {
 	// push functions and arguments
 	lua_getglobal(L, func_name); // function to be called
 	lua_pushstring(L, str_arg); // push 2nd argument
@@ -892,7 +891,6 @@ int script_emit_single_string_arg(void* L, const char* func_name, const char* st
 	if (!lua_isnumber(L, -1)) {
 		LOGEP("error: %s", lua_tostring(L, -1));
 	}
-	ret = (int)lua_tonumber(L, -1);
+	strcpy(output, lua_tostring(L, -1));
 	lua_pop(L, 1); // pop returned value
-	return ret;
 }

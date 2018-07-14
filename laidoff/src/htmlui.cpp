@@ -15,6 +15,7 @@
 #include "logic.h"
 #include "lwlog.h"
 #include "lwtimepoint.h"
+#include "script.h"
 
 class LWHTMLUI {
 public:
@@ -193,6 +194,7 @@ public:
 				char s[1024*512];
 				//memset(s, 0, sizeof(s));
 				//sprintf(s, "on_json_body('%s')", "{\"asdf\":\"asdf\"}");
+				//script_emit_single_string_arg(pLwc->L, "unescape", pLwc->tcp_ttl->html_body, pLwc->tcp_ttl->html_body_escaped);
 				sprintf(s, "on_json_body('%s')", pLwc->tcp_ttl->html_body);
 				size_t s_len = strlen(s);
 				for (size_t i = 0; i < s_len; i++) {

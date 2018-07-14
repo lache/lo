@@ -126,10 +126,9 @@ static void render_font_glyph(const LWCONTEXT* pLwc,
             } else {
                 //const float scale_per_pixel_x = 2.0f * pLwc->viewport_rt_x / pLwc->viewport_width / 2;
                 //const float scale_per_pixel_y = 2.0f * pLwc->viewport_rt_y / pLwc->viewport_height / 2;
-                ui_scale_x = (float)bci->width / 2;
-                ui_scale_y = (float)bci->height / 2;
+                ui_scale_x = prop_font_size * (float)bci->width / 2;
+                ui_scale_y = prop_font_size * (float)bci->height / 2;
             }
-            
             
             mat4x4_identity(model_scale);
             mat4x4_scale_aniso(model_scale, model_scale, ui_scale_x, ui_scale_y, 1.0f);
@@ -235,7 +234,9 @@ static void render_font_glyph(const LWCONTEXT* pLwc,
             float size_scaled_xadvance_accum_scaled = prop_font_size * (*size_scaled_xadvance_accum);
             if (text_block->pixel_perfect == 0) {
                 size_scaled_xadvance_accum_scaled *= 2 * pLwc->viewport_rt_x / pLwc->viewport_width;
-            }
+			} else {
+				size_scaled_xadvance_accum_scaled *= prop_font_size;
+			}
 
             if (size_scaled_xadvance_accum_scaled > text_block->text_block_width) {
                 *size_scaled_xadvance_accum = 0;
@@ -322,7 +323,7 @@ void render_query_text_block_alpha(const LWCONTEXT* pLwc, const LWTEXTBLOCK* tex
     }
     bc[unicode_strlen] = 0;
 
-    float prop_font_size = 1.0f;
+    float prop_font_size = 2.0f;
     if (text_block->pixel_perfect == 0) {
         prop_font_size = get_proportional_font_size(pLwc->viewport_width, pLwc->viewport_height, text_block->size);
     }

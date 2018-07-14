@@ -54,10 +54,13 @@ function on_nickname_change(nickname)
     end)
 end
 
-function unescape(text)
+function unescape(t)
+    local text = t
+    print('unescape before: '..text)
   for uchar in string.gmatch(text, "\\u([0-9a-f][0-9a-f][0-9a-f][0-9a-f])") do
     text = text:gsub("\\u"..uchar, utf8.char("0x"..uchar))
   end
+  print('unescape result: '..text)
   return text
 end
 
@@ -65,7 +68,7 @@ local player_guid = ''
 
 function on_json_body(json_body)
     json_body = unescape(json_body)
-    print('on_json_body: ' .. json_body)
+    --print('on_json_body: ' .. json_body)
     local jb = json.parse(json_body)
     print('Turn: '..jb.turn)
     if jb.guid then
