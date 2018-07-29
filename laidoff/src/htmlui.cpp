@@ -189,20 +189,23 @@ public:
 			LOGIx("=== load_next_html_body ===");
 			LOGIx(pLwc->tcp_ttl->html_body);
 			if (pLwc->tcp_ttl) {
-				// online Gazza temporary code
-				//lwc_render_ttl_fbo_body(pLwc, pLwc->tcp_ttl->html_body);
-				char s[1024*512];
-				//memset(s, 0, sizeof(s));
-				//sprintf(s, "on_json_body('%s')", "{\"asdf\":\"asdf\"}");
-				//script_emit_single_string_arg(pLwc->L, "unescape", pLwc->tcp_ttl->html_body, pLwc->tcp_ttl->html_body_escaped);
-				sprintf(s, "on_json_body('%s')", pLwc->tcp_ttl->html_body);
-				size_t s_len = strlen(s);
-				for (size_t i = 0; i < s_len; i++) {
-					if (s[i] == '\\') {
-						s[i] = '_';
-					}
-				}
-				logic_emit_evalute_with_name_async(pLwc, s, s_len, s);
+                if (pLwc->game_scene == LGS_TTL) {
+                    lwc_render_ttl_fbo_body(pLwc, pLwc->tcp_ttl->html_body);
+                } else if (pLwc->game_scene == LGS_GAZZA) {
+                    // online Gazza!!!!
+                    char s[1024*512];
+                    //memset(s, 0, sizeof(s));
+                    //sprintf(s, "on_json_body('%s')", "{\"asdf\":\"asdf\"}");
+                    //script_emit_single_string_arg(pLwc->L, "unescape", pLwc->tcp_ttl->html_body, pLwc->tcp_ttl->html_body_escaped);
+                    sprintf(s, "on_json_body('%s')", pLwc->tcp_ttl->html_body);
+                    size_t s_len = strlen(s);
+                    for (size_t i = 0; i < s_len; i++) {
+                        if (s[i] == '\\') {
+                            s[i] = '_';
+                        }
+                    }
+                    logic_emit_evalute_with_name_async(pLwc, s, s_len, s);
+                }
 			} else {
 				// offline
 				lwc_render_ttl_fbo_body(pLwc, last_html_str.c_str());

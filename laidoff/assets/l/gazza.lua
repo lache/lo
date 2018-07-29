@@ -7,7 +7,8 @@ lo.htmlui_set_online(c.htmlui, 0)
 print('GAZZA ONLINE!!!!')
 
 if c.tcp_ttl == nil then
-    lo.lw_new_tcp_ttl_custom(c, '54.175.243.215', '8000', 8000)
+    --lo.lw_new_tcp_ttl_custom(c, '54.175.243.215', '8000', 8000)
+    lo.lw_new_tcp_ttl_custom(c, '127.0.0.1', '8000', 8000)
 end
 
 function gazza_select_user(target_guid)

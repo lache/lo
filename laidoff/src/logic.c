@@ -72,8 +72,14 @@ void change_to_ttl(LWCONTEXT* pLwc) {
     pLwc->next_game_scene = LGS_TTL;
     lwfbo_init(&pLwc->shared_fbo, pLwc->window_width, pLwc->window_height);
     // Render font FBO using render-to-texture
-    //lwc_render_ttl_fbo(pLwc, ASSETS_BASE_PATH "html" PATH_SEPARATOR "HTMLPage1.html");
-	lwc_render_ttl_fbo(pLwc, ASSETS_BASE_PATH "html" PATH_SEPARATOR "GazzaHome.html");
+    lwc_render_ttl_fbo(pLwc, ASSETS_BASE_PATH "html" PATH_SEPARATOR "HTMLPage1.html");
+}
+
+void change_to_gazza(LWCONTEXT* pLwc) {
+    pLwc->next_game_scene = LGS_GAZZA;
+    lwfbo_init(&pLwc->shared_fbo, pLwc->window_width, pLwc->window_height);
+    // Render font FBO using render-to-texture
+    lwc_render_ttl_fbo(pLwc, ASSETS_BASE_PATH "html" PATH_SEPARATOR "GazzaHome.html");
 }
 
 void change_to_admin(LWCONTEXT* pLwc) {
@@ -702,6 +708,7 @@ void reset_runtime_context(LWCONTEXT* pLwc) {
         { LWU("Battle"), change_to_battle },
         { LWU("Font"), change_to_font_test },
         { LWU("TTL"), change_to_ttl },
+        { LWU("Gazza!!!"), change_to_gazza },
         { LWU("Runtime Reset"), reset_runtime_context_async },
         { LWU("Font Debug"), toggle_font_texture_test_mode },
         { LWU("UDP"), net_rtt_test },

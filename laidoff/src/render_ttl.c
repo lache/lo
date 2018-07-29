@@ -2341,8 +2341,8 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     // render field viewports
-    //const int viewport_max_count = lwttl_viewport_max_count(pLwc->ttl);
-	const int viewport_max_count = 0;
+    const int viewport_max_count = lwttl_viewport_max_count(pLwc->ttl);
+	//const int viewport_max_count = 0;
     for (int i = 0; i < viewport_max_count; i++) {
         LWTTLFIELDVIEWPORT* vp_copy = alloca((size_t)lwttl_sizeof_viewport());
         if (lwttl_copy_viewport_data(pLwc->ttl, i, vp_copy)) {
@@ -2398,20 +2398,20 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
                          pLwc->window_width,
                          pLwc->window_height);
     
-	//render_ttl_stat(pLwc->ttl, pLwc);
+	render_ttl_stat(pLwc->ttl, pLwc);
     
 	//render_coords_dms(pLwc, &view_center);
-//    {
-//        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-//        render_solid_box_ui_lvt_flip_y_uv(pLwc,
-//                                          -pLwc->viewport_rt_x,
-//                                          -pLwc->viewport_rt_y,
-//                                          2 * pLwc->viewport_rt_x * pLwc->shared_fbo.tex_width / pLwc->shared_fbo.width,
-//                                          2 * pLwc->viewport_rt_y * pLwc->shared_fbo.tex_height / pLwc->shared_fbo.height,
-//                                          pLwc->shared_fbo.color_tex,
-//                                          LVT_LEFT_BOTTOM_ANCHORED_SQUARE,
-//                                          1);
-//    }
+    {
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+        render_solid_box_ui_lvt_flip_y_uv(pLwc,
+                                          -pLwc->viewport_rt_x,
+                                          -pLwc->viewport_rt_y,
+                                          2 * pLwc->viewport_rt_x * pLwc->shared_fbo.tex_width / pLwc->shared_fbo.width,
+                                          2 * pLwc->viewport_rt_y * pLwc->shared_fbo.tex_height / pLwc->shared_fbo.height,
+                                          pLwc->shared_fbo.color_tex,
+                                          LVT_LEFT_BOTTOM_ANCHORED_SQUARE,
+                                          1);
+    }
     {
         // overwrite ui projection matrix
         logic_update_default_ui_proj_for_htmlui(pLwc->shared_fbo.width, pLwc->shared_fbo.height, ((LWCONTEXT*)pLwc)->proj);

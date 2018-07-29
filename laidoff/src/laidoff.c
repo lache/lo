@@ -17,31 +17,21 @@
 #include "ktx.h"
 #include "tex.h"
 #include "lwmacro.h"
-//#include "lwenemy.h"
-#include "render_ttl.h"
-#include "render_admin.h"
 #include "input.h"
 #include "field.h"
 #include "lwpkm.h"
-#include "render_battle_result.h"
 #include "net.h"
-#include "render_skin.h"
 #include "armature.h"
 #include "lwanim.h"
 #include "lwskinmesh.h"
-#include "render_puckgame.h"
 #include "mq.h"
 #include "sysmsg.h"
-#include "render_text_block.h"
 #include <czmq.h>
 #include "logic.h"
 #include "ps.h"
 #include "render_ps.h"
-//#include "script.h"
 #include "lwtimepoint.h"
 #include "lwparabola.h"
-#include "render_ui.h"
-#include "render_splash.h"
 #include "lwbutton.h"
 #include "puckgame.h"
 #include "lwudp.h"
@@ -50,7 +40,6 @@
 #include "lwdamagetext.h"
 #include "lwmath.h"
 #include "puckgameupdate.h"
-#include "render_leaderboard.h"
 #include "numcomp_puck_game.h"
 #include "lwvbo.h"
 #include "htmlui.h"
@@ -59,6 +48,16 @@
 #include "lwttl.h"
 #include "lwcountry.h"
 #include "remtex.h"
+#include "render_battle_result.h"
+#include "render_puckgame.h"
+#include "render_text_block.h"
+#include "render_ttl.h"
+#include "render_gazza.h"
+#include "render_admin.h"
+#include "render_skin.h"
+#include "render_ui.h"
+#include "render_splash.h"
+#include "render_leaderboard.h"
 #include "render_remtex.h"
 #include "render_font_test.h"
 #include "lwfbo.h"
@@ -1184,6 +1183,8 @@ void lwc_render(const LWCONTEXT* pLwc) {
         lwc_render_font_test(pLwc);
     } else if (pLwc->game_scene == LGS_TTL) {
         lwc_render_ttl(pLwc);
+    } else if (pLwc->game_scene == LGS_GAZZA) {
+        lwc_render_gazza(pLwc);
     } else if (pLwc->game_scene == LGS_ADMIN) {
         lwc_render_admin(pLwc);
     } else if (pLwc->game_scene == LGS_BATTLE_RESULT) {

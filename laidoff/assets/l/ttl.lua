@@ -24,6 +24,12 @@ local cell_menu_mode = CELL_MENU_MODE_NORMAL
 local select_var_name
 local selected_seaport_id
 
+if c.tcp_ttl == nil then
+    --lo.lw_new_tcp_ttl_custom(c, '54.175.243.215', '8000', 8000)
+    --lo.lw_new_tcp_ttl_custom(c, '127.0.0.1', '8000', 8000)
+    lo.lw_new_tcp_ttl_custom(c, '127.0.0.1', '3000', 8000)
+end
+
 function worldmap_scroll(dlng, dlat, dscale)
     lo.lwttl_worldmap_scroll(c.ttl, dlng/100, dlat/100, dscale)
 end
