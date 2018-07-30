@@ -6,7 +6,8 @@
 int WSAGetLastError() {
     return -1;
 }
-#include <sys/socket.h> // SD_BOTH
+#include <sys/socket.h> // SD_BOTH (?)
+#define SD_BOTH SHUT_RDWR
 #endif
 
 static int make_socket_nonblocking(int sock) {
