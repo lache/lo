@@ -10,6 +10,7 @@ local player_guid = ''
 local gazza_header = {}
 
 if c.tcp_ttl ~= nil then
+    print('Destroying the previous TCP connection...')
     lo.destroy_tcp(c.tcp_ttl);
     c.tcp_ttl = nil;
 end
@@ -19,25 +20,25 @@ if c.tcp_ttl == nil then
     lo.lw_new_tcp_ttl_custom(c, '127.0.0.1', '8000', 8000)
 end
 
-local function gazza_select_user(target_guid)
+function gazza_select_user(target_guid)
     print('target guid: ' .. target_guid)
     gazza_add_header('TargetGuid', target_guid)
     lo.htmlui_execute_anchor_click(c.htmlui, string.format('/act'))
     lo.htmlui_set_refresh_html_body(c.htmlui, 1)
 end
 
-local function gazza_act(act_id)
+function gazza_act(act_id)
     print('gazza_act: ' .. act_id)
     gazza_add_header('Action', act_id)
     lo.htmlui_execute_anchor_click(c.htmlui, string.format('/act'))
     lo.htmlui_set_refresh_html_body(c.htmlui, 1)
 end
 
-local function gazza_add_header(key, value)
-    print('[ui-select] key:'..key..',value:'..value)
+function gazza_add_header(key, value)
+    --print('[ui-select] key:'..key..',value:'..value)
     gazza_header[key] = value
-    print('=== gazza_header ===')
-    print(http_header())
+    --print('=== gazza_header ===')
+    --print(http_header())
 end
 
 function http_header()
@@ -83,7 +84,7 @@ function on_nickname_change(nickname)
     lo.htmlui_execute_anchor_click(c.htmlui, string.format('/register'))
     start_coro(function()
         while true do
-            print('gaz-za!!!')
+            --print('gaz-za!!!')
             lo.htmlui_set_online(c.htmlui, 1)
             lo.htmlui_execute_anchor_click(c.htmlui, '/ping')
             yield_wait_ms(1000)
@@ -92,13 +93,11 @@ function on_nickname_change(nickname)
 end
 
 function on_json_body(json_body)
-    print('on_json_body (original): ' .. json_body)
-    --json_body = unescape(json_body)
-    
+    --print('on_json_body (original): ' .. json_body)
     local jb = json.parse(json_body)
-    print('Turn: '..jb.turn)
+    --print('Turn: '..jb.turn)
     if jb.guid then
-        print('Player Guid: '..jb.guid)
+        --print('Player Guid: '..jb.guid)
         player_guid = jb.guid
         gazza_add_header('Guid', jb.guid)
     end
@@ -130,6 +129,9 @@ function on_json_body(json_body)
                 --print('NICKNAME: ' .. jb['user'..i..'-nickname'])
                 --print('HP: ' .. jb['user'..i..'-hp'])
                 --print('MP: ' .. jb['user'..i..'-mp'])
+                if (type(user_guid) ~= 'string') then
+                    user_guid = 'corrupted_user_guid'
+                end
                 local scr = 'script:gazza_select_user(\''..user_guid..'\')'
                 lo.htmlui_set_loop_key_value(c.htmlui, user_loop_key, 'user_anchor', scr)
                 lo.htmlui_set_loop_key_value(c.htmlui, user_loop_key, 'user_nickname', urldecode(jb['user'..i..'-nickname']))

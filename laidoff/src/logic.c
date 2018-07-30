@@ -900,7 +900,10 @@ void lwc_update(LWCONTEXT* pLwc, double delta_time) {
         ps_test_update(pLwc, pLwc->ps_context);
     }
 
-    if (pLwc->game_scene == LGS_FIELD || pLwc->game_scene == LGS_PUCK_GAME || pLwc->game_scene == LGS_TTL) {
+    if (pLwc->game_scene == LGS_FIELD
+		|| pLwc->game_scene == LGS_PUCK_GAME
+		|| pLwc->game_scene == LGS_TTL
+		|| pLwc->game_scene == LGS_GAZZA) {
         script_update(pLwc);
     }
 

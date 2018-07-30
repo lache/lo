@@ -24,11 +24,19 @@ local cell_menu_mode = CELL_MENU_MODE_NORMAL
 local select_var_name
 local selected_seaport_id
 
+if c.tcp_ttl ~= nil then
+    print('Destroying the previous TCP connection...')
+    lo.destroy_tcp(c.tcp_ttl);
+    c.tcp_ttl = nil;
+end
+
 if c.tcp_ttl == nil then
     --lo.lw_new_tcp_ttl_custom(c, '54.175.243.215', '8000', 8000)
     --lo.lw_new_tcp_ttl_custom(c, '127.0.0.1', '8000', 8000)
     lo.lw_new_tcp_ttl_custom(c, '127.0.0.1', '3000', 8000)
 end
+
+lo.script_cleanup_all_coros(c)
 
 function worldmap_scroll(dlng, dlat, dscale)
     lo.lwttl_worldmap_scroll(c.ttl, dlng/100, dlat/100, dscale)
@@ -282,7 +290,7 @@ end
 function on_cell_menu(index, command_id)
     print(string.format('on_cell_menu:%d,%d', index, command_id))
     local sc = lo.lwttl_single_cell(c.ttl)
-    print_single_cell_info(sc)
+    --print_single_cell_info(sc)
     if command_id == CELL_MENU_PURCHASE_NEW_PORT then
         purchase_new_port()
     elseif command_id == CELL_MENU_DEMOLISH_PORT and sc.port_id > 0 then
