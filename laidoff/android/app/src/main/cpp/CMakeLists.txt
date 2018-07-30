@@ -64,6 +64,9 @@ include_directories("../../../../../litehtml/include")
 add_subdirectory(../../../../../lz4/contrib/cmake_unofficial lz4)
 include_directories("../../../../../lz4/lib")
 
+# tinycthread
+add_subdirectory(../../../../../tinycthread)
+include_directories(../../../../../tinycthread/source)
 
 
 file(GLOB LUA_LIB
@@ -106,6 +109,7 @@ add_library(native-activity SHARED
     ${LUA_LIB}
     ${ODE_LIB}
     ${DETOUR_LIB}
+    tinycthread
 )
 
 target_include_directories(native-activity PRIVATE
@@ -131,4 +135,3 @@ target_link_libraries(native-activity
                       czmq
 					  litehtml
                       lz4_static)
-
