@@ -2,11 +2,11 @@
 #include <string.h>
 #include "lwlog.h"
 #include "lwtimepoint.h"
-
 #if !LW_PLATFORM_WIN32
 int WSAGetLastError() {
     return -1;
 }
+#include <sys/socket.h> // SD_BOTH
 #endif
 
 static int make_socket_nonblocking(int sock) {
