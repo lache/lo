@@ -65,7 +65,7 @@ add_subdirectory(../../../../../lz4/contrib/cmake_unofficial lz4)
 include_directories("../../../../../lz4/lib")
 
 # tinycthread
-add_subdirectory(../../../../../tinycthread)
+add_subdirectory(../../../../../tinycthread tinycthread)
 include_directories(../../../../../tinycthread/source)
 
 
