@@ -2672,52 +2672,52 @@ SWIG_Lua_dostring(lua_State *L, const char *str) {
 #define SWIGTYPE_p_LWFANIM swig_types[12]
 #define SWIGTYPE_p_LWFIELDRENDERCOMMAND swig_types[13]
 #define SWIGTYPE_p_LWFVBO swig_types[14]
-#define SWIGTYPE_p_LWHOSTADDR swig_types[15]
-#define SWIGTYPE_p_LWPKM swig_types[16]
-#define SWIGTYPE_p_LWSPRITE swig_types[17]
-#define SWIGTYPE_p_LWTRAIL swig_types[18]
-#define SWIGTYPE_p_LW_ENEMY_TYPE swig_types[19]
-#define SWIGTYPE_p_LW_FRAG_SHADER swig_types[20]
-#define SWIGTYPE_p_LW_PROGRAMMED_TEX swig_types[21]
-#define SWIGTYPE_p_LW_VERTEX_SHADER swig_types[22]
-#define SWIGTYPE_p_SOCKET swig_types[23]
-#define SWIGTYPE_p__LWACTIONMSG swig_types[24]
-#define SWIGTYPE_p__LWANIM swig_types[25]
-#define SWIGTYPE_p__LWANIM1D swig_types[26]
-#define SWIGTYPE_p__LWANIM5D swig_types[27]
-#define SWIGTYPE_p__LWANIMACTION swig_types[28]
-#define SWIGTYPE_p__LWANIMCURVE swig_types[29]
-#define SWIGTYPE_p__LWANIMKEY swig_types[30]
-#define SWIGTYPE_p__LWANIMMARKER swig_types[31]
-#define SWIGTYPE_p__LWARMATURE swig_types[32]
-#define SWIGTYPE_p__LWATLASSPRITE swig_types[33]
-#define SWIGTYPE_p__LWATLASSPRITEARRAY swig_types[34]
-#define SWIGTYPE_p__LWATLASSPRITEPTR swig_types[35]
-#define SWIGTYPE_p__LWBATTLECOMMAND swig_types[36]
-#define SWIGTYPE_p__LWBATTLECOMMANDRESULT swig_types[37]
-#define SWIGTYPE_p__LWBATTLECREATURE swig_types[38]
-#define SWIGTYPE_p__LWBITMPCONTEXT swig_types[39]
-#define SWIGTYPE_p__LWBUTTONCOMMAND swig_types[40]
-#define SWIGTYPE_p__LWCHAT swig_types[41]
-#define SWIGTYPE_p__LWCOLORVERTEX swig_types[42]
-#define SWIGTYPE_p__LWCONSTRUCT swig_types[43]
-#define SWIGTYPE_p__LWCONSTRUCTPREVIEW swig_types[44]
-#define SWIGTYPE_p__LWCONTEXT swig_types[45]
-#define SWIGTYPE_p__LWCREATURESTAT swig_types[46]
-#define SWIGTYPE_p__LWDAMAGETEXT swig_types[47]
-#define SWIGTYPE_p__LWDELTATIME swig_types[48]
-#define SWIGTYPE_p__LWDESPAWNBULLETMSG swig_types[49]
-#define SWIGTYPE_p__LWEMITTER swig_types[50]
-#define SWIGTYPE_p__LWEMITTER2 swig_types[51]
-#define SWIGTYPE_p__LWEMITTER2OBJECT swig_types[52]
-#define SWIGTYPE_p__LWENEMY swig_types[53]
-#define SWIGTYPE_p__LWFANVERTEX swig_types[54]
-#define SWIGTYPE_p__LWFBO swig_types[55]
-#define SWIGTYPE_p__LWFIELD swig_types[56]
-#define SWIGTYPE_p__LWFIELDMESH swig_types[57]
-#define SWIGTYPE_p__LWFIELDOBJECT swig_types[58]
-#define SWIGTYPE_p__LWFIREMSG swig_types[59]
-#define SWIGTYPE_p__LWHITMSG swig_types[60]
+#define SWIGTYPE_p_LWPKM swig_types[15]
+#define SWIGTYPE_p_LWSPRITE swig_types[16]
+#define SWIGTYPE_p_LWTRAIL swig_types[17]
+#define SWIGTYPE_p_LW_ENEMY_TYPE swig_types[18]
+#define SWIGTYPE_p_LW_FRAG_SHADER swig_types[19]
+#define SWIGTYPE_p_LW_PROGRAMMED_TEX swig_types[20]
+#define SWIGTYPE_p_LW_VERTEX_SHADER swig_types[21]
+#define SWIGTYPE_p_SOCKET swig_types[22]
+#define SWIGTYPE_p__LWACTIONMSG swig_types[23]
+#define SWIGTYPE_p__LWANIM swig_types[24]
+#define SWIGTYPE_p__LWANIM1D swig_types[25]
+#define SWIGTYPE_p__LWANIM5D swig_types[26]
+#define SWIGTYPE_p__LWANIMACTION swig_types[27]
+#define SWIGTYPE_p__LWANIMCURVE swig_types[28]
+#define SWIGTYPE_p__LWANIMKEY swig_types[29]
+#define SWIGTYPE_p__LWANIMMARKER swig_types[30]
+#define SWIGTYPE_p__LWARMATURE swig_types[31]
+#define SWIGTYPE_p__LWATLASSPRITE swig_types[32]
+#define SWIGTYPE_p__LWATLASSPRITEARRAY swig_types[33]
+#define SWIGTYPE_p__LWATLASSPRITEPTR swig_types[34]
+#define SWIGTYPE_p__LWBATTLECOMMAND swig_types[35]
+#define SWIGTYPE_p__LWBATTLECOMMANDRESULT swig_types[36]
+#define SWIGTYPE_p__LWBATTLECREATURE swig_types[37]
+#define SWIGTYPE_p__LWBITMPCONTEXT swig_types[38]
+#define SWIGTYPE_p__LWBUTTONCOMMAND swig_types[39]
+#define SWIGTYPE_p__LWCHAT swig_types[40]
+#define SWIGTYPE_p__LWCOLORVERTEX swig_types[41]
+#define SWIGTYPE_p__LWCONSTRUCT swig_types[42]
+#define SWIGTYPE_p__LWCONSTRUCTPREVIEW swig_types[43]
+#define SWIGTYPE_p__LWCONTEXT swig_types[44]
+#define SWIGTYPE_p__LWCREATURESTAT swig_types[45]
+#define SWIGTYPE_p__LWDAMAGETEXT swig_types[46]
+#define SWIGTYPE_p__LWDELTATIME swig_types[47]
+#define SWIGTYPE_p__LWDESPAWNBULLETMSG swig_types[48]
+#define SWIGTYPE_p__LWEMITTER swig_types[49]
+#define SWIGTYPE_p__LWEMITTER2 swig_types[50]
+#define SWIGTYPE_p__LWEMITTER2OBJECT swig_types[51]
+#define SWIGTYPE_p__LWENEMY swig_types[52]
+#define SWIGTYPE_p__LWFANVERTEX swig_types[53]
+#define SWIGTYPE_p__LWFBO swig_types[54]
+#define SWIGTYPE_p__LWFIELD swig_types[55]
+#define SWIGTYPE_p__LWFIELDMESH swig_types[56]
+#define SWIGTYPE_p__LWFIELDOBJECT swig_types[57]
+#define SWIGTYPE_p__LWFIREMSG swig_types[58]
+#define SWIGTYPE_p__LWHITMSG swig_types[59]
+#define SWIGTYPE_p__LWHOSTADDR swig_types[60]
 #define SWIGTYPE_p__LWHTMLUI swig_types[61]
 #define SWIGTYPE_p__LWKEYFRAME swig_types[62]
 #define SWIGTYPE_p__LWLINEVERTEX swig_types[63]
@@ -3051,6 +3051,7 @@ static swig_module_info swig_module = {swig_types, 286, 0, 0, 0, 0};
 #include "htmlui.h"
 #include "lwttl.h"
 #include "lwlnglat.h"
+#include "lwhostaddr.h"
 #ifdef WIN32
 #pragma warning(pop)
 #endif
@@ -26706,24 +26707,22 @@ fail:
 static int _wrap_LWCONTEXT_tcp_host_addr_set(lua_State* L) {
   int SWIG_arg = 0;
   struct _LWCONTEXT *arg1 = (struct _LWCONTEXT *) 0 ;
-  LWHOSTADDR arg2 ;
-  LWHOSTADDR *argp2 ;
+  LWHOSTADDR *arg2 = (LWHOSTADDR *) 0 ;
   
   SWIG_check_num_args("_LWCONTEXT::tcp_host_addr",2,2)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWCONTEXT::tcp_host_addr",1,"struct _LWCONTEXT *");
-  if(!lua_isuserdata(L,2)) SWIG_fail_arg("_LWCONTEXT::tcp_host_addr",2,"LWHOSTADDR");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("_LWCONTEXT::tcp_host_addr",2,"LWHOSTADDR *");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
     SWIG_fail_ptr("LWCONTEXT_tcp_host_addr_set",1,SWIGTYPE_p__LWCONTEXT);
   }
   
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&argp2,SWIGTYPE_p_LWHOSTADDR,0))){
-    SWIG_fail_ptr("LWCONTEXT_tcp_host_addr_set",2,SWIGTYPE_p_LWHOSTADDR);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWHOSTADDR,0))){
+    SWIG_fail_ptr("LWCONTEXT_tcp_host_addr_set",2,SWIGTYPE_p__LWHOSTADDR);
   }
-  arg2 = *argp2;
   
-  if (arg1) (arg1)->tcp_host_addr = arg2;
+  if (arg1) (arg1)->tcp_host_addr = *arg2;
   
   return SWIG_arg;
   
@@ -26738,7 +26737,7 @@ fail:
 static int _wrap_LWCONTEXT_tcp_host_addr_get(lua_State* L) {
   int SWIG_arg = 0;
   struct _LWCONTEXT *arg1 = (struct _LWCONTEXT *) 0 ;
-  LWHOSTADDR result;
+  LWHOSTADDR *result = 0 ;
   
   SWIG_check_num_args("_LWCONTEXT::tcp_host_addr",1,1)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWCONTEXT::tcp_host_addr",1,"struct _LWCONTEXT *");
@@ -26747,13 +26746,8 @@ static int _wrap_LWCONTEXT_tcp_host_addr_get(lua_State* L) {
     SWIG_fail_ptr("LWCONTEXT_tcp_host_addr_get",1,SWIGTYPE_p__LWCONTEXT);
   }
   
-  result =  ((arg1)->tcp_host_addr);
-  {
-    LWHOSTADDR * resultptr;
-    resultptr = (LWHOSTADDR *) malloc(sizeof(LWHOSTADDR));
-    memmove(resultptr, &result, sizeof(LWHOSTADDR));
-    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_LWHOSTADDR,1); SWIG_arg++;
-  }
+  result = (LWHOSTADDR *)& ((arg1)->tcp_host_addr);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p__LWHOSTADDR,0); SWIG_arg++; 
   return SWIG_arg;
   
   if(0) SWIG_fail;
@@ -26767,24 +26761,22 @@ fail:
 static int _wrap_LWCONTEXT_udp_host_addr_set(lua_State* L) {
   int SWIG_arg = 0;
   struct _LWCONTEXT *arg1 = (struct _LWCONTEXT *) 0 ;
-  LWHOSTADDR arg2 ;
-  LWHOSTADDR *argp2 ;
+  LWHOSTADDR *arg2 = (LWHOSTADDR *) 0 ;
   
   SWIG_check_num_args("_LWCONTEXT::udp_host_addr",2,2)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWCONTEXT::udp_host_addr",1,"struct _LWCONTEXT *");
-  if(!lua_isuserdata(L,2)) SWIG_fail_arg("_LWCONTEXT::udp_host_addr",2,"LWHOSTADDR");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("_LWCONTEXT::udp_host_addr",2,"LWHOSTADDR *");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
     SWIG_fail_ptr("LWCONTEXT_udp_host_addr_set",1,SWIGTYPE_p__LWCONTEXT);
   }
   
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&argp2,SWIGTYPE_p_LWHOSTADDR,0))){
-    SWIG_fail_ptr("LWCONTEXT_udp_host_addr_set",2,SWIGTYPE_p_LWHOSTADDR);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWHOSTADDR,0))){
+    SWIG_fail_ptr("LWCONTEXT_udp_host_addr_set",2,SWIGTYPE_p__LWHOSTADDR);
   }
-  arg2 = *argp2;
   
-  if (arg1) (arg1)->udp_host_addr = arg2;
+  if (arg1) (arg1)->udp_host_addr = *arg2;
   
   return SWIG_arg;
   
@@ -26799,7 +26791,7 @@ fail:
 static int _wrap_LWCONTEXT_udp_host_addr_get(lua_State* L) {
   int SWIG_arg = 0;
   struct _LWCONTEXT *arg1 = (struct _LWCONTEXT *) 0 ;
-  LWHOSTADDR result;
+  LWHOSTADDR *result = 0 ;
   
   SWIG_check_num_args("_LWCONTEXT::udp_host_addr",1,1)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWCONTEXT::udp_host_addr",1,"struct _LWCONTEXT *");
@@ -26808,13 +26800,8 @@ static int _wrap_LWCONTEXT_udp_host_addr_get(lua_State* L) {
     SWIG_fail_ptr("LWCONTEXT_udp_host_addr_get",1,SWIGTYPE_p__LWCONTEXT);
   }
   
-  result =  ((arg1)->udp_host_addr);
-  {
-    LWHOSTADDR * resultptr;
-    resultptr = (LWHOSTADDR *) malloc(sizeof(LWHOSTADDR));
-    memmove(resultptr, &result, sizeof(LWHOSTADDR));
-    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_LWHOSTADDR,1); SWIG_arg++;
-  }
+  result = (LWHOSTADDR *)& ((arg1)->udp_host_addr);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p__LWHOSTADDR,0); SWIG_arg++; 
   return SWIG_arg;
   
   if(0) SWIG_fail;
@@ -26828,24 +26815,22 @@ fail:
 static int _wrap_LWCONTEXT_tcp_ttl_host_addr_set(lua_State* L) {
   int SWIG_arg = 0;
   struct _LWCONTEXT *arg1 = (struct _LWCONTEXT *) 0 ;
-  LWHOSTADDR arg2 ;
-  LWHOSTADDR *argp2 ;
+  LWHOSTADDR *arg2 = (LWHOSTADDR *) 0 ;
   
   SWIG_check_num_args("_LWCONTEXT::tcp_ttl_host_addr",2,2)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWCONTEXT::tcp_ttl_host_addr",1,"struct _LWCONTEXT *");
-  if(!lua_isuserdata(L,2)) SWIG_fail_arg("_LWCONTEXT::tcp_ttl_host_addr",2,"LWHOSTADDR");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("_LWCONTEXT::tcp_ttl_host_addr",2,"LWHOSTADDR *");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
     SWIG_fail_ptr("LWCONTEXT_tcp_ttl_host_addr_set",1,SWIGTYPE_p__LWCONTEXT);
   }
   
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&argp2,SWIGTYPE_p_LWHOSTADDR,0))){
-    SWIG_fail_ptr("LWCONTEXT_tcp_ttl_host_addr_set",2,SWIGTYPE_p_LWHOSTADDR);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWHOSTADDR,0))){
+    SWIG_fail_ptr("LWCONTEXT_tcp_ttl_host_addr_set",2,SWIGTYPE_p__LWHOSTADDR);
   }
-  arg2 = *argp2;
   
-  if (arg1) (arg1)->tcp_ttl_host_addr = arg2;
+  if (arg1) (arg1)->tcp_ttl_host_addr = *arg2;
   
   return SWIG_arg;
   
@@ -26860,7 +26845,7 @@ fail:
 static int _wrap_LWCONTEXT_tcp_ttl_host_addr_get(lua_State* L) {
   int SWIG_arg = 0;
   struct _LWCONTEXT *arg1 = (struct _LWCONTEXT *) 0 ;
-  LWHOSTADDR result;
+  LWHOSTADDR *result = 0 ;
   
   SWIG_check_num_args("_LWCONTEXT::tcp_ttl_host_addr",1,1)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWCONTEXT::tcp_ttl_host_addr",1,"struct _LWCONTEXT *");
@@ -26869,13 +26854,8 @@ static int _wrap_LWCONTEXT_tcp_ttl_host_addr_get(lua_State* L) {
     SWIG_fail_ptr("LWCONTEXT_tcp_ttl_host_addr_get",1,SWIGTYPE_p__LWCONTEXT);
   }
   
-  result =  ((arg1)->tcp_ttl_host_addr);
-  {
-    LWHOSTADDR * resultptr;
-    resultptr = (LWHOSTADDR *) malloc(sizeof(LWHOSTADDR));
-    memmove(resultptr, &result, sizeof(LWHOSTADDR));
-    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_LWHOSTADDR,1); SWIG_arg++;
-  }
+  result = (LWHOSTADDR *)& ((arg1)->tcp_ttl_host_addr);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p__LWHOSTADDR,0); SWIG_arg++; 
   return SWIG_arg;
   
   if(0) SWIG_fail;
@@ -26889,24 +26869,22 @@ fail:
 static int _wrap_LWCONTEXT_sea_udp_host_addr_set(lua_State* L) {
   int SWIG_arg = 0;
   struct _LWCONTEXT *arg1 = (struct _LWCONTEXT *) 0 ;
-  LWHOSTADDR arg2 ;
-  LWHOSTADDR *argp2 ;
+  LWHOSTADDR *arg2 = (LWHOSTADDR *) 0 ;
   
   SWIG_check_num_args("_LWCONTEXT::sea_udp_host_addr",2,2)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWCONTEXT::sea_udp_host_addr",1,"struct _LWCONTEXT *");
-  if(!lua_isuserdata(L,2)) SWIG_fail_arg("_LWCONTEXT::sea_udp_host_addr",2,"LWHOSTADDR");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("_LWCONTEXT::sea_udp_host_addr",2,"LWHOSTADDR *");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
     SWIG_fail_ptr("LWCONTEXT_sea_udp_host_addr_set",1,SWIGTYPE_p__LWCONTEXT);
   }
   
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&argp2,SWIGTYPE_p_LWHOSTADDR,0))){
-    SWIG_fail_ptr("LWCONTEXT_sea_udp_host_addr_set",2,SWIGTYPE_p_LWHOSTADDR);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWHOSTADDR,0))){
+    SWIG_fail_ptr("LWCONTEXT_sea_udp_host_addr_set",2,SWIGTYPE_p__LWHOSTADDR);
   }
-  arg2 = *argp2;
   
-  if (arg1) (arg1)->sea_udp_host_addr = arg2;
+  if (arg1) (arg1)->sea_udp_host_addr = *arg2;
   
   return SWIG_arg;
   
@@ -26921,7 +26899,7 @@ fail:
 static int _wrap_LWCONTEXT_sea_udp_host_addr_get(lua_State* L) {
   int SWIG_arg = 0;
   struct _LWCONTEXT *arg1 = (struct _LWCONTEXT *) 0 ;
-  LWHOSTADDR result;
+  LWHOSTADDR *result = 0 ;
   
   SWIG_check_num_args("_LWCONTEXT::sea_udp_host_addr",1,1)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWCONTEXT::sea_udp_host_addr",1,"struct _LWCONTEXT *");
@@ -26930,13 +26908,8 @@ static int _wrap_LWCONTEXT_sea_udp_host_addr_get(lua_State* L) {
     SWIG_fail_ptr("LWCONTEXT_sea_udp_host_addr_get",1,SWIGTYPE_p__LWCONTEXT);
   }
   
-  result =  ((arg1)->sea_udp_host_addr);
-  {
-    LWHOSTADDR * resultptr;
-    resultptr = (LWHOSTADDR *) malloc(sizeof(LWHOSTADDR));
-    memmove(resultptr, &result, sizeof(LWHOSTADDR));
-    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_LWHOSTADDR,1); SWIG_arg++;
-  }
+  result = (LWHOSTADDR *)& ((arg1)->sea_udp_host_addr);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p__LWHOSTADDR,0); SWIG_arg++; 
   return SWIG_arg;
   
   if(0) SWIG_fail;
@@ -26950,24 +26923,22 @@ fail:
 static int _wrap_LWCONTEXT_sea_tcp_host_addr_set(lua_State* L) {
   int SWIG_arg = 0;
   struct _LWCONTEXT *arg1 = (struct _LWCONTEXT *) 0 ;
-  LWHOSTADDR arg2 ;
-  LWHOSTADDR *argp2 ;
+  LWHOSTADDR *arg2 = (LWHOSTADDR *) 0 ;
   
   SWIG_check_num_args("_LWCONTEXT::sea_tcp_host_addr",2,2)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWCONTEXT::sea_tcp_host_addr",1,"struct _LWCONTEXT *");
-  if(!lua_isuserdata(L,2)) SWIG_fail_arg("_LWCONTEXT::sea_tcp_host_addr",2,"LWHOSTADDR");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("_LWCONTEXT::sea_tcp_host_addr",2,"LWHOSTADDR *");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
     SWIG_fail_ptr("LWCONTEXT_sea_tcp_host_addr_set",1,SWIGTYPE_p__LWCONTEXT);
   }
   
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&argp2,SWIGTYPE_p_LWHOSTADDR,0))){
-    SWIG_fail_ptr("LWCONTEXT_sea_tcp_host_addr_set",2,SWIGTYPE_p_LWHOSTADDR);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWHOSTADDR,0))){
+    SWIG_fail_ptr("LWCONTEXT_sea_tcp_host_addr_set",2,SWIGTYPE_p__LWHOSTADDR);
   }
-  arg2 = *argp2;
   
-  if (arg1) (arg1)->sea_tcp_host_addr = arg2;
+  if (arg1) (arg1)->sea_tcp_host_addr = *arg2;
   
   return SWIG_arg;
   
@@ -26982,7 +26953,7 @@ fail:
 static int _wrap_LWCONTEXT_sea_tcp_host_addr_get(lua_State* L) {
   int SWIG_arg = 0;
   struct _LWCONTEXT *arg1 = (struct _LWCONTEXT *) 0 ;
-  LWHOSTADDR result;
+  LWHOSTADDR *result = 0 ;
   
   SWIG_check_num_args("_LWCONTEXT::sea_tcp_host_addr",1,1)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWCONTEXT::sea_tcp_host_addr",1,"struct _LWCONTEXT *");
@@ -26991,13 +26962,8 @@ static int _wrap_LWCONTEXT_sea_tcp_host_addr_get(lua_State* L) {
     SWIG_fail_ptr("LWCONTEXT_sea_tcp_host_addr_get",1,SWIGTYPE_p__LWCONTEXT);
   }
   
-  result =  ((arg1)->sea_tcp_host_addr);
-  {
-    LWHOSTADDR * resultptr;
-    resultptr = (LWHOSTADDR *) malloc(sizeof(LWHOSTADDR));
-    memmove(resultptr, &result, sizeof(LWHOSTADDR));
-    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_LWHOSTADDR,1); SWIG_arg++;
-  }
+  result = (LWHOSTADDR *)& ((arg1)->sea_tcp_host_addr);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p__LWHOSTADDR,0); SWIG_arg++; 
   return SWIG_arg;
   
   if(0) SWIG_fail;
@@ -73345,24 +73311,22 @@ fail:
 static int _wrap_LWTCP_host_addr_set(lua_State* L) {
   int SWIG_arg = 0;
   struct _LWTCP *arg1 = (struct _LWTCP *) 0 ;
-  LWHOSTADDR arg2 ;
-  LWHOSTADDR *argp2 ;
+  LWHOSTADDR *arg2 = (LWHOSTADDR *) 0 ;
   
   SWIG_check_num_args("_LWTCP::host_addr",2,2)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTCP::host_addr",1,"struct _LWTCP *");
-  if(!lua_isuserdata(L,2)) SWIG_fail_arg("_LWTCP::host_addr",2,"LWHOSTADDR");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("_LWTCP::host_addr",2,"LWHOSTADDR *");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTCP,0))){
     SWIG_fail_ptr("LWTCP_host_addr_set",1,SWIGTYPE_p__LWTCP);
   }
   
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&argp2,SWIGTYPE_p_LWHOSTADDR,0))){
-    SWIG_fail_ptr("LWTCP_host_addr_set",2,SWIGTYPE_p_LWHOSTADDR);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWHOSTADDR,0))){
+    SWIG_fail_ptr("LWTCP_host_addr_set",2,SWIGTYPE_p__LWHOSTADDR);
   }
-  arg2 = *argp2;
   
-  if (arg1) (arg1)->host_addr = arg2;
+  if (arg1) (arg1)->host_addr = *arg2;
   
   return SWIG_arg;
   
@@ -73377,7 +73341,7 @@ fail:
 static int _wrap_LWTCP_host_addr_get(lua_State* L) {
   int SWIG_arg = 0;
   struct _LWTCP *arg1 = (struct _LWTCP *) 0 ;
-  LWHOSTADDR result;
+  LWHOSTADDR *result = 0 ;
   
   SWIG_check_num_args("_LWTCP::host_addr",1,1)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTCP::host_addr",1,"struct _LWTCP *");
@@ -73386,13 +73350,8 @@ static int _wrap_LWTCP_host_addr_get(lua_State* L) {
     SWIG_fail_ptr("LWTCP_host_addr_get",1,SWIGTYPE_p__LWTCP);
   }
   
-  result =  ((arg1)->host_addr);
-  {
-    LWHOSTADDR * resultptr;
-    resultptr = (LWHOSTADDR *) malloc(sizeof(LWHOSTADDR));
-    memmove(resultptr, &result, sizeof(LWHOSTADDR));
-    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_LWHOSTADDR,1); SWIG_arg++;
-  }
+  result = (LWHOSTADDR *)& ((arg1)->host_addr);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p__LWHOSTADDR,0); SWIG_arg++; 
   return SWIG_arg;
   
   if(0) SWIG_fail;
@@ -73987,8 +73946,8 @@ static int _wrap_new_tcp(lua_State* L) {
   
   arg2 = (char *)lua_tostring(L, 2);
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_LWHOSTADDR,0))){
-    SWIG_fail_ptr("new_tcp",3,SWIGTYPE_p_LWHOSTADDR);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p__LWHOSTADDR,0))){
+    SWIG_fail_ptr("new_tcp",3,SWIGTYPE_p__LWHOSTADDR);
   }
   
   
@@ -74001,7 +73960,7 @@ static int _wrap_new_tcp(lua_State* L) {
     SWIG_fail_ptr("new_tcp",5,SWIGTYPE_p_f_p_struct__LWTCP__int);
   }
   
-  result = (LWTCP *)new_tcp(arg1,(char const *)arg2,(LWHOSTADDR const *)arg3,arg4,arg5);
+  result = (LWTCP *)new_tcp(arg1,(char const *)arg2,(struct _LWHOSTADDR const *)arg3,arg4,arg5);
   SWIG_NewPointerObj(L,result,SWIGTYPE_p__LWTCP,0); SWIG_arg++; 
   return SWIG_arg;
   
@@ -110454,6 +110413,289 @@ fail:
 }
 
 
+static int _wrap_LWHOSTADDR_host_set(lua_State* L) {
+  int SWIG_arg = 0;
+  struct _LWHOSTADDR *arg1 = (struct _LWHOSTADDR *) 0 ;
+  char *arg2 ;
+  
+  SWIG_check_num_args("_LWHOSTADDR::host",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWHOSTADDR::host",1,"struct _LWHOSTADDR *");
+  if(!SWIG_lua_isnilstring(L,2)) SWIG_fail_arg("_LWHOSTADDR::host",2,"char [128]");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWHOSTADDR,0))){
+    SWIG_fail_ptr("LWHOSTADDR_host_set",1,SWIGTYPE_p__LWHOSTADDR);
+  }
+  
+  arg2 = (char *)lua_tostring(L, 2);
+  {
+    if(arg2) {
+      strncpy((char*)arg1->host, (const char *)arg2, 128-1);
+      arg1->host[128-1] = 0;
+    } else {
+      arg1->host[0] = 0;
+    }
+  }
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_LWHOSTADDR_host_get(lua_State* L) {
+  int SWIG_arg = 0;
+  struct _LWHOSTADDR *arg1 = (struct _LWHOSTADDR *) 0 ;
+  char *result = 0 ;
+  
+  SWIG_check_num_args("_LWHOSTADDR::host",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWHOSTADDR::host",1,"struct _LWHOSTADDR *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWHOSTADDR,0))){
+    SWIG_fail_ptr("LWHOSTADDR_host_get",1,SWIGTYPE_p__LWHOSTADDR);
+  }
+  
+  result = (char *)(char *) ((arg1)->host);
+  lua_pushstring(L,(const char *)result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_LWHOSTADDR_port_str_set(lua_State* L) {
+  int SWIG_arg = 0;
+  struct _LWHOSTADDR *arg1 = (struct _LWHOSTADDR *) 0 ;
+  char *arg2 ;
+  
+  SWIG_check_num_args("_LWHOSTADDR::port_str",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWHOSTADDR::port_str",1,"struct _LWHOSTADDR *");
+  if(!SWIG_lua_isnilstring(L,2)) SWIG_fail_arg("_LWHOSTADDR::port_str",2,"char [16]");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWHOSTADDR,0))){
+    SWIG_fail_ptr("LWHOSTADDR_port_str_set",1,SWIGTYPE_p__LWHOSTADDR);
+  }
+  
+  arg2 = (char *)lua_tostring(L, 2);
+  {
+    if(arg2) {
+      strncpy((char*)arg1->port_str, (const char *)arg2, 16-1);
+      arg1->port_str[16-1] = 0;
+    } else {
+      arg1->port_str[0] = 0;
+    }
+  }
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_LWHOSTADDR_port_str_get(lua_State* L) {
+  int SWIG_arg = 0;
+  struct _LWHOSTADDR *arg1 = (struct _LWHOSTADDR *) 0 ;
+  char *result = 0 ;
+  
+  SWIG_check_num_args("_LWHOSTADDR::port_str",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWHOSTADDR::port_str",1,"struct _LWHOSTADDR *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWHOSTADDR,0))){
+    SWIG_fail_ptr("LWHOSTADDR_port_str_get",1,SWIGTYPE_p__LWHOSTADDR);
+  }
+  
+  result = (char *)(char *) ((arg1)->port_str);
+  lua_pushstring(L,(const char *)result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_LWHOSTADDR_host_resolved_set(lua_State* L) {
+  int SWIG_arg = 0;
+  struct _LWHOSTADDR *arg1 = (struct _LWHOSTADDR *) 0 ;
+  unsigned long arg2 ;
+  
+  SWIG_check_num_args("_LWHOSTADDR::host_resolved",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWHOSTADDR::host_resolved",1,"struct _LWHOSTADDR *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWHOSTADDR::host_resolved",2,"unsigned long");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWHOSTADDR,0))){
+    SWIG_fail_ptr("LWHOSTADDR_host_resolved_set",1,SWIGTYPE_p__LWHOSTADDR);
+  }
+  
+  SWIG_contract_assert((lua_tonumber(L,2)>=0),"number must not be negative")
+  arg2 = (unsigned long)lua_tonumber(L, 2);
+  if (arg1) (arg1)->host_resolved = arg2;
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_LWHOSTADDR_host_resolved_get(lua_State* L) {
+  int SWIG_arg = 0;
+  struct _LWHOSTADDR *arg1 = (struct _LWHOSTADDR *) 0 ;
+  unsigned long result;
+  
+  SWIG_check_num_args("_LWHOSTADDR::host_resolved",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWHOSTADDR::host_resolved",1,"struct _LWHOSTADDR *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWHOSTADDR,0))){
+    SWIG_fail_ptr("LWHOSTADDR_host_resolved_get",1,SWIGTYPE_p__LWHOSTADDR);
+  }
+  
+  result = (unsigned long) ((arg1)->host_resolved);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_LWHOSTADDR_port_set(lua_State* L) {
+  int SWIG_arg = 0;
+  struct _LWHOSTADDR *arg1 = (struct _LWHOSTADDR *) 0 ;
+  int arg2 ;
+  
+  SWIG_check_num_args("_LWHOSTADDR::port",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWHOSTADDR::port",1,"struct _LWHOSTADDR *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("_LWHOSTADDR::port",2,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWHOSTADDR,0))){
+    SWIG_fail_ptr("LWHOSTADDR_port_set",1,SWIGTYPE_p__LWHOSTADDR);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  if (arg1) (arg1)->port = arg2;
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_LWHOSTADDR_port_get(lua_State* L) {
+  int SWIG_arg = 0;
+  struct _LWHOSTADDR *arg1 = (struct _LWHOSTADDR *) 0 ;
+  int result;
+  
+  SWIG_check_num_args("_LWHOSTADDR::port",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWHOSTADDR::port",1,"struct _LWHOSTADDR *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWHOSTADDR,0))){
+    SWIG_fail_ptr("LWHOSTADDR_port_get",1,SWIGTYPE_p__LWHOSTADDR);
+  }
+  
+  result = (int) ((arg1)->port);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_new_LWHOSTADDR(lua_State* L) {
+  int SWIG_arg = 0;
+  struct _LWHOSTADDR *result = 0 ;
+  
+  SWIG_check_num_args("_LWHOSTADDR::_LWHOSTADDR",0,0)
+  result = (struct _LWHOSTADDR *)calloc(1, sizeof(struct _LWHOSTADDR));
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p__LWHOSTADDR,1); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static void swig_delete_LWHOSTADDR(void *obj) {
+struct _LWHOSTADDR *arg1 = (struct _LWHOSTADDR *) obj;
+free((char *) arg1);
+}
+static int _proxy__wrap_new_LWHOSTADDR(lua_State *L) {
+    assert(lua_istable(L,1));
+    lua_pushcfunction(L,_wrap_new_LWHOSTADDR);
+    assert(!lua_isnil(L,-1));
+    lua_replace(L,1); /* replace our table with real constructor */
+    lua_call(L,lua_gettop(L)-1,1);
+    return 1;
+}
+static swig_lua_attribute swig_LWHOSTADDR_attributes[] = {
+    { "host", _wrap_LWHOSTADDR_host_get, _wrap_LWHOSTADDR_host_set },
+    { "port_str", _wrap_LWHOSTADDR_port_str_get, _wrap_LWHOSTADDR_port_str_set },
+    { "host_resolved", _wrap_LWHOSTADDR_host_resolved_get, _wrap_LWHOSTADDR_host_resolved_set },
+    { "port", _wrap_LWHOSTADDR_port_get, _wrap_LWHOSTADDR_port_set },
+    {0,0,0}
+};
+static swig_lua_method swig_LWHOSTADDR_methods[]= {
+    {0,0}
+};
+static swig_lua_method swig_LWHOSTADDR_meta[] = {
+    {0,0}
+};
+
+static swig_lua_attribute swig_LWHOSTADDR_Sf_SwigStatic_attributes[] = {
+    {0,0,0}
+};
+static swig_lua_const_info swig_LWHOSTADDR_Sf_SwigStatic_constants[]= {
+    {0,0,0,0,0,0}
+};
+static swig_lua_method swig_LWHOSTADDR_Sf_SwigStatic_methods[]= {
+    {0,0}
+};
+static swig_lua_class* swig_LWHOSTADDR_Sf_SwigStatic_classes[]= {
+    0
+};
+
+static swig_lua_namespace swig_LWHOSTADDR_Sf_SwigStatic = {
+    "LWHOSTADDR",
+    swig_LWHOSTADDR_Sf_SwigStatic_methods,
+    swig_LWHOSTADDR_Sf_SwigStatic_attributes,
+    swig_LWHOSTADDR_Sf_SwigStatic_constants,
+    swig_LWHOSTADDR_Sf_SwigStatic_classes,
+    0
+};
+static swig_lua_class *swig_LWHOSTADDR_bases[] = {0};
+static const char *swig_LWHOSTADDR_base_names[] = {0};
+static swig_lua_class _wrap_class_LWHOSTADDR = { "LWHOSTADDR", "LWHOSTADDR", &SWIGTYPE_p__LWHOSTADDR,_proxy__wrap_new_LWHOSTADDR, swig_delete_LWHOSTADDR, swig_LWHOSTADDR_methods, swig_LWHOSTADDR_attributes, &swig_LWHOSTADDR_Sf_SwigStatic, swig_LWHOSTADDR_meta, swig_LWHOSTADDR_bases, swig_LWHOSTADDR_base_names };
+
 static int _wrap_new_int(lua_State* L) {
   int SWIG_arg = 0;
   int arg1 ;
@@ -112643,6 +112885,7 @@ static swig_lua_class* swig_SwigModule_classes[]= {
 &_wrap_class_LWTTLLNGLAT,
 &_wrap_class_LWTTLCHUNKKEY,
 &_wrap_class__LWTTLCHUNKKEY_bf,
+&_wrap_class_LWHOSTADDR,
     0
 };
 static swig_lua_namespace* swig_SwigModule_namespaces[] = {
@@ -112678,7 +112921,6 @@ static swig_type_info _swigt__p_LWDIRPAD = {"_p_LWDIRPAD", "LWDIRPAD *", 0, 0, (
 static swig_type_info _swigt__p_LWFANIM = {"_p_LWFANIM", "LWFANIM *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_LWFIELDRENDERCOMMAND = {"_p_LWFIELDRENDERCOMMAND", "LWFIELDRENDERCOMMAND *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_LWFVBO = {"_p_LWFVBO", "LWFVBO *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_LWHOSTADDR = {"_p_LWHOSTADDR", "LWHOSTADDR *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_LWPKM = {"_p_LWPKM", "LWPKM *", 0, 0, (void*)&_wrap_class_LWPKM, 0};
 static swig_type_info _swigt__p_LWSPRITE = {"_p_LWSPRITE", "LWSPRITE *", 0, 0, (void*)&_wrap_class_LWSPRITE, 0};
 static swig_type_info _swigt__p_LWTRAIL = {"_p_LWTRAIL", "LWTRAIL *", 0, 0, (void*)&_wrap_class_LWTRAIL, 0};
@@ -112724,6 +112966,7 @@ static swig_type_info _swigt__p__LWFIELDMESH = {"_p__LWFIELDMESH", "struct _LWFI
 static swig_type_info _swigt__p__LWFIELDOBJECT = {"_p__LWFIELDOBJECT", "struct _LWFIELDOBJECT *|LWFIELDOBJECT *|_LWFIELDOBJECT *", 0, 0, (void*)&_wrap_class_LWFIELDOBJECT, 0};
 static swig_type_info _swigt__p__LWFIREMSG = {"_p__LWFIREMSG", "struct _LWFIREMSG *|_LWFIREMSG *|LWFIREMSG *", 0, 0, (void*)&_wrap_class_LWFIREMSG, 0};
 static swig_type_info _swigt__p__LWHITMSG = {"_p__LWHITMSG", "struct _LWHITMSG *|_LWHITMSG *|LWHITMSG *", 0, 0, (void*)&_wrap_class_LWHITMSG, 0};
+static swig_type_info _swigt__p__LWHOSTADDR = {"_p__LWHOSTADDR", "struct _LWHOSTADDR *|LWHOSTADDR *|_LWHOSTADDR *", 0, 0, (void*)&_wrap_class_LWHOSTADDR, 0};
 static swig_type_info _swigt__p__LWHTMLUI = {"_p__LWHTMLUI", "struct _LWHTMLUI *|LWHTMLUI *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p__LWKEYFRAME = {"_p__LWKEYFRAME", "struct _LWKEYFRAME *|LWKEYFRAME *|_LWKEYFRAME *", 0, 0, (void*)&_wrap_class_LWKEYFRAME, 0};
 static swig_type_info _swigt__p__LWLINEVERTEX = {"_p__LWLINEVERTEX", "struct _LWLINEVERTEX *|_LWLINEVERTEX *|LWLINEVERTEX *", 0, 0, (void*)&_wrap_class_LWLINEVERTEX, 0};
@@ -112966,7 +113209,6 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_LWFANIM,
   &_swigt__p_LWFIELDRENDERCOMMAND,
   &_swigt__p_LWFVBO,
-  &_swigt__p_LWHOSTADDR,
   &_swigt__p_LWPKM,
   &_swigt__p_LWSPRITE,
   &_swigt__p_LWTRAIL,
@@ -113012,6 +113254,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p__LWFIELDOBJECT,
   &_swigt__p__LWFIREMSG,
   &_swigt__p__LWHITMSG,
+  &_swigt__p__LWHOSTADDR,
   &_swigt__p__LWHTMLUI,
   &_swigt__p__LWKEYFRAME,
   &_swigt__p__LWLINEVERTEX,
@@ -113254,7 +113497,6 @@ static swig_cast_info _swigc__p_LWDIRPAD[] = {  {&_swigt__p_LWDIRPAD, 0, 0, 0},{
 static swig_cast_info _swigc__p_LWFANIM[] = {  {&_swigt__p_LWFANIM, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_LWFIELDRENDERCOMMAND[] = {  {&_swigt__p_LWFIELDRENDERCOMMAND, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_LWFVBO[] = {  {&_swigt__p_LWFVBO, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_LWHOSTADDR[] = {  {&_swigt__p_LWHOSTADDR, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_LWPKM[] = {  {&_swigt__p_LWPKM, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_LWSPRITE[] = {  {&_swigt__p_LWSPRITE, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_LWTRAIL[] = {  {&_swigt__p_LWTRAIL, 0, 0, 0},{0, 0, 0, 0}};
@@ -113300,6 +113542,7 @@ static swig_cast_info _swigc__p__LWFIELDMESH[] = {  {&_swigt__p__LWFIELDMESH, 0,
 static swig_cast_info _swigc__p__LWFIELDOBJECT[] = {  {&_swigt__p__LWFIELDOBJECT, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__LWFIREMSG[] = {  {&_swigt__p__LWFIREMSG, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__LWHITMSG[] = {  {&_swigt__p__LWHITMSG, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p__LWHOSTADDR[] = {  {&_swigt__p__LWHOSTADDR, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__LWHTMLUI[] = {  {&_swigt__p__LWHTMLUI, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__LWKEYFRAME[] = {  {&_swigt__p__LWKEYFRAME, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__LWLINEVERTEX[] = {  {&_swigt__p__LWLINEVERTEX, 0, 0, 0},{0, 0, 0, 0}};
@@ -113542,7 +113785,6 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_LWFANIM,
   _swigc__p_LWFIELDRENDERCOMMAND,
   _swigc__p_LWFVBO,
-  _swigc__p_LWHOSTADDR,
   _swigc__p_LWPKM,
   _swigc__p_LWSPRITE,
   _swigc__p_LWTRAIL,
@@ -113588,6 +113830,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p__LWFIELDOBJECT,
   _swigc__p__LWFIREMSG,
   _swigc__p__LWHITMSG,
+  _swigc__p__LWHOSTADDR,
   _swigc__p__LWHTMLUI,
   _swigc__p__LWKEYFRAME,
   _swigc__p__LWLINEVERTEX,

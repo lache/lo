@@ -101,6 +101,7 @@
 #include "htmlui.h"
 #include "lwttl.h"
 #include "lwlnglat.h"
+#include "lwhostaddr.h"
 #ifdef WIN32
 #pragma warning(pop)
 #endif
@@ -221,6 +222,7 @@
 %include "htmlui.h"
 %include "lwttl.h"
 %include "lwlnglat.h"
+%include "lwhostaddr.h"
 
 // using the C-array
 %include <carrays.i>
