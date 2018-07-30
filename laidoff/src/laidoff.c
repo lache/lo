@@ -1143,6 +1143,7 @@ void lwc_prerender_mutable_context(LWCONTEXT* pLwc) {
     }
     if (pLwc->htmlui) {
         if (pLwc->game_scene == LGS_TTL
+			|| pLwc->game_scene == LGS_GAZZA
             || (pLwc->game_scene == LGS_PUCK_GAME && pLwc->puck_game->show_html_ui)) {
             htmlui_update_on_render_thread(pLwc->htmlui);
         }
