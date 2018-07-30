@@ -26,7 +26,6 @@ void script_evaluate(void* L, const char* code, size_t code_len);
 void script_evaluate_async(LWCONTEXT* pLwc, const char* code, size_t code_len);
 const char* script_full_asset_path(const char* asset_type, const char* asset_name);
 int script_http_header(void* L, char* header, size_t header_max_len);
-void script_emit_single_string_arg(void* L, const char* func_name, const char* str_arg, char* output);
 #ifdef __cplusplus
 };
 #endif

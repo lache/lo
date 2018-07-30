@@ -2922,30 +2922,29 @@ SWIG_Lua_dostring(lua_State *L, const char *str) {
 #define SWIGTYPE_p_p__LWPS swig_types[262]
 #define SWIGTYPE_p_p__LWPUCKGAME swig_types[263]
 #define SWIGTYPE_p_p__LWSKILL swig_types[264]
-#define SWIGTYPE_p_p__LWTCP swig_types[265]
-#define SWIGTYPE_p_p__LWTTL swig_types[266]
-#define SWIGTYPE_p_p__kvmsg swig_types[267]
-#define SWIGTYPE_p_p_char swig_types[268]
-#define SWIGTYPE_p_p_tinyobj_material_t swig_types[269]
-#define SWIGTYPE_p_p_tinyobj_shape_t swig_types[270]
-#define SWIGTYPE_p_p_void swig_types[271]
-#define SWIGTYPE_p_pcg_state_setseq_64 swig_types[272]
-#define SWIGTYPE_p_short swig_types[273]
-#define SWIGTYPE_p_size_t swig_types[274]
-#define SWIGTYPE_p_tinyobj_attrib_t swig_types[275]
-#define SWIGTYPE_p_tinyobj_material_t swig_types[276]
-#define SWIGTYPE_p_tinyobj_shape_t swig_types[277]
-#define SWIGTYPE_p_tinyobj_vertex_index_t swig_types[278]
-#define SWIGTYPE_p_uint32_t swig_types[279]
-#define SWIGTYPE_p_uint64_t swig_types[280]
-#define SWIGTYPE_p_unsigned_char swig_types[281]
-#define SWIGTYPE_p_unsigned_int swig_types[282]
-#define SWIGTYPE_p_unsigned_long swig_types[283]
-#define SWIGTYPE_p_unsigned_short swig_types[284]
-#define SWIGTYPE_p_void swig_types[285]
-#define SWIGTYPE_p_zhash_t swig_types[286]
-static swig_type_info *swig_types[288];
-static swig_module_info swig_module = {swig_types, 287, 0, 0, 0, 0};
+#define SWIGTYPE_p_p__LWTTL swig_types[265]
+#define SWIGTYPE_p_p__kvmsg swig_types[266]
+#define SWIGTYPE_p_p_char swig_types[267]
+#define SWIGTYPE_p_p_tinyobj_material_t swig_types[268]
+#define SWIGTYPE_p_p_tinyobj_shape_t swig_types[269]
+#define SWIGTYPE_p_p_void swig_types[270]
+#define SWIGTYPE_p_pcg_state_setseq_64 swig_types[271]
+#define SWIGTYPE_p_short swig_types[272]
+#define SWIGTYPE_p_size_t swig_types[273]
+#define SWIGTYPE_p_tinyobj_attrib_t swig_types[274]
+#define SWIGTYPE_p_tinyobj_material_t swig_types[275]
+#define SWIGTYPE_p_tinyobj_shape_t swig_types[276]
+#define SWIGTYPE_p_tinyobj_vertex_index_t swig_types[277]
+#define SWIGTYPE_p_uint32_t swig_types[278]
+#define SWIGTYPE_p_uint64_t swig_types[279]
+#define SWIGTYPE_p_unsigned_char swig_types[280]
+#define SWIGTYPE_p_unsigned_int swig_types[281]
+#define SWIGTYPE_p_unsigned_long swig_types[282]
+#define SWIGTYPE_p_unsigned_short swig_types[283]
+#define SWIGTYPE_p_void swig_types[284]
+#define SWIGTYPE_p_zhash_t swig_types[285]
+static swig_type_info *swig_types[287];
+static swig_module_info swig_module = {swig_types, 286, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -11037,6 +11036,29 @@ static int _wrap_change_to_ttl(lua_State* L) {
   }
   
   change_to_ttl(arg1);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_change_to_gazza(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  
+  SWIG_check_num_args("change_to_gazza",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("change_to_gazza",1,"LWCONTEXT *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("change_to_gazza",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  change_to_gazza(arg1);
   
   return SWIG_arg;
   
@@ -32248,6 +32270,70 @@ static int _wrap_lw_null_printf(lua_State* L) {
   if(!SWIG_lua_isnilstring(L,1)) SWIG_fail_arg("lw_null_printf",1,"char const *");
   arg1 = (char *)lua_tostring(L, 1);
   lw_null_printf((char const *)arg1,arg2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwlog_init(lua_State* L) {
+  int SWIG_arg = 0;
+  
+  SWIG_check_num_args("lwlog_init",0,0)
+  lwlog_init();
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwlog_destroy(lua_State* L) {
+  int SWIG_arg = 0;
+  
+  SWIG_check_num_args("lwlog_destroy",0,0)
+  lwlog_destroy();
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwlog_lock(lua_State* L) {
+  int SWIG_arg = 0;
+  
+  SWIG_check_num_args("lwlog_lock",0,0)
+  lwlog_lock();
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwlog_unlock(lua_State* L) {
+  int SWIG_arg = 0;
+  
+  SWIG_check_num_args("lwlog_unlock",0,0)
+  lwlog_unlock();
   
   return SWIG_arg;
   
@@ -73528,7 +73614,7 @@ static int _wrap_LWTCP_html_response_set(lua_State* L) {
   
   SWIG_check_num_args("_LWTCP::html_response",2,2)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTCP::html_response",1,"struct _LWTCP *");
-  if(!SWIG_lua_isnilstring(L,2)) SWIG_fail_arg("_LWTCP::html_response",2,"char [1024*10]");
+  if(!SWIG_lua_isnilstring(L,2)) SWIG_fail_arg("_LWTCP::html_response",2,"char [(1024*1024)]");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTCP,0))){
     SWIG_fail_ptr("LWTCP_html_response_set",1,SWIGTYPE_p__LWTCP);
@@ -73537,8 +73623,8 @@ static int _wrap_LWTCP_html_response_set(lua_State* L) {
   arg2 = (char *)lua_tostring(L, 2);
   {
     if(arg2) {
-      strncpy((char*)arg1->html_response, (const char *)arg2, 1024*10-1);
-      arg1->html_response[1024*10-1] = 0;
+      strncpy((char*)arg1->html_response, (const char *)arg2, (1024*1024)-1);
+      arg1->html_response[(1024*1024)-1] = 0;
     } else {
       arg1->html_response[0] = 0;
     }
@@ -73585,7 +73671,7 @@ static int _wrap_LWTCP_html_body_set(lua_State* L) {
   
   SWIG_check_num_args("_LWTCP::html_body",2,2)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTCP::html_body",1,"struct _LWTCP *");
-  if(!SWIG_lua_isnilstring(L,2)) SWIG_fail_arg("_LWTCP::html_body",2,"char [1024*100]");
+  if(!SWIG_lua_isnilstring(L,2)) SWIG_fail_arg("_LWTCP::html_body",2,"char [(1024*1024)]");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTCP,0))){
     SWIG_fail_ptr("LWTCP_html_body_set",1,SWIGTYPE_p__LWTCP);
@@ -73594,8 +73680,8 @@ static int _wrap_LWTCP_html_body_set(lua_State* L) {
   arg2 = (char *)lua_tostring(L, 2);
   {
     if(arg2) {
-      strncpy((char*)arg1->html_body, (const char *)arg2, 1024*100-1);
-      arg1->html_body[1024*100-1] = 0;
+      strncpy((char*)arg1->html_body, (const char *)arg2, (1024*1024)-1);
+      arg1->html_body[(1024*1024)-1] = 0;
     } else {
       arg1->html_body[0] = 0;
     }
@@ -73624,6 +73710,63 @@ static int _wrap_LWTCP_html_body_get(lua_State* L) {
   }
   
   result = (char *)(char *) ((arg1)->html_body);
+  lua_pushstring(L,(const char *)result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_LWTCP_html_body_escaped_set(lua_State* L) {
+  int SWIG_arg = 0;
+  struct _LWTCP *arg1 = (struct _LWTCP *) 0 ;
+  char *arg2 ;
+  
+  SWIG_check_num_args("_LWTCP::html_body_escaped",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTCP::html_body_escaped",1,"struct _LWTCP *");
+  if(!SWIG_lua_isnilstring(L,2)) SWIG_fail_arg("_LWTCP::html_body_escaped",2,"char [(1024*1024)]");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTCP,0))){
+    SWIG_fail_ptr("LWTCP_html_body_escaped_set",1,SWIGTYPE_p__LWTCP);
+  }
+  
+  arg2 = (char *)lua_tostring(L, 2);
+  {
+    if(arg2) {
+      strncpy((char*)arg1->html_body_escaped, (const char *)arg2, (1024*1024)-1);
+      arg1->html_body_escaped[(1024*1024)-1] = 0;
+    } else {
+      arg1->html_body_escaped[0] = 0;
+    }
+  }
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_LWTCP_html_body_escaped_get(lua_State* L) {
+  int SWIG_arg = 0;
+  struct _LWTCP *arg1 = (struct _LWTCP *) 0 ;
+  char *result = 0 ;
+  
+  SWIG_check_num_args("_LWTCP::html_body_escaped",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWTCP::html_body_escaped",1,"struct _LWTCP *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTCP,0))){
+    SWIG_fail_ptr("LWTCP_html_body_escaped_get",1,SWIGTYPE_p__LWTCP);
+  }
+  
+  result = (char *)(char *) ((arg1)->html_body_escaped);
   lua_pushstring(L,(const char *)result); SWIG_arg++;
   return SWIG_arg;
   
@@ -73785,6 +73928,7 @@ static swig_lua_attribute swig_LWTCP_attributes[] = {
     { "on_leaderboard_packet", _wrap_LWTCP_on_leaderboard_packet_get, _wrap_LWTCP_on_leaderboard_packet_set },
     { "html_response", _wrap_LWTCP_html_response_get, _wrap_LWTCP_html_response_set },
     { "html_body", _wrap_LWTCP_html_body_get, _wrap_LWTCP_html_body_set },
+    { "html_body_escaped", _wrap_LWTCP_html_body_escaped_get, _wrap_LWTCP_html_body_escaped_set },
     { "html_body_parse_start", _wrap_LWTCP_html_body_parse_start_get, _wrap_LWTCP_html_body_parse_start_set },
     { "html_wait", _wrap_LWTCP_html_wait_get, _wrap_LWTCP_html_wait_set },
     {0,0,0}
@@ -73871,13 +74015,13 @@ fail:
 
 static int _wrap_destroy_tcp(lua_State* L) {
   int SWIG_arg = 0;
-  LWTCP **arg1 = (LWTCP **) 0 ;
+  LWTCP *arg1 = (LWTCP *) 0 ;
   
   SWIG_check_num_args("destroy_tcp",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("destroy_tcp",1,"LWTCP **");
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("destroy_tcp",1,"LWTCP *");
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_p__LWTCP,0))){
-    SWIG_fail_ptr("destroy_tcp",1,SWIGTYPE_p_p__LWTCP);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWTCP,0))){
+    SWIG_fail_ptr("destroy_tcp",1,SWIGTYPE_p__LWTCP);
   }
   
   destroy_tcp(arg1);
@@ -111072,8 +111216,9 @@ static swig_lua_const_info swig_SwigModule_constants[]= {
     {SWIG_LUA_CONSTTAB_INT("LGS_SPLASH", LGS_SPLASH)},
     {SWIG_LUA_CONSTTAB_INT("LGS_LEADERBOARD", LGS_LEADERBOARD)},
     {SWIG_LUA_CONSTTAB_INT("LGS_REMTEX", LGS_REMTEX)},
-    {SWIG_LUA_CONSTTAB_STRING("__LW_STRING_LINE__", "61")},
-    {SWIG_LUA_CONSTTAB_STRING("LWLOGPOS", "src\\lwlog.h(62): ")},
+    {SWIG_LUA_CONSTTAB_INT("LGS_GAZZA", LGS_GAZZA)},
+    {SWIG_LUA_CONSTTAB_STRING("__LW_STRING_LINE__", "63")},
+    {SWIG_LUA_CONSTTAB_STRING("LWLOGPOS", "src\\lwlog.h(64): ")},
     {SWIG_LUA_CONSTTAB_INT("LPT_GRID", LPT_GRID)},
     {SWIG_LUA_CONSTTAB_INT("LPT_SOLID_RED", LPT_SOLID_RED)},
     {SWIG_LUA_CONSTTAB_INT("LPT_SOLID_GREEN", LPT_SOLID_GREEN)},
@@ -111327,6 +111472,7 @@ static swig_lua_const_info swig_SwigModule_constants[]= {
     {SWIG_LUA_CONSTTAB_INT("LPGCF_HIDE_DASH_BUTTON", LPGCF_HIDE_DASH_BUTTON)},
     {SWIG_LUA_CONSTTAB_INT("LPGCF_HIDE_PULL_BUTTON", LPGCF_HIDE_PULL_BUTTON)},
     {SWIG_LUA_CONSTTAB_INT("LW_TCP_BUFLEN", (1024*8))},
+    {SWIG_LUA_CONSTTAB_INT("LW_TCP_HTTP_RECEIVE_BUFLEN", (1024*1024))},
     {SWIG_LUA_CONSTTAB_INT("LUS_INIT", LUS_INIT)},
     {SWIG_LUA_CONSTTAB_INT("LUS_GETTOKEN", LUS_GETTOKEN)},
     {SWIG_LUA_CONSTTAB_INT("LUS_QUEUE", LUS_QUEUE)},
@@ -111739,6 +111885,7 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "change_to_battle", _wrap_change_to_battle},
     { "change_to_font_test", _wrap_change_to_font_test},
     { "change_to_ttl", _wrap_change_to_ttl},
+    { "change_to_gazza", _wrap_change_to_gazza},
     { "change_to_admin", _wrap_change_to_admin},
     { "change_to_battle_result", _wrap_change_to_battle_result},
     { "change_to_skin", _wrap_change_to_skin},
@@ -111809,6 +111956,10 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "lwfbo_postrender", _wrap_lwfbo_postrender},
     { "lazy_glUseProgram", _wrap_lazy_glUseProgram},
     { "lw_null_printf", _wrap_lw_null_printf},
+    { "lwlog_init", _wrap_lwlog_init},
+    { "lwlog_destroy", _wrap_lwlog_destroy},
+    { "lwlog_lock", _wrap_lwlog_lock},
+    { "lwlog_unlock", _wrap_lwlog_unlock},
     { "lw_create_shader_program", _wrap_lw_create_shader_program},
     { "lw_create_all_shader_program", _wrap_lw_create_all_shader_program},
     { "lw_delete_all_shader_program", _wrap_lw_delete_all_shader_program},
@@ -112777,7 +112928,6 @@ static swig_type_info _swigt__p_p__LWDELTATIME = {"_p_p__LWDELTATIME", "struct _
 static swig_type_info _swigt__p_p__LWPS = {"_p_p__LWPS", "struct _LWPS **|LWPS **", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_p__LWPUCKGAME = {"_p_p__LWPUCKGAME", "struct _LWPUCKGAME **|LWPUCKGAME **", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_p__LWSKILL = {"_p_p__LWSKILL", "struct _LWSKILL **|LWSKILL **", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_p__LWTCP = {"_p_p__LWTCP", "struct _LWTCP **|LWTCP **", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_p__LWTTL = {"_p_p__LWTTL", "struct _LWTTL **|LWTTL **", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_p__kvmsg = {"_p_p__kvmsg", "kvmsg_t **|struct _kvmsg **", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_p_char = {"_p_p_char", "char **", 0, 0, (void*)0, 0};
@@ -113066,7 +113216,6 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_p__LWPS,
   &_swigt__p_p__LWPUCKGAME,
   &_swigt__p_p__LWSKILL,
-  &_swigt__p_p__LWTCP,
   &_swigt__p_p__LWTTL,
   &_swigt__p_p__kvmsg,
   &_swigt__p_p_char,
@@ -113355,7 +113504,6 @@ static swig_cast_info _swigc__p_p__LWDELTATIME[] = {  {&_swigt__p_p__LWDELTATIME
 static swig_cast_info _swigc__p_p__LWPS[] = {  {&_swigt__p_p__LWPS, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p__LWPUCKGAME[] = {  {&_swigt__p_p__LWPUCKGAME, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p__LWSKILL[] = {  {&_swigt__p_p__LWSKILL, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_p__LWTCP[] = {  {&_swigt__p_p__LWTCP, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p__LWTTL[] = {  {&_swigt__p_p__LWTTL, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p__kvmsg[] = {  {&_swigt__p_p__kvmsg, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_char[] = {  {&_swigt__p_p_char, 0, 0, 0},{0, 0, 0, 0}};
@@ -113644,7 +113792,6 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_p__LWPS,
   _swigc__p_p__LWPUCKGAME,
   _swigc__p_p__LWSKILL,
-  _swigc__p_p__LWTCP,
   _swigc__p_p__LWTTL,
   _swigc__p_p__kvmsg,
   _swigc__p_p_char,

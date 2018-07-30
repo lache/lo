@@ -166,12 +166,19 @@ LWTCP* new_tcp(LWCONTEXT* pLwc,
     return tcp;
 }
 
-void destroy_tcp(LWTCP** tcp) {
-    if (*tcp) {
-        freeaddrinfo((*tcp)->result);
-        free(*tcp);
-        *tcp = 0;
-    }
+void destroy_tcp(LWTCP* tcp) {
+    if (tcp) {
+		if (shutdown(tcp->connect_socket, SD_BOTH)) {
+			LOGE("shutdown() on socket failed");
+		}
+		if (closesocket(tcp->connect_socket)) {
+			LOGE("closesocket() on socket failed");
+		}
+        freeaddrinfo(tcp->result);
+        free(tcp);
+	} else {
+		LOGE("NULL tcp cannot be destroyed.");
+	}
 }
 
 void tcp_update(LWTCP* tcp) {

@@ -30,12 +30,12 @@ LWUDP* new_udp() {
     memset(udp, 0, sizeof(LWUDP));
     udp->slen = sizeof(udp->si_other);
 #if LW_PLATFORM_WIN32
-    LOGI("Initialising Winsock...");
+    LOGI("Initialising WinSock...");
     if (WSAStartup(MAKEWORD(2, 2), &udp->wsa) != 0) {
         LOGE("Failed. Error Code : %d", WSAGetLastError());
         exit(EXIT_FAILURE);
     }
-    LOGI("Initialised.\n");
+    LOGI("WinSock Initialised.");
 #endif
 
     //create socket

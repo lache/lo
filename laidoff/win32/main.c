@@ -122,6 +122,7 @@ void test_main_bundle_path(const char* filename);
 #endif
 
 int main(int argc, char* argv[]) {
+	lwlog_init();
     LOGI("LAIDOFF: Greetings.");
 
     while (!directory_exists("assets") && LwChangeDirectory("..")) {
@@ -303,6 +304,8 @@ int main(int argc, char* argv[]) {
     lw_on_destroy(pLwc);
 
     LOGI("LAIDOFF: Goodbye.");
+
+	lwlog_destroy();
 
     exit(EXIT_SUCCESS);
 }

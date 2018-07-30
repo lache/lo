@@ -6,26 +6,34 @@ local c = lo.script_context()
 lo.htmlui_set_online(c.htmlui, 0)
 print('GAZZA ONLINE!!!!')
 
+local player_guid = ''
+local gazza_header = {}
+
+if c.tcp_ttl ~= nil then
+    lo.destroy_tcp(c.tcp_ttl);
+    c.tcp_ttl = nil;
+end
+
 if c.tcp_ttl == nil then
     --lo.lw_new_tcp_ttl_custom(c, '54.175.243.215', '8000', 8000)
     lo.lw_new_tcp_ttl_custom(c, '127.0.0.1', '8000', 8000)
 end
 
-function gazza_select_user(target_guid)
+local function gazza_select_user(target_guid)
     print('target guid: ' .. target_guid)
     gazza_add_header('TargetGuid', target_guid)
     lo.htmlui_execute_anchor_click(c.htmlui, string.format('/act'))
     lo.htmlui_set_refresh_html_body(c.htmlui, 1)
 end
 
-function gazza_act(act_id)
+local function gazza_act(act_id)
     print('gazza_act: ' .. act_id)
     gazza_add_header('Action', act_id)
     lo.htmlui_execute_anchor_click(c.htmlui, string.format('/act'))
     lo.htmlui_set_refresh_html_body(c.htmlui, 1)
 end
 
-function gazza_add_header(key, value)
+local function gazza_add_header(key, value)
     print('[ui-select] key:'..key..',value:'..value)
     gazza_header[key] = value
     print('=== gazza_header ===')
@@ -40,8 +48,37 @@ function http_header()
     return r
 end
 
+local char_to_hex = function(c)
+  return string.format("%%%02X", string.byte(c))
+end
+
+local function urlencode(url)
+  if url == nil then
+    return
+  end
+  url = url:gsub("\n", "\r\n")
+  url = url:gsub("([^%w ])", char_to_hex)
+  url = url:gsub(" ", "+")
+  return url
+end
+
+local hex_to_char = function(x)
+  return string.char(tonumber(x, 16))
+end
+
+local urldecode = function(url)
+  if url == nil then
+    return
+  end
+  url = url:gsub("+", " ")
+  url = url:gsub("%%(%x%x)", hex_to_char)
+  return url
+end
+
 function on_nickname_change(nickname)
     print('on_nickname_change: ' .. nickname)
+    nickname = urlencode(nickname)
+    print('on_nickname_change (url-encoded): ' .. nickname)
     gazza_add_header('Nickname', nickname)
     lo.htmlui_execute_anchor_click(c.htmlui, string.format('/register'))
     start_coro(function()
@@ -54,21 +91,10 @@ function on_nickname_change(nickname)
     end)
 end
 
-function unescape(t)
-    local text = t
-    print('unescape before: '..text)
-  for uchar in string.gmatch(text, "\\u([0-9a-f][0-9a-f][0-9a-f][0-9a-f])") do
-    text = text:gsub("\\u"..uchar, utf8.char("0x"..uchar))
-  end
-  print('unescape result: '..text)
-  return text
-end
-
-local player_guid = ''
-
 function on_json_body(json_body)
-    json_body = unescape(json_body)
-    --print('on_json_body: ' .. json_body)
+    print('on_json_body (original): ' .. json_body)
+    --json_body = unescape(json_body)
+    
     local jb = json.parse(json_body)
     print('Turn: '..jb.turn)
     if jb.guid then
@@ -90,11 +116,11 @@ function on_json_body(json_body)
             local portrait = string.format('atlas/captain/%02d.png', portrait_number)
 
             if user_guid == jb['selected-target'] then
-                target_nickname = jb['user'..i..'-nickname']
+                target_nickname = urldecode(jb['user'..i..'-nickname'])
             end
 
             if user_guid == player_guid then
-                lo.htmlui_set_loop_key_value(c.htmlui, player_loop_key, 'user_nickname', jb['user'..i..'-nickname'])
+                lo.htmlui_set_loop_key_value(c.htmlui, player_loop_key, 'user_nickname', urldecode(jb['user'..i..'-nickname']))
                 lo.htmlui_set_loop_key_value(c.htmlui, player_loop_key, 'user_portrait', portrait)
                 lo.htmlui_set_loop_key_value(c.htmlui, player_loop_key, 'user_hp', jb['user'..i..'-hp'])
                 lo.htmlui_set_loop_key_value(c.htmlui, player_loop_key, 'user_mp', jb['user'..i..'-mp'])
@@ -106,7 +132,7 @@ function on_json_body(json_body)
                 --print('MP: ' .. jb['user'..i..'-mp'])
                 local scr = 'script:gazza_select_user(\''..user_guid..'\')'
                 lo.htmlui_set_loop_key_value(c.htmlui, user_loop_key, 'user_anchor', scr)
-                lo.htmlui_set_loop_key_value(c.htmlui, user_loop_key, 'user_nickname', jb['user'..i..'-nickname'])
+                lo.htmlui_set_loop_key_value(c.htmlui, user_loop_key, 'user_nickname', urldecode(jb['user'..i..'-nickname']))
                 lo.htmlui_set_loop_key_value(c.htmlui, user_loop_key, 'user_portrait', portrait)
                 lo.htmlui_set_loop_key_value(c.htmlui, user_loop_key, 'user_hp', jb['user'..i..'-hp'])
                 lo.htmlui_set_loop_key_value(c.htmlui, user_loop_key, 'user_mp', jb['user'..i..'-mp'])

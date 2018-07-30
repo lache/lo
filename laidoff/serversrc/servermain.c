@@ -903,7 +903,8 @@ int main(int argc, char* argv[]) {
 #if !LW_PLATFORM_WIN32
 #pragma clang diagnostic pop
 #endif
-    destroy_tcp(&reward_service);
+    destroy_tcp(reward_service);
+	reward_service = 0;
     return 0;
 }
 

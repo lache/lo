@@ -277,6 +277,7 @@ if (NOT SERVER_ONLY)
             ${WINXAUDIO2}
             ${WINSOCK2}
 		lz4_static
+        tinycthread
             )
 endif (NOT SERVER_ONLY)
 
@@ -291,6 +292,8 @@ add_executable(laidoff-server
         src/numcomp.h
         src/numcomp_puck_game.c
         src/numcomp_puck_game.h
+        src/lwlog.c
+        src/lwlog.h
         ${LAIDOFF_SERVER_LIB}
         ${SERVER_WIN32_DEPS}
         ${ODE_LIB}

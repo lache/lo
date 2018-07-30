@@ -11,10 +11,11 @@ static inline void lw_null_printf(const char* x, ...) {}
 #include <stdio.h>
 #include <windows.h>
 #define LOGV(...) //((void)printf(__VA_ARGS__))
-#define LOGD(...) (void)printf(__VA_ARGS__);(void)printf("\n")
-#define LOGI(...) (void)printf(__VA_ARGS__);(void)printf("\n")
-#define LOGW(...) (void)printf(__VA_ARGS__);(void)printf("\n")
+#define LOGD(...) lwlog_lock();(void)printf(__VA_ARGS__);(void)printf("\n");lwlog_unlock()
+#define LOGI(...) lwlog_lock();(void)printf(__VA_ARGS__);(void)printf("\n");lwlog_unlock()
+#define LOGW(...) lwlog_lock();(void)printf(__VA_ARGS__);(void)printf("\n");lwlog_unlock()
 #define LOGE(...) { \
+lwlog_lock(); \
 HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); \
 CONSOLE_SCREEN_BUFFER_INFO consoleInfo; \
 WORD saved_attributes; \
@@ -24,6 +25,7 @@ SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_INTENSITY); \
 (void)printf(__VA_ARGS__); \
 (void)printf("\n"); \
 SetConsoleTextAttribute(hConsole, saved_attributes); \
+lwlog_unlock(); \
 }
 #define LOGF(...) LOGE(__VA_ARGS__);abort()
 #define LOGA(...) (void)printf(__VA_ARGS__);(void)printf("\n")
@@ -68,3 +70,14 @@ SetConsoleTextAttribute(hConsole, saved_attributes); \
 #define LOGEP(...) LOGE(LWLOGPOS __VA_ARGS__)
 #define LOGFP(...) LOGF(LWLOGPOS __VA_ARGS__)
 #define LOGAP(...) LOGA(LWLOGPOS __VA_ARGS__)
+
+#ifdef __cplusplus
+extern "C" {;
+#endif
+void lwlog_init();
+void lwlog_destroy();
+void lwlog_lock();
+void lwlog_unlock();
+#ifdef __cplusplus
+}
+#endif

@@ -90,7 +90,7 @@ LWTCP* new_tcp(LWCONTEXT* pLwc,
                const LWHOSTADDR* host_addr,
                LWTCP_ON_CONNECT on_connect,
                LWTCP_ON_RECV_PACKETS on_recv_packets);
-void destroy_tcp(LWTCP** tcp);
+void destroy_tcp(LWTCP* tcp);
 void tcp_update(LWTCP* tcp);
 int tcp_connect(LWTCP* tcp);
 int tcp_send_sendbuf(LWTCP* tcp, int s);
