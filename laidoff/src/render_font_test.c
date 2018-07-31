@@ -12,10 +12,6 @@
 #include "lwlog.h"
 #include "lwlnglat.h"
 
-#define WATER_COLOR_R (0 / 255.f)
-#define WATER_COLOR_G (94 / 255.f)
-#define WATER_COLOR_B (190 / 255.f)
-
 static void lwc_prerender_font_test_fbo(const LWCONTEXT* pLwc) {
     glBindFramebuffer(GL_FRAMEBUFFER, pLwc->shared_fbo.fbo);
     glDisable(GL_DEPTH_TEST);
@@ -156,5 +152,12 @@ void lwc_render_font_test(const LWCONTEXT* pLwc) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     // render FBO
-    render_solid_box_ui_lvt_flip_y_uv(pLwc, 0, 0, 2 * pLwc->viewport_aspect_ratio, 2, pLwc->shared_fbo.color_tex, LVT_CENTER_CENTER_ANCHORED_SQUARE, 1);
+    render_solid_box_ui_lvt_flip_y_uv(pLwc,
+									  0,
+									  0,
+									  2 * pLwc->viewport_rt_x,
+									  2 * pLwc->viewport_rt_y,
+									  pLwc->shared_fbo.color_tex,
+									  LVT_CENTER_CENTER_ANCHORED_SQUARE,
+									  1);
 }

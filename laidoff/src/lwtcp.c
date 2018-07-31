@@ -172,6 +172,10 @@ void destroy_tcp(LWTCP* tcp) {
 		if (shutdown(tcp->connect_socket, SD_BOTH)) {
 			LOGE("shutdown() on socket failed");
 		}
+		struct linger ling;
+		ling.l_onoff = 1;
+		ling.l_linger = 0;
+		setsockopt(tcp->connect_socket, SOL_SOCKET, SO_LINGER, (const char*)&ling, sizeof(ling));
 		if (closesocket(tcp->connect_socket)) {
 			LOGE("closesocket() on socket failed");
 		}

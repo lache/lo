@@ -58,7 +58,7 @@ void lw_trigger_mouse_press(LWCONTEXT* pLwc, float nx, float ny, int pointer_id)
     float y = ny;
     lw_convert_touch_coord_to_ui_coord(pLwc, &x, &y);
 
-    LOGI("mouse press ui coord x=%f, y=%f", x, y);
+    LOGIx("mouse press ui coord x=%f, y=%f", x, y);
 
     // Touch right top corner of the screen
     if (pLwc->game_scene != LGS_ADMIN
