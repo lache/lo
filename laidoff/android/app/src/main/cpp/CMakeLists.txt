@@ -135,3 +135,5 @@ target_link_libraries(native-activity
 					  litehtml
                       lz4_static
                       tinycthread)
+
+                      

@@ -29,6 +29,7 @@
 #include "rmsg.h"
 #include "htmlui.h"
 #include "remtex.h"
+#include "render_dynamic_vbo.h"
 
 void toggle_font_texture_test_mode(LWCONTEXT* pLwc);
 void lw_request_remote_notification_device_token(LWCONTEXT* pLwc);
@@ -80,6 +81,11 @@ void change_to_gazza(LWCONTEXT* pLwc) {
     lwfbo_init(&pLwc->shared_fbo, pLwc->window_width, pLwc->window_height);
     // Render font FBO using render-to-texture
     lwc_render_ttl_fbo(pLwc, ASSETS_BASE_PATH "html" PATH_SEPARATOR "GazzaHome.html");
+}
+
+void change_to_dynamic_vbo(LWCONTEXT* pLwc) {
+    pLwc->next_game_scene = LGS_DYNAMIC_VBO;
+    lwc_init_dynamic_vbo(pLwc);
 }
 
 void change_to_admin(LWCONTEXT* pLwc) {
@@ -709,6 +715,7 @@ void reset_runtime_context(LWCONTEXT* pLwc) {
         { LWU("Font"), change_to_font_test },
         { LWU("TTL"), change_to_ttl },
         { LWU("Gazza!!!"), change_to_gazza },
+        { LWU("Dynamic VBO"), change_to_dynamic_vbo },
         { LWU("Runtime Reset"), reset_runtime_context_async },
         { LWU("Font Debug"), toggle_font_texture_test_mode },
         { LWU("UDP"), net_rtt_test },
@@ -855,7 +862,7 @@ void lwc_update(LWCONTEXT* pLwc, double delta_time) {
     if (pLwc->game_scene != LGS_PUCK_GAME) {
         remtex_update(pLwc->remtex, delta_time);
     }
-    
+
     if (pLwc->tcp) {
         tcp_update(pLwc->tcp);
     }
@@ -901,9 +908,9 @@ void lwc_update(LWCONTEXT* pLwc, double delta_time) {
     }
 
     if (pLwc->game_scene == LGS_FIELD
-		|| pLwc->game_scene == LGS_PUCK_GAME
-		|| pLwc->game_scene == LGS_TTL
-		|| pLwc->game_scene == LGS_GAZZA) {
+        || pLwc->game_scene == LGS_PUCK_GAME
+        || pLwc->game_scene == LGS_TTL
+        || pLwc->game_scene == LGS_GAZZA) {
         script_update(pLwc);
     }
 
@@ -926,18 +933,18 @@ void lwc_update(LWCONTEXT* pLwc, double delta_time) {
             //char nicknameMsg[256];
             //sprintf(nicknameMsg, "Changing nickname to %s...", lw_get_text_input());
             //show_sys_msg(pLwc->def_sys_msg, nicknameMsg);
-			if (pLwc->tcp) {
-				tcp_send_setnickname(pLwc->tcp, &pLwc->tcp->user_id, lw_get_text_input());
-			} else if (pLwc->tcp_ttl) {
-				// Gazza temporary code
-				char s[1024];
-				sprintf(s, "on_nickname_change('%s')", lw_get_text_input());
-				logic_emit_evalute_with_name_async(pLwc, s, strlen(s), s);
-				//tcp_send_setnickname(pLwc->tcp_ttl, &pLwc->tcp_ttl->user_id, lw_get_text_input());
-			} else {
-				LOGE("No tcp! (cannot set nickname)");
-			}
-			break;
+            if (pLwc->tcp) {
+                tcp_send_setnickname(pLwc->tcp, &pLwc->tcp->user_id, lw_get_text_input());
+            } else if (pLwc->tcp_ttl) {
+                // Gazza temporary code
+                char s[1024];
+                sprintf(s, "on_nickname_change('%s')", lw_get_text_input());
+                logic_emit_evalute_with_name_async(pLwc, s, strlen(s), s);
+                //tcp_send_setnickname(pLwc->tcp_ttl, &pLwc->tcp_ttl->user_id, lw_get_text_input());
+            } else {
+                LOGE("No tcp! (cannot set nickname)");
+            }
+            break;
         }
         case LITI_SERVER_ADDR:
         {
@@ -1099,10 +1106,10 @@ static void parse_countries(LWCONTEXT* pLwc, LWCOUNTRYARRAY* country_array, cons
             exit(-1);
         }
         LOGI("countries file: %s", conf_path);
-        
+
         int entry_count = t[0].size;
         LWCOUNTRY* country = (LWCOUNTRY*)calloc(entry_count, sizeof(LWCOUNTRY));
-        
+
         int string_count = 0;
         int entry_index = -1;
         for (int i = 1; i < token_count; i++) {
@@ -1369,11 +1376,11 @@ static void parse_conf(LWCONTEXT* pLwc) {
 
 static void s_logic_worker(zsock_t *pipe, void *args) {
     LWCONTEXT* pLwc = args;
-    
+
     parse_conf(pLwc);
     parse_atlas(pLwc);
     parse_countries(pLwc, &pLwc->country_array, ASSETS_BASE_PATH "ttldata" PATH_SEPARATOR "countries.json");
-    
+
     // Send 'worker ready' signal to parent thread
     zsock_signal(pipe, 0);
     LWTIMEPOINT last_time;
@@ -1397,7 +1404,7 @@ static void s_logic_worker(zsock_t *pipe, void *args) {
                         &pLwc->tcp_host_addr,
                         tcp_on_connect,
                         parse_recv_packets);*/
-    
+
     zloop_t* loop = zloop_new();
     pLwc->logic_loop = loop;
     logic_start_logic_update_job(pLwc);
@@ -1489,18 +1496,18 @@ void lw_new_tcp_ttl(LWCONTEXT* pLwc) {
 }
 
 void lw_new_tcp_ttl_custom(LWCONTEXT* pLwc, const char* host, const char* port_str, int port) {
-	if (pLwc->tcp_ttl == 0) {
-		LWHOSTADDR custom_tcp_ttl_host_addr;
-		strcpy(custom_tcp_ttl_host_addr.host, host);
-		custom_tcp_ttl_host_addr.host_resolved = 0;
-		strcpy(custom_tcp_ttl_host_addr.port_str, port_str);
-		custom_tcp_ttl_host_addr.port = port;
-		pLwc->tcp_ttl = new_tcp(pLwc,
-								pLwc->user_data_path,
-								&custom_tcp_ttl_host_addr,
-								tcp_ttl_on_connect,
-								parse_recv_packets);
-	} else {
-		LOGEP("tcp_ttl already set!");
-	}
+    if (pLwc->tcp_ttl == 0) {
+        LWHOSTADDR custom_tcp_ttl_host_addr;
+        strcpy(custom_tcp_ttl_host_addr.host, host);
+        custom_tcp_ttl_host_addr.host_resolved = 0;
+        strcpy(custom_tcp_ttl_host_addr.port_str, port_str);
+        custom_tcp_ttl_host_addr.port = port;
+        pLwc->tcp_ttl = new_tcp(pLwc,
+                                pLwc->user_data_path,
+                                &custom_tcp_ttl_host_addr,
+                                tcp_ttl_on_connect,
+                                parse_recv_packets);
+    } else {
+        LOGEP("tcp_ttl already set!");
+    }
 }

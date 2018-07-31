@@ -60,6 +60,7 @@
 #include "render_leaderboard.h"
 #include "render_remtex.h"
 #include "render_font_test.h"
+#include "render_dynamic_vbo.h"
 #include "lwfbo.h"
 // SWIG output file
 #include "lo_wrap.inl"
@@ -129,24 +130,24 @@ unsigned short swap_bytes(unsigned short aData) {
 
 unsigned int swap_4_bytes(unsigned int num) {
     return ((num >> 24) & 0xff) | // move byte 3 to byte 0
-    ((num << 8) & 0xff0000) | // move byte 1 to byte 2
-    ((num >> 8) & 0xff00) | // move byte 2 to byte 1
-    ((num << 24) & 0xff000000); // byte 0 to byte 3
+        ((num << 8) & 0xff0000) | // move byte 1 to byte 2
+        ((num >> 8) & 0xff00) | // move byte 2 to byte 1
+        ((num << 24) & 0xff000000); // byte 0 to byte 3
 }
 
 void set_texture_parameter_values(const LWCONTEXT* pLwc, float x, float y, float w, float h,
                                   float atlas_w, float atlas_h, int shader_index) {
-    
+
     const float offset[2] = {
         x / atlas_w,
         y / atlas_h,
     };
-    
+
     const float scale[2] = {
         w / atlas_w,
         h / atlas_h,
     };
-    
+
     glUniform2fv(pLwc->shader[shader_index].vuvoffset_location, 1, offset);
     glUniform2fv(pLwc->shader[shader_index].vuvscale_location, 1, scale);
 }
@@ -154,29 +155,29 @@ void set_texture_parameter_values(const LWCONTEXT* pLwc, float x, float y, float
 void
 set_texture_parameter(const LWCONTEXT* pLwc, LWENUM _LW_ATLAS_ENUM lae, LWENUM _LW_ATLAS_SPRITE las) {
     set_texture_parameter_values(
-                                 pLwc,
-                                 (float)pLwc->sprite_data[las].x,
-                                 (float)pLwc->sprite_data[las].y,
-                                 (float)pLwc->sprite_data[las].w,
-                                 (float)pLwc->sprite_data[las].h,
-                                 (float)pLwc->tex_atlas_width[lae],
-                                 (float)pLwc->tex_atlas_height[lae],
-                                 0
-                                 );
+        pLwc,
+        (float)pLwc->sprite_data[las].x,
+        (float)pLwc->sprite_data[las].y,
+        (float)pLwc->sprite_data[las].w,
+        (float)pLwc->sprite_data[las].h,
+        (float)pLwc->tex_atlas_width[lae],
+        (float)pLwc->tex_atlas_height[lae],
+        0
+    );
 }
 
 static void load_skin_vbo(LWCONTEXT* pLwc, const char *filename, LWVBO *pSvbo) {
     GLuint vbo = 0;
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    
+
     size_t mesh_file_size = 0;
     char *mesh_vbo_data = create_binary_from_file(filename, &mesh_file_size);
     glBufferData(GL_ARRAY_BUFFER, mesh_file_size, mesh_vbo_data, GL_STATIC_DRAW);
     release_binary(mesh_vbo_data);
-    
+
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    
+
     pSvbo->vertex_buffer = vbo;
     pSvbo->vertex_count = (int)(mesh_file_size / skin_stride_in_bytes);
 }
@@ -234,10 +235,10 @@ static void load_morph_vbo(LWCONTEXT* pLwc, const char *filename, LWVBO *pSvbo) 
 }
 
 static void init_vbo(LWCONTEXT* pLwc) {
-    
+
     // === STATIC MESHES ===
     //lw_load_all_vbo(pLwc);
-    
+
     // LVT_LEFT_TOP_ANCHORED_SQUARE,    LVT_CENTER_TOP_ANCHORED_SQUARE,     LVT_RIGHT_TOP_ANCHORED_SQUARE,
     // LVT_LEFT_CENTER_ANCHORED_SQUARE, LVT_CENTER_CENTER_ANCHORED_SQUARE,  LVT_RIGHT_CENTER_ANCHORED_SQUARE,
     // LVT_LEFT_BOTTOM_ANCHORED_SQUARE, LVT_CENTER_BOTTOM_ANCHORED_SQUARE,  LVT_RIGHT_BOTTOM_ANCHORED_SQUARE,
@@ -254,9 +255,9 @@ static void init_vbo(LWCONTEXT* pLwc) {
             square_vertices[r].x += anchored_square_offset[i][0];
             square_vertices[r].y += anchored_square_offset[i][1];
         }
-        
+
         const LW_VBO_TYPE lvt = LVT_LEFT_TOP_ANCHORED_SQUARE + i;
-        
+
         glGenBuffers(1, &pLwc->vertex_buffer[lvt].vertex_buffer);
         glBindBuffer(GL_ARRAY_BUFFER, pLwc->vertex_buffer[lvt].vertex_buffer);
         glBufferData(GL_ARRAY_BUFFER, sizeof(LWVERTEX) * VERTEX_COUNT_PER_ARRAY,
@@ -285,48 +286,48 @@ static void init_vbo(LWCONTEXT* pLwc) {
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
         pLwc->vertex_buffer[lvt].vertex_count = ARRAY_SIZE(vertices);
     }
-    
+
     // === SKIN VERTEX BUFFERS ===
-    
+
     // LSVT_TRIANGLE
     load_skin_vbo(pLwc, ASSETS_BASE_PATH "svbo" PATH_SEPARATOR "Triangle.svbo",
                   &pLwc->skin_vertex_buffer[LSVT_TRIANGLE]);
-    
+
     // LSVT_TREEPLANE
     load_skin_vbo(pLwc, ASSETS_BASE_PATH "svbo" PATH_SEPARATOR "TreePlane.svbo",
                   &pLwc->skin_vertex_buffer[LSVT_TREEPLANE]);
-    
+
     // LSVT_HUMAN
     load_skin_vbo(pLwc, ASSETS_BASE_PATH "svbo" PATH_SEPARATOR "Human.svbo",
                   &pLwc->skin_vertex_buffer[LSVT_HUMAN]);
-    
+
     // LSVT_DETACHPLANE
     load_skin_vbo(pLwc, ASSETS_BASE_PATH "svbo" PATH_SEPARATOR "DetachPlane.svbo",
                   &pLwc->skin_vertex_buffer[LSVT_DETACHPLANE]);
-    
+
     // LSVT_GUNTOWER
     load_skin_vbo(pLwc, ASSETS_BASE_PATH "svbo" PATH_SEPARATOR "guntower.svbo",
                   &pLwc->skin_vertex_buffer[LSVT_GUNTOWER]);
-    
+
     // LSVT_TURRET
     load_skin_vbo(pLwc, ASSETS_BASE_PATH "svbo" PATH_SEPARATOR "turret.svbo",
                   &pLwc->skin_vertex_buffer[LSVT_TURRET]);
-    
+
     // LSVT_CROSSBOW
     load_skin_vbo(pLwc, ASSETS_BASE_PATH "svbo" PATH_SEPARATOR "crossbow.svbo",
                   &pLwc->skin_vertex_buffer[LSVT_CROSSBOW]);
-    
+
     // LSVT_CATAPULT
     load_skin_vbo(pLwc, ASSETS_BASE_PATH "svbo" PATH_SEPARATOR "catapult.svbo",
                   &pLwc->skin_vertex_buffer[LSVT_CATAPULT]);
-    
+
     // LSVT_PYRO
     load_skin_vbo(pLwc, ASSETS_BASE_PATH "svbo" PATH_SEPARATOR "pyro.svbo",
                   &pLwc->skin_vertex_buffer[LSVT_PYRO]);
-    
+
     // === STATIC MESHES (FAN TYPE) ===
     load_fan_vbo(pLwc);
-    
+
     lwc_create_ui_vbo(pLwc);
 
     lwc_create_line_vbo(pLwc);
@@ -535,7 +536,7 @@ static void init_skin_vao(LWCONTEXT* pLwc, int shader_index) {
         glBindBuffer(GL_ARRAY_BUFFER, pLwc->skin_vertex_buffer[i].vertex_buffer);
         set_skin_vertex_attrib_pointer(pLwc, shader_index);
     }
-    
+
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 #endif
@@ -550,7 +551,7 @@ static void init_fan_vao(LWCONTEXT* pLwc, int shader_index) {
         glBindBuffer(GL_ARRAY_BUFFER, pLwc->fan_vertex_buffer[i].vertex_buffer);
         set_fan_vertex_attrib_pointer(pLwc, shader_index);
     }
-    
+
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 #endif
@@ -565,7 +566,7 @@ static void init_ps_vao(LWCONTEXT* pLwc, int shader_index) {
         glBindBuffer(GL_ARRAY_BUFFER, pLwc->particle_buffer2);
         set_ps_vertex_attrib_pointer(pLwc, shader_index);
     }
-    
+
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 #endif
@@ -665,17 +666,17 @@ static void init_gl_context(LWCONTEXT* pLwc) {
 unsigned long hash(const unsigned char *str) {
     unsigned long hash = 5381;
     int c;
-    
+
     while ((c = *str++))
         hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
-    
+
     return hash;
 }
 
 int get_tex_index_by_hash_key(const LWCONTEXT* pLwc, const char *hash_key) {
     if (hash_key[0] == 0) {
         return 0;
-    }   
+    }
     unsigned long h = hash((const unsigned char *)hash_key);
     for (int i = 0; i < MAX_TEX_ATLAS; i++) {
         if (pLwc->tex_atlas_hash[i] == h) {
@@ -736,7 +737,7 @@ void render_addr(const LWCONTEXT* pLwc) {
     sprintf(msg, "T:%s:%d / U:%s:%d",
             lw_tcp_addr(pLwc), lw_tcp_port(pLwc),
             lw_udp_addr(pLwc), lw_udp_port(pLwc)
-            );
+    );
     text_block.text = msg;
     text_block.text_bytelen = (int)strlen(text_block.text);
     text_block.begin_index = 0;
@@ -898,39 +899,39 @@ static void read_all_rmsgs(LWCONTEXT* pLwc) {
         // Process command here
         LWFIELDRENDERCOMMAND* cmd = zmq_msg_data(&rmsg);
         switch (cmd->cmdtype) {
-            case LRCT_SPAWN:
-                handle_rmsg_spawn(pLwc, cmd);
-                break;
-            case LRCT_ANIM:
-                handle_rmsg_anim(pLwc, cmd);
-                break;
-            case LRCT_DESPAWN:
-                handle_rmsg_despawn(pLwc, cmd);
-                break;
-            case LRCT_POS:
-                handle_rmsg_pos(pLwc, cmd);
-                break;
-            case LRCT_TURN:
-                handle_rmsg_turn(pLwc, cmd);
-                break;
-            case LRCT_RPARAMS:
-                handle_rmsg_rparams(pLwc, cmd);
-                break;
-            case LRCT_BULLETSPAWNHEIGHT:
-                handle_rmsg_bulletspawnheight(pLwc, cmd);
-                break;
-            case LRCT_QUITAPP:
-                handle_rmsg_quitapp(pLwc, cmd);
-                break;
-            case LRCT_LOADTEX:
-                handle_rmsg_loadtex(pLwc, cmd);
-                break;
-            case LRCT_STARTTEXTINPUTACTIVITY:
-                handle_rmsg_starttextinputactivity(pLwc, cmd);
-                break;
-            case LRCT_REDRAWUIFBO:
-                handle_rmsg_redrawuifbo(pLwc, cmd);
-                break;
+        case LRCT_SPAWN:
+            handle_rmsg_spawn(pLwc, cmd);
+            break;
+        case LRCT_ANIM:
+            handle_rmsg_anim(pLwc, cmd);
+            break;
+        case LRCT_DESPAWN:
+            handle_rmsg_despawn(pLwc, cmd);
+            break;
+        case LRCT_POS:
+            handle_rmsg_pos(pLwc, cmd);
+            break;
+        case LRCT_TURN:
+            handle_rmsg_turn(pLwc, cmd);
+            break;
+        case LRCT_RPARAMS:
+            handle_rmsg_rparams(pLwc, cmd);
+            break;
+        case LRCT_BULLETSPAWNHEIGHT:
+            handle_rmsg_bulletspawnheight(pLwc, cmd);
+            break;
+        case LRCT_QUITAPP:
+            handle_rmsg_quitapp(pLwc, cmd);
+            break;
+        case LRCT_LOADTEX:
+            handle_rmsg_loadtex(pLwc, cmd);
+            break;
+        case LRCT_STARTTEXTINPUTACTIVITY:
+            handle_rmsg_starttextinputactivity(pLwc, cmd);
+            break;
+        case LRCT_REDRAWUIFBO:
+            handle_rmsg_redrawuifbo(pLwc, cmd);
+            break;
         }
         zmq_msg_close(&rmsg);
     }
@@ -952,7 +953,7 @@ void slerp(quat qm, const quat qa, const quat qb, float t) {
     }
     // Calculate temporary values.
     float halfTheta = acosf(cosHalfTheta);
-    float sinHalfTheta = sqrtf(1.0f - cosHalfTheta*cosHalfTheta);
+    float sinHalfTheta = sqrtf(1.0f - cosHalfTheta * cosHalfTheta);
     // if theta = 180 degrees then result is not fully defined
     // we could rotate around any axis normal to qa or qb
     if (fabsf(sinHalfTheta) < 0.001f) { // fabs is floating point absolute
@@ -976,7 +977,7 @@ void linear_interpolate_state(LWPSTATE* p, LWPSTATE* state_buffer, int state_buf
     double sample1_diff = DBL_MAX;
     int sample2_idx = 0;
     double sample2_diff = DBL_MAX;
-    
+
     for (int i = 0; i < state_buffer_len; i++) {
         double d = state_buffer[i].update_tick - sample_update_tick;
         if (d >= 0) {
@@ -993,12 +994,12 @@ void linear_interpolate_state(LWPSTATE* p, LWPSTATE* state_buffer, int state_buf
     }
     if (sample1_idx != sample2_idx
         && state_buffer[sample1_idx].update_tick <= sample_update_tick && sample_update_tick <= state_buffer[sample2_idx].update_tick) {
-        
+
         int update_tick_diff = state_buffer[sample2_idx].update_tick - state_buffer[sample1_idx].update_tick;
         double dist = sample_update_tick - state_buffer[sample1_idx].update_tick;
-        
+
         double ratio = dist / update_tick_diff;
-        
+
         quat player_quat1, puck_quat1, target_quat1;
         quat_from_mat4x4_skin(player_quat1, state_buffer[sample1_idx].player_rot);
         quat_from_mat4x4_skin(puck_quat1, state_buffer[sample1_idx].puck_rot);
@@ -1031,7 +1032,7 @@ static void dequeue_puck_game_state_and_apply(LWCONTEXT* pLwc) {
         //LWPSTATE sampled_state;
         //linear_interpolate_state(&sampled_state, pLwc->udp->state_buffer, LW_STATE_RING_BUFFER_CAPACITY, sample_update_tick);
         //memcpy(&pLwc->puck_game_state, &sampled_state, sizeof(LWPSTATE));
-        
+
         // 'player' is currently playing player
         // 'target' is currently opponent player
         const int player_damage = pLwc->puck_game_state.bf.player_current_hp - new_state.bf.player_current_hp;
@@ -1143,13 +1144,13 @@ void lwc_prerender_mutable_context(LWCONTEXT* pLwc) {
     }
     if (pLwc->htmlui) {
         if (pLwc->game_scene == LGS_TTL
-			|| pLwc->game_scene == LGS_GAZZA
+            || pLwc->game_scene == LGS_GAZZA
             || (pLwc->game_scene == LGS_PUCK_GAME && pLwc->puck_game->show_html_ui)) {
             htmlui_update_on_render_thread(pLwc->htmlui);
         }
     }
     if (pLwc->game_scene == LGS_TTL) {
-        
+
     }
     if (pLwc->udp == 0 || pLwc->udp->ready == 0) {
         return;
@@ -1204,6 +1205,8 @@ void lwc_render(const LWCONTEXT* pLwc) {
         lwc_render_leaderboard(pLwc);
     } else if (pLwc->game_scene == LGS_REMTEX) {
         lwc_render_remtex(pLwc);
+    } else if (pLwc->game_scene == LGS_DYNAMIC_VBO) {
+        lwc_render_dynamic_vbo(pLwc);
     }
     // Rendering a system message
     render_sys_msg(pLwc, pLwc->def_sys_msg);
@@ -1339,23 +1342,23 @@ void load_pkm_hw_decoding(const char *tex_atlas_filename) {
         return;
     }
     LWPKM *pPkm = (LWPKM *)b;
-    
+
     GLenum error_enum;
-    
+
     short extended_width = swap_bytes(pPkm->extended_width);
     short extended_height = swap_bytes(pPkm->extended_height);
-    
+
     // TODO: iOS texture
 #if LW_SUPPORT_ETC1_HARDWARE_DECODING
     // calculate size of data with formula (extWidth / 4) * (extHeight / 4) * 8
     u32 dataLength = ((extended_width >> 2) * (extended_height >> 2)) << 3;
-    
+
     glCompressedTexImage2D(GL_TEXTURE_2D, 0, GL_ETC1_RGB8_OES, extended_width, extended_height, 0,
                            dataLength, b + sizeof(LWPKM));
 #else
     LWBITMAPCONTEXT bitmap_context;
     create_image(tex_atlas_filename, &bitmap_context, 0);
-    
+
     glTexImage2D(GL_TEXTURE_2D,
                  0,
                  GL_RGBA,
@@ -1368,22 +1371,22 @@ void load_pkm_hw_decoding(const char *tex_atlas_filename) {
     error_enum = glGetError();
     LOGI("glTexImage2D (ETC1 software decompression) result (%dx%d): %d", bitmap_context.width, bitmap_context.height,
          error_enum);
-    
+
     release_image(&bitmap_context);
 #endif
-    
+
     error_enum = glGetError();
     LOGI("glCompressedTexImage2D result (%dx%d): %d", extended_width, extended_height,
          error_enum);
-    
+
     release_binary(b);
 }
 
 void load_png_pkm_sw_decoding(LWCONTEXT* pLwc, int i) {
     LWBITMAPCONTEXT bitmap_context;
-    
+
     create_image(tex_atlas_filename[i], &bitmap_context, i);
-    
+
     if (bitmap_context.width > 0 && bitmap_context.height > 0) {
         glTexImage2D(GL_TEXTURE_2D,
                      0,
@@ -1397,13 +1400,13 @@ void load_png_pkm_sw_decoding(LWCONTEXT* pLwc, int i) {
         GLenum error_enum = glGetError();
         LOGI("glTexImage2D result (%dx%d): %d", bitmap_context.width, bitmap_context.height,
              error_enum);
-        
+
         release_image(&bitmap_context);
-        
+
         // all atlas sizes should be equal
         pLwc->tex_atlas_width[i] = bitmap_context.width;
         pLwc->tex_atlas_height[i] = bitmap_context.height;
-        
+
         glGenerateMipmap(GL_TEXTURE_2D);
         error_enum = glGetError();
         LOGI("glGenerateMipmap result: %d", error_enum);
@@ -1430,31 +1433,31 @@ void init_load_textures(LWCONTEXT* pLwc) {
 
 void load_test_font(LWCONTEXT* pLwc) {
     glGenTextures(MAX_TEX_FONT_ATLAS, pLwc->tex_font_atlas);
-    
+
     for (int i = 0; i < MAX_TEX_FONT_ATLAS; i++) {
         glBindTexture(GL_TEXTURE_2D, pLwc->tex_font_atlas[i]);
-        
+
         size_t file_size = 0;
         char *b = create_binary_from_file(tex_font_atlas_filename[i], &file_size);
         if (!b) {
             LOGE("load_test_font: create_binary_from_file null, filename %s", tex_font_atlas_filename[i]);
             continue;
         }
-        
+
         LOGI("load_test_font %s...", tex_font_atlas_filename[i]);
-        
+
         const TGAHEADER *tga_header = (const TGAHEADER *)b;
-        
+
         char *tex_data = (char *)malloc(tga_header->width * tga_header->height * 4);
         for (int j = 0; j < tga_header->width * tga_header->height; j++) {
             char v = *(b + sizeof(TGAHEADER) + j);
-            
+
             tex_data[4 * j + 0] = v;
             tex_data[4 * j + 1] = v;
             tex_data[4 * j + 2] = v;
             tex_data[4 * j + 3] = v;
         }
-        
+
         glTexImage2D(GL_TEXTURE_2D,
                      0,
                      GL_RGBA,
@@ -1464,19 +1467,19 @@ void load_test_font(LWCONTEXT* pLwc) {
                      GL_RGBA,
                      GL_UNSIGNED_BYTE,
                      tex_data);
-        
+
         free(tex_data);
-        
+
         GLenum error_enum = glGetError();
         LOGI("font glTexImage2D result (%dx%d): %d", tga_header->width, tga_header->height,
              error_enum);
         glGenerateMipmap(GL_TEXTURE_2D);
         error_enum = glGetError();
         LOGI("font glGenerateMipmap result: %d", error_enum);
-        
+
         release_binary(b);
     }
-    
+
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
@@ -1493,52 +1496,52 @@ void init_action(LWCONTEXT* pLwc) {
 }
 
 LWCONTEXT* lw_init_initial_size(int width, int height) {
-    
+
     init_ext_image_lib();
-    
+
     init_ext_sound_lib();
-    
+
     //test_image();
-    
+
     LWCONTEXT* pLwc = (LWCONTEXT *)calloc(1, sizeof(LWCONTEXT));
     pLwc->puck_game_stage_lvt = LVT_DONTCARE;
     pLwc->puck_game_stage_lae = LAE_DONTCARE;
     pLwc->control_flags = LCF_PUCK_GAME_DASH /*| LCF_PUCK_GAME_JUMP | LCF_PUCK_GAME_PULL*/;
-    
+
     pLwc->viewport_width = width;
     pLwc->viewport_height = height;
-    
+
     setlocale(LC_ALL, "");
 
     lw_calculate_all_tex_atlas_hash(pLwc);
-    
+
     init_gl_context(pLwc);
-    
+
     pLwc->def_sys_msg = init_sys_msg();
-    
+
     pLwc->update_dt = deltatime_new();
-    
+
     deltatime_set_to_now(pLwc->update_dt);
-    
+
     pLwc->render_dt = deltatime_new();
-    
+
     deltatime_set_to_now(pLwc->render_dt);
-    
+
     init_net(pLwc);
-    
+
     pLwc->mq = init_mq(logic_server_addr(pLwc->server_index), pLwc->def_sys_msg);
-    
+
     init_armature(pLwc);
     init_action(pLwc);
-    
+
     lwparabola_test();
-    
+
     lwcontext_set_update_frequency(pLwc, 125);
-    
+
     pLwc->puck_game = new_puck_game(lwcontext_update_frequency(pLwc), LPGM_SQUARE);
     puck_game_set_static_default_values_client(pLwc->puck_game);
     pLwc->puck_game->pLwc = pLwc;
-    
+
     float dir_pad_origin_x, dir_pad_origin_y;
     get_left_dir_pad_original_center(pLwc->viewport_aspect_ratio, &dir_pad_origin_x, &dir_pad_origin_y);
     dir_pad_init(&pLwc->left_dir_pad,
@@ -1700,24 +1703,24 @@ void lw_deinit(LWCONTEXT* pLwc) {
             pLwc->atlas_conf[i].count = 0;
         }
     }
-    
+
     for (int i = 0; i < LVT_COUNT; i++) {
         glDeleteBuffers(1, &pLwc->vertex_buffer[i].vertex_buffer);
     }
-    
+
     for (int i = 0; i < LFT_COUNT; i++) {
         glDeleteBuffers(1, &pLwc->fvertex_buffer[i].vertex_buffer);
     }
-    
+
     for (int i = 0; i < LFAT_COUNT; i++) {
         release_binary(pLwc->fanim[i].data);
         memset(&pLwc->fanim[i], 0, sizeof(pLwc->fanim[i]));
     }
-    
+
     for (int i = 0; i < LSVT_COUNT; i++) {
         glDeleteBuffers(1, &pLwc->skin_vertex_buffer[i].vertex_buffer);
     }
-    
+
     for (int i = 0; i < LFVT_COUNT; i++) {
         glDeleteBuffers(1, &pLwc->fan_vertex_buffer[i].vertex_buffer);
     }
@@ -1729,12 +1732,12 @@ void lw_deinit(LWCONTEXT* pLwc) {
     for (int i = 0; i < LMVT_COUNT; i++) {
         glDeleteBuffers(1, &pLwc->morph_vertex_buffer[i].vertex_buffer);
     }
-    
+
     glDeleteTextures(1, &pLwc->shared_fbo.color_tex);
     glDeleteTextures(MAX_TEX_ATLAS, pLwc->tex_atlas);
     glDeleteTextures(MAX_TEX_FONT_ATLAS, pLwc->tex_font_atlas);
     glDeleteTextures(MAX_TEX_PROGRAMMED, pLwc->tex_programmed);
-    
+
 #if LW_SUPPORT_VAO
     glDeleteVertexArrays(VERTEX_BUFFER_COUNT, pLwc->vao);
     glDeleteVertexArrays(LFT_COUNT, pLwc->fvao);
@@ -1744,27 +1747,27 @@ void lw_deinit(LWCONTEXT* pLwc) {
     glDeleteVertexArrays(PS0_VERTEX_BUFFER_COUNT, pLwc->ps0_vao);
     glDeleteVertexArrays(LINE_VERTEX_BUFFER_COUNT, pLwc->line_vao);
 #endif
-    
+
     lw_delete_all_shader_program(pLwc);
     lw_delete_all_vertex_shader(pLwc);
     lw_delete_all_frag_shader(pLwc);
-    
+
     for (int i = 0; i < LWAC_COUNT; i++) {
         unload_action(&pLwc->action[i]);
     }
-    
+
     for (int i = 0; i < LWAR_COUNT; i++) {
         unload_armature(&pLwc->armature[i]);
     }
-    
+
     deinit_mq(pLwc->mq);
-    
+
     unload_field(pLwc->field);
-    
+
     deinit_sys_msg(pLwc->def_sys_msg);
-    
+
     deltatime_destroy(&pLwc->update_dt);
-    
+
     delete_puck_game(&pLwc->puck_game);
 
     htmlui_destroy(&pLwc->htmlui);
@@ -1776,7 +1779,7 @@ void lw_deinit(LWCONTEXT* pLwc) {
     remtex_destroy(&pLwc->remtex);
 
     free(pLwc->country_array.first);
-    
+
     free(pLwc);
 }
 
