@@ -109,7 +109,6 @@ add_library(native-activity SHARED
     ${LUA_LIB}
     ${ODE_LIB}
     ${DETOUR_LIB}
-    tinycthread
 )
 
 target_include_directories(native-activity PRIVATE
@@ -134,4 +133,5 @@ target_link_libraries(native-activity
                       libzmq
                       czmq
 					  litehtml
-                      lz4_static)
+                      lz4_static
+                      tinycthread)
