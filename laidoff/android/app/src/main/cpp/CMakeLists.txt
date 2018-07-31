@@ -132,7 +132,7 @@ target_link_libraries(native-activity
                       log
                       libzmq
                       czmq
-					  litehtml
+                      litehtml
                       lz4_static
                       tinycthread)
 
