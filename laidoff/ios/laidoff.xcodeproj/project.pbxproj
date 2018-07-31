@@ -329,6 +329,10 @@
 		6C40DD9220F527F40055A782 /* ChatStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6C40DD9120F527F40055A782 /* ChatStoryboard.storyboard */; };
 		6C59053E207C60C500A14685 /* remtex.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C59053C207C60C400A14685 /* remtex.c */; };
 		6C59053F207C60C500A14685 /* render_remtex.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C59053D207C60C500A14685 /* render_remtex.c */; };
+		6C7C10FB21112C0C00245ACB /* render_gazza.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C7C10F321112C0B00245ACB /* render_gazza.c */; };
+		6C7C10FC21112C0C00245ACB /* render_dynamic_vbo.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C7C10F521112C0C00245ACB /* render_dynamic_vbo.c */; };
+		6C7C10FD21112C0C00245ACB /* lwlog.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C7C10F721112C0C00245ACB /* lwlog.c */; };
+		6C7C10FE21112C0C00245ACB /* render_tilemap.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C7C10FA21112C0C00245ACB /* render_tilemap.c */; };
 		6CA16CD81EA20B5600DB7AF0 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CA16CD71EA20B5600DB7AF0 /* main.m */; };
 		6CA16CDB1EA20B5600DB7AF0 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CA16CDA1EA20B5600DB7AF0 /* AppDelegate.m */; };
 		6CA16CDD1EA20B5600DB7AF0 /* Shader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 6CA16CDC1EA20B5600DB7AF0 /* Shader.fsh */; };
@@ -1153,6 +1157,15 @@
 		6C59053B207C60C400A14685 /* render_remtex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = render_remtex.h; sourceTree = "<group>"; };
 		6C59053C207C60C400A14685 /* remtex.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = remtex.c; sourceTree = "<group>"; };
 		6C59053D207C60C500A14685 /* render_remtex.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = render_remtex.c; sourceTree = "<group>"; };
+		6C7C10F221112C0B00245ACB /* render_gazza.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = render_gazza.h; sourceTree = "<group>"; };
+		6C7C10F321112C0B00245ACB /* render_gazza.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = render_gazza.c; sourceTree = "<group>"; };
+		6C7C10F421112C0C00245ACB /* render_tilemap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = render_tilemap.h; sourceTree = "<group>"; };
+		6C7C10F521112C0C00245ACB /* render_dynamic_vbo.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = render_dynamic_vbo.c; sourceTree = "<group>"; };
+		6C7C10F621112C0C00245ACB /* render_dynamic_vbo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = render_dynamic_vbo.h; sourceTree = "<group>"; };
+		6C7C10F721112C0C00245ACB /* lwlog.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lwlog.c; sourceTree = "<group>"; };
+		6C7C10F821112C0C00245ACB /* lwmutex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lwmutex.h; sourceTree = "<group>"; };
+		6C7C10F921112C0C00245ACB /* lwlnglat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lwlnglat.h; sourceTree = "<group>"; };
+		6C7C10FA21112C0C00245ACB /* render_tilemap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = render_tilemap.c; sourceTree = "<group>"; };
 		6CA16CD31EA20B5600DB7AF0 /* laidoff.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = laidoff.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6CA16CD71EA20B5600DB7AF0 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		6CA16CD91EA20B5600DB7AF0 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -2603,10 +2616,13 @@
 				6CC832D0205D50DA0031523A /* lwime.c */,
 				6CC83321205D50DA0031523A /* lwime.h */,
 				6CC832BD205D50DA0031523A /* lwkeyframe.h */,
+				6C7C10F921112C0C00245ACB /* lwlnglat.h */,
+				6C7C10F721112C0C00245ACB /* lwlog.c */,
 				6CC832DC205D50DA0031523A /* lwlog.h */,
 				6CC832F5205D50DA0031523A /* lwmacro.h */,
 				6CC832B5205D50DA0031523A /* lwmath.c */,
 				6CC83334205D50DA0031523A /* lwmath.h */,
+				6C7C10F821112C0C00245ACB /* lwmutex.h */,
 				6CC8326A205D50DA0031523A /* lwparabola.c */,
 				6CC832EB205D50DA0031523A /* lwparabola.h */,
 				6CC8329F205D50DA0031523A /* lwpkm.h */,
@@ -2685,12 +2701,16 @@
 				6CD6276220EF4B8F002A2164 /* render_command_container.h */,
 				6CC832E8205D50DA0031523A /* render_dialog.c */,
 				6CC83271205D50DA0031523A /* render_dialog.h */,
+				6C7C10F521112C0C00245ACB /* render_dynamic_vbo.c */,
+				6C7C10F621112C0C00245ACB /* render_dynamic_vbo.h */,
 				6CC83272205D50DA0031523A /* render_fan.c */,
 				6CC832E6205D50DA0031523A /* render_fan.h */,
 				6CC832CC205D50DA0031523A /* render_field.c */,
 				6CC8331D205D50DA0031523A /* render_field.h */,
 				6CC832E7205D50DA0031523A /* render_font_test.c */,
 				6CC83270205D50DA0031523A /* render_font_test.h */,
+				6C7C10F321112C0B00245ACB /* render_gazza.c */,
+				6C7C10F221112C0B00245ACB /* render_gazza.h */,
 				6CC832CF205D50DA0031523A /* render_leaderboard.c */,
 				6CC83324205D50DA0031523A /* render_leaderboard.h */,
 				3EF18865C9E87623A8107AC5 /* render_morph.c */,
@@ -2709,6 +2729,8 @@
 				6CC832ED205D50DA0031523A /* render_splash.h */,
 				6CC83286205D50DA0031523A /* render_text_block.c */,
 				6CC83303205D50DA0031523A /* render_text_block.h */,
+				6C7C10FA21112C0C00245ACB /* render_tilemap.c */,
+				6C7C10F421112C0C00245ACB /* render_tilemap.h */,
 				153809DC50A3E01320158089 /* render_ttl.c */,
 				6CD6276920EF4B90002A2164 /* render_ttl.h */,
 				6CC832B7205D50DA0031523A /* render_ui.c */,
@@ -2925,6 +2947,7 @@
 				5663736E1EBA52D4001DA3F4 /* odeou.cpp in Sources */,
 				6C295EBD204310700052999C /* el_div.cpp in Sources */,
 				56F188F21EC74DB60019312F /* sub.cpp in Sources */,
+				6C7C10FC21112C0C00245ACB /* render_dynamic_vbo.c in Sources */,
 				6C295ED2204310700052999C /* el_image.cpp in Sources */,
 				56F189091EC74DB60019312F /* xpub.cpp in Sources */,
 				6C295EB9204310700052999C /* el_space.cpp in Sources */,
@@ -2937,6 +2960,7 @@
 				56F188FF1EC74DB60019312F /* udp_engine.cpp in Sources */,
 				6CF70E3A20597A1D00F782C8 /* lz4frame.c in Sources */,
 				6CA16CDB1EA20B5600DB7AF0 /* AppDelegate.m in Sources */,
+				6C7C10FE21112C0C00245ACB /* render_tilemap.c in Sources */,
 				56F188D01EC74DB60019312F /* pgm_receiver.cpp in Sources */,
 				56F189AE1EC751950019312F /* zmonitor.c in Sources */,
 				566373401EBA52D4001DA3F4 /* collision_trimesh_ray.cpp in Sources */,
@@ -3112,6 +3136,7 @@
 				56F188ED1EC74DB60019312F /* socket_poller.cpp in Sources */,
 				56F188E61EC74DB60019312F /* router.cpp in Sources */,
 				56F188A71EC74DB60019312F /* client.cpp in Sources */,
+				6C7C10FD21112C0C00245ACB /* lwlog.c in Sources */,
 				6CA16D8B1EA210BB00DB7AF0 /* lfunc.c in Sources */,
 				6CFC5019206012360077E1B7 /* lwttl.c in Sources */,
 				6CC83389205D50DA0031523A /* sysmsg.c in Sources */,
@@ -3165,6 +3190,7 @@
 				56F189B61EC751950019312F /* zsock_option.inc in Sources */,
 				6C3F143920F897670021A1FD /* lwchat.c in Sources */,
 				56F189051EC74DB60019312F /* vmci.cpp in Sources */,
+				6C7C10FB21112C0C00245ACB /* render_gazza.c in Sources */,
 				56ED77B91EBB9C1C00FABA64 /* DetourNavMesh.cpp in Sources */,
 				566373531EBA52D4001DA3F4 /* dhinge.cpp in Sources */,
 				5663736A1EBA52D4001DA3F4 /* obstack.cpp in Sources */,

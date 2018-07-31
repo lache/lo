@@ -6,6 +6,8 @@
 #include "laidoff.h"
 #include "render_solid.h"
 #include "lwmacro.h"
+#include <stdlib.h>
+#include <string.h>
 
 static GLuint dynamic_vbo = 0;
 static GLuint dynamic_vao = 0;
@@ -42,7 +44,7 @@ void lwc_init_tilemap(LWCONTEXT* pLwc) {
             }
         }
 		glBufferData(GL_ARRAY_BUFFER, sizeof(square)*tile_count_x*tile_count_y, tilemap, GL_DYNAMIC_DRAW);
-        free(tilemap), tilemap = tilemap_cursor = 0;
+        (void)free(tilemap), tilemap = tilemap_cursor = 0;
 #if LW_SUPPORT_VAO
 		glGenVertexArrays(1, &dynamic_vao);
 		glBindVertexArray(dynamic_vao);
