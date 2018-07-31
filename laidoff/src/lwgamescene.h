@@ -18,4 +18,5 @@ typedef enum _LW_GAME_SCENE {
     LGS_REMTEX,
     LGS_GAZZA,
 	LGS_DYNAMIC_VBO,
+    LGS_TILEMAP,
 } LW_GAME_SCENE;

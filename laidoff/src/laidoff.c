@@ -61,6 +61,7 @@
 #include "render_remtex.h"
 #include "render_font_test.h"
 #include "render_dynamic_vbo.h"
+#include "render_tilemap.h"
 #include "lwfbo.h"
 // SWIG output file
 #include "lo_wrap.inl"
@@ -1207,6 +1208,8 @@ void lwc_render(const LWCONTEXT* pLwc) {
         lwc_render_remtex(pLwc);
     } else if (pLwc->game_scene == LGS_DYNAMIC_VBO) {
         lwc_render_dynamic_vbo(pLwc);
+    } else if (pLwc->game_scene == LGS_TILEMAP) {
+        lwc_render_tilemap(pLwc);
     }
     // Rendering a system message
     render_sys_msg(pLwc, pLwc->def_sys_msg);

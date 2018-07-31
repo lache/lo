@@ -30,6 +30,7 @@
 #include "htmlui.h"
 #include "remtex.h"
 #include "render_dynamic_vbo.h"
+#include "render_tilemap.h"
 
 void toggle_font_texture_test_mode(LWCONTEXT* pLwc);
 void lw_request_remote_notification_device_token(LWCONTEXT* pLwc);
@@ -86,6 +87,11 @@ void change_to_gazza(LWCONTEXT* pLwc) {
 void change_to_dynamic_vbo(LWCONTEXT* pLwc) {
     pLwc->next_game_scene = LGS_DYNAMIC_VBO;
     lwc_init_dynamic_vbo(pLwc);
+}
+
+void change_to_tilemap(LWCONTEXT* pLwc) {
+    pLwc->next_game_scene = LGS_TILEMAP;
+    lwc_init_tilemap(pLwc);
 }
 
 void change_to_admin(LWCONTEXT* pLwc) {
@@ -716,6 +722,7 @@ void reset_runtime_context(LWCONTEXT* pLwc) {
         { LWU("TTL"), change_to_ttl },
         { LWU("Gazza!!!"), change_to_gazza },
         { LWU("Dynamic VBO"), change_to_dynamic_vbo },
+        { LWU("Tilemap"), change_to_tilemap },
         { LWU("Runtime Reset"), reset_runtime_context_async },
         { LWU("Font Debug"), toggle_font_texture_test_mode },
         { LWU("UDP"), net_rtt_test },

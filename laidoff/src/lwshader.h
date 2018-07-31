@@ -25,6 +25,7 @@ typedef enum _LW_SHADER_TYPE {
 	LWST_DEFAULT_NORMAL_COLOR,
     LWST_LINE,
     LWST_MORPH,
+    LWST_TILEMAP,
 
 	LWST_COUNT,
 } LW_SHADER_TYPE;
@@ -54,6 +55,7 @@ static const LWSHADERFILENAME shader_filename[] = {
 	{ LWST_DEFAULT_NORMAL_COLOR,    "Default Normal Color Shader",  LWVS_DEFAULT_NORMAL_COLOR,	LWFS_DEFAULT_NORMAL_COLOR, },
     { LWST_LINE,                    "Line Shader",                  LWVS_LINE,                  LWFS_LINE, },
     { LWST_MORPH,                   "Morph Shader",                 LWVS_MORPH,                 LWFS_DEFAULT, },
+    { LWST_TILEMAP,                 "Tilemap Shader",               LWVS_TILEMAP,               LWFS_TILEMAP, },
 };
 LwStaticAssert(ARRAY_SIZE(shader_filename) == LWST_COUNT, "LWST_COUNT error");
 

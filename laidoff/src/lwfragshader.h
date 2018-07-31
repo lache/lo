@@ -22,6 +22,7 @@ typedef enum _LW_FRAG_SHADER {
     LWFS_DEFAULT_NORMAL,
 	LWFS_DEFAULT_NORMAL_COLOR,
     LWFS_LINE,
+    LWFS_TILEMAP,
 
     LWFS_COUNT,
 } LW_FRAG_SHADER;
@@ -42,6 +43,7 @@ static const char* frag_shader_filename[] = {
     ASSETS_BASE_PATH GLSL_DIR_NAME PATH_SEPARATOR "default-normal-frag.glsl",
 	ASSETS_BASE_PATH GLSL_DIR_NAME PATH_SEPARATOR "default-normal-color-frag.glsl",
     ASSETS_BASE_PATH GLSL_DIR_NAME PATH_SEPARATOR "line-frag.glsl",
+    ASSETS_BASE_PATH GLSL_DIR_NAME PATH_SEPARATOR "tilemap-frag.glsl",
 };
 LwStaticAssert(ARRAY_SIZE(frag_shader_filename) == LWFS_COUNT, "LWFS_COUNT error");
 

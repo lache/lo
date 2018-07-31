@@ -1,4 +1,4 @@
-#include "render_dynamic_vbo.h"
+#include "render_tilemap.h"
 #include "lwgl.h"
 #include <math.h>
 #include "lwcontext.h"
@@ -11,58 +11,71 @@ static GLuint dynamic_vbo = 0;
 static GLuint dynamic_vao = 0;
 static LWVERTEX square[] = {
 	//x     y     z  r  g  b  u  v  s  s
-	{ -1.f, -1.f, 0, 1, 0, 0, 0, 1, 0, 0 },
-	{ +1.f, -1.f, 0, 0, 1, 0, 1, 1, 0, 0 },
-	{ +1.f, +1.f, 0, 0, 0, 1, 1, 0, 0, 0 },
-	{ +1.f, +1.f, 0, 1, 0, 0, 1, 0, 0, 0 },
-	{ -1.f, +1.f, 0, 0, 1, 0, 0, 0, 0, 0 },
-	{ -1.f, -1.f, 0, 0, 0, 1, 0, 1, 0, 0 },
+	{ -1.f, -1.f, 0, 0, 0, 0, 0, 1, 0, 0 },
+	{ +1.f, -1.f, 0, 0, 0, 0, 1, 1, 0, 0 },
+	{ +1.f, +1.f, 0, 0, 0, 0, 1, 0, 0, 0 },
+	{ +1.f, +1.f, 0, 0, 0, 0, 1, 0, 0, 0 },
+	{ -1.f, +1.f, 0, 0, 0, 0, 0, 0, 0, 0 },
+	{ -1.f, -1.f, 0, 0, 0, 0, 0, 1, 0, 0 },
 };
+const static int tile_count_x = 9*3;
+const static int tile_count_y = 9*3;
 
-void lwc_init_dynamic_vbo(LWCONTEXT* pLwc) {
+void lwc_init_tilemap(LWCONTEXT* pLwc) {
 	if (dynamic_vao == 0) {
 		glGenBuffers(1, &dynamic_vbo);
 		glBindBuffer(GL_ARRAY_BUFFER, dynamic_vbo);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(square), square, GL_DYNAMIC_DRAW);
+        LWVERTEX* tilemap = malloc(sizeof(square)*tile_count_x*tile_count_y);
+        LWVERTEX* tilemap_cursor = tilemap;
+        for (int i = -tile_count_y/2; i <= tile_count_y/2; i++) {
+            for (int j = -tile_count_x/2; j <= tile_count_x/2; j++) {
+                memcpy(tilemap_cursor, square, sizeof(square));
+                for (int k = 0; k < ARRAY_SIZE(square); k++) {
+                    tilemap_cursor[k].x += 2.0f * j;
+                    tilemap_cursor[k].y += 2.0f * i;
+                    tilemap_cursor[k].u /= 4.0f;
+                    tilemap_cursor[k].v /= 4.0f;
+                    tilemap_cursor[k].u += 1.0f / 4 * j;
+                    tilemap_cursor[k].v += 1.0f / 4 * i;
+                }
+                tilemap_cursor += ARRAY_SIZE(square);
+            }
+        }
+		glBufferData(GL_ARRAY_BUFFER, sizeof(square)*tile_count_x*tile_count_y, tilemap, GL_DYNAMIC_DRAW);
+        free(tilemap), tilemap = tilemap_cursor = 0;
 #if LW_SUPPORT_VAO
 		glGenVertexArrays(1, &dynamic_vao);
 		glBindVertexArray(dynamic_vao);
-		set_vertex_attrib_pointer(pLwc, LWST_DEFAULT);
+		set_vertex_attrib_pointer(pLwc, LWST_TILEMAP);
 #endif
 	}
 }
 
 static void update_vbo(const LWCONTEXT* pLwc) {
-    const float v = sinf((float)pLwc->app_time);
-	square[0].x = v;
-    square[2].y = v;
-    square[3].x = v;
-    square[5].y = v;
-	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(square), square);
 }
 
-void lwc_render_dynamic_vbo(const LWCONTEXT* pLwc) {
+void lwc_render_tilemap(const LWCONTEXT* pLwc) {
     LW_GL_VIEWPORT();
     lw_clear_color();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	int shader_index = LWST_DEFAULT;
+	int shader_index = LWST_TILEMAP;
 	float alpha_multiplier = 1.0f;
 	float over_r = 1.0f;
 	float over_g = 1.0f;
 	float over_b = 1.0f;
 	float oratio = 0.0f;
 	const vec4* proj = pLwc->proj;
-	float sx = 1.0f;
-	float sy = 1.0f;
-	float sz = 1.0f;
+	float sx = 0.1f;
+	float sy = 0.1f;
+	float sz = 0.1f;
 	float rot_z = 0;
 	mat4x4 view;
 	mat4x4_identity(view);
 	float x = 0;
 	float y = 0;
 	float z = 0;
-	GLsizei vertex_count = sizeof(square) / sizeof(square[0]);
+	GLsizei vertex_count = ARRAY_SIZE(square) * tile_count_x * tile_count_y;
 
 	const LWSHADER* shader = &pLwc->shader[shader_index];
 	lazy_glUseProgram(pLwc, shader_index);
@@ -103,7 +116,8 @@ void lwc_render_dynamic_vbo(const LWCONTEXT* pLwc) {
 	set_vertex_attrib_pointer(pLwc, shader_index);
 #endif
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, pLwc->tex_atlas[LAE_TTL_CITY]);
+    glBindTexture(GL_TEXTURE_2D, pLwc->tex_atlas[LAE_WATER_SAND_TILE_GRID_1X]);
+    set_tex_filter(GL_LINEAR, GL_LINEAR);
 	glUniformMatrix4fv(shader->mvp_location, 1, GL_FALSE, (const GLfloat*)proj_view_model);
 	glDrawArrays(GL_TRIANGLES, 0, vertex_count);
 
