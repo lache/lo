@@ -1699,6 +1699,8 @@ int lw_get_render_count(LWCONTEXT* pLwc) {
 }
 
 void lw_deinit(LWCONTEXT* pLwc) {
+    lwc_destroy_tilemap();
+
     for (int i = 0; i < LAC_COUNT; i++) {
         if (pLwc->atlas_conf[i].first) {
             free(pLwc->atlas_conf[i].first);

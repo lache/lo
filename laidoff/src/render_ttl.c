@@ -1004,9 +1004,9 @@ static void render_morphed_earth(const LWCONTEXT* pLwc,
 }
 
 static double distance_xy(const int ax,
-                         const int ay,
-                         const int bx,
-                         const int by) {
+                          const int ay,
+                          const int bx,
+                          const int by) {
     return sqrt((double)((ax - bx) * (ax - bx) + (ay - by) * (ay - by)));
 }
 
@@ -1032,9 +1032,9 @@ int std_lower_bound_float(const float* a,
 }
 
 int std_lower_bound_double(const double* a,
-                          int first,
-                          const int last,
-                          const double value) {
+                           int first,
+                           const int last,
+                           const double value) {
     int count = last - first;
     int it;
     int step;
@@ -1126,7 +1126,7 @@ static void render_sea_objects_nameplate(const LWCONTEXT* pLwc, const LWTTLFIELD
         }
         double px, py, dx, dy;
         pos_from_waypoints(wp,
-                           (double)ttl_dynamic_state->obj[i].route_param,
+            (double)ttl_dynamic_state->obj[i].route_param,
                            ttl_dynamic_state->obj[i].route_flags.reversed,
                            &px,
                            &py,
@@ -2342,7 +2342,7 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     // render field viewports
     const int viewport_max_count = lwttl_viewport_max_count(pLwc->ttl);
-	//const int viewport_max_count = 0;
+    //const int viewport_max_count = 0;
     for (int i = 0; i < viewport_max_count; i++) {
         LWTTLFIELDVIEWPORT* vp_copy = alloca((size_t)lwttl_sizeof_viewport());
         if (lwttl_copy_viewport_data(pLwc->ttl, i, vp_copy)) {
@@ -2397,10 +2397,10 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
     lw_set_viewport_size((LWCONTEXT*)pLwc,
                          pLwc->window_width,
                          pLwc->window_height);
-    
-	render_ttl_stat(pLwc->ttl, pLwc);
-    
-	//render_coords_dms(pLwc, &view_center);
+
+    render_ttl_stat(pLwc->ttl, pLwc);
+
+    //render_coords_dms(pLwc, &view_center);
     {
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         render_solid_box_ui_lvt_flip_y_uv(pLwc,
@@ -2415,12 +2415,12 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
     {
         // overwrite ui projection matrix
         logic_update_default_ui_proj_for_htmlui(pLwc->shared_fbo.width, pLwc->shared_fbo.height, ((LWCONTEXT*)pLwc)->proj);
-        
+
         // render HTML UI queued at render command queue
         htmlui_render_render_commands(pLwc->htmlui);
-        
+
         lwc_render_chat(pLwc);
-        
+
         lw_set_viewport_size((LWCONTEXT*)pLwc,
                              pLwc->window_width,
                              pLwc->window_height);
