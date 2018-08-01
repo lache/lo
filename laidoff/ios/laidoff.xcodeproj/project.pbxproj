@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		25087D2260A972920DA26DF1 /* tilemap.c in Sources */ = {isa = PBXBuildFile; fileRef = 668B67331C003FBE0EB731F1 /* tilemap.c */; };
 		5633AC321EADDF98003F1549 /* net.c in Sources */ = {isa = PBXBuildFile; fileRef = 5633AC311EADDF98003F1549 /* net.c */; };
 		5663732C1EBA52D3001DA3F4 /* array.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 566372811EBA52D3001DA3F4 /* array.cpp */; };
 		5663732D1EBA52D3001DA3F4 /* box.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 566372831EBA52D3001DA3F4 /* box.cpp */; };
@@ -474,6 +475,7 @@
 		71E4555CFCE0FC140AB64668 /* render_morph.c in Sources */ = {isa = PBXBuildFile; fileRef = 3EF18865C9E87623A8107AC5 /* render_morph.c */; };
 		78C0045A2ED2FB61C2B8D165 /* render_puckgame.c in Sources */ = {isa = PBXBuildFile; fileRef = FE6E8484ADBCBB3A0251BB37 /* render_puckgame.c */; };
 		D8531FF879956455D7126889 /* render_ttl.c in Sources */ = {isa = PBXBuildFile; fileRef = 153809DC50A3E01320158089 /* render_ttl.c */; };
+		DD8705DA95CC214470DDE9CE /* tilemap.h in Sources */ = {isa = PBXBuildFile; fileRef = 7AD73425E6BEBD0B0D11BDE4 /* tilemap.h */; };
 		E60E57B5481CB001701AE180 /* lwfbo.c in Sources */ = {isa = PBXBuildFile; fileRef = 0E38E11C6E337B7525B05C1D /* lwfbo.c */; };
 		F6ADF47571DFD34379A49919 /* lwchatringbuffer.c in Sources */ = {isa = PBXBuildFile; fileRef = EA30351E6C793142A9AC7BD3 /* lwchatringbuffer.c */; };
 /* End PBXBuildFile section */
@@ -1027,6 +1029,7 @@
 		56F1897D1EC751950019312F /* ztimerset.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ztimerset.c; sourceTree = "<group>"; };
 		56F1897E1EC751950019312F /* ztrie.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ztrie.c; sourceTree = "<group>"; };
 		56F1897F1EC751950019312F /* zuuid.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zuuid.c; sourceTree = "<group>"; };
+		668B67331C003FBE0EB731F1 /* tilemap.c */ = {isa = PBXFileReference; includeInIndex = 1; name = tilemap.c; path = ../src/tilemap.c; sourceTree = "<group>"; };
 		6C20CE8C1FE6C2E500A85583 /* UIDeviceHardware.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIDeviceHardware.m; sourceTree = "<group>"; };
 		6C20CE8D1FE6C2E500A85583 /* UIDeviceHardware.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDeviceHardware.h; sourceTree = "<group>"; };
 		6C295E18204310700052999C /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
@@ -1469,6 +1472,7 @@
 		6CF70E4020597A2B00F782C8 /* xxhash.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = xxhash.h; path = ../../../../lz4/lib/xxhash.h; sourceTree = "<group>"; };
 		6CFC5017206012360077E1B7 /* lwttl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lwttl.h; sourceTree = "<group>"; };
 		6CFC5018206012360077E1B7 /* lwttl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lwttl.c; sourceTree = "<group>"; };
+		7AD73425E6BEBD0B0D11BDE4 /* tilemap.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = tilemap.h; path = ../src/tilemap.h; sourceTree = "<group>"; };
 		EA30351E6C793142A9AC7BD3 /* lwchatringbuffer.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = lwchatringbuffer.c; sourceTree = "<group>"; };
 		FE6E8484ADBCBB3A0251BB37 /* render_puckgame.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = render_puckgame.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -2396,6 +2400,8 @@
 				567F39C31EA2A7500081EB67 /* Frameworks */,
 				6CA16CD51EA20B5600DB7AF0 /* laidoff */,
 				6CA16CD41EA20B5600DB7AF0 /* Products */,
+				668B67331C003FBE0EB731F1 /* tilemap.c */,
+				7AD73425E6BEBD0B0D11BDE4 /* tilemap.h */,
 			);
 			sourceTree = "<group>";
 		};
@@ -3338,6 +3344,8 @@
 				78C0045A2ED2FB61C2B8D165 /* render_puckgame.c in Sources */,
 				F6ADF47571DFD34379A49919 /* lwchatringbuffer.c in Sources */,
 				E60E57B5481CB001701AE180 /* lwfbo.c in Sources */,
+				25087D2260A972920DA26DF1 /* tilemap.c in Sources */,
+				DD8705DA95CC214470DDE9CE /* tilemap.h in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3480,10 +3488,7 @@
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = laidoff/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_CFLAGS = (
 					"-Ilaidoff",
 					"-I../glfw/deps",
@@ -3520,10 +3525,7 @@
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = laidoff/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_CFLAGS = (
 					"-Ilaidoff",
 					"-I../glfw/deps",
