@@ -23,13 +23,13 @@ static LWVERTEX single_tile[] = {
 const static int tile_chunk_tile_count_x = 18 * 1;
 const static int tile_chunk_tile_count_y = 18 * 1;
 
-const static int tile_chunk_count_x = 2;
-const static int tile_chunk_count_y = 3;
+const static int tile_chunk_count_x = 1;
+const static int tile_chunk_count_y = 1;
 
 const static float global_scale = 0.04f;
 
 inline int tile_chunk_render_tile_count() {
-    return (tile_chunk_tile_count_x)  * (tile_chunk_tile_count_y);
+    return (tile_chunk_tile_count_x) * (tile_chunk_tile_count_y);
 }
 
 inline int tile_chunk_vertex_count() {
