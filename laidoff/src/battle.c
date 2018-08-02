@@ -12,9 +12,9 @@
 #include "logic.h"
 
 int calculate_and_apply_attack_1_on_1(LWCONTEXT* pLwc, LWBATTLECREATURE* ca, const LWSKILL* s, LWBATTLECREATURE* cb,
-    LWBATTLECOMMANDRESULT* cmd_result_a, LWBATTLECOMMANDRESULT* cmd_result_b);
+                                      LWBATTLECOMMANDRESULT* cmd_result_a, LWBATTLECOMMANDRESULT* cmd_result_b);
 void play_enemy_hp_desc_anim(LWCONTEXT* pLwc, LWENEMY* enemy, int enemy_slot,
-    const LWBATTLECOMMANDRESULT* cmd_result_a, const LWBATTLECOMMANDRESULT* cmd_result_b);
+                             const LWBATTLECOMMANDRESULT* cmd_result_a, const LWBATTLECOMMANDRESULT* cmd_result_b);
 int get_alive_enemy_count(LWCONTEXT* pLwc);
 void exec_player_win(LWCONTEXT* pLwc);
 
@@ -163,7 +163,7 @@ const LWSKILL* pick_skill(LWBATTLECREATURE* ca) {
 }
 
 void play_player_hp_desc_anim(LWCONTEXT* pLwc, const int player_slot,
-    LWBATTLECOMMANDRESULT* cmd_result_a, LWBATTLECOMMANDRESULT* cmd_result_b) {
+                              LWBATTLECOMMANDRESULT* cmd_result_a, LWBATTLECOMMANDRESULT* cmd_result_b) {
 
     float left_top_x = 0;
     float left_top_y = 0;
@@ -171,9 +171,15 @@ void play_player_hp_desc_anim(LWCONTEXT* pLwc, const int player_slot,
     float area_width = 0;
     float area_height = 0;
 
-    
-    get_player_creature_ui_box(player_slot, pLwc->viewport_aspect_ratio, &left_top_x, &left_top_y, &area_width, &area_height);
-    
+
+    get_player_creature_ui_box(player_slot,
+                               pLwc->viewport_rt_x,
+                               pLwc->viewport_rt_y,
+                               &left_top_x,
+                               &left_top_y,
+                               &area_width,
+                               &area_height);
+
     char damage_str[128];
 
     LWBATTLECREATURE* player = &pLwc->player[player_slot];
@@ -266,7 +272,7 @@ void exec_player_win(LWCONTEXT* pLwc) {
 
     // Remove enemy
     field_remove_field_object(pLwc->field, pLwc->field_event_id);
-    
+
     change_to_battle_result(pLwc);
 }
 
@@ -297,7 +303,7 @@ void update_enemy_turn(LWCONTEXT* pLwc) {
     }
 
     if (pLwc->battle_state == LBS_ENEMY_COMMAND_IN_PROGRESS) {
-        
+
         // Wait for command banner anim finished.
         if (pLwc->command_banner_anim.t <= 0) {
             // Wait for the next enemy creature.
@@ -313,7 +319,7 @@ void update_enemy_turn(LWCONTEXT* pLwc) {
                 pLwc->center_image_anim.max_v = 1.0f;
                 pLwc->center_image = LAE_U_PLAYER_TURN_KTX;
 
-                
+
                 pLwc->battle_state = LBS_SELECT_COMMAND;
 
                 setup_player_turn(pLwc);
@@ -347,7 +353,7 @@ int exec_attack_p2e(LWCONTEXT* pLwc, int enemy_slot) {
 }
 
 void play_enemy_hp_desc_anim(LWCONTEXT* pLwc, LWENEMY* enemy, int enemy_slot,
-    const LWBATTLECOMMANDRESULT* cmd_result_a, const LWBATTLECOMMANDRESULT* cmd_result_b) {
+                             const LWBATTLECOMMANDRESULT* cmd_result_a, const LWBATTLECOMMANDRESULT* cmd_result_b) {
     if (enemy->c.hp <= 0) {
         enemy->death_anim.v0[4] = 1; // Phase 0 (last): alpha remove max
         enemy->death_anim.v1[0] = 1; enemy->death_anim.v1[3] = 1; // Phase 1 (middle): full red
@@ -388,7 +394,7 @@ void play_enemy_hp_desc_anim(LWCONTEXT* pLwc, LWENEMY* enemy, int enemy_slot,
 }
 
 int calculate_and_apply_attack_1_on_1(LWCONTEXT* pLwc, LWBATTLECREATURE* ca, const LWSKILL* s, LWBATTLECREATURE* cb,
-    LWBATTLECOMMANDRESULT* cmd_result_a, LWBATTLECOMMANDRESULT* cmd_result_b) {
+                                      LWBATTLECOMMANDRESULT* cmd_result_a, LWBATTLECOMMANDRESULT* cmd_result_b) {
     if (s && s->valid) {
         if (s->consume_hp > ca->hp) {
             return -1;
@@ -434,7 +440,7 @@ void exec_attack_p2e_with_screen_point(LWCONTEXT* pLwc, float x, float y) {
 
 void update_battle(LWCONTEXT* pLwc) {
 
-    
+
 
     mat4x4_perspective(pLwc->battle_proj, (float)(LWDEG2RAD(pLwc->battle_fov_deg) / pLwc->viewport_aspect_ratio), pLwc->viewport_aspect_ratio, 0.1f, 1000.0f);
 

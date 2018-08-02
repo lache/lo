@@ -117,7 +117,7 @@ void render_top_button(const LWCONTEXT* pLwc) {
 
 static void s_render_ui(const LWCONTEXT* pLwc) {
     render_dir_pad(pLwc, pLwc->left_dir_pad.x, pLwc->left_dir_pad.y);
-    render_basic_field_ui(pLwc);
+    //render_basic_field_ui(pLwc);
 }
 
 void render_debug_sphere(const LWCONTEXT* pLwc, GLuint tex_id, const mat4x4 perspective, const mat4x4 view, float x, float y, float z, float s) {

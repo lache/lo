@@ -76,7 +76,7 @@ void update_enemy_scope_ui_point(const LWCONTEXT* pLwc, LWENEMY* enemy) {
     calculate_ui_point_from_world_point(pLwc->viewport_aspect_ratio, proj_view, left_top_world_point, enemy->left_top_ui_point);
     calculate_ui_point_from_world_point(pLwc->viewport_aspect_ratio, proj_view, right_bottom_world_point, enemy->right_bottom_ui_point);
 
-    float enemy_scope_ui_width = enemy->right_bottom_ui_point[0] - enemy->left_top_ui_point[0];
+    /*float enemy_scope_ui_width = enemy->right_bottom_ui_point[0] - enemy->left_top_ui_point[0];
     float enemy_scope_ui_height = enemy->left_top_ui_point[1] - enemy->right_bottom_ui_point[1];
 
     if (enemy_scope_ui_width < 0.4f) {
@@ -87,7 +87,7 @@ void update_enemy_scope_ui_point(const LWCONTEXT* pLwc, LWENEMY* enemy) {
     if (enemy_scope_ui_height < 0.4f) {
         const float d = 0.4f - enemy_scope_ui_height;
         enemy->left_top_ui_point[1] += d;
-    }
+    }*/
 }
 
 void update_enemy(const LWCONTEXT* pLwc, int enemy_slot_index, LWENEMY* enemy) {

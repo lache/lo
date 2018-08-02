@@ -20,11 +20,11 @@ static LWVERTEX single_tile[] = {
     { -1.f, +1.f, 0, 0, 0, 0, 0, 0, 0, 0 },
     { -1.f, -1.f, 0, 0, 0, 0, 0, 1, 0, 0 },
 };
-const static int tile_chunk_tile_count_x = 18 * 1;
-const static int tile_chunk_tile_count_y = 18 * 1;
+const static int tile_chunk_tile_count_x = 9 * 1;
+const static int tile_chunk_tile_count_y = 9 * 1;
 
-const static int tile_chunk_count_x = 1;
-const static int tile_chunk_count_y = 1;
+const static int tile_chunk_count_x = 2;
+const static int tile_chunk_count_y = 2;
 
 const static float global_scale = 0.04f;
 

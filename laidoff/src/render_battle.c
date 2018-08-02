@@ -15,9 +15,9 @@
 void render_enemy_scope(const LWCONTEXT* pLwc, float ux, float uy, float width, float height, LWATTRIBVALUE enemy_attrib) {
 
     // Minimum size constraints
-    if (width < 0.4f || height < 0.4f) {
-        return;
-    }
+    //if (width < 0.4f || height < 0.4f) {
+    //    return;
+    //}
 
     int shader_index = LWST_ETC1;
 
@@ -231,7 +231,7 @@ void render_enemy_3d(
     const float shadow_alpha_multiplier = overlay[4];
 
     render_enemy_shadow_3d(pLwc, enemy->render_pos[0], enemy->render_pos[1], 0,
-        enemy->shadow_scale, view, proj, 1 - shadow_alpha_multiplier, enemy->time_offset);
+                           enemy->shadow_scale, view, proj, 1 - shadow_alpha_multiplier, enemy->time_offset);
 
     mat4x4_identity(identity_view);
 
@@ -447,12 +447,18 @@ static void render_battle_twirl(const LWCONTEXT* pLwc, const mat4x4 view, const 
     }
 }
 
-void get_player_creature_ui_box(int pos, float screen_aspect_ratio, float* left_top_x, float* left_top_y, float* area_width, float* area_height) {
-    *left_top_x = (-1 + (2.0f / MAX_PLAYER_SLOT * pos)) * screen_aspect_ratio;
-    *left_top_y = 1;
+void get_player_creature_ui_box(int pos,
+                                float viewport_rt_x,
+                                float viewport_rt_y,
+                                float* left_top_x,
+                                float* left_top_y,
+                                float* area_width,
+                                float* area_height) {
+    *left_top_x = (-1 + (2.0f / MAX_PLAYER_SLOT * pos)) * viewport_rt_x;
+    *left_top_y = viewport_rt_y;
 
-    *area_width = 2.0f / MAX_PLAYER_SLOT * screen_aspect_ratio;
-    *area_height = 0.5f;
+    *area_width = 2.0f / MAX_PLAYER_SLOT * viewport_rt_x;
+    *area_height = 0.5f * viewport_rt_y;
 }
 
 void render_player_creature_ui(const LWCONTEXT* pLwc, const LWBATTLECREATURE* c, int pos) {
@@ -469,7 +475,7 @@ void render_player_creature_ui(const LWCONTEXT* pLwc, const LWBATTLECREATURE* c,
     SET_COLOR_RGBA_FLOAT(text_block.color_emp_outline, 0, 0, 0, 1);
 
 
-    
+
 
     float left_top_x = 0;
     float left_top_y = 0;
@@ -477,10 +483,16 @@ void render_player_creature_ui(const LWCONTEXT* pLwc, const LWBATTLECREATURE* c,
     float area_width = 0;
     float area_height = 0;
 
-    get_player_creature_ui_box(pos, pLwc->viewport_aspect_ratio, &left_top_x, &left_top_y, &area_width, &area_height);
+    get_player_creature_ui_box(pos,
+                               pLwc->viewport_rt_x,
+                               pLwc->viewport_rt_y,
+                               &left_top_x,
+                               &left_top_y,
+                               &area_width,
+                               &area_height);
 
-    const float block_x_margin = 0.075f * pLwc->viewport_aspect_ratio;
-    const float block_y_margin = 0.025f;
+    const float block_x_margin = 0.075f * pLwc->viewport_rt_x;
+    const float block_y_margin = 0.025f * pLwc->viewport_rt_y;
 
     const float bar_width = area_width - block_x_margin * 2;
     const float bar_height = 0.03f;
@@ -707,8 +719,8 @@ static void render_command_banner(const LWCONTEXT* pLwc) {
     if (skill_name) {
         const float x = 0;
         const float y = -0.5f;
-        const float w = 1.0f * pLwc->viewport_aspect_ratio;
-        const float h = 0.2f;
+        const float w = 1.0f * pLwc->viewport_rt_x;
+        const float h = 0.2f * pLwc->viewport_rt_y;
 
         const float anim_v = LWCLAMP(5 * lwanim_get_1d(&pLwc->command_banner_anim), 0, 1);
         const float bg_alpha = 0.5f;
@@ -754,10 +766,10 @@ static void render_command_palette(const LWCONTEXT* pLwc) {
         return;
     }
 
-    
 
-    const float screen_width = 2 * pLwc->viewport_aspect_ratio;
-    const float screen_height = 2;
+
+    const float screen_width = 2 * pLwc->viewport_rt_x;
+    const float screen_height = 2 * pLwc->viewport_rt_y;
     const int command_slot_margin_count = 2;
     const int command_slot_count = 6;
     const float command_slot_width = screen_width / (command_slot_count + 2 * command_slot_margin_count);
@@ -920,7 +932,7 @@ void lwc_render_battle(const LWCONTEXT* pLwc) {
 
     glUniformMatrix4fv(pLwc->shader[shader_index].mvp_location, 1, GL_FALSE, (const GLfloat*)pLwc->proj);
 
-    
+
 
     int only_render_ui = 0;
 
@@ -930,8 +942,8 @@ void lwc_render_battle(const LWCONTEXT* pLwc) {
             pLwc,
             0,
             0,
-            2 * pLwc->viewport_aspect_ratio,
-            2,
+            2 * pLwc->viewport_rt_x,
+            2 * pLwc->viewport_rt_y,
             pLwc->tex_programmed[LPT_SOLID_TRANSPARENT],
             LVT_CENTER_CENTER_ANCHORED_SQUARE,
             1.0f,
@@ -953,12 +965,11 @@ void lwc_render_battle(const LWCONTEXT* pLwc) {
             lwanim_get_5d(&e->death_anim, overlay);
 
             render_enemy_3d(pLwc,
-                e,
-                pLwc->battle_state == LBS_SELECT_TARGET && pLwc->selected_enemy_slot == i,
-                overlay,
-                pLwc->battle_view,
-                pLwc->battle_proj
-            );
+                            e,
+                            pLwc->battle_state == LBS_SELECT_TARGET && pLwc->selected_enemy_slot == i,
+                            overlay,
+                            pLwc->battle_view,
+                            pLwc->battle_proj);
         } ARRAY_ITERATE_VALID_END();
     }
 

@@ -11071,6 +11071,29 @@ fail:
 }
 
 
+static int _wrap_change_to_dynamic_vbo(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  
+  SWIG_check_num_args("change_to_dynamic_vbo",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("change_to_dynamic_vbo",1,"LWCONTEXT *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("change_to_dynamic_vbo",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  change_to_dynamic_vbo(arg1);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_change_to_admin(lua_State* L) {
   int SWIG_arg = 0;
   LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
@@ -48757,25 +48780,23 @@ static int _wrap_get_player_creature_ui_box(lua_State* L) {
   int SWIG_arg = 0;
   int arg1 ;
   float arg2 ;
-  float *arg3 = (float *) 0 ;
+  float arg3 ;
   float *arg4 = (float *) 0 ;
   float *arg5 = (float *) 0 ;
   float *arg6 = (float *) 0 ;
+  float *arg7 = (float *) 0 ;
   
-  SWIG_check_num_args("get_player_creature_ui_box",6,6)
+  SWIG_check_num_args("get_player_creature_ui_box",7,7)
   if(!lua_isnumber(L,1)) SWIG_fail_arg("get_player_creature_ui_box",1,"int");
   if(!lua_isnumber(L,2)) SWIG_fail_arg("get_player_creature_ui_box",2,"float");
-  if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("get_player_creature_ui_box",3,"float *");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("get_player_creature_ui_box",3,"float");
   if(!SWIG_isptrtype(L,4)) SWIG_fail_arg("get_player_creature_ui_box",4,"float *");
   if(!SWIG_isptrtype(L,5)) SWIG_fail_arg("get_player_creature_ui_box",5,"float *");
   if(!SWIG_isptrtype(L,6)) SWIG_fail_arg("get_player_creature_ui_box",6,"float *");
+  if(!SWIG_isptrtype(L,7)) SWIG_fail_arg("get_player_creature_ui_box",7,"float *");
   arg1 = (int)lua_tonumber(L, 1);
   arg2 = (float)lua_tonumber(L, 2);
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_float,0))){
-    SWIG_fail_ptr("get_player_creature_ui_box",3,SWIGTYPE_p_float);
-  }
-  
+  arg3 = (float)lua_tonumber(L, 3);
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,4,(void**)&arg4,SWIGTYPE_p_float,0))){
     SWIG_fail_ptr("get_player_creature_ui_box",4,SWIGTYPE_p_float);
@@ -48791,7 +48812,12 @@ static int _wrap_get_player_creature_ui_box(lua_State* L) {
     SWIG_fail_ptr("get_player_creature_ui_box",6,SWIGTYPE_p_float);
   }
   
-  get_player_creature_ui_box(arg1,arg2,arg3,arg4,arg5,arg6);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,7,(void**)&arg7,SWIGTYPE_p_float,0))){
+    SWIG_fail_ptr("get_player_creature_ui_box",7,SWIGTYPE_p_float);
+  }
+  
+  get_player_creature_ui_box(arg1,arg2,arg3,arg4,arg5,arg6,arg7);
   
   return SWIG_arg;
   
@@ -48830,25 +48856,23 @@ static int _wrap_get_player_creature_result_ui_box(lua_State* L) {
   int SWIG_arg = 0;
   int arg1 ;
   float arg2 ;
-  float *arg3 = (float *) 0 ;
+  float arg3 ;
   float *arg4 = (float *) 0 ;
   float *arg5 = (float *) 0 ;
   float *arg6 = (float *) 0 ;
+  float *arg7 = (float *) 0 ;
   
-  SWIG_check_num_args("get_player_creature_result_ui_box",6,6)
+  SWIG_check_num_args("get_player_creature_result_ui_box",7,7)
   if(!lua_isnumber(L,1)) SWIG_fail_arg("get_player_creature_result_ui_box",1,"int");
   if(!lua_isnumber(L,2)) SWIG_fail_arg("get_player_creature_result_ui_box",2,"float");
-  if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("get_player_creature_result_ui_box",3,"float *");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("get_player_creature_result_ui_box",3,"float");
   if(!SWIG_isptrtype(L,4)) SWIG_fail_arg("get_player_creature_result_ui_box",4,"float *");
   if(!SWIG_isptrtype(L,5)) SWIG_fail_arg("get_player_creature_result_ui_box",5,"float *");
   if(!SWIG_isptrtype(L,6)) SWIG_fail_arg("get_player_creature_result_ui_box",6,"float *");
+  if(!SWIG_isptrtype(L,7)) SWIG_fail_arg("get_player_creature_result_ui_box",7,"float *");
   arg1 = (int)lua_tonumber(L, 1);
   arg2 = (float)lua_tonumber(L, 2);
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_float,0))){
-    SWIG_fail_ptr("get_player_creature_result_ui_box",3,SWIGTYPE_p_float);
-  }
-  
+  arg3 = (float)lua_tonumber(L, 3);
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,4,(void**)&arg4,SWIGTYPE_p_float,0))){
     SWIG_fail_ptr("get_player_creature_result_ui_box",4,SWIGTYPE_p_float);
@@ -48864,7 +48888,12 @@ static int _wrap_get_player_creature_result_ui_box(lua_State* L) {
     SWIG_fail_ptr("get_player_creature_result_ui_box",6,SWIGTYPE_p_float);
   }
   
-  get_player_creature_result_ui_box(arg1,arg2,arg3,arg4,arg5,arg6);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,7,(void**)&arg7,SWIGTYPE_p_float,0))){
+    SWIG_fail_ptr("get_player_creature_result_ui_box",7,SWIGTYPE_p_float);
+  }
+  
+  get_player_creature_result_ui_box(arg1,arg2,arg3,arg4,arg5,arg6,arg7);
   
   return SWIG_arg;
   
@@ -111459,6 +111488,8 @@ static swig_lua_const_info swig_SwigModule_constants[]= {
     {SWIG_LUA_CONSTTAB_INT("LGS_LEADERBOARD", LGS_LEADERBOARD)},
     {SWIG_LUA_CONSTTAB_INT("LGS_REMTEX", LGS_REMTEX)},
     {SWIG_LUA_CONSTTAB_INT("LGS_GAZZA", LGS_GAZZA)},
+    {SWIG_LUA_CONSTTAB_INT("LGS_DYNAMIC_VBO", LGS_DYNAMIC_VBO)},
+    {SWIG_LUA_CONSTTAB_INT("LGS_TILEMAP", LGS_TILEMAP)},
     {SWIG_LUA_CONSTTAB_STRING("__LW_STRING_LINE__", "63")},
     {SWIG_LUA_CONSTTAB_STRING("LWLOGPOS", "src\\lwlog.h(64): ")},
     {SWIG_LUA_CONSTTAB_INT("LPT_GRID", LPT_GRID)},
@@ -111492,6 +111523,7 @@ static swig_lua_const_info swig_SwigModule_constants[]= {
     {SWIG_LUA_CONSTTAB_INT("LWST_DEFAULT_NORMAL_COLOR", LWST_DEFAULT_NORMAL_COLOR)},
     {SWIG_LUA_CONSTTAB_INT("LWST_LINE", LWST_LINE)},
     {SWIG_LUA_CONSTTAB_INT("LWST_MORPH", LWST_MORPH)},
+    {SWIG_LUA_CONSTTAB_INT("LWST_TILEMAP", LWST_TILEMAP)},
     {SWIG_LUA_CONSTTAB_INT("LWST_COUNT", LWST_COUNT)},
     {SWIG_LUA_CONSTTAB_INT("LST_ENEMY_1", LST_ENEMY_1)},
     {SWIG_LUA_CONSTTAB_INT("LST_ENEMY_ALL", LST_ENEMY_ALL)},
@@ -112128,6 +112160,7 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "change_to_font_test", _wrap_change_to_font_test},
     { "change_to_ttl", _wrap_change_to_ttl},
     { "change_to_gazza", _wrap_change_to_gazza},
+    { "change_to_dynamic_vbo", _wrap_change_to_dynamic_vbo},
     { "change_to_admin", _wrap_change_to_admin},
     { "change_to_battle_result", _wrap_change_to_battle_result},
     { "change_to_skin", _wrap_change_to_skin},
