@@ -99,7 +99,9 @@ void lw_trigger_mouse_press(LWCONTEXT* pLwc, float nx, float ny, int pointer_id)
     }
 
     if (lw_pinch() == 0) {
-        lwttl_on_press(pLwc->ttl, pLwc, nx, ny);
+        if (pLwc->game_scene == LGS_TTL) {
+            lwttl_on_press(pLwc->ttl, pLwc, nx, ny);
+        }
     }
 
     if (field_network(pLwc->field)) {

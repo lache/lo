@@ -36,15 +36,15 @@ static void render_dialog_balloon(const LWCONTEXT* pLwc) {
     lazy_glUseProgram(pLwc, shader_index);
     glUniform2fv(pLwc->shader[shader_index].vuvoffset_location, 1, default_uv_offset);
     glUniform2fv(pLwc->shader[shader_index].vuvscale_location, 1, default_uv_scale);
-    glUniform1f(pLwc->shader[shader_index].alpha_multiplier_location, 0.75f);
+    glUniform1f(pLwc->shader[shader_index].alpha_multiplier_location, 0.90f);
     glUniform1i(pLwc->shader[shader_index].diffuse_location, 0); // 0 means GL_TEXTURE0
     glUniform1i(pLwc->shader[shader_index].alpha_only_location, 1); // 1 means GL_TEXTURE1
     glUniformMatrix4fv(pLwc->shader[shader_index].mvp_location, 1, GL_FALSE, (const GLfloat*)pLwc->proj);
 
 
 
-    float ui_scale_x = pLwc->viewport_aspect_ratio;
-    float ui_scale_y = 0.275f;
+    float ui_scale_x = pLwc->viewport_rt_x;
+    float ui_scale_y = pLwc->viewport_rt_y * 0.275f;
 
     mat4x4 model_translate;
     mat4x4 model;
@@ -60,7 +60,7 @@ static void render_dialog_balloon(const LWCONTEXT* pLwc) {
 
     mat4x4_translate(model_translate,
                      0,
-                     -1.0f,
+                     -pLwc->viewport_rt_y,
                      0);
 
     mat4x4_identity(model);
@@ -86,8 +86,8 @@ static void render_bg(const LWCONTEXT* pLwc) {
 
 
 
-    float ui_scale_x = pLwc->viewport_aspect_ratio;
-    float ui_scale_y = 1;
+    float ui_scale_x = 1.0f;// pLwc->viewport_rt_x;
+    float ui_scale_y = 1.0f * 9 / 16;// pLwc->viewport_rt_y;
 
     mat4x4 model_translate;
     mat4x4 model;
@@ -179,9 +179,9 @@ void lwc_render_dialog(const LWCONTEXT* pLwc) {
     text_block.begin_index = pLwc->dialog_start_index;
     text_block.end_index = text_block.begin_index + pLwc->render_char < text_block.text_bytelen ? text_block.begin_index +
         pLwc->render_char : text_block.text_bytelen;
-    text_block.text_block_x = -0.75f * pLwc->viewport_aspect_ratio;
-    text_block.text_block_y = -0.55f;
-    text_block.text_block_width = 0.70f * 2 * pLwc->viewport_aspect_ratio;
+    text_block.text_block_x = -0.75f * pLwc->viewport_rt_x;
+    text_block.text_block_y = -0.55f * pLwc->viewport_rt_y;
+    text_block.text_block_width = 0.70f * 2 * pLwc->viewport_rt_x;
     text_block.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_A;
     text_block.size = DEFAULT_TEXT_BLOCK_SIZE_A;
     text_block.multiline = 1;
