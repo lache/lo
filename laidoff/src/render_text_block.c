@@ -8,6 +8,9 @@
 #include <string.h>
 #include "lwtextblock.h"
 
+#define MAX_UNICODE_STRLEN (1024)
+#define MAX_TEXT_BLOCK_LINE (64)
+
 #define LW_COLOR_WHITE { 1, 1, 1, 1 }
 #define LW_COLOR_BLACK { 0, 0, 0, 1 }
 #define LW_COLOR_YELLOW { 1, 1, 0, 1 }
@@ -28,18 +31,72 @@ static float get_proportional_font_size(int width, int height, float font_size) 
     //return font_size;
 }
 
+static void get_align_offset_and_mode(const LWCONTEXT* pLwc,
+                                      const LWTEXTBLOCK* text_block,
+                                      const int line,
+                                      int width_sum[MAX_TEXT_BLOCK_LINE],
+                                      int height_sum,
+                                      int first_height,
+                                      float prop_font_size,
+                                      float* align_offset_x,
+                                      float* align_offset_y,
+                                      int* x_align_mode,
+                                      int* y_align_mode) {
+    // Horizontal
+    if (text_block->align == LTBA_LEFT_TOP
+        || text_block->align == LTBA_LEFT_CENTER
+        || text_block->align == LTBA_LEFT_BOTTOM) {
+        // LEFT
+        *x_align_mode = -1;
+    } else if (text_block->align == LTBA_CENTER_TOP
+               || text_block->align == LTBA_CENTER_CENTER
+               || text_block->align == LTBA_CENTER_BOTTOM) {
+        // CENTER
+        *x_align_mode = 0;
+        *align_offset_x = -width_sum[line] / 2.0f;
+    } else {
+        // RIGHT
+        *x_align_mode = 1;
+        *align_offset_x = (float)-width_sum[line];
+    }
+    // Vertical
+    if (text_block->align == LTBA_LEFT_TOP
+        || text_block->align == LTBA_CENTER_TOP
+        || text_block->align == LTBA_RIGHT_TOP) {
+        // TOP
+        *y_align_mode = 1;
+    } else if (text_block->align == LTBA_LEFT_CENTER
+               || text_block->align == LTBA_CENTER_CENTER
+               || text_block->align == LTBA_RIGHT_CENTER) {
+        // CENTER
+        *y_align_mode = 0;
+        *align_offset_y = (height_sum - first_height) / 2.0f;
+    } else {
+        // BOTTOM
+        *y_align_mode = -1;
+    }
+    // Pixel perfect (screen-space coordinates) or UI (normalized) coordinates
+    if (text_block->pixel_perfect == 0) {
+        *align_offset_x = *align_offset_x / pLwc->viewport_width * 2 * pLwc->viewport_rt_x * prop_font_size;
+        *align_offset_y = *align_offset_y / pLwc->viewport_height * 2 * pLwc->viewport_rt_y * prop_font_size;
+    }
+}
+
 static void render_font_glyph(const LWCONTEXT* pLwc,
                               const LWTEXTBLOCK* text_block,
                               int unicode_strlen,
                               const unsigned int* unicode_str,
-                              float width_sum,
-                              float first_width,
+                              int width_sum[MAX_TEXT_BLOCK_LINE],
+                              int height_sum,
+                              int first_width,
                               int first_width_set,
+                              int first_height,
                               const BMF_CHAR** bc,
                               int shader_index,
                               LW_VBO_TYPE lvt,
                               float prop_font_size,
                               float* size_scaled_xadvance_accum,
+                              float* max_size_scaled_xadvance_accum,
                               const float color_normal_glyph[4],
                               const float color_normal_outline[4],
                               const float color_emp_glyph[4],
@@ -53,49 +110,26 @@ static void render_font_glyph(const LWCONTEXT* pLwc,
     
     float last_x = 0;
     float last_size_scaled_xadvance = 0;
-    
+
+    *size_scaled_xadvance_accum = 0;
+    *max_size_scaled_xadvance_accum = 0;
+
     float align_offset_x = 0;
     float align_offset_y = 0;
-    
     int x_align_mode = 0;
-    if (text_block->align == LTBA_LEFT_TOP
-        || text_block->align == LTBA_LEFT_CENTER
-        || text_block->align == LTBA_LEFT_BOTTOM) {
-        x_align_mode = -1; // LEFT
-    } else if (text_block->align == LTBA_CENTER_TOP
-               || text_block->align == LTBA_CENTER_CENTER
-               || text_block->align == LTBA_CENTER_BOTTOM) {
-        
-        x_align_mode = 0; // CENTER
-        align_offset_x = -width_sum / 2;// +first_width / 2;
-        
-        //size_scaled_xadvance_accum = (float)first_width / 2;
-    } else {
-        x_align_mode = 1; // RIGHT;
-        
-        align_offset_x = -width_sum;
-    }
-    
     int y_align_mode = 0;
-    if (text_block->align == LTBA_LEFT_TOP
-        || text_block->align == LTBA_CENTER_TOP
-        || text_block->align == LTBA_RIGHT_TOP) {
-        y_align_mode = 1; // TOP
-    } else if (text_block->align == LTBA_LEFT_CENTER
-               || text_block->align == LTBA_CENTER_CENTER
-               || text_block->align == LTBA_RIGHT_CENTER) {
-        y_align_mode = 0; // CENTER
-    } else {
-        y_align_mode = -1; // BOTTOM
-    }
-    
-    *size_scaled_xadvance_accum = 0;
-    
-    if (text_block->pixel_perfect == 0) {
-        align_offset_x = align_offset_x / pLwc->viewport_width * 2 * pLwc->viewport_rt_x * prop_font_size;
-        align_offset_y = align_offset_y / pLwc->viewport_height * 2 * pLwc->viewport_rt_y * prop_font_size;
-    }
-    
+    // update align offset and align mode for the first line
+    get_align_offset_and_mode(pLwc,
+                              text_block,
+                              line,
+                              width_sum,
+                              height_sum,
+                              first_height,
+                              prop_font_size,
+                              &align_offset_x,
+                              &align_offset_y,
+                              &x_align_mode,
+                              &y_align_mode);
     mat4x4 model_translate;
     mat4x4 model;
     mat4x4 identity_view;
@@ -108,8 +142,21 @@ static void render_font_glyph(const LWCONTEXT* pLwc,
     for (int i = 0; i < unicode_strlen; i++) {
         if (unicode_str[i] == '\n') {
             if (text_block->multiline) {
+                *max_size_scaled_xadvance_accum = LWMAX(*max_size_scaled_xadvance_accum, *size_scaled_xadvance_accum);
                 *size_scaled_xadvance_accum = 0;
                 line++;
+                // update align offset and align mode for the next line
+                get_align_offset_and_mode(pLwc,
+                                          text_block,
+                                          line,
+                                          width_sum,
+                                          height_sum,
+                                          first_height,
+                                          prop_font_size,
+                                          &align_offset_x,
+                                          &align_offset_y,
+                                          &x_align_mode,
+                                          &y_align_mode);
                 continue;
             } else {
                 break;
@@ -159,7 +206,7 @@ static void render_font_glyph(const LWCONTEXT* pLwc,
             }
             
             const float x = align_offset_x + text_block->text_block_x + prop_font_size * xoffset * ((text_block->pixel_perfect == 0) ? pLwc->viewport_rt_x : 1);
-            const float y = align_offset_y + text_block->text_block_y + prop_font_size * yoffset * ((text_block->pixel_perfect == 0) ? pLwc->viewport_rt_y : 1) + (line * -text_block->text_block_line_height);
+            const float y = align_offset_y + text_block->text_block_y + prop_font_size * yoffset * ((text_block->pixel_perfect == 0) ? pLwc->viewport_rt_y : 1) + (line * -(pLwc->viewport_rt_y * 2.0f / pLwc->viewport_height * prop_font_size * font_line_height));
 
             
             last_x = x;
@@ -244,6 +291,7 @@ static void render_font_glyph(const LWCONTEXT* pLwc,
             }
         }
     }
+    *max_size_scaled_xadvance_accum = LWMAX(*max_size_scaled_xadvance_accum, *size_scaled_xadvance_accum);
 }
 
 void render_text_block(const LWCONTEXT* pLwc, const LWTEXTBLOCK* text_block) {
@@ -286,7 +334,7 @@ void render_query_text_block_alpha(const LWCONTEXT* pLwc, const LWTEXTBLOCK* tex
         glUniform2fv(pLwc->shader[shader_index].vuvoffset_location, 1, default_uv_offset);
         glUniform2fv(pLwc->shader[shader_index].vuvscale_location, 1, default_uv_scale);
     }
-#define MAX_UNICODE_STRLEN (1024)
+
 
     unsigned int unicode_str[MAX_UNICODE_STRLEN];
     size_t unicode_strlen = u8_toucs(
@@ -303,17 +351,30 @@ void render_query_text_block_alpha(const LWCONTEXT* pLwc, const LWTEXTBLOCK* tex
 
     const BMF_CHAR* bc[MAX_UNICODE_STRLEN];
     // Calculate total font block size
-    float width_sum = 0;
-    float first_width = 0;
+    int width_sum[MAX_TEXT_BLOCK_LINE] = { 0, };
+    int line = 0;
+    int height_sum = 0;
+    int first_width = 0;
     int first_width_set = 0;
+    int first_height = 0;
+    const int font_line_height = font_get_line_height(pLwc->pFnt);
     for (size_t i = 0; i < unicode_strlen; i++) {
         bc[i] = font_binary_search_char(pLwc->pFnt, unicode_str[i]);
         if (unicode_str[i] == '<' || unicode_str[i] == '>') {
             continue;
         }
         if (bc[i]) {
-            const float width = bc[i]->xadvance; // : bc[i]->width);
-            width_sum += width;
+            const int width = bc[i]->xadvance; // : bc[i]->width);
+            if (height_sum == 0) {
+                height_sum = font_line_height;
+                first_height = font_line_height;
+            }
+            if (unicode_str[i] == '\n') {
+                height_sum += font_line_height;
+                line++;
+            } else {
+                width_sum[line] += width;
+            }
 
             if (!first_width_set) {
                 first_width = width;
@@ -328,6 +389,7 @@ void render_query_text_block_alpha(const LWCONTEXT* pLwc, const LWTEXTBLOCK* tex
         prop_font_size = get_proportional_font_size(pLwc->viewport_width, pLwc->viewport_height, text_block->size);
     }
     float size_scaled_xadvance_accum = 0;
+    float max_size_scaled_xadvance_accum = 0;
     float color_normal_outline_null[4];
     float color_emp_outline_null[4];
     memcpy(color_normal_outline_null, text_block->color_normal_glyph, sizeof(color_normal_outline_null));
@@ -355,13 +417,16 @@ void render_query_text_block_alpha(const LWCONTEXT* pLwc, const LWTEXTBLOCK* tex
                           unicode_strlen,
                           unicode_str,
                           width_sum,
+                          height_sum,
                           first_width,
                           first_width_set,
+                          first_height,
                           bc,
                           shader_index,
                           lvt,
                           prop_font_size,
                           &size_scaled_xadvance_accum,
+                          &max_size_scaled_xadvance_accum,
                           colors[i][0],
                           colors[i][1],
                           colors[i][2],
@@ -385,7 +450,7 @@ void render_query_text_block_alpha(const LWCONTEXT* pLwc, const LWTEXTBLOCK* tex
                 pLwc,
                 text_block->text_block_x,
                 text_block->text_block_y,
-                prop_font_size * size_scaled_xadvance_accum * pLwc->viewport_rt_x / pLwc->viewport_width * 2,
+                prop_font_size * max_size_scaled_xadvance_accum * pLwc->viewport_rt_x / pLwc->viewport_width * 2,
                 h,
                 pLwc->tex_programmed[LPT_SOLID_RED],
                 lvt,

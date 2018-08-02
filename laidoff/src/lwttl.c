@@ -2054,10 +2054,10 @@ void lwttl_on_release(LWTTL* ttl, LWCONTEXT* pLwc, float nx, float ny) {
                          &yc,
                          &lnglat);
         lwttl_change_selected_cell_to(ttl,
-                                      pLwc,
-                                      xc,
-                                      yc,
-                                      &lnglat);
+                                        pLwc,
+                                        xc,
+                                        yc,
+                                        &lnglat);
         selected->pressing = 0;
     }
     if (selected->dragging) {

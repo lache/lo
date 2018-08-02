@@ -70,7 +70,7 @@ void lwc_render_admin(const LWCONTEXT* pLwc) {
             text_block.align = LTBA_CENTER_CENTER;
             text_block.text_block_width = DEFAULT_TEXT_BLOCK_WIDTH;
             text_block.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_E;
-            text_block.size = DEFAULT_TEXT_BLOCK_SIZE_E;
+            text_block.size = DEFAULT_TEXT_BLOCK_SIZE_F;
             SET_COLOR_RGBA_FLOAT(text_block.color_normal_glyph, 1, 1, 1, 1);
             SET_COLOR_RGBA_FLOAT(text_block.color_normal_outline, 0, 0, 0, 1);
             SET_COLOR_RGBA_FLOAT(text_block.color_emp_glyph, 1, 1, 0, 1);
