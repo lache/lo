@@ -116,6 +116,10 @@ void change_to_puck_game(LWCONTEXT* pLwc) {
                             parse_recv_packets);
     }
     pLwc->next_game_scene = LGS_PUCK_GAME;
+    script_evaluate_with_name_async(pLwc,
+                                    "on_puck_game_enter()",
+                                    strlen("on_puck_game_enter()"),
+                                    "on_puck_game_enter()");
     lwfbo_init(&pLwc->shared_fbo, pLwc->window_width, pLwc->window_height);
 }
 

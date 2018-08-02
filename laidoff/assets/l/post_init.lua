@@ -214,9 +214,12 @@ if field_filename then
 	print('field_module:test()', field_module:test())
 end
 
-if lo.puck_game_is_tutorial_completed(c.puck_game) == 1 then
-else
-	on_ui_event('tutorial_button', 0, 0)
+function on_puck_game_enter()
+	if lo.puck_game_is_tutorial_completed(c.puck_game) == 1 then
+	else
+		lo.script_cleanup_all_coros(c)
+		on_ui_event('tutorial_button', 0, 0)
+	end
 end
 
 return 1
