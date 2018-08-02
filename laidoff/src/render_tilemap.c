@@ -139,7 +139,7 @@ void lwc_destroy_tilemap() {
 static void update_vbo(const LWCONTEXT* pLwc) {
 }
 
-static void render_tile_chunk_at(const LWCONTEXT* pLwc, const mat4x4 view, const mat4x4 proj, int tcx, int tcy) {
+static void render_tile_chunk_at(const LWCONTEXT* pLwc, const mat4x4 view, const mat4x4 proj, int tcx, int tcy, int lae) {
     const int shader_index = LWST_TILEMAP;
     const float alpha_multiplier = 1.0f;
     const float over_r = 1.0f;
@@ -202,7 +202,8 @@ static void render_tile_chunk_at(const LWCONTEXT* pLwc, const mat4x4 view, const
     set_vertex_attrib_pointer(pLwc, shader_index);
 #endif
     glActiveTexture(GL_TEXTURE0);
-    lazy_tex_atlas_glBindTexture(pLwc, LAE_WATER_SAND_TILE_GRID_1X);
+    glBindTexture(GL_TEXTURE_2D, pLwc->tex_atlas[lae]);
+    set_tex_filter(GL_LINEAR, GL_LINEAR);
     glUniformMatrix4fv(shader->mvp_location, 1, GL_FALSE, (const GLfloat*)proj_view_model);
     glDrawArrays(GL_TRIANGLES, 0, tile_chunk_vertex_count());
 }
@@ -211,6 +212,9 @@ void lwc_render_tilemap(const LWCONTEXT* pLwc) {
     LW_GL_VIEWPORT();
     lw_clear_color();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    const int lae = LAE_WATER_SAND_TILE_GRID_1X;
+    lazy_tex_atlas_glBindTexture(pLwc, lae);
 
     mat4x4 view, proj;
     const float aspect_ratio = pLwc->viewport_aspect_ratio;
@@ -259,7 +263,7 @@ void lwc_render_tilemap(const LWCONTEXT* pLwc) {
 
     for (int i = 0; i < tile_chunk_count_y; i++) {
         for (int j = 0; j < tile_chunk_count_x; j++) {
-            render_tile_chunk_at(pLwc, view, proj, j, i);
+            render_tile_chunk_at(pLwc, view, proj, j, i, lae);
         }
     }
     /*render_tile_chunk_at(pLwc, 0, 0);

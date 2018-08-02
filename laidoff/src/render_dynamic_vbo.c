@@ -46,6 +46,9 @@ void lwc_render_dynamic_vbo(const LWCONTEXT* pLwc) {
     lw_clear_color();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    const int lae = LAE_TTL_CITY;
+    lazy_tex_atlas_glBindTexture(pLwc, lae);
+
     int shader_index = LWST_DEFAULT;
     float alpha_multiplier = 1.0f;
     float over_r = 1.0f;
@@ -102,7 +105,9 @@ void lwc_render_dynamic_vbo(const LWCONTEXT* pLwc) {
 #else
     set_vertex_attrib_pointer(pLwc, shader_index);
 #endif
-    lazy_tex_atlas_glBindTexture(pLwc, LAE_TTL_CITY);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, pLwc->tex_atlas[lae]);
+    set_tex_filter(GL_LINEAR, GL_LINEAR);
     glUniformMatrix4fv(shader->mvp_location, 1, GL_FALSE, (const GLfloat*)proj_view_model);
     glDrawArrays(GL_TRIANGLES, 0, vertex_count);
 
