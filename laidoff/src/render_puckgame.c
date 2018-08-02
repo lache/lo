@@ -485,7 +485,7 @@ static void render_tutorial_guide(const LWCONTEXT* pLwc, const LWPUCKGAME* puck_
         text_block.align = LTBA_CENTER_TOP;
         text_block.text_block_width = DEFAULT_TEXT_BLOCK_WIDTH;
         text_block.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_E;
-        text_block.size = pLwc->viewport_aspect_ratio > 1 ? DEFAULT_TEXT_BLOCK_SIZE_B : DEFAULT_TEXT_BLOCK_SIZE_D;
+        text_block.size = pLwc->viewport_aspect_ratio > 1 ? DEFAULT_TEXT_BLOCK_SIZE_B : DEFAULT_TEXT_BLOCK_SIZE_F;
         text_block.multiline = 1;
         text_block.pixel_perfect = 0;
         SET_COLOR_RGBA_FLOAT(text_block.color_normal_glyph, 1, 1, 1, ui_alpha);

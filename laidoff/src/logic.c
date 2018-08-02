@@ -72,6 +72,7 @@ void change_to_font_test(LWCONTEXT* pLwc) {
 
 void change_to_ttl(LWCONTEXT* pLwc) {
     pLwc->next_game_scene = LGS_TTL;
+    htmlui_set_render_command_container_mode(pLwc->htmlui);
     lwfbo_init(&pLwc->shared_fbo, pLwc->window_width, pLwc->window_height);
     // Render font FBO using render-to-texture
     lwc_render_ttl_fbo(pLwc, ASSETS_BASE_PATH "html" PATH_SEPARATOR "HTMLPage1.html");

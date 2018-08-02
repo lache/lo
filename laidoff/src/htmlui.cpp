@@ -21,7 +21,9 @@ class LWHTMLUI {
 public:
     LWHTMLUI(LWCONTEXT* _pLwc, int w, int h)
         : pLwc(_pLwc)
-        , container(_pLwc, w, h)
+        , container_mode(HCM_RENDER_COMMAND)
+        , text_cont(_pLwc, w, h)
+        , render_command_cont(_pLwc, w, h)
         , client_width(w)
         , client_height(h)
         , refresh_html_body(0)
@@ -81,11 +83,18 @@ public:
         unlock();
     }
     void load_body_internal(const char* html_body) {
-        container.clear_remtex_name_hash_set();
-        container.clear_render_command_queue();
+        text_cont.clear_remtex_name_hash_set();
+        render_command_cont.clear_remtex_name_hash_set();
+        render_command_cont.clear_render_command_queue();
         scroll_y = 0;
         scroll_dy = 0;
-        doc = litehtml::document::createFromString(html_body, &container, &browser_context);
+        if (container_mode == HCM_RENDER_COMMAND) {
+            doc = litehtml::document::createFromString(html_body, &render_command_cont, &browser_context);
+        } else if (container_mode == HCM_TEXT) {
+            doc = litehtml::document::createFromString(html_body, &text_cont, &browser_context);
+        } else {
+            LOGE("Unknown container mode: %d", container_mode);
+        }
         // root document size can be obtained after calling doc->render()
     }
     void lock() {
@@ -211,17 +220,20 @@ public:
         }
     }
     void set_online(bool b) {
-        container.set_online(b);
+        text_cont.set_online(b);
+        render_command_cont.set_online(b);
     }
     void on_remtex_gpu_loaded(unsigned long name_hash) {
-        if (container.need_update_on_remtex_change(name_hash)) {
+        if (text_cont.need_update_on_remtex_change(name_hash)
+            || render_command_cont.need_update_on_remtex_change(name_hash)) {
             redraw_fbo();
         }
     }
     void set_client_size(int client_width, int client_height) {
         this->client_width = client_width;
         this->client_height = client_height;
-        container.set_client_size(client_width, client_height);
+        text_cont.set_client_size(client_width, client_height);
+        render_command_cont.set_client_size(client_width, client_height);
     }
     bool over_element(float nx, float ny) {
         if (doc) {
@@ -245,7 +257,11 @@ public:
         return false;
     }
     void execute_anchor_click(const char* url) {
-        container.on_anchor_click_ex(url, doc->root(), false);
+        if (container_mode == HCM_RENDER_COMMAND) {
+            render_command_cont.on_anchor_click_ex(url, doc->root(), false);
+        } else {
+            text_cont.on_anchor_click_ex(url, doc->root(), false);
+        }
     }
     void add_touch_rect(float x, float y, float z, float width, float height, float extend_width, float extend_height, const mat4x4 view, const mat4x4 proj) {
         double start = lwtimepoint_now_seconds();
@@ -281,7 +297,11 @@ public:
         mat4x4_dup(view, touch_rect[index].view);
         mat4x4_dup(proj, touch_rect[index].proj);
     }
-    void render_render_commands() { container.render_render_commands(pLwc, scroll_y + scroll_dy); }
+    void render_render_commands() {
+        if (container_mode == HCM_RENDER_COMMAND) {
+            render_command_cont.render_render_commands(pLwc, scroll_y + scroll_dy);
+        }
+    }
     void update_on_render_thread() {
         const float retraction = 3.0f;
         if (mouse_dragging == false) {
@@ -302,13 +322,24 @@ public:
             }
         }
     }
+    void set_render_command_container_mode() {
+        container_mode = HCM_RENDER_COMMAND;
+    }
+    void set_text_container_mode() {
+        container_mode = HCM_TEXT;
+    }
 private:
     LWHTMLUI();
     LWHTMLUI(const LWHTMLUI&);
     LWCONTEXT* pLwc;
     litehtml::context browser_context;
-    //litehtml::text_container container;
-    litehtml::render_command_container container;
+    enum HTMLUI_CONTAINER_MODE {
+        HCM_TEXT,
+        HCM_RENDER_COMMAND,
+    };
+    HTMLUI_CONTAINER_MODE container_mode;
+    litehtml::text_container text_cont;
+    litehtml::render_command_container render_command_cont;
     litehtml::document::ptr doc;
     int client_width;
     int client_height;
@@ -486,4 +517,14 @@ void htmlui_render_render_commands(void* c) {
 void htmlui_update_on_render_thread(void* c) {
     LWHTMLUI* htmlui = (LWHTMLUI*)c;
     htmlui->update_on_render_thread();
+}
+
+void htmlui_set_render_command_container_mode(void* c) {
+    LWHTMLUI* htmlui = (LWHTMLUI*)c;
+    htmlui->set_render_command_container_mode();
+}
+
+void htmlui_set_text_container_mode(void* c) {
+    LWHTMLUI* htmlui = (LWHTMLUI*)c;
+    htmlui->set_text_container_mode();
 }

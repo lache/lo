@@ -104704,6 +104704,44 @@ fail:
 }
 
 
+static int _wrap_htmlui_set_render_command_container_mode(lua_State* L) {
+  int SWIG_arg = 0;
+  void *arg1 = (void *) 0 ;
+  
+  SWIG_check_num_args("htmlui_set_render_command_container_mode",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("htmlui_set_render_command_container_mode",1,"void *");
+  arg1=(void *)SWIG_MustGetPtr(L,1,0,0,1,"htmlui_set_render_command_container_mode");
+  htmlui_set_render_command_container_mode(arg1);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_htmlui_set_text_container_mode(lua_State* L) {
+  int SWIG_arg = 0;
+  void *arg1 = (void *) 0 ;
+  
+  SWIG_check_num_args("htmlui_set_text_container_mode",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("htmlui_set_text_container_mode",1,"void *");
+  arg1=(void *)SWIG_MustGetPtr(L,1,0,0,1,"htmlui_set_text_container_mode");
+  htmlui_set_text_container_mode(arg1);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_LWTTLLNGLAT_lng_set(lua_State* L) {
   int SWIG_arg = 0;
   struct _LWTTLLNGLAT *arg1 = (struct _LWTTLLNGLAT *) 0 ;
@@ -112579,6 +112617,8 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "htmlui_get_touch_rect", _wrap_htmlui_get_touch_rect},
     { "htmlui_render_render_commands", _wrap_htmlui_render_render_commands},
     { "htmlui_update_on_render_thread", _wrap_htmlui_update_on_render_thread},
+    { "htmlui_set_render_command_container_mode", _wrap_htmlui_set_render_command_container_mode},
+    { "htmlui_set_text_container_mode", _wrap_htmlui_set_text_container_mode},
     { "lwttl_new", _wrap_lwttl_new},
     { "lwttl_destroy", _wrap_lwttl_destroy},
     { "lwttl_worldmap_smooth_scroll_to", _wrap_lwttl_worldmap_smooth_scroll_to},

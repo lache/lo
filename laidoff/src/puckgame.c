@@ -1093,6 +1093,8 @@ void puck_game_update_tick(LWPUCKGAME* puck_game, int update_frequency) {
             } else {
                 LOGEP("puck_game->update_tick >= puck_game->record->num_frame!");
             }
+        } else if (puck_game->game_state == LPGS_TUTORIAL) {
+            // do nothing on tutorial
         } else {
             // WTF?
             LOGEP("Unknown case");
