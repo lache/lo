@@ -26,5 +26,5 @@ void main()
 {
     vec4 t = TEX(diffuse, uv);
     fragColor.rgb = (glyph_color * t).rgb;
-    fragColor.a = t.r;
+    fragColor.a = t.r * alpha_multiplier;
 }

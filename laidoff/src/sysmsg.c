@@ -37,14 +37,22 @@ void update_sys_msg(void* _sm, float delta_time) {
     sm->remain_time = LWMAX(0, sm->remain_time - delta_time);
 }
 
-static const float header_y_center = 0.9f;
 static const float header_height = 0.1f;
 
 static void s_render(const LWCONTEXT* pLwc, const char* msg) {
-    render_solid_vb_ui_flip_y_uv(pLwc, 0, -header_y_center, 2 * pLwc->viewport_aspect_ratio, header_height,
-        pLwc->tex_programmed[LPT_BOTH_END_GRADIENT_HORIZONTAL], LVT_CENTER_CENTER_ANCHORED_SQUARE,
-        1, 39 / 255.0f, 74 / 255.0f, 110 / 255.0f, 1.0f, 0);
-
+    render_solid_vb_ui_flip_y_uv(pLwc,
+                                 0,
+                                 0,
+                                 2 * pLwc->viewport_rt_x,
+                                 header_height,
+                                 pLwc->tex_programmed[LPT_BOTH_END_GRADIENT_HORIZONTAL],
+                                 LVT_CENTER_CENTER_ANCHORED_SQUARE,
+                                 1,
+                                 39 / 255.0f,
+                                 74 / 255.0f,
+                                 110 / 255.0f,
+                                 1.0f,
+                                 0);
     LWTEXTBLOCK text_block;
     text_block.align = LTBA_CENTER_CENTER;
     text_block.text_block_width = DEFAULT_TEXT_BLOCK_WIDTH;
@@ -59,7 +67,7 @@ static void s_render(const LWCONTEXT* pLwc, const char* msg) {
     text_block.begin_index = 0;
     text_block.end_index = text_block.text_bytelen;
     text_block.text_block_x = 0;
-    text_block.text_block_y = -header_y_center;
+    text_block.text_block_y = 0;
     text_block.multiline = 1;
     text_block.pixel_perfect = 0;
     render_text_block(pLwc, &text_block);

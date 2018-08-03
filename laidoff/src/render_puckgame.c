@@ -561,7 +561,7 @@ static void render_searching_state(const LWCONTEXT* pLwc, const LWPUCKGAME* puck
     text_block.end_index = text_block.text_bytelen;
     text_block.text_block_x = 0;
     text_block.text_block_y = 0;
-    render_text_block(pLwc, &text_block);
+    render_text_block_alpha(pLwc, &text_block, ui_alpha);
 }
 
 static void render_nickname_score(const LWCONTEXT* pLwc,
