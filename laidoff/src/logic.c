@@ -76,6 +76,10 @@ void change_to_ttl(LWCONTEXT* pLwc) {
     lwfbo_init(&pLwc->shared_fbo, pLwc->window_width, pLwc->window_height);
     // Render font FBO using render-to-texture
     lwc_render_ttl_fbo(pLwc, ASSETS_BASE_PATH "html" PATH_SEPARATOR "HTMLPage1.html");
+    script_evaluate_with_name_async(pLwc,
+                                    "on_ttl_enter()",
+                                    strlen("on_ttl_enter()"),
+                                    "on_ttl_enter()");
 }
 
 void change_to_gazza(LWCONTEXT* pLwc) {

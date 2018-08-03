@@ -36,7 +36,9 @@ if c.tcp_ttl == nil then
     lo.lw_new_tcp_ttl_custom(c, c.tcp_ttl_host_addr.host, c.tcp_ttl_host_addr.port_str, tonumber(c.tcp_ttl_host_addr.port_str))
 end
 
-lo.script_cleanup_all_coros(c)
+function on_ttl_enter()
+    lo.script_cleanup_all_coros(c)
+end
 
 function worldmap_scroll(dlng, dlat, dscale)
     lo.lwttl_worldmap_scroll(c.ttl, dlng/100, dlat/100, dscale)
