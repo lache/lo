@@ -9,18 +9,21 @@ return function ()
 	lo.puck_game_set_dash_disabled(c.puck_game, 1, 0)
 	lo.puck_game_set_bogus_disabled(c.puck_game, 0)
 	lo.lwcontext_set_custom_puck_game_stage(c, lo.LVT_DONTCARE, lo.LAE_DONTCARE)
+	local items_in_page = lo.puck_game_leaderboard_items_in_page(c.viewport_aspect_ratio)
 	if c.puck_game.game_state == lo.LPGS_SEARCHING then
 		lo.tcp_send_cancelqueue(c.tcp, c.tcp.user_id)
 		c.puck_game.game_state = lo.LPGS_MAIN_MENU
 	elseif c.game_scene == lo.LGS_LEADERBOARD then
-		lo.request_player_reveal_leaderboard(c.tcp)
+		lo.request_player_reveal_leaderboard(c.tcp, items_in_page)
 		lo.change_to_physics(c)
 	elseif c.puck_game.game_state == lo.LPGS_TUTORIAL then
-		lo.script_cleanup_all_coros(c)
+		if lo.puck_game_is_tutorial_stoppable(c.puck_game) == 1 then
+			lo.script_cleanup_all_coros(c)
+		end
 		lo.lw_go_back(c, c.android_native_activity)
 	elseif c.puck_game.game_state == lo.LPGS_BATTLE then
 		-- refresh leaderboard
-		lo.request_player_reveal_leaderboard(c.tcp)
+		lo.request_player_reveal_leaderboard(c.tcp, items_in_page)
 		lo.lw_go_back(c, c.android_native_activity)
 	else
 		lo.lw_go_back(c, c.android_native_activity)

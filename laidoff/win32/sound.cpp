@@ -64,7 +64,11 @@ int load_sound(int i) {
     int num_chan, samprate;
     short *output;
     int bits_per_samp = 16;
-    unsigned int num_samples = stb_vorbis_decode_filename(SOUND_FILE[i], &num_chan, &samprate, &output);
+    int num_samples = stb_vorbis_decode_filename(SOUND_FILE[i], &num_chan, &samprate, &output);
+    if (num_samples <= 0) {
+        LOGE("Loading sfx %s failed!", SOUND_FILE[i]);
+        return -1;
+    }
     LOGI("Loading sfx %s...", SOUND_FILE[i]);
     LOGI(" - sfx num_samples: %u", num_samples);
     LOGI(" - sfx num_chan: %d", num_chan);

@@ -38,6 +38,9 @@ local c = lo.script_context()
 
 local Data = reload_require('data')
 print('Data loaded!')
+
+reload_require('ttl')
+
 local data = Data:new()
 
 local Field = reload_require('field')
@@ -83,7 +86,7 @@ end
 
 -- Lua handler for logc frame finish events emitted from C
 function on_ui_event(id, w_ratio, h_ratio)
-	--print(string.format('ui event emitted from C:%s (w_ratio:%.2f, h_ratio:%.2f)', id, w_ratio, h_ratio))
+	print(string.format('ui event emitted from C:%s (w_ratio:%.2f, h_ratio:%.2f)', id, w_ratio, h_ratio))
 	local gtid = 'catapult'
 	if id == 'seltower0' then gtid = 'catapult'
 	elseif id == 'seltower1' then gtid = 'crossbow'
@@ -114,17 +117,18 @@ function on_ui_event(id, w_ratio, h_ratio)
 	elseif id == 'leaderboard_page_button' then
 		--print(c.last_leaderboard.Current_page)
 		if c.last_leaderboard.Current_page ~= 0 then
+			local items_in_page = lo.puck_game_leaderboard_items_in_page(c.viewport_aspect_ratio)
 			if w_ratio < 1.0/3 then
 				-- go to the previous page if possible
 				if c.last_leaderboard.Current_page > 1 then
-					lo.request_leaderboard(c.tcp, c.last_leaderboard.Current_page - 1)
+					lo.request_leaderboard(c.tcp, items_in_page, c.last_leaderboard.Current_page - 1)
 				end
 			elseif w_ratio < 2.0/3 then
 				-- go to the page which reveals the player
-				lo.request_player_reveal_leaderboard(c.tcp)
+				lo.request_player_reveal_leaderboard(c.tcp, items_in_page)
 			elseif c.last_leaderboard.Current_page < c.last_leaderboard.Total_page then
 				-- go to the next page if possible
-				lo.request_leaderboard(c.tcp, c.last_leaderboard.Current_page + 1)
+				lo.request_leaderboard(c.tcp, items_in_page, c.last_leaderboard.Current_page + 1)
 			end
 		end
 	elseif id == 'change_nickname_button' then
@@ -162,6 +166,10 @@ function on_ui_event(id, w_ratio, h_ratio)
 		lo.puck_game_clear_match_data(c, c.puck_game)
 		lo.puck_game_roll_to_practice(c.puck_game)
 	else
+		local ship_id = id:match("ship(%d+)")
+		if ship_id then
+			on_ttl_ship_selected(tonumber(ship_id))
+		end
 		lo.construct_set_preview_enable(c.construct, 0)
 		return 0
 	end
@@ -206,9 +214,12 @@ if field_filename then
 	print('field_module:test()', field_module:test())
 end
 
-if lo.puck_game_is_tutorial_completed(c.puck_game) == 1 then
-else
-	on_ui_event('tutorial_button', 0, 0)
+function on_puck_game_enter()
+	if lo.puck_game_is_tutorial_completed(c.puck_game) == 1 then
+	else
+		lo.script_cleanup_all_coros(c)
+		on_ui_event('tutorial_button', 0, 0)
+	end
 end
 
 return 1

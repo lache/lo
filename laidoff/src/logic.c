@@ -1154,7 +1154,7 @@ static void parse_countries(LWCONTEXT* pLwc, LWCOUNTRYARRAY* country_array, cons
     } else {
         LOGE("Atlas conf file %s not found!", conf_path);
         fflush(stdout);
-        exit(-2);
+        //exit(-2);
     }
     free(conf_token);
 }

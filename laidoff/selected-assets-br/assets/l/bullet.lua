@@ -82,7 +82,7 @@ function M:play_explosion()
 	local pt = lo.new_vec3(self.x, self.y, self.z)
 	local field = lo.lwcontext_field(c)
 	local ps = lo.field_ps(field)
-	lo.ps_play_new_pos(ps, pt)
+	lo.ps_play_new_pos(c.ps_context, ps, pt)
 	lo.delete_vec3(pt)
 end
 
