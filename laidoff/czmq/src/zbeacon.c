@@ -32,6 +32,8 @@
 //#ifdef IOS
 //#include <net/if.h>
 //#endif
+unsigned int if_nametoindex (const char *ifname);
+char *if_indextoname (unsigned int ifindex, char *ifname);
 
 //  Constants
 #define INTERVAL_DFLT  1000         //  Default interval = 1 second

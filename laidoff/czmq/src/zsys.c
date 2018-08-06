@@ -21,6 +21,8 @@
 */
 
 #include "czmq_classes.h"
+unsigned int if_nametoindex (const char *ifname);
+char *if_indextoname (unsigned int ifindex, char *ifname);
 
 //#include "platform.hpp"
 //
