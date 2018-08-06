@@ -28,19 +28,19 @@ const static int tile_chunk_count_y = 2;
 
 const static float global_scale = 0.04f;
 
-inline int tile_chunk_render_tile_count() {
+int tile_chunk_render_tile_count() {
     return (tile_chunk_tile_count_x) * (tile_chunk_tile_count_y);
 }
 
-inline int tile_chunk_vertex_count() {
+int tile_chunk_vertex_count() {
     return ARRAY_SIZE(single_tile) * tile_chunk_render_tile_count();
 }
 
-inline float tile_chunk_width() {
+float tile_chunk_width() {
     return 2.0f * (tile_chunk_tile_count_x);
 }
 
-inline float tile_chunk_height() {
+float tile_chunk_height() {
     return 2.0f * (tile_chunk_tile_count_y);
 }
 
