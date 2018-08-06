@@ -40,6 +40,12 @@ if (MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_CRT_NONSTDC_NO_WARNINGS /D_CRT_SECURE_NO_WARNINGS /WX")
 endif ()
 
+# mbedtls 의존성 추가
+add_subdirectory(mbedtls)
+
+include_directories(mbedtls/include)
+
+
 # ZeroMQ CMake 의존성 추가
 
 # ZeroMQ 라이브러리 중 테스트 프로젝트는 빌드하지 않는다.
@@ -278,6 +284,7 @@ if (NOT SERVER_ONLY)
             ${WINSOCK2}
 		lz4_static
         tinycthread
+        mbedtls
             )
 endif (NOT SERVER_ONLY)
 
@@ -305,6 +312,7 @@ target_link_libraries(laidoff-server
         tinycthread
         ${CMAKE_THREAD_LIBS_INIT} # pthread deps on Linux server build
         lz4_static
+        mbedtls
         )
 
 if (NOT SERVER_ONLY)

@@ -63,6 +63,7 @@
 #include "render_dynamic_vbo.h"
 #include "render_tilemap.h"
 #include "lwfbo.h"
+#include "test_srp.h"
 // SWIG output file
 #include "lo_wrap.inl"
 
@@ -1499,6 +1500,7 @@ void init_action(LWCONTEXT* pLwc) {
 }
 
 LWCONTEXT* lw_init_initial_size(int width, int height) {
+    test_srp_main();
 
     init_ext_image_lib();
 

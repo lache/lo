@@ -41,6 +41,11 @@ if (MSVC)
 endif (MSVC)
 endmacro(ADD_MSVC_PRECOMPILED_HEADER)
 
+# mbedtls 의존성 추가
+add_subdirectory(mbedtls)
+
+include_directories(mbedtls/include)
+
 # lz4
 
 add_subdirectory(lz4/contrib/cmake_unofficial)
@@ -106,7 +111,7 @@ set(ServerSources
 add_msvc_precompiled_header("precompiled.hpp" "precompiled.cpp" ServerSources)
 add_executable(sea-server ${ServerSources} AStar.c AStar.h CohenSutherland.c CohenSutherland.h)
 
-target_link_libraries(sea-server LINK_PUBLIC ${Boost_LIBRARIES} lz4_static ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(sea-server LINK_PUBLIC ${Boost_LIBRARIES} lz4_static ${CMAKE_THREAD_LIBS_INIT} mbedtls)
 
 if (UNIX AND NOT APPLE)
   include(PrecompiledHeader.cmake)
