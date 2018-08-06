@@ -44,7 +44,7 @@ endif ()
 add_subdirectory(mbedtls)
 
 include_directories(mbedtls/include)
-
+add_definitions(-DMBEDTLS_CONFIG_FILE=\"mbedtls/mbedtls-config.h\")
 
 # ZeroMQ CMake 의존성 추가
 

@@ -71,6 +71,7 @@ include_directories(../../../../../tinycthread/source)
 # mbedtls
 add_subdirectory(../../../../../mbedtls mbedtls)
 include_directories(../../../../../mbedtls/include)
+add_definitions(-DMBEDTLS_CONFIG_FILE=\"mbedtls/mbedtls-config.h\")
 
 file(GLOB LUA_LIB
     "../../../../../lua-5.3.4/*.h"
