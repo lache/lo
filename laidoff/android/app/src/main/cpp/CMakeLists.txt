@@ -68,6 +68,9 @@ include_directories("../../../../../lz4/lib")
 add_subdirectory(../../../../../tinycthread tinycthread)
 include_directories(../../../../../tinycthread/source)
 
+# mbedtls
+add_subdirectory(../../../../../mbedtls mbedtls)
+include_directories(../../../../../mbedtls/include)
 
 file(GLOB LUA_LIB
     "../../../../../lua-5.3.4/*.h"
@@ -121,7 +124,8 @@ target_include_directories(native-activity PRIVATE
                            ../../../../../ode/ode/src
                            ../../../../../recastnavigation/Detour/Include
 						   ../../../../../litehtml/include
-                           ../../../../../lz4/lib)
+                           ../../../../../lz4/lib
+                           ../../../../../mbedtls/include)
 
 # add lib dependencies
 target_link_libraries(native-activity
@@ -134,7 +138,5 @@ target_link_libraries(native-activity
                       czmq
                       litehtml
                       lz4_static
-                      tinycthread)
-
-                      
-
+                      tinycthread
+                      mbedtls)
