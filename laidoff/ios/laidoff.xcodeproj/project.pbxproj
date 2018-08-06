@@ -4015,6 +4015,7 @@
 					"-Werror=partial-availability",
 					"-DCZMQ_BUILD_DRAFT_API",
 					"-I../mbedtls/include",
+					"-DMBEDTLS_CONFIG_FILE=\\\"mbedtls/mbedtls-config.h\\\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.popsongremix.laidoff;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -4056,6 +4057,7 @@
 					"-Werror=partial-availability",
 					"-DCZMQ_BUILD_DRAFT_API",
 					"-I../mbedtls/include",
+					"-DMBEDTLS_CONFIG_FILE=\\\"mbedtls/mbedtls-config.h\\\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.popsongremix.laidoff;
 				PRODUCT_NAME = "$(TARGET_NAME)";
