@@ -959,3 +959,12 @@ void srp_user_verify_session(struct SRPUser * usr, const unsigned char * bytes_H
     if (memcmp(usr->H_AMK, bytes_HAMK, hash_length(usr->hash_alg)) == 0)
         usr->authenticated = 1;
 }
+
+
+void srp_hexify(const unsigned char * b, int len_b, const char ** str) {
+    char* out = calloc(len_b * 2 + 1, sizeof(char));
+    for (int i = 0; i < len_b; i++) {
+        sprintf(out + i * 2, "%02x", b[i]);
+    }
+    *str = out;
+}

@@ -5,6 +5,7 @@ local c = lo.script_context()
 lo.htmlui_set_online(c.htmlui, 0)
 
 local select_context = {}
+local custom_http_headers = {}
 local way_mode = 0
 local cam_iso_top_mode = 0
 local ttl_url_history = {}
@@ -78,10 +79,19 @@ function select(type, id)
     print(http_header())
 end
 
+function add_custom_http_header(type, id)
+    custom_http_headers[type] = id
+end
+
 function http_header()
     local r = ''
+    -- Select Context
     for key, value in pairs(select_context) do
         r = r .. 'X-Select-' .. key:sub(1,1):upper()..key:sub(2) .. ': ' .. table.concat(value, ',') .. '\r\n'
+    end
+    -- Custom Headers
+    for key, value in pairs(custom_http_headers) do
+        r = r .. key .. ': ' .. value .. '\r\n'
     end
     return r
 end
@@ -407,4 +417,82 @@ end
 function fire_captain(ship_id)
     print('fire_captain')
     lo.htmlui_execute_anchor_click(c.htmlui, string.format('/fireCaptain?shipId=%d', ship_id))
+end
+
+function create_account()
+    print('create_account')
+    add_custom_http_header('X-Account-Id', 'testuser')
+    add_custom_http_header('X-Account-S', 'ssssssssss')
+    add_custom_http_header('X-Account-V', 'vvvvvvvv')
+
+    local alg = lo.SRP_SHA1
+    local ng_type = lo.SRP_NG_512
+    local username = 'testuser'
+    local n_hex = nil
+    local g_hex = nil
+
+    -- [1] Client: Register a new account
+    local pw_len = 8
+    local pw = lo.new_LWUNSIGNEDCHAR(pw_len)
+    lo.LWUNSIGNEDCHAR_setitem(pw, 0, 0x12)
+    lo.LWUNSIGNEDCHAR_setitem(pw, 1, 0x34)
+    lo.LWUNSIGNEDCHAR_setitem(pw, 2, 0x56)
+    lo.LWUNSIGNEDCHAR_setitem(pw, 3, 0x78)
+    lo.LWUNSIGNEDCHAR_setitem(pw, 4, 0x9a)
+    lo.LWUNSIGNEDCHAR_setitem(pw, 5, 0xbc)
+    lo.LWUNSIGNEDCHAR_setitem(pw, 6, 0xde)
+    lo.LWUNSIGNEDCHAR_setitem(pw, 7, 0xf0)
+    local bytes_s, len_s, bytes_v, len_v = lo.srp_create_salted_verification_key(
+        lo.SRP_SHA1,
+        lo.SRP_NG_512,
+        username,
+        pw,
+        pw_len,
+        nil,
+        nil)
+    print(bytes_s, len_s, bytes_v, len_v)
+    
+    -- [2] Client: Create an account object for authentication
+    local usr = lo.srp_user_new(alg, ng_type, username, pw, pw_len, n_hex, g_hex)
+    local auth_username, bytes_A, len_A = lo.srp_user_start_authentication(usr)
+    print(auth_username, bytes_A, len_A)
+
+    -- [3] Server: Create a verifier
+    local ver, bytes_B, len_B = lo.srp_verifier_new(alg, ng_type, username, bytes_s, len_s, bytes_v, len_v, bytes_A, len_A, n_hex, g_hex)
+    print(ver, bytes_B, len_B)
+    if bytes_B == nil then
+        print('Verifier SRP-6a safety check violated!')
+        return
+    end
+
+    -- [4] Client
+    local bytes_M, len_M = lo.srp_user_process_challenge(usr, bytes_s, len_s, bytes_B, len_B)
+    print(bytes_M, len_M)
+    if bytes_M == nil then
+        print('User SRP-6a safety check violation!')
+        return
+    end
+
+    -- [5] Server
+    local bytes_HAMK = lo.srp_verifier_verify_session(ver, bytes_M)
+    print(bytes_HAMK)
+    if bytes_HAMK == nil then
+        print('User authentication failed!')
+        return
+    end
+
+    -- [6] Client check
+    lo.srp_user_verify_session(usr, bytes_HAMK);
+    if lo.srp_user_is_authenticated(usr) ~= 1 then
+        print('Server authentication failed!')
+        return
+    end
+
+    local hexstr_s = lo.srp_hexify(bytes_s, len_s)
+    print('len_s:',len_s,'s:',hexstr_s)
+
+    lo.delete_LWUNSIGNEDCHAR(pw)
+
+    lo.htmlui_execute_anchor_click(c.htmlui, '/createAccount')
+
 end

@@ -79,8 +79,8 @@ int test_srp_main() {
     struct SRPVerifier * ver; // HOST-PRIVATE
     struct SRPUser     * usr; // CLIENT-PRIVATE
 
-    const unsigned char * bytes_s = 0; // SHARED
-    const unsigned char * bytes_v = 0; // SHARED
+    const unsigned char * bytes_s = 0; // SHARED salt
+    const unsigned char * bytes_v = 0; // SHARED verifier
     const unsigned char * bytes_A = 0; // SHARED
     const unsigned char * bytes_B = 0; // SHARED
 
@@ -120,14 +120,14 @@ int test_srp_main() {
                                        &bytes_s, &len_s,
                                        &bytes_v, &len_v,
                                        n_hex, g_hex);
-
+    // User-> Host: (username, bytes_s, bytes_v)
 
 
     start = get_usec();
 
     for (i = 0; i < NITER; i++) {
         printf("iter %d\n", i);
-        // CLIENT
+        // CLIENT - open a new session
         usr = srp_user_new(alg, ng_type, username,
                            password_cuchar,
                            strlen(password), n_hex, g_hex);

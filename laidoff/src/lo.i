@@ -1,4 +1,36 @@
 %module lo
+
+
+/* -----------------------------------------------------------------------------
+ * wchar.i
+ *
+ * Typemaps for the wchar_t type
+ * These are mapped to a Lua string and are passed around by value.
+ * ----------------------------------------------------------------------------- */
+
+// note: only support for pointer right now, not fixed length strings
+// TODO: determine how long a const wchar_t* is so we can write wstr2str() 
+// & do the output typemap
+
+%{
+#include <stdlib.h>
+
+%}
+
+%typemap(in, numinputs=0) const char **OUTPUT_NO_FREE (char * temp) { $1 = &temp; }
+%typemap(argout) const char **OUTPUT_NO_FREE {
+if ($1==0) { lua_pushnil(L); } else { lua_pushstring(L, *$1); } SWIG_arg++;
+}
+
+%typemap(in, numinputs=0) const char **OUTPUT (char * temp) { $1 = &temp; }
+%typemap(argout) const char **OUTPUT {
+if ($1==0) { lua_pushnil(L); } else { lua_pushstring(L, *$1); } SWIG_arg++;
+}
+
+%typemap(freearg) const char **OUTPUT {
+if (*$1) free(*$1);
+}
+
 %begin %{
 #ifdef WIN32
 #pragma warning(push)
@@ -102,10 +134,13 @@
 #include "lwttl.h"
 #include "lwlnglat.h"
 #include "lwhostaddr.h"
+#include "srp.h"
 #ifdef WIN32
 #pragma warning(pop)
 #endif
 %}
+
+%include <typemaps.i>
 
 %ignore s_set_id;
 %ignore _LWTIMEPOINT;
@@ -224,9 +259,20 @@
 %include "lwlnglat.h"
 %include "lwhostaddr.h"
 
+// srp_create_salted_verification_key
+// srp_user_start_authentication
+// srp_verifier_new
+%apply SWIGTYPE** OUTPUT {const unsigned char **};
+%apply const char** OUTPUT_NO_FREE {const char **username};
+%apply const char** OUTPUT {const char **str};
+%apply int* OUTPUT {int *};
+
+%include "srp.h"
+
 // using the C-array
 %include <carrays.i>
 %array_functions(int,int)
 %array_functions(float,float)
+%array_functions(LWUNSIGNEDCHAR,LWUNSIGNEDCHAR)
 %array_functions(LWPUCKGAMEOBJECT,PUCKGAMEOBJECT)
 %array_functions(LWPUCKGAMETOWER,PUCKGAMETOWER)
