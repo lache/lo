@@ -464,35 +464,45 @@ end
 
 function create_account()
     print('create_account')
-    
-    local username = 'testuser2'
 
-    -- [1] Client: Register a new account
-    local len_pw = 8
-    local bytes_pw = lo.new_LWUNSIGNEDCHAR(len_pw)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_pw, 0, 0x12)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_pw, 1, 0x34)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_pw, 2, 0x56)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_pw, 3, 0x78)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_pw, 4, 0x9a)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_pw, 5, 0xbc)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_pw, 6, 0xde)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_pw, 7, 0xf0)
-    local bytes_s, len_s, bytes_v, len_v = lo.srp_create_salted_verification_key(
-        lo.SRP_SHA1,
-        lo.SRP_NG_512,
-        username,
-        bytes_pw,
-        len_pw,
-        nil,
-        nil)
-    print(bytes_s, len_s, bytes_v, len_v)
+    local errcode_username, username = lo.read_user_data_file_string(c, 'account-id')
+    local errcode_s, bytes_s, len_s = lo.read_user_data_file_binary(c, 'account-s')
+    local errcode_v, bytes_v, len_v = lo.read_user_data_file_binary(c, 'account-v')
+    local errcode_pw, bytes_pw, len_pw = lo.read_user_data_file_binary(c, 'account-pw')
+    print(username, bytes_s, len_s, bytes_v, len_v, bytes_pw, len_pw)
+    if errcode_username == 0 and errcode_s == 0 and errcode_v == 0 and errcode_pw == 0 then
+        lo.show_sys_msg(c.def_sys_msg, '이미 계정 캐시 파일 존재...')
+    else
+        username = 'testuser2'
 
-    -- Save I(username), s, v and pw to client disk
-    lo.write_user_data_file_string(c, 'account-id', username)
-    lo.write_user_data_file_binary(c, 'account-s', bytes_s, len_s)
-    lo.write_user_data_file_binary(c, 'account-v', bytes_v, len_v)
-    lo.write_user_data_file_binary(c, 'account-pw', bytes_pw, len_pw)
+        -- [1] Client: Register a new account
+        len_pw = 8
+        bytes_pw = lo.new_LWUNSIGNEDCHAR(len_pw)
+
+        lo.LWUNSIGNEDCHAR_setitem(bytes_pw, 0, 0x12)
+        lo.LWUNSIGNEDCHAR_setitem(bytes_pw, 1, 0x34)
+        lo.LWUNSIGNEDCHAR_setitem(bytes_pw, 2, 0x56)
+        lo.LWUNSIGNEDCHAR_setitem(bytes_pw, 3, 0x78)
+        lo.LWUNSIGNEDCHAR_setitem(bytes_pw, 4, 0x9a)
+        lo.LWUNSIGNEDCHAR_setitem(bytes_pw, 5, 0xbc)
+        lo.LWUNSIGNEDCHAR_setitem(bytes_pw, 6, 0xde)
+        lo.LWUNSIGNEDCHAR_setitem(bytes_pw, 7, 0xf0)
+        bytes_s, len_s, bytes_v, len_v = lo.srp_create_salted_verification_key(
+            lo.SRP_SHA1,
+            lo.SRP_NG_512,
+            username,
+            bytes_pw,
+            len_pw,
+            nil,
+            nil)
+        print(bytes_s, len_s, bytes_v, len_v)
+
+        -- Save I(username), s, v and pw to client disk
+        lo.write_user_data_file_string(c, 'account-id', username)
+        lo.write_user_data_file_binary(c, 'account-s', bytes_s, len_s)
+        lo.write_user_data_file_binary(c, 'account-v', bytes_v, len_v)
+        lo.write_user_data_file_binary(c, 'account-pw', bytes_pw, len_pw)
+    end
 
     -- Send I(username), s and v to server
     local hexstr_s = lo.srp_hexify(bytes_s, len_s)
@@ -562,6 +572,7 @@ function on_json_body(json_body)
         print(bytes_M, len_M)
         if bytes_M == nil then
             print('User SRP-6a safety check violation!')
+            lo.show_sys_msg(c.def_sys_msg, '인증 실패! :(')
             return
         end
 
@@ -577,8 +588,10 @@ function on_json_body(json_body)
         lo.srp_user_verify_session(auth_context.usr, bytes_HAMK);
         if lo.srp_user_is_authenticated(auth_context.usr) ~= 1 then
             print('Server authentication failed!')
+            lo.show_sys_msg(c.def_sys_msg, '인증 실패!! :(')
             return
         end
         print('Authed :)')
+        lo.show_sys_msg(c.def_sys_msg, '인증 성공 :)')
     end
 end
