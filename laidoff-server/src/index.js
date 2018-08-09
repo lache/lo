@@ -10,7 +10,8 @@ const glob = require('glob')
 const addon = require('../build/Release/module')
 const value = 8
 
-console.log(`${value} times 2 equals`, addon.my_function(value, 9))
+const r = addon.my_function(value, 9)
+console.log(`${value} times 2 equals`, r)
 
 if (argv.init) {
   init.initialize()

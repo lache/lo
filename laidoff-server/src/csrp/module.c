@@ -6,7 +6,7 @@ napi_value MyFunction(napi_env env, napi_callback_info info) {
   napi_status status;
   size_t argc = 2;
   int number = 0, number2 = 0;
-  napi_value argv[1];
+  napi_value argv[2];
   status = napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
 
   if (status != napi_ok) {
