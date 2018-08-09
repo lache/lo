@@ -60,6 +60,14 @@ CREATE TABLE IF NOT EXISTS `captain` (
 	`template_id`	INTEGER,
 	`user_id`	INTEGER
 );
+DROP TABLE IF EXISTS `account`;
+CREATE TABLE IF NOT EXISTS `account` (
+	`account_id`	TEXT NOT NULL UNIQUE,
+	`s`	TEXT,
+	`v`	TEXT,
+	`created`	DATETIME DEFAULT CURRENT_TIMESTAMP,
+	PRIMARY KEY(`account_id`)
+);
 DROP INDEX IF EXISTS `ux_guid`;
 CREATE UNIQUE INDEX IF NOT EXISTS `ux_guid` ON `user` (
 	`guid`
