@@ -205,11 +205,6 @@ public:
                     char s[1024*512];
                     sprintf(s, "on_json_body([===[%s]===])", pLwc->tcp_ttl->html_body);
                     size_t s_len = strlen(s);
-                    /*for (size_t i = 0; i < s_len; i++) {
-                        if (s[i] == '\\') {
-                            s[i] = '_';
-                        }
-                    }*/
                     logic_emit_evalute_with_name_async(pLwc, s, s_len, s);
                 }
 			} else {

@@ -25,6 +25,7 @@ app.use(express.static('./src/html'))
 app.set('views', './src/views')
 app.set('view engine', 'pug')
 app.set('seaUdpClient', seaUdpClient)
+app.set('verifierMap', {})
 
 // register all HTTP handlers
 glob('./src/httphandler/*.js', (err, files) => {

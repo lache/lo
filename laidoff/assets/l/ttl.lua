@@ -1,5 +1,6 @@
 local inspect = require('inspect')
 local neturl = require('neturl')
+local json = require('json')
 
 local c = lo.script_context()
 lo.htmlui_set_online(c.htmlui, 0)
@@ -424,6 +425,7 @@ local alg = lo.SRP_SHA1
 local ng_type = lo.SRP_NG_512
 local n_hex = nil
 local g_hex = nil
+local auth_context = {}
 
 function start_account_auth()
     local errcode_username, username = lo.read_user_data_file_string(c, 'account-id')
@@ -438,14 +440,26 @@ function start_account_auth()
     end
 
     -- [2] Client: Create an account object for authentication
-    local usr = lo.srp_user_new(alg, ng_type, username, bytes_pw, len_pw, n_hex, g_hex)
-    local auth_username, bytes_A, len_A = lo.srp_user_start_authentication(usr)
+    auth_context.usr = lo.srp_user_new(alg, ng_type, username, bytes_pw, len_pw, n_hex, g_hex)
+    local auth_username, bytes_A, len_A = lo.srp_user_start_authentication(auth_context.usr)
     print(auth_username, bytes_A, len_A)
     local hexstr_A = lo.srp_hexify(bytes_A, len_A)
     -- Send 'A' to server
     add_custom_http_header('X-Account-Id', username)
     add_custom_http_header('X-Account-A', hexstr_A)
     lo.htmlui_execute_anchor_click(c.htmlui, '/startAuth1')
+    auth_context.bytes_s = bytes_s
+    auth_context.len_s = len_s
+
+    local ver, bytes_B, len_B = lo.srp_verifier_new(alg, ng_type, username, bytes_s, len_s, bytes_v, len_v, bytes_A, len_A, n_hex, g_hex)
+    print(ver, bytes_B, len_B)
+    local hexstr_s = lo.srp_hexify(bytes_s, len_s)
+    local hexstr_v = lo.srp_hexify(bytes_v, len_v)
+    local hexstr_B = lo.srp_hexify(bytes_B, len_B)
+    print('hexstr_s', hexstr_s)
+    print('hexstr_v', hexstr_v)
+    print('hexstr_A', hexstr_A)
+    print('hexstr_B', hexstr_B)
 end
 
 function create_account()
@@ -531,4 +545,40 @@ function create_account()
     lo.delete_LWUNSIGNEDCHAR(pw)
 
     
+end
+
+function on_json_body(json_body)
+    local jb = json.parse(json_body)
+    if jb.B ~= nil then
+        print('B', jb.B)
+        auth_context.bytes_B, auth_context.len_B = lo.srp_unhexify(jb.B)
+        print(auth_context.bytes_B, auth_context.len_B)
+        -- [4] Client
+        local bytes_M, len_M = lo.srp_user_process_challenge(auth_context.usr,
+                                                             auth_context.bytes_s,
+                                                             auth_context.len_s,
+                                                             auth_context.bytes_B,
+                                                             auth_context.len_B)
+        print(bytes_M, len_M)
+        if bytes_M == nil then
+            print('User SRP-6a safety check violation!')
+            return
+        end
+
+        local hexstr_M = lo.srp_hexify(bytes_M, len_M)
+        print('len_M:',len_M,'M:',hexstr_M)
+
+        add_custom_http_header('X-Account-M', hexstr_M)
+        lo.htmlui_execute_anchor_click(c.htmlui, '/startAuth2')
+    elseif jb.HAMK ~= nil then
+        print('HAMK', jb.HAMK)
+        local bytes_HAMK, len_HAMK = lo.srp_unhexify(jb.HAMK)
+        print(bytes_HAMK, len_HAMK)
+        lo.srp_user_verify_session(auth_context.usr, bytes_HAMK);
+        if lo.srp_user_is_authenticated(auth_context.usr) ~= 1 then
+            print('Server authentication failed!')
+            return
+        end
+        print('Authed :)')
+    end
 end

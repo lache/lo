@@ -289,7 +289,17 @@ void refresh_body(LWTCP* tcp, void* htmlui, const char* html_response) {
         }
     } else {
         // Plain GET reply
-        htmlui_set_refresh_html_body(htmlui, 1);
+        if (strstr(html_response, "Content-Type: application/json")) {
+            LOGI("JSON type HTTP response detected from header.");
+            char* s = malloc(1024*512);
+            sprintf(s, "on_json_body([===[%s]===])", tcp->html_body);
+            size_t s_len = strlen(s);
+            // call script synchronously (since this is logic thread)
+            script_evaluate_with_name(tcp->pLwc->L, s, s_len, "HTTP JSON response");
+            free(s);
+        } else {
+            htmlui_set_refresh_html_body(htmlui, 1);
+        }
         // overlapping prevent down
         tcp->html_wait = 0;
     }
