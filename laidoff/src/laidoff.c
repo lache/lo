@@ -1820,3 +1820,37 @@ void set_package_version(const char* package_version) {
 const char* package_version() {
     return packageVersion;
 }
+
+void write_user_data_file_string(const LWCONTEXT* pLwc, const char* filename, const char* str) {
+    write_file_string(pLwc->user_data_path,
+                      filename,
+                      str);
+}
+
+void write_user_data_file_binary(const LWCONTEXT* pLwc, const char* filename, const unsigned char* dat, int dat_len) {
+    write_file_binary(pLwc->user_data_path,
+                      filename,
+                      (const char*)dat,
+                      (size_t)dat_len);
+}
+
+int read_user_data_file_string(const LWCONTEXT* pLwc, const char* filename, const char** str) {
+    char* out;
+    int ret_code = read_file_string_all(pLwc->user_data_path,
+                                        filename,
+                                        &out);
+    *str = out;
+    return ret_code;
+}
+
+int read_user_data_file_binary(const LWCONTEXT* pLwc, const char* filename, const unsigned char** dat, int* dat_len) {
+    char* out;
+    size_t out_len;
+    int ret_code = read_file_binary_all(pLwc->user_data_path,
+                                        filename,
+                                        &out_len,
+                                        &out);
+    *dat = out;
+    *dat_len = (int)out_len;
+    return ret_code;
+}

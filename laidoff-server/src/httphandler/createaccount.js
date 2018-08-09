@@ -14,6 +14,7 @@ module.exports = app => {
     console.log(v)
     let resultMsg, errMsg
     if (db.createAccount(accountId, s, v)) {
+      resultMsg = '계정 생성 성공'
     } else {
       errMsg = '새 계정 생성 실패!'
     }

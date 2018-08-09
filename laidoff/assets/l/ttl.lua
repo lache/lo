@@ -419,38 +419,81 @@ function fire_captain(ship_id)
     lo.htmlui_execute_anchor_click(c.htmlui, string.format('/fireCaptain?shipId=%d', ship_id))
 end
 
+-- Shared constants regarding to auth
+local alg = lo.SRP_SHA1
+local ng_type = lo.SRP_NG_512
+local n_hex = nil
+local g_hex = nil
+
+function start_account_auth()
+    local errcode_username, username = lo.read_user_data_file_string(c, 'account-id')
+    local errcode_s, bytes_s, len_s = lo.read_user_data_file_binary(c, 'account-s')
+    local errcode_v, bytes_v, len_v = lo.read_user_data_file_binary(c, 'account-v')
+    local errcode_pw, bytes_pw, len_pw = lo.read_user_data_file_binary(c, 'account-pw')
+    print(username, bytes_s, len_s, bytes_v, len_v, bytes_pw, len_pw)
+    if errcode_username == 0 and errcode_s == 0 and errcode_v == 0 and errcode_pw == 0 then
+        print('Auth data loaded successfully.')
+    else
+        print('Auth data corrupted!')
+    end
+
+    -- [2] Client: Create an account object for authentication
+    local usr = lo.srp_user_new(alg, ng_type, username, bytes_pw, len_pw, n_hex, g_hex)
+    local auth_username, bytes_A, len_A = lo.srp_user_start_authentication(usr)
+    print(auth_username, bytes_A, len_A)
+    local hexstr_A = lo.srp_hexify(bytes_A, len_A)
+    -- Send 'A' to server
+    add_custom_http_header('X-Account-Id', username)
+    add_custom_http_header('X-Account-A', hexstr_A)
+    lo.htmlui_execute_anchor_click(c.htmlui, '/startAuth1')
+end
+
 function create_account()
     print('create_account')
     
-    local alg = lo.SRP_SHA1
-    local ng_type = lo.SRP_NG_512
     local username = 'testuser2'
-    local n_hex = nil
-    local g_hex = nil
 
     -- [1] Client: Register a new account
-    local pw_len = 8
-    local pw = lo.new_LWUNSIGNEDCHAR(pw_len)
-    lo.LWUNSIGNEDCHAR_setitem(pw, 0, 0x12)
-    lo.LWUNSIGNEDCHAR_setitem(pw, 1, 0x34)
-    lo.LWUNSIGNEDCHAR_setitem(pw, 2, 0x56)
-    lo.LWUNSIGNEDCHAR_setitem(pw, 3, 0x78)
-    lo.LWUNSIGNEDCHAR_setitem(pw, 4, 0x9a)
-    lo.LWUNSIGNEDCHAR_setitem(pw, 5, 0xbc)
-    lo.LWUNSIGNEDCHAR_setitem(pw, 6, 0xde)
-    lo.LWUNSIGNEDCHAR_setitem(pw, 7, 0xf0)
+    local len_pw = 8
+    local bytes_pw = lo.new_LWUNSIGNEDCHAR(len_pw)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_pw, 0, 0x12)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_pw, 1, 0x34)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_pw, 2, 0x56)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_pw, 3, 0x78)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_pw, 4, 0x9a)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_pw, 5, 0xbc)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_pw, 6, 0xde)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_pw, 7, 0xf0)
     local bytes_s, len_s, bytes_v, len_v = lo.srp_create_salted_verification_key(
         lo.SRP_SHA1,
         lo.SRP_NG_512,
         username,
-        pw,
-        pw_len,
+        bytes_pw,
+        len_pw,
         nil,
         nil)
     print(bytes_s, len_s, bytes_v, len_v)
+
+    -- Save I(username), s, v and pw to client disk
+    lo.write_user_data_file_string(c, 'account-id', username)
+    lo.write_user_data_file_binary(c, 'account-s', bytes_s, len_s)
+    lo.write_user_data_file_binary(c, 'account-v', bytes_v, len_v)
+    lo.write_user_data_file_binary(c, 'account-pw', bytes_pw, len_pw)
+
+    -- Send I(username), s and v to server
+    local hexstr_s = lo.srp_hexify(bytes_s, len_s)
+    local hexstr_v = lo.srp_hexify(bytes_v, len_v)
+    print('len_s:',len_s,'s:',hexstr_s)
+    print('len_v:',len_v,'v:',hexstr_v)
+
+    add_custom_http_header('X-Account-Id', username)
+    add_custom_http_header('X-Account-S', hexstr_s)
+    add_custom_http_header('X-Account-V', hexstr_v)
+    lo.htmlui_execute_anchor_click(c.htmlui, '/createAccount')
+
     
     -- [2] Client: Create an account object for authentication
-    local usr = lo.srp_user_new(alg, ng_type, username, pw, pw_len, n_hex, g_hex)
+    local usr = lo.srp_user_new(alg, ng_type, username, bytes_pw, len_pw, n_hex, g_hex)
     local auth_username, bytes_A, len_A = lo.srp_user_start_authentication(usr)
     print(auth_username, bytes_A, len_A)
 
@@ -485,16 +528,7 @@ function create_account()
         return
     end
 
-    local hexstr_s = lo.srp_hexify(bytes_s, len_s)
-    local hexstr_v = lo.srp_hexify(bytes_v, len_v)
-    print('len_s:',len_s,'s:',hexstr_s)
-    print('len_v:',len_v,'v:',hexstr_v)
-
-    add_custom_http_header('X-Account-Id', username)
-    add_custom_http_header('X-Account-S', hexstr_s)
-    add_custom_http_header('X-Account-V', hexstr_v)
-
     lo.delete_LWUNSIGNEDCHAR(pw)
 
-    lo.htmlui_execute_anchor_click(c.htmlui, '/createAccount')
+    
 end

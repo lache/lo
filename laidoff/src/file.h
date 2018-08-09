@@ -22,6 +22,8 @@ void write_file(const char* path_prefix, const char* filename, const char* dat, 
 int read_file_string(const char* path_prefix, const char* filename, size_t str_out_len, char* str_out);
 int read_file_binary(const char* path_prefix, const char* filename, size_t str_out_len, char* str_out);
 int read_file(const char* path_prefix, const char* filename, size_t dat_out_len, char* dat_out, const char* mode);
+int read_file_string_all(const char* path_prefix, const char* filename, const char** str_out);
+int read_file_binary_all(const char* path_prefix, const char* filename, size_t* dat_out_len, const char** dat_out);
 #ifdef __cplusplus
 };
 #endif

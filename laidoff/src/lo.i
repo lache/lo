@@ -175,7 +175,6 @@ if (*$1) free(*$1);
 %include "input.h"
 %include "ktx.h"
 %include "kvmsg.h"
-%include "laidoff.h"
 %include "logic.h"
 %include "lwanim.h"
 %include "lwatlasenum.h"
@@ -263,12 +262,17 @@ if (*$1) free(*$1);
 // srp_create_salted_verification_key
 // srp_user_start_authentication
 // srp_verifier_new
+// write_user_data_file_string
+// write_user_data_file_binary
+// read_user_data_file_string
+// read_user_data_file_binary
 %apply SWIGTYPE** OUTPUT {const unsigned char **};
 %apply const char** OUTPUT_NO_FREE {const char **username};
 %apply const char** OUTPUT {const char **str};
 %apply int* OUTPUT {int *};
 
 %include "srp.h"
+%include "laidoff.h"
 
 // using the C-array
 %include <carrays.i>

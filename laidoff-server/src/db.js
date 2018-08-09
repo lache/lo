@@ -154,6 +154,7 @@ const createAccount = (accountId, s, v) => {
     return null
   }
 }
+const findAccount = accountId => queryAccount.findAccount.get(accountId)
 module.exports = {
   createUser,
   createPort,
@@ -192,5 +193,6 @@ module.exports = {
   insertCaptain,
   findCaptain,
   deleteCaptain,
-  createAccount
+  createAccount,
+  findAccount
 }

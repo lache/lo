@@ -7781,6 +7781,73 @@ fail:
 }
 
 
+static int _wrap_read_file_string_all(lua_State* L) {
+  int SWIG_arg = 0;
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char **arg3 = (char **) 0 ;
+  int result;
+  
+  SWIG_check_num_args("read_file_string_all",3,3)
+  if(!SWIG_lua_isnilstring(L,1)) SWIG_fail_arg("read_file_string_all",1,"char const *");
+  if(!SWIG_lua_isnilstring(L,2)) SWIG_fail_arg("read_file_string_all",2,"char const *");
+  if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("read_file_string_all",3,"char const **");
+  arg1 = (char *)lua_tostring(L, 1);
+  arg2 = (char *)lua_tostring(L, 2);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_p_char,0))){
+    SWIG_fail_ptr("read_file_string_all",3,SWIGTYPE_p_p_char);
+  }
+  
+  result = (int)read_file_string_all((char const *)arg1,(char const *)arg2,(char const **)arg3);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_read_file_binary_all(lua_State* L) {
+  int SWIG_arg = 0;
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  size_t *arg3 = (size_t *) 0 ;
+  char **arg4 = (char **) 0 ;
+  int result;
+  
+  SWIG_check_num_args("read_file_binary_all",4,4)
+  if(!SWIG_lua_isnilstring(L,1)) SWIG_fail_arg("read_file_binary_all",1,"char const *");
+  if(!SWIG_lua_isnilstring(L,2)) SWIG_fail_arg("read_file_binary_all",2,"char const *");
+  if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("read_file_binary_all",3,"size_t *");
+  if(!SWIG_isptrtype(L,4)) SWIG_fail_arg("read_file_binary_all",4,"char const **");
+  arg1 = (char *)lua_tostring(L, 1);
+  arg2 = (char *)lua_tostring(L, 2);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_size_t,0))){
+    SWIG_fail_ptr("read_file_binary_all",3,SWIGTYPE_p_size_t);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,4,(void**)&arg4,SWIGTYPE_p_p_char,0))){
+    SWIG_fail_ptr("read_file_binary_all",4,SWIGTYPE_p_p_char);
+  }
+  
+  result = (int)read_file_binary_all((char const *)arg1,(char const *)arg2,arg3,(char const **)arg4);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_load_fnt(lua_State* L) {
   int SWIG_arg = 0;
   char *arg1 = (char *) 0 ;
@@ -9277,1132 +9344,6 @@ static int _wrap_kvmsg_test(lua_State* L) {
   arg1 = (int)lua_tonumber(L, 1);
   result = (int)kvmsg_test(arg1);
   lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_lw_init_initial_size(lua_State* L) {
-  int SWIG_arg = 0;
-  int arg1 ;
-  int arg2 ;
-  LWCONTEXT *result = 0 ;
-  
-  SWIG_check_num_args("lw_init_initial_size",2,2)
-  if(!lua_isnumber(L,1)) SWIG_fail_arg("lw_init_initial_size",1,"int");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("lw_init_initial_size",2,"int");
-  arg1 = (int)lua_tonumber(L, 1);
-  arg2 = (int)lua_tonumber(L, 2);
-  result = (LWCONTEXT *)lw_init_initial_size(arg1,arg2);
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p__LWCONTEXT,0); SWIG_arg++; 
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_lw_init(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *result = 0 ;
-  
-  SWIG_check_num_args("lw_init",0,0)
-  result = (LWCONTEXT *)lw_init();
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p__LWCONTEXT,0); SWIG_arg++; 
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_lw_deinit(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  
-  SWIG_check_num_args("lw_deinit",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lw_deinit",1,"LWCONTEXT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("lw_deinit",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  lw_deinit(arg1);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_lw_set_window_size(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  int arg2 ;
-  int arg3 ;
-  
-  SWIG_check_num_args("lw_set_window_size",3,3)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lw_set_window_size",1,"LWCONTEXT *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("lw_set_window_size",2,"int");
-  if(!lua_isnumber(L,3)) SWIG_fail_arg("lw_set_window_size",3,"int");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("lw_set_window_size",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  arg2 = (int)lua_tonumber(L, 2);
-  arg3 = (int)lua_tonumber(L, 3);
-  lw_set_window_size(arg1,arg2,arg3);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_lw_set_viewport_size(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  int arg2 ;
-  int arg3 ;
-  
-  SWIG_check_num_args("lw_set_viewport_size",3,3)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lw_set_viewport_size",1,"LWCONTEXT *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("lw_set_viewport_size",2,"int");
-  if(!lua_isnumber(L,3)) SWIG_fail_arg("lw_set_viewport_size",3,"int");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("lw_set_viewport_size",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  arg2 = (int)lua_tonumber(L, 2);
-  arg3 = (int)lua_tonumber(L, 3);
-  lw_set_viewport_size(arg1,arg2,arg3);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_lw_set_window(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  struct GLFWwindow *arg2 = (struct GLFWwindow *) 0 ;
-  
-  SWIG_check_num_args("lw_set_window",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lw_set_window",1,"LWCONTEXT *");
-  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("lw_set_window",2,"struct GLFWwindow *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("lw_set_window",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_GLFWwindow,0))){
-    SWIG_fail_ptr("lw_set_window",2,SWIGTYPE_p_GLFWwindow);
-  }
-  
-  lw_set_window(arg1,arg2);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_lw_get_window(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  GLFWwindow *result = 0 ;
-  
-  SWIG_check_num_args("lw_get_window",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lw_get_window",1,"LWCONTEXT const *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("lw_get_window",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  result = (GLFWwindow *)lw_get_window((struct _LWCONTEXT const *)arg1);
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_GLFWwindow,0); SWIG_arg++; 
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_lwc_prerender_mutable_context(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  
-  SWIG_check_num_args("lwc_prerender_mutable_context",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwc_prerender_mutable_context",1,"LWCONTEXT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("lwc_prerender_mutable_context",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  lwc_prerender_mutable_context(arg1);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_lwc_render(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  
-  SWIG_check_num_args("lwc_render",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwc_render",1,"LWCONTEXT const *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("lwc_render",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  lwc_render((struct _LWCONTEXT const *)arg1);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_lw_get_update_count(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  int result;
-  
-  SWIG_check_num_args("lw_get_update_count",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lw_get_update_count",1,"LWCONTEXT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("lw_get_update_count",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  result = (int)lw_get_update_count(arg1);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_lw_get_render_count(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  int result;
-  
-  SWIG_check_num_args("lw_get_render_count",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lw_get_render_count",1,"LWCONTEXT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("lw_get_render_count",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  result = (int)lw_get_render_count(arg1);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_lw_on_destroy(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  
-  SWIG_check_num_args("lw_on_destroy",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lw_on_destroy",1,"LWCONTEXT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("lw_on_destroy",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  lw_on_destroy(arg1);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_lw_clear_color(lua_State* L) {
-  int SWIG_arg = 0;
-  
-  SWIG_check_num_args("lw_clear_color",0,0)
-  lw_clear_color();
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_lw_set_kp(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  int arg2 ;
-  
-  SWIG_check_num_args("lw_set_kp",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lw_set_kp",1,"LWCONTEXT *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("lw_set_kp",2,"int");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("lw_set_kp",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  arg2 = (int)lua_tonumber(L, 2);
-  lw_set_kp(arg1,arg2);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_set_tex_filter(lua_State* L) {
-  int SWIG_arg = 0;
-  int arg1 ;
-  int arg2 ;
-  
-  SWIG_check_num_args("set_tex_filter",2,2)
-  if(!lua_isnumber(L,1)) SWIG_fail_arg("set_tex_filter",1,"int");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("set_tex_filter",2,"int");
-  arg1 = (int)lua_tonumber(L, 1);
-  arg2 = (int)lua_tonumber(L, 2);
-  set_tex_filter(arg1,arg2);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_bind_all_fvertex_attrib(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  int arg2 ;
-  
-  SWIG_check_num_args("bind_all_fvertex_attrib",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("bind_all_fvertex_attrib",1,"LWCONTEXT const *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("bind_all_fvertex_attrib",2,"int");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("bind_all_fvertex_attrib",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  arg2 = (int)lua_tonumber(L, 2);
-  bind_all_fvertex_attrib((struct _LWCONTEXT const *)arg1,arg2);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_bind_all_vertex_attrib(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  int arg2 ;
-  
-  SWIG_check_num_args("bind_all_vertex_attrib",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("bind_all_vertex_attrib",1,"LWCONTEXT const *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("bind_all_vertex_attrib",2,"int");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("bind_all_vertex_attrib",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  arg2 = (int)lua_tonumber(L, 2);
-  bind_all_vertex_attrib((struct _LWCONTEXT const *)arg1,arg2);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_bind_all_color_vertex_attrib(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  int arg2 ;
-  
-  SWIG_check_num_args("bind_all_color_vertex_attrib",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("bind_all_color_vertex_attrib",1,"LWCONTEXT const *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("bind_all_color_vertex_attrib",2,"int");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("bind_all_color_vertex_attrib",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  arg2 = (int)lua_tonumber(L, 2);
-  bind_all_color_vertex_attrib((struct _LWCONTEXT const *)arg1,arg2);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_bind_all_vertex_attrib_font(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  int arg2 ;
-  int arg3 ;
-  
-  SWIG_check_num_args("bind_all_vertex_attrib_font",3,3)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("bind_all_vertex_attrib_font",1,"LWCONTEXT const *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("bind_all_vertex_attrib_font",2,"int");
-  if(!lua_isnumber(L,3)) SWIG_fail_arg("bind_all_vertex_attrib_font",3,"int");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("bind_all_vertex_attrib_font",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  arg2 = (int)lua_tonumber(L, 2);
-  arg3 = (int)lua_tonumber(L, 3);
-  bind_all_vertex_attrib_font((struct _LWCONTEXT const *)arg1,arg2,arg3);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_bind_all_vertex_attrib_etc1_with_alpha(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  int arg2 ;
-  
-  SWIG_check_num_args("bind_all_vertex_attrib_etc1_with_alpha",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("bind_all_vertex_attrib_etc1_with_alpha",1,"LWCONTEXT const *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("bind_all_vertex_attrib_etc1_with_alpha",2,"int");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("bind_all_vertex_attrib_etc1_with_alpha",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  arg2 = (int)lua_tonumber(L, 2);
-  bind_all_vertex_attrib_etc1_with_alpha((struct _LWCONTEXT const *)arg1,arg2);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_bind_all_skin_vertex_attrib(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  int arg2 ;
-  
-  SWIG_check_num_args("bind_all_skin_vertex_attrib",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("bind_all_skin_vertex_attrib",1,"LWCONTEXT const *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("bind_all_skin_vertex_attrib",2,"int");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("bind_all_skin_vertex_attrib",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  arg2 = (int)lua_tonumber(L, 2);
-  bind_all_skin_vertex_attrib((struct _LWCONTEXT const *)arg1,arg2);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_bind_all_fan_vertex_attrib(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  int arg2 ;
-  
-  SWIG_check_num_args("bind_all_fan_vertex_attrib",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("bind_all_fan_vertex_attrib",1,"LWCONTEXT const *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("bind_all_fan_vertex_attrib",2,"int");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("bind_all_fan_vertex_attrib",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  arg2 = (int)lua_tonumber(L, 2);
-  bind_all_fan_vertex_attrib((struct _LWCONTEXT const *)arg1,arg2);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_bind_all_ps_vertex_attrib(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  int arg2 ;
-  
-  SWIG_check_num_args("bind_all_ps_vertex_attrib",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("bind_all_ps_vertex_attrib",1,"LWCONTEXT const *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("bind_all_ps_vertex_attrib",2,"int");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("bind_all_ps_vertex_attrib",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  arg2 = (int)lua_tonumber(L, 2);
-  bind_all_ps_vertex_attrib((struct _LWCONTEXT const *)arg1,arg2);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_bind_all_ps0_vertex_attrib(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  int arg2 ;
-  
-  SWIG_check_num_args("bind_all_ps0_vertex_attrib",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("bind_all_ps0_vertex_attrib",1,"LWCONTEXT const *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("bind_all_ps0_vertex_attrib",2,"int");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("bind_all_ps0_vertex_attrib",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  arg2 = (int)lua_tonumber(L, 2);
-  bind_all_ps0_vertex_attrib((struct _LWCONTEXT const *)arg1,arg2);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_bind_all_line_vertex_attrib(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  
-  SWIG_check_num_args("bind_all_line_vertex_attrib",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("bind_all_line_vertex_attrib",1,"LWCONTEXT const *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("bind_all_line_vertex_attrib",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  bind_all_line_vertex_attrib((struct _LWCONTEXT const *)arg1);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_bind_all_morph_vertex_attrib(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  int arg2 ;
-  
-  SWIG_check_num_args("bind_all_morph_vertex_attrib",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("bind_all_morph_vertex_attrib",1,"LWCONTEXT const *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("bind_all_morph_vertex_attrib",2,"int");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("bind_all_morph_vertex_attrib",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  arg2 = (int)lua_tonumber(L, 2);
-  bind_all_morph_vertex_attrib((struct _LWCONTEXT const *)arg1,arg2);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_set_texture_parameter_values(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  float arg2 ;
-  float arg3 ;
-  float arg4 ;
-  float arg5 ;
-  float arg6 ;
-  float arg7 ;
-  int arg8 ;
-  
-  SWIG_check_num_args("set_texture_parameter_values",8,8)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("set_texture_parameter_values",1,"LWCONTEXT const *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("set_texture_parameter_values",2,"float");
-  if(!lua_isnumber(L,3)) SWIG_fail_arg("set_texture_parameter_values",3,"float");
-  if(!lua_isnumber(L,4)) SWIG_fail_arg("set_texture_parameter_values",4,"float");
-  if(!lua_isnumber(L,5)) SWIG_fail_arg("set_texture_parameter_values",5,"float");
-  if(!lua_isnumber(L,6)) SWIG_fail_arg("set_texture_parameter_values",6,"float");
-  if(!lua_isnumber(L,7)) SWIG_fail_arg("set_texture_parameter_values",7,"float");
-  if(!lua_isnumber(L,8)) SWIG_fail_arg("set_texture_parameter_values",8,"int");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("set_texture_parameter_values",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  arg2 = (float)lua_tonumber(L, 2);
-  arg3 = (float)lua_tonumber(L, 3);
-  arg4 = (float)lua_tonumber(L, 4);
-  arg5 = (float)lua_tonumber(L, 5);
-  arg6 = (float)lua_tonumber(L, 6);
-  arg7 = (float)lua_tonumber(L, 7);
-  arg8 = (int)lua_tonumber(L, 8);
-  set_texture_parameter_values((struct _LWCONTEXT const *)arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_get_tex_index_by_hash_key(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  char *arg2 = (char *) 0 ;
-  int result;
-  
-  SWIG_check_num_args("get_tex_index_by_hash_key",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("get_tex_index_by_hash_key",1,"LWCONTEXT const *");
-  if(!SWIG_lua_isnilstring(L,2)) SWIG_fail_arg("get_tex_index_by_hash_key",2,"char const *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("get_tex_index_by_hash_key",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  arg2 = (char *)lua_tostring(L, 2);
-  result = (int)get_tex_index_by_hash_key((struct _LWCONTEXT const *)arg1,(char const *)arg2);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_set_texture_parameter(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  enum _LW_ATLAS_ENUM arg2 ;
-  enum _LW_ATLAS_SPRITE arg3 ;
-  
-  SWIG_check_num_args("set_texture_parameter",3,3)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("set_texture_parameter",1,"LWCONTEXT const *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("set_texture_parameter",2,"enum _LW_ATLAS_ENUM");
-  if(!lua_isnumber(L,3)) SWIG_fail_arg("set_texture_parameter",3,"enum _LW_ATLAS_SPRITE");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("set_texture_parameter",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  arg2 = (enum _LW_ATLAS_ENUM)(int)lua_tonumber(L, 2);
-  arg3 = (enum _LW_ATLAS_SPRITE)(int)lua_tonumber(L, 3);
-  set_texture_parameter((struct _LWCONTEXT const *)arg1,arg2,arg3);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_lw_app_quit(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  void *arg2 = (void *) 0 ;
-  
-  SWIG_check_num_args("lw_app_quit",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lw_app_quit",1,"LWCONTEXT *");
-  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("lw_app_quit",2,"void *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("lw_app_quit",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  arg2=(void *)SWIG_MustGetPtr(L,2,0,0,2,"lw_app_quit");
-  lw_app_quit(arg1,arg2);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_hash(lua_State* L) {
-  int SWIG_arg = 0;
-  unsigned char *arg1 = (unsigned char *) 0 ;
-  unsigned long result;
-  
-  SWIG_check_num_args("hash",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("hash",1,"unsigned char const *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_unsigned_char,0))){
-    SWIG_fail_ptr("hash",1,SWIGTYPE_p_unsigned_char);
-  }
-  
-  result = (unsigned long)hash((unsigned char const *)arg1);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_reset_battle_context(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  
-  SWIG_check_num_args("reset_battle_context",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("reset_battle_context",1,"LWCONTEXT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("reset_battle_context",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  reset_battle_context(arg1);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_lwc_start_logic_thread(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  
-  SWIG_check_num_args("lwc_start_logic_thread",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwc_start_logic_thread",1,"LWCONTEXT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("lwc_start_logic_thread",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  lwc_start_logic_thread(arg1);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_delete_all_rmsgs(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  
-  SWIG_check_num_args("delete_all_rmsgs",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("delete_all_rmsgs",1,"LWCONTEXT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("delete_all_rmsgs",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  delete_all_rmsgs(arg1);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_lw_start_text_input_activity(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  int arg2 ;
-  
-  SWIG_check_num_args("lw_start_text_input_activity",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lw_start_text_input_activity",1,"LWCONTEXT *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("lw_start_text_input_activity",2,"int");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("lw_start_text_input_activity",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  arg2 = (int)lua_tonumber(L, 2);
-  lw_start_text_input_activity(arg1,arg2);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_lw_start_chat_text_input_activity(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  
-  SWIG_check_num_args("lw_start_chat_text_input_activity",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lw_start_chat_text_input_activity",1,"LWCONTEXT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("lw_start_chat_text_input_activity",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  lw_start_chat_text_input_activity(arg1);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_lw_set_device_model(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  char *arg2 = (char *) 0 ;
-  
-  SWIG_check_num_args("lw_set_device_model",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lw_set_device_model",1,"LWCONTEXT *");
-  if(!SWIG_lua_isnilstring(L,2)) SWIG_fail_arg("lw_set_device_model",2,"char const *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("lw_set_device_model",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  arg2 = (char *)lua_tostring(L, 2);
-  lw_set_device_model(arg1,(char const *)arg2);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_lw_flag_logic_actor_to_quit_and_wait(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  
-  SWIG_check_num_args("lw_flag_logic_actor_to_quit_and_wait",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lw_flag_logic_actor_to_quit_and_wait",1,"LWCONTEXT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("lw_flag_logic_actor_to_quit_and_wait",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  lw_flag_logic_actor_to_quit_and_wait(arg1);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_set_vertex_attrib_pointer(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  int arg2 ;
-  
-  SWIG_check_num_args("set_vertex_attrib_pointer",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("set_vertex_attrib_pointer",1,"LWCONTEXT const *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("set_vertex_attrib_pointer",2,"int");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("set_vertex_attrib_pointer",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  arg2 = (int)lua_tonumber(L, 2);
-  set_vertex_attrib_pointer((struct _LWCONTEXT const *)arg1,arg2);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_set_color_vertex_attrib_pointer(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  int arg2 ;
-  
-  SWIG_check_num_args("set_color_vertex_attrib_pointer",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("set_color_vertex_attrib_pointer",1,"LWCONTEXT const *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("set_color_vertex_attrib_pointer",2,"int");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("set_color_vertex_attrib_pointer",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  arg2 = (int)lua_tonumber(L, 2);
-  set_color_vertex_attrib_pointer((struct _LWCONTEXT const *)arg1,arg2);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_load_png_pkm_sw_decoding(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  int arg2 ;
-  
-  SWIG_check_num_args("load_png_pkm_sw_decoding",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("load_png_pkm_sw_decoding",1,"LWCONTEXT *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("load_png_pkm_sw_decoding",2,"int");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("load_png_pkm_sw_decoding",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  arg2 = (int)lua_tonumber(L, 2);
-  load_png_pkm_sw_decoding(arg1,arg2);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_set_package_version(lua_State* L) {
-  int SWIG_arg = 0;
-  char *arg1 = (char *) 0 ;
-  
-  SWIG_check_num_args("set_package_version",1,1)
-  if(!SWIG_lua_isnilstring(L,1)) SWIG_fail_arg("set_package_version",1,"char const *");
-  arg1 = (char *)lua_tostring(L, 1);
-  set_package_version((char const *)arg1);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_load_pkm_hw_decoding(lua_State* L) {
-  int SWIG_arg = 0;
-  char *arg1 = (char *) 0 ;
-  
-  SWIG_check_num_args("load_pkm_hw_decoding",1,1)
-  if(!SWIG_lua_isnilstring(L,1)) SWIG_fail_arg("load_pkm_hw_decoding",1,"char const *");
-  arg1 = (char *)lua_tostring(L, 1);
-  load_pkm_hw_decoding((char const *)arg1);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_default_uv_offset_get(lua_State* L) {
-  int SWIG_arg = 0;
-  float *result = 0 ;
-  
-  SWIG_check_num_args("default_uv_offset",0,0)
-  result = (float *)(float *)default_uv_offset;
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_float,0); SWIG_arg++; 
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_default_uv_scale_get(lua_State* L) {
-  int SWIG_arg = 0;
-  float *result = 0 ;
-  
-  SWIG_check_num_args("default_uv_scale",0,0)
-  result = (float *)(float *)default_uv_scale;
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_float,0); SWIG_arg++; 
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_default_flip_y_uv_scale_get(lua_State* L) {
-  int SWIG_arg = 0;
-  float *result = 0 ;
-  
-  SWIG_check_num_args("default_flip_y_uv_scale",0,0)
-  result = (float *)(float *)default_flip_y_uv_scale;
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_float,0); SWIG_arg++; 
   return SWIG_arg;
   
   if(0) SWIG_fail;
@@ -111597,6 +110538,1280 @@ fail:
 }
 
 
+static int _wrap_lw_init_initial_size(lua_State* L) {
+  int SWIG_arg = 0;
+  int arg1 ;
+  int arg2 ;
+  LWCONTEXT *result = 0 ;
+  
+  SWIG_check_num_args("lw_init_initial_size",2,2)
+  if(!lua_isnumber(L,1)) SWIG_fail_arg("lw_init_initial_size",1,"int");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("lw_init_initial_size",2,"int");
+  arg1 = (int)lua_tonumber(L, 1);
+  arg2 = (int)lua_tonumber(L, 2);
+  result = (LWCONTEXT *)lw_init_initial_size(arg1,arg2);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p__LWCONTEXT,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lw_init(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *result = 0 ;
+  
+  SWIG_check_num_args("lw_init",0,0)
+  result = (LWCONTEXT *)lw_init();
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p__LWCONTEXT,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lw_deinit(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  
+  SWIG_check_num_args("lw_deinit",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lw_deinit",1,"LWCONTEXT *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("lw_deinit",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  lw_deinit(arg1);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lw_set_window_size(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  
+  SWIG_check_num_args("lw_set_window_size",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lw_set_window_size",1,"LWCONTEXT *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("lw_set_window_size",2,"int");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("lw_set_window_size",3,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("lw_set_window_size",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  arg3 = (int)lua_tonumber(L, 3);
+  lw_set_window_size(arg1,arg2,arg3);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lw_set_viewport_size(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  
+  SWIG_check_num_args("lw_set_viewport_size",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lw_set_viewport_size",1,"LWCONTEXT *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("lw_set_viewport_size",2,"int");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("lw_set_viewport_size",3,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("lw_set_viewport_size",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  arg3 = (int)lua_tonumber(L, 3);
+  lw_set_viewport_size(arg1,arg2,arg3);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lw_set_window(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  struct GLFWwindow *arg2 = (struct GLFWwindow *) 0 ;
+  
+  SWIG_check_num_args("lw_set_window",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lw_set_window",1,"LWCONTEXT *");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("lw_set_window",2,"struct GLFWwindow *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("lw_set_window",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_GLFWwindow,0))){
+    SWIG_fail_ptr("lw_set_window",2,SWIGTYPE_p_GLFWwindow);
+  }
+  
+  lw_set_window(arg1,arg2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lw_get_window(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  GLFWwindow *result = 0 ;
+  
+  SWIG_check_num_args("lw_get_window",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lw_get_window",1,"LWCONTEXT const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("lw_get_window",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  result = (GLFWwindow *)lw_get_window((struct _LWCONTEXT const *)arg1);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_GLFWwindow,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwc_prerender_mutable_context(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  
+  SWIG_check_num_args("lwc_prerender_mutable_context",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwc_prerender_mutable_context",1,"LWCONTEXT *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("lwc_prerender_mutable_context",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  lwc_prerender_mutable_context(arg1);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwc_render(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  
+  SWIG_check_num_args("lwc_render",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwc_render",1,"LWCONTEXT const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("lwc_render",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  lwc_render((struct _LWCONTEXT const *)arg1);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lw_get_update_count(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  int result;
+  
+  SWIG_check_num_args("lw_get_update_count",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lw_get_update_count",1,"LWCONTEXT *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("lw_get_update_count",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  result = (int)lw_get_update_count(arg1);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lw_get_render_count(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  int result;
+  
+  SWIG_check_num_args("lw_get_render_count",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lw_get_render_count",1,"LWCONTEXT *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("lw_get_render_count",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  result = (int)lw_get_render_count(arg1);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lw_on_destroy(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  
+  SWIG_check_num_args("lw_on_destroy",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lw_on_destroy",1,"LWCONTEXT *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("lw_on_destroy",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  lw_on_destroy(arg1);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lw_clear_color(lua_State* L) {
+  int SWIG_arg = 0;
+  
+  SWIG_check_num_args("lw_clear_color",0,0)
+  lw_clear_color();
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lw_set_kp(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  int arg2 ;
+  
+  SWIG_check_num_args("lw_set_kp",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lw_set_kp",1,"LWCONTEXT *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("lw_set_kp",2,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("lw_set_kp",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  lw_set_kp(arg1,arg2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_set_tex_filter(lua_State* L) {
+  int SWIG_arg = 0;
+  int arg1 ;
+  int arg2 ;
+  
+  SWIG_check_num_args("set_tex_filter",2,2)
+  if(!lua_isnumber(L,1)) SWIG_fail_arg("set_tex_filter",1,"int");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("set_tex_filter",2,"int");
+  arg1 = (int)lua_tonumber(L, 1);
+  arg2 = (int)lua_tonumber(L, 2);
+  set_tex_filter(arg1,arg2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_bind_all_fvertex_attrib(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  int arg2 ;
+  
+  SWIG_check_num_args("bind_all_fvertex_attrib",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("bind_all_fvertex_attrib",1,"LWCONTEXT const *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("bind_all_fvertex_attrib",2,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("bind_all_fvertex_attrib",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  bind_all_fvertex_attrib((struct _LWCONTEXT const *)arg1,arg2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_bind_all_vertex_attrib(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  int arg2 ;
+  
+  SWIG_check_num_args("bind_all_vertex_attrib",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("bind_all_vertex_attrib",1,"LWCONTEXT const *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("bind_all_vertex_attrib",2,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("bind_all_vertex_attrib",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  bind_all_vertex_attrib((struct _LWCONTEXT const *)arg1,arg2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_bind_all_color_vertex_attrib(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  int arg2 ;
+  
+  SWIG_check_num_args("bind_all_color_vertex_attrib",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("bind_all_color_vertex_attrib",1,"LWCONTEXT const *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("bind_all_color_vertex_attrib",2,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("bind_all_color_vertex_attrib",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  bind_all_color_vertex_attrib((struct _LWCONTEXT const *)arg1,arg2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_bind_all_vertex_attrib_font(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  
+  SWIG_check_num_args("bind_all_vertex_attrib_font",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("bind_all_vertex_attrib_font",1,"LWCONTEXT const *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("bind_all_vertex_attrib_font",2,"int");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("bind_all_vertex_attrib_font",3,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("bind_all_vertex_attrib_font",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  arg3 = (int)lua_tonumber(L, 3);
+  bind_all_vertex_attrib_font((struct _LWCONTEXT const *)arg1,arg2,arg3);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_bind_all_vertex_attrib_etc1_with_alpha(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  int arg2 ;
+  
+  SWIG_check_num_args("bind_all_vertex_attrib_etc1_with_alpha",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("bind_all_vertex_attrib_etc1_with_alpha",1,"LWCONTEXT const *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("bind_all_vertex_attrib_etc1_with_alpha",2,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("bind_all_vertex_attrib_etc1_with_alpha",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  bind_all_vertex_attrib_etc1_with_alpha((struct _LWCONTEXT const *)arg1,arg2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_bind_all_skin_vertex_attrib(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  int arg2 ;
+  
+  SWIG_check_num_args("bind_all_skin_vertex_attrib",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("bind_all_skin_vertex_attrib",1,"LWCONTEXT const *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("bind_all_skin_vertex_attrib",2,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("bind_all_skin_vertex_attrib",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  bind_all_skin_vertex_attrib((struct _LWCONTEXT const *)arg1,arg2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_bind_all_fan_vertex_attrib(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  int arg2 ;
+  
+  SWIG_check_num_args("bind_all_fan_vertex_attrib",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("bind_all_fan_vertex_attrib",1,"LWCONTEXT const *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("bind_all_fan_vertex_attrib",2,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("bind_all_fan_vertex_attrib",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  bind_all_fan_vertex_attrib((struct _LWCONTEXT const *)arg1,arg2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_bind_all_ps_vertex_attrib(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  int arg2 ;
+  
+  SWIG_check_num_args("bind_all_ps_vertex_attrib",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("bind_all_ps_vertex_attrib",1,"LWCONTEXT const *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("bind_all_ps_vertex_attrib",2,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("bind_all_ps_vertex_attrib",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  bind_all_ps_vertex_attrib((struct _LWCONTEXT const *)arg1,arg2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_bind_all_ps0_vertex_attrib(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  int arg2 ;
+  
+  SWIG_check_num_args("bind_all_ps0_vertex_attrib",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("bind_all_ps0_vertex_attrib",1,"LWCONTEXT const *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("bind_all_ps0_vertex_attrib",2,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("bind_all_ps0_vertex_attrib",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  bind_all_ps0_vertex_attrib((struct _LWCONTEXT const *)arg1,arg2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_bind_all_line_vertex_attrib(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  
+  SWIG_check_num_args("bind_all_line_vertex_attrib",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("bind_all_line_vertex_attrib",1,"LWCONTEXT const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("bind_all_line_vertex_attrib",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  bind_all_line_vertex_attrib((struct _LWCONTEXT const *)arg1);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_bind_all_morph_vertex_attrib(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  int arg2 ;
+  
+  SWIG_check_num_args("bind_all_morph_vertex_attrib",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("bind_all_morph_vertex_attrib",1,"LWCONTEXT const *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("bind_all_morph_vertex_attrib",2,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("bind_all_morph_vertex_attrib",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  bind_all_morph_vertex_attrib((struct _LWCONTEXT const *)arg1,arg2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_set_texture_parameter_values(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  float arg2 ;
+  float arg3 ;
+  float arg4 ;
+  float arg5 ;
+  float arg6 ;
+  float arg7 ;
+  int arg8 ;
+  
+  SWIG_check_num_args("set_texture_parameter_values",8,8)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("set_texture_parameter_values",1,"LWCONTEXT const *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("set_texture_parameter_values",2,"float");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("set_texture_parameter_values",3,"float");
+  if(!lua_isnumber(L,4)) SWIG_fail_arg("set_texture_parameter_values",4,"float");
+  if(!lua_isnumber(L,5)) SWIG_fail_arg("set_texture_parameter_values",5,"float");
+  if(!lua_isnumber(L,6)) SWIG_fail_arg("set_texture_parameter_values",6,"float");
+  if(!lua_isnumber(L,7)) SWIG_fail_arg("set_texture_parameter_values",7,"float");
+  if(!lua_isnumber(L,8)) SWIG_fail_arg("set_texture_parameter_values",8,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("set_texture_parameter_values",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  arg2 = (float)lua_tonumber(L, 2);
+  arg3 = (float)lua_tonumber(L, 3);
+  arg4 = (float)lua_tonumber(L, 4);
+  arg5 = (float)lua_tonumber(L, 5);
+  arg6 = (float)lua_tonumber(L, 6);
+  arg7 = (float)lua_tonumber(L, 7);
+  arg8 = (int)lua_tonumber(L, 8);
+  set_texture_parameter_values((struct _LWCONTEXT const *)arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_get_tex_index_by_hash_key(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  char *arg2 = (char *) 0 ;
+  int result;
+  
+  SWIG_check_num_args("get_tex_index_by_hash_key",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("get_tex_index_by_hash_key",1,"LWCONTEXT const *");
+  if(!SWIG_lua_isnilstring(L,2)) SWIG_fail_arg("get_tex_index_by_hash_key",2,"char const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("get_tex_index_by_hash_key",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  arg2 = (char *)lua_tostring(L, 2);
+  result = (int)get_tex_index_by_hash_key((struct _LWCONTEXT const *)arg1,(char const *)arg2);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_set_texture_parameter(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  enum _LW_ATLAS_ENUM arg2 ;
+  enum _LW_ATLAS_SPRITE arg3 ;
+  
+  SWIG_check_num_args("set_texture_parameter",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("set_texture_parameter",1,"LWCONTEXT const *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("set_texture_parameter",2,"enum _LW_ATLAS_ENUM");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("set_texture_parameter",3,"enum _LW_ATLAS_SPRITE");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("set_texture_parameter",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  arg2 = (enum _LW_ATLAS_ENUM)(int)lua_tonumber(L, 2);
+  arg3 = (enum _LW_ATLAS_SPRITE)(int)lua_tonumber(L, 3);
+  set_texture_parameter((struct _LWCONTEXT const *)arg1,arg2,arg3);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lw_app_quit(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  void *arg2 = (void *) 0 ;
+  
+  SWIG_check_num_args("lw_app_quit",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lw_app_quit",1,"LWCONTEXT *");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("lw_app_quit",2,"void *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("lw_app_quit",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  arg2=(void *)SWIG_MustGetPtr(L,2,0,0,2,"lw_app_quit");
+  lw_app_quit(arg1,arg2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_hash(lua_State* L) {
+  int SWIG_arg = 0;
+  unsigned char *arg1 = (unsigned char *) 0 ;
+  unsigned long result;
+  
+  SWIG_check_num_args("hash",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("hash",1,"unsigned char const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_unsigned_char,0))){
+    SWIG_fail_ptr("hash",1,SWIGTYPE_p_unsigned_char);
+  }
+  
+  result = (unsigned long)hash((unsigned char const *)arg1);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_reset_battle_context(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  
+  SWIG_check_num_args("reset_battle_context",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("reset_battle_context",1,"LWCONTEXT *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("reset_battle_context",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  reset_battle_context(arg1);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwc_start_logic_thread(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  
+  SWIG_check_num_args("lwc_start_logic_thread",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwc_start_logic_thread",1,"LWCONTEXT *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("lwc_start_logic_thread",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  lwc_start_logic_thread(arg1);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_delete_all_rmsgs(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  
+  SWIG_check_num_args("delete_all_rmsgs",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("delete_all_rmsgs",1,"LWCONTEXT *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("delete_all_rmsgs",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  delete_all_rmsgs(arg1);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lw_start_text_input_activity(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  int arg2 ;
+  
+  SWIG_check_num_args("lw_start_text_input_activity",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lw_start_text_input_activity",1,"LWCONTEXT *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("lw_start_text_input_activity",2,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("lw_start_text_input_activity",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  lw_start_text_input_activity(arg1,arg2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lw_start_chat_text_input_activity(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  
+  SWIG_check_num_args("lw_start_chat_text_input_activity",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lw_start_chat_text_input_activity",1,"LWCONTEXT *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("lw_start_chat_text_input_activity",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  lw_start_chat_text_input_activity(arg1);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lw_set_device_model(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  char *arg2 = (char *) 0 ;
+  
+  SWIG_check_num_args("lw_set_device_model",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lw_set_device_model",1,"LWCONTEXT *");
+  if(!SWIG_lua_isnilstring(L,2)) SWIG_fail_arg("lw_set_device_model",2,"char const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("lw_set_device_model",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  arg2 = (char *)lua_tostring(L, 2);
+  lw_set_device_model(arg1,(char const *)arg2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lw_flag_logic_actor_to_quit_and_wait(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  
+  SWIG_check_num_args("lw_flag_logic_actor_to_quit_and_wait",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lw_flag_logic_actor_to_quit_and_wait",1,"LWCONTEXT *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("lw_flag_logic_actor_to_quit_and_wait",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  lw_flag_logic_actor_to_quit_and_wait(arg1);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_set_vertex_attrib_pointer(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  int arg2 ;
+  
+  SWIG_check_num_args("set_vertex_attrib_pointer",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("set_vertex_attrib_pointer",1,"LWCONTEXT const *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("set_vertex_attrib_pointer",2,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("set_vertex_attrib_pointer",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  set_vertex_attrib_pointer((struct _LWCONTEXT const *)arg1,arg2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_set_color_vertex_attrib_pointer(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  int arg2 ;
+  
+  SWIG_check_num_args("set_color_vertex_attrib_pointer",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("set_color_vertex_attrib_pointer",1,"LWCONTEXT const *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("set_color_vertex_attrib_pointer",2,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("set_color_vertex_attrib_pointer",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  set_color_vertex_attrib_pointer((struct _LWCONTEXT const *)arg1,arg2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_load_png_pkm_sw_decoding(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  int arg2 ;
+  
+  SWIG_check_num_args("load_png_pkm_sw_decoding",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("load_png_pkm_sw_decoding",1,"LWCONTEXT *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("load_png_pkm_sw_decoding",2,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("load_png_pkm_sw_decoding",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  load_png_pkm_sw_decoding(arg1,arg2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_set_package_version(lua_State* L) {
+  int SWIG_arg = 0;
+  char *arg1 = (char *) 0 ;
+  
+  SWIG_check_num_args("set_package_version",1,1)
+  if(!SWIG_lua_isnilstring(L,1)) SWIG_fail_arg("set_package_version",1,"char const *");
+  arg1 = (char *)lua_tostring(L, 1);
+  set_package_version((char const *)arg1);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_load_pkm_hw_decoding(lua_State* L) {
+  int SWIG_arg = 0;
+  char *arg1 = (char *) 0 ;
+  
+  SWIG_check_num_args("load_pkm_hw_decoding",1,1)
+  if(!SWIG_lua_isnilstring(L,1)) SWIG_fail_arg("load_pkm_hw_decoding",1,"char const *");
+  arg1 = (char *)lua_tostring(L, 1);
+  load_pkm_hw_decoding((char const *)arg1);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_write_user_data_file_string(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  
+  SWIG_check_num_args("write_user_data_file_string",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("write_user_data_file_string",1,"LWCONTEXT const *");
+  if(!SWIG_lua_isnilstring(L,2)) SWIG_fail_arg("write_user_data_file_string",2,"char const *");
+  if(!SWIG_lua_isnilstring(L,3)) SWIG_fail_arg("write_user_data_file_string",3,"char const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("write_user_data_file_string",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  arg2 = (char *)lua_tostring(L, 2);
+  arg3 = (char *)lua_tostring(L, 3);
+  write_user_data_file_string((struct _LWCONTEXT const *)arg1,(char const *)arg2,(char const *)arg3);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_write_user_data_file_binary(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  char *arg2 = (char *) 0 ;
+  unsigned char *arg3 = (unsigned char *) 0 ;
+  int arg4 ;
+  
+  SWIG_check_num_args("write_user_data_file_binary",4,4)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("write_user_data_file_binary",1,"LWCONTEXT const *");
+  if(!SWIG_lua_isnilstring(L,2)) SWIG_fail_arg("write_user_data_file_binary",2,"char const *");
+  if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("write_user_data_file_binary",3,"unsigned char const *");
+  if(!lua_isnumber(L,4)) SWIG_fail_arg("write_user_data_file_binary",4,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("write_user_data_file_binary",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  arg2 = (char *)lua_tostring(L, 2);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,3,(void**)&arg3,SWIGTYPE_p_unsigned_char,0))){
+    SWIG_fail_ptr("write_user_data_file_binary",3,SWIGTYPE_p_unsigned_char);
+  }
+  
+  arg4 = (int)lua_tonumber(L, 4);
+  write_user_data_file_binary((struct _LWCONTEXT const *)arg1,(char const *)arg2,(unsigned char const *)arg3,arg4);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_read_user_data_file_string(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char **arg3 = (char **) 0 ;
+  char *temp3 ;
+  int result;
+  
+  {
+    arg3 = &temp3; 
+  }
+  SWIG_check_num_args("read_user_data_file_string",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("read_user_data_file_string",1,"LWCONTEXT const *");
+  if(!SWIG_lua_isnilstring(L,2)) SWIG_fail_arg("read_user_data_file_string",2,"char const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("read_user_data_file_string",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  arg2 = (char *)lua_tostring(L, 2);
+  result = (int)read_user_data_file_string((struct _LWCONTEXT const *)arg1,(char const *)arg2,(char const **)arg3);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  {
+    if (arg3==0) {
+      lua_pushnil(L); 
+    } else {
+      lua_pushstring(L, *arg3); 
+    } SWIG_arg++;
+  }
+  {
+    // FREE STR
+    if (*arg3) free(*arg3);
+  }
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  {
+    // FREE STR
+    if (*arg3) free(*arg3);
+  }
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_read_user_data_file_binary(lua_State* L) {
+  int SWIG_arg = 0;
+  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
+  char *arg2 = (char *) 0 ;
+  unsigned char **arg3 = (unsigned char **) 0 ;
+  int *arg4 = (int *) 0 ;
+  unsigned char *temp3 ;
+  int temp4 ;
+  int result;
+  
+  temp3 = (unsigned char *)0;
+  arg3 = &temp3; 
+  arg4 = &temp4; 
+  SWIG_check_num_args("read_user_data_file_binary",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("read_user_data_file_binary",1,"LWCONTEXT const *");
+  if(!SWIG_lua_isnilstring(L,2)) SWIG_fail_arg("read_user_data_file_binary",2,"char const *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
+    SWIG_fail_ptr("read_user_data_file_binary",1,SWIGTYPE_p__LWCONTEXT);
+  }
+  
+  arg2 = (char *)lua_tostring(L, 2);
+  result = (int)read_user_data_file_binary((struct _LWCONTEXT const *)arg1,(char const *)arg2,(unsigned char const **)arg3,arg4);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  SWIG_NewPointerObj(L,*arg3,SWIGTYPE_p_unsigned_char,1); SWIG_arg++; 
+  lua_pushnumber(L, (lua_Number) *arg4); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_default_uv_offset_get(lua_State* L) {
+  int SWIG_arg = 0;
+  float *result = 0 ;
+  
+  SWIG_check_num_args("default_uv_offset",0,0)
+  result = (float *)(float *)default_uv_offset;
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_float,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_default_uv_scale_get(lua_State* L) {
+  int SWIG_arg = 0;
+  float *result = 0 ;
+  
+  SWIG_check_num_args("default_uv_scale",0,0)
+  result = (float *)(float *)default_uv_scale;
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_float,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_default_flip_y_uv_scale_get(lua_State* L) {
+  int SWIG_arg = 0;
+  float *result = 0 ;
+  
+  SWIG_check_num_args("default_flip_y_uv_scale",0,0)
+  result = (float *)(float *)default_flip_y_uv_scale;
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_float,0); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_new_int(lua_State* L) {
   int SWIG_arg = 0;
   int arg1 ;
@@ -112107,9 +112322,6 @@ fail:
 
 
 static swig_lua_attribute swig_SwigModule_attributes[] = {
-    { "default_uv_offset", _wrap_default_uv_offset_get, SWIG_Lua_set_immutable },
-    { "default_uv_scale", _wrap_default_uv_scale_get, SWIG_Lua_set_immutable },
-    { "default_flip_y_uv_scale", _wrap_default_flip_y_uv_scale_get, SWIG_Lua_set_immutable },
     { "action_filename", _wrap_action_filename_get, _wrap_action_filename_set },
     { "tex_atlas_filename", _wrap_tex_atlas_filename_get, SWIG_Lua_set_immutable },
     { "atlas_conf_filename", _wrap_atlas_conf_filename_get, SWIG_Lua_set_immutable },
@@ -112131,6 +112343,9 @@ static swig_lua_attribute swig_SwigModule_attributes[] = {
     { "SPRITE_DATA", _wrap_SPRITE_DATA_get, SWIG_Lua_set_immutable },
     { "full_square_vertices", _wrap_full_square_vertices_get, SWIG_Lua_set_immutable },
     { "armature_filename", _wrap_armature_filename_get, SWIG_Lua_set_immutable },
+    { "default_uv_offset", _wrap_default_uv_offset_get, SWIG_Lua_set_immutable },
+    { "default_uv_scale", _wrap_default_uv_scale_get, SWIG_Lua_set_immutable },
+    { "default_flip_y_uv_scale", _wrap_default_flip_y_uv_scale_get, SWIG_Lua_set_immutable },
     {0,0,0}
 };
 static swig_lua_const_info swig_SwigModule_constants[]= {
@@ -112159,7 +112374,6 @@ static swig_lua_const_info swig_SwigModule_constants[]= {
     {SWIG_LUA_CONSTTAB_INT("LSG_TOWER", LSG_TOWER)},
     {SWIG_LUA_CONSTTAB_INT("LSG_SCRIPT_BULLET", LSG_SCRIPT_BULLET)},
     {SWIG_LUA_CONSTTAB_INT("LSG_COUNT", LSG_COUNT)},
-    {SWIG_LUA_CONSTTAB_INT("MAX_COMMAND_SLOT", (6))},
     {SWIG_LUA_CONSTTAB_INT("LACT_NONE", LACT_NONE)},
     {SWIG_LUA_CONSTTAB_INT("LACT_KEYFRAME", LACT_KEYFRAME)},
     {SWIG_LUA_CONSTTAB_INT("LACT_BEZIER", LACT_BEZIER)},
@@ -112865,6 +113079,7 @@ static swig_lua_const_info swig_SwigModule_constants[]= {
     {SWIG_LUA_CONSTTAB_INT("SRP_SHA256", SRP_SHA256)},
     {SWIG_LUA_CONSTTAB_INT("SRP_SHA384", SRP_SHA384)},
     {SWIG_LUA_CONSTTAB_INT("SRP_SHA512", SRP_SHA512)},
+    {SWIG_LUA_CONSTTAB_INT("MAX_COMMAND_SLOT", (6))},
     {0,0,0,0,0,0}
 };
 static swig_lua_method swig_SwigModule_methods[]= {
@@ -113012,6 +113227,8 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "read_file_string", _wrap_read_file_string},
     { "read_file_binary", _wrap_read_file_binary},
     { "read_file", _wrap_read_file},
+    { "read_file_string_all", _wrap_read_file_string_all},
+    { "read_file_binary_all", _wrap_read_file_binary_all},
     { "load_fnt", _wrap_load_fnt},
     { "font_binary_search_char", _wrap_font_binary_search_char},
     { "font_get_base", _wrap_font_get_base},
@@ -113072,49 +113289,6 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "kvmsg_store", _wrap_kvmsg_store},
     { "kvmsg_dump", _wrap_kvmsg_dump},
     { "kvmsg_test", _wrap_kvmsg_test},
-    { "lw_init_initial_size", _wrap_lw_init_initial_size},
-    { "lw_init", _wrap_lw_init},
-    { "lw_deinit", _wrap_lw_deinit},
-    { "lw_set_window_size", _wrap_lw_set_window_size},
-    { "lw_set_viewport_size", _wrap_lw_set_viewport_size},
-    { "lw_set_window", _wrap_lw_set_window},
-    { "lw_get_window", _wrap_lw_get_window},
-    { "lwc_prerender_mutable_context", _wrap_lwc_prerender_mutable_context},
-    { "lwc_render", _wrap_lwc_render},
-    { "lw_get_update_count", _wrap_lw_get_update_count},
-    { "lw_get_render_count", _wrap_lw_get_render_count},
-    { "lw_on_destroy", _wrap_lw_on_destroy},
-    { "lw_clear_color", _wrap_lw_clear_color},
-    { "lw_set_kp", _wrap_lw_set_kp},
-    { "set_tex_filter", _wrap_set_tex_filter},
-    { "bind_all_fvertex_attrib", _wrap_bind_all_fvertex_attrib},
-    { "bind_all_vertex_attrib", _wrap_bind_all_vertex_attrib},
-    { "bind_all_color_vertex_attrib", _wrap_bind_all_color_vertex_attrib},
-    { "bind_all_vertex_attrib_font", _wrap_bind_all_vertex_attrib_font},
-    { "bind_all_vertex_attrib_etc1_with_alpha", _wrap_bind_all_vertex_attrib_etc1_with_alpha},
-    { "bind_all_skin_vertex_attrib", _wrap_bind_all_skin_vertex_attrib},
-    { "bind_all_fan_vertex_attrib", _wrap_bind_all_fan_vertex_attrib},
-    { "bind_all_ps_vertex_attrib", _wrap_bind_all_ps_vertex_attrib},
-    { "bind_all_ps0_vertex_attrib", _wrap_bind_all_ps0_vertex_attrib},
-    { "bind_all_line_vertex_attrib", _wrap_bind_all_line_vertex_attrib},
-    { "bind_all_morph_vertex_attrib", _wrap_bind_all_morph_vertex_attrib},
-    { "set_texture_parameter_values", _wrap_set_texture_parameter_values},
-    { "get_tex_index_by_hash_key", _wrap_get_tex_index_by_hash_key},
-    { "set_texture_parameter", _wrap_set_texture_parameter},
-    { "lw_app_quit", _wrap_lw_app_quit},
-    { "hash", _wrap_hash},
-    { "reset_battle_context", _wrap_reset_battle_context},
-    { "lwc_start_logic_thread", _wrap_lwc_start_logic_thread},
-    { "delete_all_rmsgs", _wrap_delete_all_rmsgs},
-    { "lw_start_text_input_activity", _wrap_lw_start_text_input_activity},
-    { "lw_start_chat_text_input_activity", _wrap_lw_start_chat_text_input_activity},
-    { "lw_set_device_model", _wrap_lw_set_device_model},
-    { "lw_flag_logic_actor_to_quit_and_wait", _wrap_lw_flag_logic_actor_to_quit_and_wait},
-    { "set_vertex_attrib_pointer", _wrap_set_vertex_attrib_pointer},
-    { "set_color_vertex_attrib_pointer", _wrap_set_color_vertex_attrib_pointer},
-    { "load_png_pkm_sw_decoding", _wrap_load_png_pkm_sw_decoding},
-    { "set_package_version", _wrap_set_package_version},
-    { "load_pkm_hw_decoding", _wrap_load_pkm_hw_decoding},
     { "lwc_update", _wrap_lwc_update},
     { "reset_runtime_context", _wrap_reset_runtime_context},
     { "reset_time", _wrap_reset_time},
@@ -113738,6 +113912,53 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "srp_user_process_challenge", _wrap_srp_user_process_challenge},
     { "srp_user_verify_session", _wrap_srp_user_verify_session},
     { "srp_hexify", _wrap_srp_hexify},
+    { "lw_init_initial_size", _wrap_lw_init_initial_size},
+    { "lw_init", _wrap_lw_init},
+    { "lw_deinit", _wrap_lw_deinit},
+    { "lw_set_window_size", _wrap_lw_set_window_size},
+    { "lw_set_viewport_size", _wrap_lw_set_viewport_size},
+    { "lw_set_window", _wrap_lw_set_window},
+    { "lw_get_window", _wrap_lw_get_window},
+    { "lwc_prerender_mutable_context", _wrap_lwc_prerender_mutable_context},
+    { "lwc_render", _wrap_lwc_render},
+    { "lw_get_update_count", _wrap_lw_get_update_count},
+    { "lw_get_render_count", _wrap_lw_get_render_count},
+    { "lw_on_destroy", _wrap_lw_on_destroy},
+    { "lw_clear_color", _wrap_lw_clear_color},
+    { "lw_set_kp", _wrap_lw_set_kp},
+    { "set_tex_filter", _wrap_set_tex_filter},
+    { "bind_all_fvertex_attrib", _wrap_bind_all_fvertex_attrib},
+    { "bind_all_vertex_attrib", _wrap_bind_all_vertex_attrib},
+    { "bind_all_color_vertex_attrib", _wrap_bind_all_color_vertex_attrib},
+    { "bind_all_vertex_attrib_font", _wrap_bind_all_vertex_attrib_font},
+    { "bind_all_vertex_attrib_etc1_with_alpha", _wrap_bind_all_vertex_attrib_etc1_with_alpha},
+    { "bind_all_skin_vertex_attrib", _wrap_bind_all_skin_vertex_attrib},
+    { "bind_all_fan_vertex_attrib", _wrap_bind_all_fan_vertex_attrib},
+    { "bind_all_ps_vertex_attrib", _wrap_bind_all_ps_vertex_attrib},
+    { "bind_all_ps0_vertex_attrib", _wrap_bind_all_ps0_vertex_attrib},
+    { "bind_all_line_vertex_attrib", _wrap_bind_all_line_vertex_attrib},
+    { "bind_all_morph_vertex_attrib", _wrap_bind_all_morph_vertex_attrib},
+    { "set_texture_parameter_values", _wrap_set_texture_parameter_values},
+    { "get_tex_index_by_hash_key", _wrap_get_tex_index_by_hash_key},
+    { "set_texture_parameter", _wrap_set_texture_parameter},
+    { "lw_app_quit", _wrap_lw_app_quit},
+    { "hash", _wrap_hash},
+    { "reset_battle_context", _wrap_reset_battle_context},
+    { "lwc_start_logic_thread", _wrap_lwc_start_logic_thread},
+    { "delete_all_rmsgs", _wrap_delete_all_rmsgs},
+    { "lw_start_text_input_activity", _wrap_lw_start_text_input_activity},
+    { "lw_start_chat_text_input_activity", _wrap_lw_start_chat_text_input_activity},
+    { "lw_set_device_model", _wrap_lw_set_device_model},
+    { "lw_flag_logic_actor_to_quit_and_wait", _wrap_lw_flag_logic_actor_to_quit_and_wait},
+    { "set_vertex_attrib_pointer", _wrap_set_vertex_attrib_pointer},
+    { "set_color_vertex_attrib_pointer", _wrap_set_color_vertex_attrib_pointer},
+    { "load_png_pkm_sw_decoding", _wrap_load_png_pkm_sw_decoding},
+    { "set_package_version", _wrap_set_package_version},
+    { "load_pkm_hw_decoding", _wrap_load_pkm_hw_decoding},
+    { "write_user_data_file_string", _wrap_write_user_data_file_string},
+    { "write_user_data_file_binary", _wrap_write_user_data_file_binary},
+    { "read_user_data_file_string", _wrap_read_user_data_file_string},
+    { "read_user_data_file_binary", _wrap_read_user_data_file_binary},
     { "new_int", _wrap_new_int},
     { "delete_int", _wrap_delete_int},
     { "int_getitem", _wrap_int_getitem},

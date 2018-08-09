@@ -1,3 +1,8 @@
 /laidoff/user1/*.dat
 .~lock.*#
 ~$*
+/laidoff-server/build
+/laidoff/account-id
+/laidoff/account-pw
+/laidoff/account-s
+/laidoff/account-v
