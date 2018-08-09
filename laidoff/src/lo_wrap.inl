@@ -111580,6 +111580,7 @@ static int _wrap_srp_hexify(lua_State* L) {
     } SWIG_arg++;
   }
   {
+    // FREE STR
     if (*arg3) free(*arg3);
   }
   return SWIG_arg;
@@ -111588,6 +111589,7 @@ static int _wrap_srp_hexify(lua_State* L) {
   
 fail:
   {
+    // FREE STR
     if (*arg3) free(*arg3);
   }
   lua_error(L);

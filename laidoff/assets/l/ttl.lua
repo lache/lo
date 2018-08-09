@@ -421,13 +421,10 @@ end
 
 function create_account()
     print('create_account')
-    add_custom_http_header('X-Account-Id', 'testuser')
-    add_custom_http_header('X-Account-S', 'ssssssssss')
-    add_custom_http_header('X-Account-V', 'vvvvvvvv')
-
+    
     local alg = lo.SRP_SHA1
     local ng_type = lo.SRP_NG_512
-    local username = 'testuser'
+    local username = 'testuser2'
     local n_hex = nil
     local g_hex = nil
 
@@ -489,10 +486,15 @@ function create_account()
     end
 
     local hexstr_s = lo.srp_hexify(bytes_s, len_s)
+    local hexstr_v = lo.srp_hexify(bytes_v, len_v)
     print('len_s:',len_s,'s:',hexstr_s)
+    print('len_v:',len_v,'v:',hexstr_v)
+
+    add_custom_http_header('X-Account-Id', username)
+    add_custom_http_header('X-Account-S', hexstr_s)
+    add_custom_http_header('X-Account-V', hexstr_v)
 
     lo.delete_LWUNSIGNEDCHAR(pw)
 
     lo.htmlui_execute_anchor_click(c.htmlui, '/createAccount')
-
 end

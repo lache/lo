@@ -5,6 +5,7 @@ const queryShiproute = require('./query/shiproute')
 const queryShipyard = require('./query/shipyard')
 const queryUser = require('./query/user')
 const queryCaptain = require('./query/captain')
+const queryAccount = require('./query/account')
 
 const createUser = guid => {
   const userName = `${raname.first()} ${raname.last()}`
@@ -115,26 +116,6 @@ const findUserShipsScrollDown = (userId, lastUserId, count) => {
 const findUserShipsScrollUp = (userId, firstUserId, count) => {
   return queryShip.findUserShipsScrollUp.all(userId, firstUserId, count)
 }
-const findMission = missionId => queryMission.findMission.get(missionId)
-const findMissions = () => {
-  const result = queryMission.findMissions.all()
-  const rows = []
-  let row = []
-  let index = 0
-  for (let each of result) {
-    row.push(each)
-    if (++index % 2 === 0) {
-      rows.push(row)
-      row = []
-    }
-  }
-  if (row.length > 0) {
-    rows.push(row)
-  }
-  console.log(rows)
-  return rows
-}
-
 const findPort = portId => querySeaport.findPort.get(portId)
 const findShipyard = shipyardId => queryShipyard.findShipyard.get(shipyardId)
 const findPortsScrollDown = (userId, lastRegionId, count) => {
@@ -161,6 +142,18 @@ const insertCaptain = (userId, name, captainTemplateId) => {
 const findCaptain = captainId => queryCaptain.findCaptain.get(captainId)
 const deleteCaptain = captainId => queryCaptain.deleteCaptain.run(captainId)
 
+const createAccount = (accountId, s, v) => {
+  try {
+    const account = queryAccount.insertAccount.run(accountId, s, v)
+    return account.lastInsertROWID
+  } catch (e) {
+    if (e.code !== 'SQLITE_CONSTRAINT_PRIMARYKEY') {
+      throw e
+    }
+    console.log(`Duplicated account ID: '${accountId}'`)
+    return null
+  }
+}
 module.exports = {
   createUser,
   createPort,
@@ -190,8 +183,6 @@ module.exports = {
   spendGold,
   findUserShipsScrollDown,
   findUserShipsScrollUp,
-  findMission,
-  findMissions,
   findPort,
   findShipyard,
   findPortsScrollDown,
@@ -200,5 +191,6 @@ module.exports = {
   deleteShipyard,
   insertCaptain,
   findCaptain,
-  deleteCaptain
+  deleteCaptain,
+  createAccount
 }

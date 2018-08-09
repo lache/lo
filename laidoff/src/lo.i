@@ -28,6 +28,7 @@ if ($1==0) { lua_pushnil(L); } else { lua_pushstring(L, *$1); } SWIG_arg++;
 }
 
 %typemap(freearg) const char **OUTPUT {
+// FREE STR
 if (*$1) free(*$1);
 }
 
