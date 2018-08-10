@@ -13,6 +13,8 @@ WORKDIR /app
 COPY --from=builder /app/node_modules /app/node_modules
 COPY . /app
 
+RUN node-gyp rebuild
+
 RUN npm run init
 
 EXPOSE 3000 3003/udp
