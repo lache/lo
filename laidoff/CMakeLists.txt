@@ -180,6 +180,7 @@ elseif (APPLE)
             win32/sound.cpp
             win32/net.c
             win32/lwimgui.cpp
+            win32/lwimgui.h
             osx/osx_image.m
             osx/osx_sound.m
             assets # mac os executable bundles its external resources

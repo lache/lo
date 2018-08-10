@@ -8,8 +8,9 @@
 #include <stdio.h>
 #include "iconchar.h"
 #include <ctype.h> // isspace() on mac os
+#include "logic.h"
+
 static bool show_test_window = false;
-static bool show_chat_window = false;
 static bool show_another_window = true;
 static ImVec4 clear_color = ImColor(114, 144, 154);
 
@@ -35,13 +36,11 @@ extern "C" void lwimgui_init(GLFWwindow* window) {
         0,
     };
 
-#if LW_PLATFORM_WIN32
-    // mac os resource finding problem not solved
-    ImFont* font1 = io.Fonts->AddFontFromFileTTF("fonts" PATH_SEPARATOR "NotoSansCJKkr-Regular.otf",
+    ImFont* font1 = io.Fonts->AddFontFromFileTTF(ASSETS_BASE_PATH "fonts" PATH_SEPARATOR "NotoSansCJKkr-Regular.otf",
                                                  18,
                                                  nullptr,
                                                  ranges);
-#endif
+
     
     //ImFontConfig config;
     //config.OversampleH = 3;
@@ -86,19 +85,22 @@ extern "C" void lwimgui_render(GLFWwindow* window) {
     //}
     // 2. Show another simple window, this time using an explicit Begin/End pair
     if (show_another_window) {
-        if (show_chat_window) {
+        if (pLwc->show_chat_window) {
             static char buf[256] = "";
-            static bool focus_here = false;
+            
 			const int chat_window_height = 60;// +190;
             ImGui::SetNextWindowPos(ImVec2(0, (float)pLwc->window_height - chat_window_height));
+            bool show_chat_window = pLwc->show_chat_window ? true : false;
             if (!ImGui::Begin("Chat",
                               &show_chat_window,
                               ImVec2((float)pLwc->window_width, (float)chat_window_height),
                               0.8f,
                               ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings)) {
+                pLwc->show_chat_window = show_chat_window ? 1 : 0;
                 ImGui::End();
                 return;
             }
+            pLwc->show_chat_window = show_chat_window ? 1 : 0;
             ImGui::Text("%s", "Chat"); ImGui::SameLine();
             if (ImGui::SmallButton("Clear")) {
                 lwchatringbuffer_clear(&pLwc->chat_ring_buffer);
@@ -120,21 +122,25 @@ extern "C" void lwimgui_render(GLFWwindow* window) {
             ImGui::EndChild();
             ImGui::Separator();
 			*/
-            if (focus_here) {
+            if (pLwc->focus_chat_input) {
                 ImGui::SetKeyboardFocusHere();
-                focus_here = false;
+                pLwc->focus_chat_input = false;
             }
             ImGui::PushItemWidth(-1);
             if (ImGui::InputText("Chat", buf, ARRAY_SIZE(buf), ImGuiInputTextFlags_EnterReturnsTrue)) {
+                char s[1024*512];
+                sprintf(s, "on_chat([===[%s]===])", buf);
+                size_t s_len = strlen(s);
+                logic_emit_evalute_with_name_async(pLwc, s, s_len, s);
+                /*
                 const char* buf_trimmed = trimwhitespace_inplace(buf);
                 if (buf_trimmed[0]) {
                     LOGI("Chat %s", buf_trimmed);
                     lwttl_udp_send_ttlchat(pLwc->ttl, lwttl_sea_udp(pLwc->ttl), buf_trimmed);
-                    //lwchatringbuffer_add(&pLwc->chat_ring_buffer, buf_trimmed);
-                    //scroll_to_bottom = true;
                 }
                 buf[0] = 0;
-                focus_here = true;
+                focus_chat_input = true;
+                 */
             }
             ImGui::End();
         }
@@ -186,7 +192,7 @@ extern "C" void lwimgui_render(GLFWwindow* window) {
             show_test_window ^= 1;
         } ImGui::SameLine();
         if (ImGui::Button("Chat Window")) {
-            show_chat_window ^= 1;
+            pLwc->show_chat_window ^= 1;
         }
         ImGui::End();
     }

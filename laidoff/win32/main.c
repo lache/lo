@@ -442,24 +442,25 @@ void lw_start_text_input_activity(LWCONTEXT* pLwc, int tag) {
 }
 #else // #if LW_PLATFORM_WIN32
 void lw_start_text_input_activity(LWCONTEXT* pLwc, int tag) {
-    LOGE("Not implemented yet..");
+    pLwc->show_chat_window = 1;
+    pLwc->focus_chat_input = 1;
 }
 #endif
 
 void lw_start_chat_text_input_activity(LWCONTEXT* pLwc) {
-	LOGE("Not implemented yet..");
+    LOGE("lw_start_chat_text_input_activity: Not implemented yet..");
 }
 
 void lw_request_remote_notification_device_token(LWCONTEXT* pLwc) {
-    LOGE("Not supported in win32");
+    LOGE("lw_request_remote_notification_device_token: Not supported in this platform");
 }
 
 void lw_start_reward_video(LWCONTEXT* pLwc, int tag) {
-    LOGE("Not supported");
+    LOGE("lw_start_reward_video: Not supported in this platform");
 }
 
 void lw_start_sign_in(LWCONTEXT* pLwc, int tag) {
-    LOGE("Not supported");
+    LOGE("lw_start_sign_in: Not supported in this platform");
 }
 
 void lw_start_sign_out(LWCONTEXT* pLwc, int tag) {

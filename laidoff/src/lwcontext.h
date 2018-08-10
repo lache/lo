@@ -433,6 +433,8 @@ typedef struct _LWCONTEXT {
     int country_page;
     void* remtex;
     LWCHATRINGBUFFER chat_ring_buffer;
+    int show_chat_window;
+    int focus_chat_input;
 } LWCONTEXT;
 
 double lwcontext_delta_time(const LWCONTEXT* pLwc);
