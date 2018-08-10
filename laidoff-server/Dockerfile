@@ -6,14 +6,14 @@ WORKDIR /app
 COPY package.json /app/package.json
 COPY package-lock.json /app/package-lock.json
 RUN npm install --production
+RUN node-gyp rebuild
 
 FROM node:8-alpine
 
 WORKDIR /app
 COPY --from=builder /app/node_modules /app/node_modules
+COPY --from=builder /app/build /app/build
 COPY . /app
-
-RUN node-gyp rebuild
 
 RUN npm run init
 
