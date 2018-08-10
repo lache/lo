@@ -422,7 +422,7 @@ end
 
 -- Shared constants regarding to auth
 local alg = lo.SRP_SHA1
-local ng_type = lo.SRP_NG_512
+local ng_type = lo.SRP_NG_1024
 local n_hex = nil
 local g_hex = nil
 local auth_context = {}
@@ -441,10 +441,12 @@ function start_account_auth()
         return
     end
 
+
+
     -- [2] Client: Create an account object for authentication
     auth_context.usr = lo.srp_user_new(alg, ng_type, username, bytes_pw, len_pw, n_hex, g_hex)
     local auth_username, bytes_A, len_A = lo.srp_user_start_authentication(auth_context.usr)
-    print(auth_username, bytes_A, len_A)
+    print('username:',auth_username, 'bytes_A:',bytes_A, 'len_A:',len_A)
     local hexstr_A = lo.srp_hexify(bytes_A, len_A)
     -- Send 'A' to server
     add_custom_http_header('X-Account-Id', username)
@@ -452,9 +454,18 @@ function start_account_auth()
     lo.htmlui_execute_anchor_click(c.htmlui, '/startAuth1')
     auth_context.bytes_s = bytes_s
     auth_context.len_s = len_s
+    auth_context.bytes_v = bytes_v
+    auth_context.len_v = len_v
+    auth_context.bytes_pw = bytes_pw
+    auth_context.len_pw = len_pw
 
+    -- store 'A' for debugging purpose
+    auth_context.bytes_A = bytes_A
+    auth_context.len_A = len_A
+
+    --[[
     local ver, bytes_B, len_B = lo.srp_verifier_new(alg, ng_type, username, bytes_s, len_s, bytes_v, len_v, bytes_A, len_A, n_hex, g_hex)
-    print(ver, bytes_B, len_B)
+    print('ver:',ver, 'bytes_B:',bytes_B, 'len_B:',len_B)
     local hexstr_s = lo.srp_hexify(bytes_s, len_s)
     local hexstr_v = lo.srp_hexify(bytes_v, len_v)
     local hexstr_B = lo.srp_hexify(bytes_B, len_B)
@@ -462,6 +473,7 @@ function start_account_auth()
     print('hexstr_v', hexstr_v)
     print('hexstr_A', hexstr_A)
     print('hexstr_B', hexstr_B)
+    ]]--
 end
 
 function create_account_force()
@@ -524,15 +536,15 @@ function create_account_ex(force)
             nil,
             nil)
         print(bytes_s, len_s, bytes_v, len_v)
-
-        -- save these values to disk only after successful response received.
-        auth_context.bytes_s = bytes_s
-        auth_context.len_s = len_s
-        auth_context.bytes_v = bytes_v
-        auth_context.len_v = len_v
-        auth_context.bytes_pw = bytes_pw
-        auth_context.len_pw = len_pw
     end
+
+    -- save these values to disk only after successful response received.
+    auth_context.bytes_s = bytes_s
+    auth_context.len_s = len_s
+    auth_context.bytes_v = bytes_v
+    auth_context.len_v = len_v
+    auth_context.bytes_pw = bytes_pw
+    auth_context.len_pw = len_pw
 
     -- Send I(username), s and v to server
     local hexstr_s = lo.srp_hexify(bytes_s, len_s)
@@ -550,6 +562,9 @@ function create_account_ex(force)
     local usr = lo.srp_user_new(alg, ng_type, username, bytes_pw, len_pw, n_hex, g_hex)
     local auth_username, bytes_A, len_A = lo.srp_user_start_authentication(usr)
     print(auth_username, bytes_A, len_A)
+    -- store 'A' for debugging purpose
+    auth_context.bytes_A = bytes_A
+    auth_context.len_A = len_A
 
     -- [3] Server: Create a verifier
     local ver, bytes_B, len_B = lo.srp_verifier_new(alg, ng_type, username, bytes_s, len_s, bytes_v, len_v, bytes_A, len_A, n_hex, g_hex)
@@ -605,14 +620,13 @@ function on_json_body(json_body)
         -- startAuth1 step result
         print('B', jb.B)
         auth_context.bytes_B, auth_context.len_B = lo.srp_unhexify(jb.B)
-        print(auth_context.bytes_B, auth_context.len_B)
+        print('bytes_B:',auth_context.bytes_B,'len_B:',auth_context.len_B)
         -- [4] Client
         local bytes_M, len_M = lo.srp_user_process_challenge(auth_context.usr,
                                                              auth_context.bytes_s,
                                                              auth_context.len_s,
                                                              auth_context.bytes_B,
                                                              auth_context.len_B)
-        print(bytes_M, len_M)
         if bytes_M == nil then
             print('User SRP-6a safety check violation!')
             lo.show_sys_msg(c.def_sys_msg, '인증 실패! :(')
@@ -624,6 +638,31 @@ function on_json_body(json_body)
 
         add_custom_http_header('X-Account-M', hexstr_M)
         lo.htmlui_execute_anchor_click(c.htmlui, '/startAuth2')
+
+        -- simulate on client side (debugging)
+        -- [3] Server: Create a verifier
+        local ver_debug, bytes_B_debug, len_B_debug = lo.srp_verifier_new(alg,
+                                                        ng_type,
+                                                        lo.srp_user_get_username(auth_context.usr),
+                                                        auth_context.bytes_s,
+                                                        auth_context.len_s,
+                                                        auth_context.bytes_v,
+                                                        auth_context.len_v,
+                                                        auth_context.bytes_A,
+                                                        auth_context.len_A,
+                                                        n_hex, g_hex)
+        print('ver(debug):',ver_debug,'bytes_B(debug):',bytes_B_debug,'len_B(debug):',len_B_debug)
+        if bytes_B_debug == nil then
+            print('[Debug] Verifier SRP-6a safety check violated!')
+            return
+        end
+        -- [5] Server
+        local bytes_HAMK_debug = lo.srp_verifier_verify_session(ver_debug, bytes_M)
+        print('bytes_HAMK(debug):',bytes_HAMK_debug)
+        if bytes_HAMK_debug == nil then
+            print('[Debug] User authentication failed!')
+            return
+        end
     elseif jb.HAMK ~= nil then
         -- startAuth2 step result
         print('HAMK', jb.HAMK)
@@ -636,6 +675,10 @@ function on_json_body(json_body)
             return
         end
         print('Authed :)')
+        local bytes_key, len_key = lo.srp_user_get_session_key(auth_context.usr)
+        local hexstr_key = lo.srp_hexify(bytes_key, len_key)
+        print('Session key:', hexstr_key)
+
         auth_context.username = lo.srp_user_get_username(auth_context.usr)
         lo.show_sys_msg(c.def_sys_msg, '계정 \''..auth_context.username..'\' 인증 성공 :)')
     else

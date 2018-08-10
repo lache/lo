@@ -44,7 +44,7 @@ void finalize_verifier(napi_env env, void* finalize_data, void* finalize_hint) {
 }
 
 int alg = SRP_SHA1;
-int ng_type = SRP_NG_512;
+int ng_type = SRP_NG_1024;
 const char* n_hex = NULL;
 const char* g_hex = NULL;
 

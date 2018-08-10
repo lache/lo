@@ -1,5 +1,4 @@
 const db = require('../db')
-const url = require('url')
 
 module.exports = app => {
   app.get('/createAccount', (req, res) => {

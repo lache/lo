@@ -1,6 +1,6 @@
 const db = require('../db')
 const url = require('url')
-const srp = require('../../build/Release/module')
+const srp = require('../../build/Debug/module')
 
 module.exports = app => {
   app.get('/startAuth2', (req, res) => {
