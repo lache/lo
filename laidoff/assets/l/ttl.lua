@@ -28,8 +28,8 @@ local selected_seaport_id
 
 if c.tcp_ttl ~= nil then
     print('Destroying the previous TCP connection...')
-    lo.destroy_tcp(c.tcp_ttl);
-    c.tcp_ttl = nil;
+    lo.destroy_tcp(c.tcp_ttl)
+    c.tcp_ttl = nil
 end
 
 if c.tcp_ttl == nil then
@@ -436,7 +436,9 @@ function start_account_auth()
     if errcode_username == 0 and errcode_s == 0 and errcode_v == 0 and errcode_pw == 0 then
         print('Auth data loaded successfully.')
     else
-        print('Auth data corrupted!')
+        print('Auth data empty or corrupted!')
+        lo.show_sys_msg(c.def_sys_msg, '계정 정보가 없거나 잘못됨')
+        return
     end
 
     -- [2] Client: Create an account object for authentication
@@ -462,18 +464,44 @@ function start_account_auth()
     print('hexstr_B', hexstr_B)
 end
 
+function create_account_force()
+    print('create_account_force')
+    auth_context.force_create = true
+    lo.start_nickname_text_input_activity(c)
+end
+
 function create_account()
     print('create_account')
+    auth_context.force_create = false
+    lo.start_nickname_text_input_activity(c)
+end
 
+function on_nickname_change(nickname)
+    print('on_nickname_change: ' .. nickname)
+    if #nickname > 0 then
+        if nickname:match("%W") then
+            lo.show_sys_msg(c.def_sys_msg, '닉네임은 알파벳과 숫자만 허용됩니다.')
+        else
+            auth_context.username = nickname
+            create_account_ex(auth_context.force_create)
+        end
+    else
+        lo.show_sys_msg(c.def_sys_msg, '닉네임을 지정해야합니다.')
+    end
+end
+
+function create_account_ex(force)
+    print('create_account_ex')
     local errcode_username, username = lo.read_user_data_file_string(c, 'account-id')
     local errcode_s, bytes_s, len_s = lo.read_user_data_file_binary(c, 'account-s')
     local errcode_v, bytes_v, len_v = lo.read_user_data_file_binary(c, 'account-v')
     local errcode_pw, bytes_pw, len_pw = lo.read_user_data_file_binary(c, 'account-pw')
     print(username, bytes_s, len_s, bytes_v, len_v, bytes_pw, len_pw)
-    if errcode_username == 0 and errcode_s == 0 and errcode_v == 0 and errcode_pw == 0 then
-        lo.show_sys_msg(c.def_sys_msg, '이미 계정 캐시 파일 존재...')
+    if force == false and errcode_username == 0 and errcode_s == 0 and errcode_v == 0 and errcode_pw == 0 then
+        lo.show_sys_msg(c.def_sys_msg, '이미 \''..username..'\' 계정 캐시 존재!')
+        auth_context.username = username
     else
-        username = 'testuser2'
+        username = auth_context.username --'testuser2'
 
         -- [1] Client: Register a new account
         len_pw = 8
@@ -488,8 +516,8 @@ function create_account()
         lo.LWUNSIGNEDCHAR_setitem(bytes_pw, 6, 0xde)
         lo.LWUNSIGNEDCHAR_setitem(bytes_pw, 7, 0xf0)
         bytes_s, len_s, bytes_v, len_v = lo.srp_create_salted_verification_key(
-            lo.SRP_SHA1,
-            lo.SRP_NG_512,
+            alg,
+            ng_type,
             username,
             bytes_pw,
             len_pw,
@@ -497,11 +525,13 @@ function create_account()
             nil)
         print(bytes_s, len_s, bytes_v, len_v)
 
-        -- Save I(username), s, v and pw to client disk
-        lo.write_user_data_file_string(c, 'account-id', username)
-        lo.write_user_data_file_binary(c, 'account-s', bytes_s, len_s)
-        lo.write_user_data_file_binary(c, 'account-v', bytes_v, len_v)
-        lo.write_user_data_file_binary(c, 'account-pw', bytes_pw, len_pw)
+        -- save these values to disk only after successful response received.
+        auth_context.bytes_s = bytes_s
+        auth_context.len_s = len_s
+        auth_context.bytes_v = bytes_v
+        auth_context.len_v = len_v
+        auth_context.bytes_pw = bytes_pw
+        auth_context.len_pw = len_pw
     end
 
     -- Send I(username), s and v to server
@@ -546,7 +576,7 @@ function create_account()
     end
 
     -- [6] Client check
-    lo.srp_user_verify_session(usr, bytes_HAMK);
+    lo.srp_user_verify_session(usr, bytes_HAMK)
     if lo.srp_user_is_authenticated(usr) ~= 1 then
         print('Server authentication failed!')
         return
@@ -559,7 +589,20 @@ end
 
 function on_json_body(json_body)
     local jb = json.parse(json_body)
-    if jb.B ~= nil then
+    if jb.id ~= nil and jb.result ~= nil then
+        -- registration step result
+        if jb.result == 'ok' and jb.id == auth_context.username then
+            -- Save I(username), s, v and pw to client disk
+            lo.write_user_data_file_string(c, 'account-id', auth_context.username)
+            lo.write_user_data_file_binary(c, 'account-s', auth_context.bytes_s, auth_context.len_s)
+            lo.write_user_data_file_binary(c, 'account-v', auth_context.bytes_v, auth_context.len_v)
+            lo.write_user_data_file_binary(c, 'account-pw', auth_context.bytes_pw, auth_context.len_pw)
+            lo.show_sys_msg(c.def_sys_msg, '새 계정 \''..auth_context.username..'\' 생성')
+        else
+            lo.show_sys_msg(c.def_sys_msg, '새 계정 \''..auth_context.username..'\' 생성 실패!!')
+        end
+    elseif jb.B ~= nil then
+        -- startAuth1 step result
         print('B', jb.B)
         auth_context.bytes_B, auth_context.len_B = lo.srp_unhexify(jb.B)
         print(auth_context.bytes_B, auth_context.len_B)
@@ -582,16 +625,20 @@ function on_json_body(json_body)
         add_custom_http_header('X-Account-M', hexstr_M)
         lo.htmlui_execute_anchor_click(c.htmlui, '/startAuth2')
     elseif jb.HAMK ~= nil then
+        -- startAuth2 step result
         print('HAMK', jb.HAMK)
         local bytes_HAMK, len_HAMK = lo.srp_unhexify(jb.HAMK)
         print(bytes_HAMK, len_HAMK)
-        lo.srp_user_verify_session(auth_context.usr, bytes_HAMK);
+        lo.srp_user_verify_session(auth_context.usr, bytes_HAMK)
         if lo.srp_user_is_authenticated(auth_context.usr) ~= 1 then
             print('Server authentication failed!')
             lo.show_sys_msg(c.def_sys_msg, '인증 실패!! :(')
             return
         end
         print('Authed :)')
-        lo.show_sys_msg(c.def_sys_msg, '인증 성공 :)')
+        auth_context.username = lo.srp_user_get_username(auth_context.usr)
+        lo.show_sys_msg(c.def_sys_msg, '계정 \''..auth_context.username..'\' 인증 성공 :)')
+    else
+        print('Unknown JSON body')
     end
 end

@@ -12,20 +12,8 @@ module.exports = app => {
     console.log(s)
     console.log('X-Account-V')
     console.log(v)
-    let resultMsg, errMsg
-    if (db.createAccount(accountId, s, v)) {
-      resultMsg = '계정 생성 성공'
-    } else {
-      errMsg = '새 계정 생성 실패!'
-    }
-    res.redirect(
-      url.format({
-        pathname: '/idle',
-        query: {
-          resultMsg: resultMsg,
-          errMsg: errMsg
-        }
-      })
-    )
+    const result = db.createAccount(accountId, s, v)
+    res.setHeader('Content-Type', 'application/json')
+    res.send(JSON.stringify({ id: accountId, result: result ? 'ok' : 'fail' }))
   })
 }

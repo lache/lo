@@ -184,6 +184,7 @@ int read_file_string_all(const char* path_prefix, const char* filename, const ch
     if (f == 0) {
         // no cached user id exists
         LOGEP("CRITICAL ERROR: Cannot open file '%s' for reading...", path);
+        *str_out = 0;
         return -1;
     }
     fseek(f, 0, SEEK_END);
@@ -192,18 +193,20 @@ int read_file_string_all(const char* path_prefix, const char* filename, const ch
         LOGEP("Total size of '%s' is %d!",
               path,
               total_size);
+        *str_out = 0;
         return -3;
     }
     fseek(f, 0, SEEK_SET);
 
     size_t read_size = total_size;
-    *str_out = malloc(read_size + 1);
+    *str_out = (char*)malloc(read_size + 1);
     fread((char*)*str_out, 1, read_size, f);
     if (read_size != total_size) {
         LOGEP("Cannot read all string of '%s'. Total size = %d, Read size = %zu",
               path,
               total_size,
               read_size);
+        (void)free((char*)*str_out), *str_out = 0;
         return -4;
     }
     fclose(f);
@@ -220,6 +223,8 @@ int read_file_binary_all(const char* path_prefix, const char* filename, size_t* 
     if (f == 0) {
         // no cached user id exists
         LOGEP("CRITICAL ERROR: Cannot open file '%s' for reading...", path);
+        *dat_out = 0;
+        *dat_out_len = 0;
         return -1;
     }
     fseek(f, 0, SEEK_END);
@@ -228,12 +233,14 @@ int read_file_binary_all(const char* path_prefix, const char* filename, size_t* 
         LOGEP("Total size of '%s' is %d!",
               path,
               total_size);
+        *dat_out = 0;
+        *dat_out_len = 0;
         return -3;
     }
     fseek(f, 0, SEEK_SET);
     
     size_t read_size = total_size;
-    *dat_out = malloc(read_size);
+    *dat_out = (char*)malloc(read_size);
     *dat_out_len = total_size;
     fread((char*)*dat_out, 1, read_size, f);
     if (read_size != total_size) {
@@ -241,6 +248,8 @@ int read_file_binary_all(const char* path_prefix, const char* filename, size_t* 
                 path,
                 *dat_out_len,
                 total_size);
+        (void)free((char*)*dat_out), *dat_out = 0;
+        *dat_out_len = 0;
         return -4;
     }
     fclose(f);

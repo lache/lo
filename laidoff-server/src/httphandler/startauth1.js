@@ -30,8 +30,8 @@ module.exports = app => {
       console.log(ver.B.toString('hex'))
       if (ver.B.length > 0) {
         req.app.get('verifierMap')[accountId] = ver.verifier
-        res.setHeader('Content-Type', 'application/json');
-        res.send(JSON.stringify({ B: ver.B.toString('hex') }));
+        res.setHeader('Content-Type', 'application/json')
+        res.send(JSON.stringify({ B: ver.B.toString('hex') }))
       } else {
         errMsg = '데이터 오류'
         res.redirect(
