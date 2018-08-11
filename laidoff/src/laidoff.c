@@ -1500,7 +1500,8 @@ void init_action(LWCONTEXT* pLwc) {
 }
 
 LWCONTEXT* lw_init_initial_size(int width, int height) {
-    test_srp_main();
+    // run on logic thread in script...
+    //test_srp_main();
 
     init_ext_image_lib();
 

@@ -194,6 +194,7 @@ void                  srp_user_verify_session(struct SRPUser * usr, const unsign
 
 typedef unsigned char LWUNSIGNEDCHAR, *LWUNSIGNEDCHARPTR;
 void srp_hexify(const unsigned char * b, int len_b, const char ** str);
+void srp_unhexify(const char * str, const unsigned char ** b, int * len_b);
 
 #endif /* Include Guard */
 #ifdef __cplusplus

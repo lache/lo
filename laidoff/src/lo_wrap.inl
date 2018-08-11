@@ -3062,6 +3062,7 @@ static swig_module_info swig_module = {swig_types, 291, 0, 0, 0, 0};
 #include "lwlnglat.h"
 #include "lwhostaddr.h"
 #include "srp.h"
+#include "test_srp.h"
 #ifdef WIN32
 #pragma warning(pop)
 #endif
@@ -109989,6 +109990,23 @@ static swig_lua_class *swig_LWHOSTADDR_bases[] = {0};
 static const char *swig_LWHOSTADDR_base_names[] = {0};
 static swig_lua_class _wrap_class_LWHOSTADDR = { "LWHOSTADDR", "LWHOSTADDR", &SWIGTYPE_p__LWHOSTADDR,_proxy__wrap_new_LWHOSTADDR, swig_delete_LWHOSTADDR, swig_LWHOSTADDR_methods, swig_LWHOSTADDR_attributes, &swig_LWHOSTADDR_Sf_SwigStatic, swig_LWHOSTADDR_meta, swig_LWHOSTADDR_bases, swig_LWHOSTADDR_base_names };
 
+static int _wrap_test_srp_main(lua_State* L) {
+  int SWIG_arg = 0;
+  int result;
+  
+  SWIG_check_num_args("test_srp_main",0,0)
+  result = (int)test_srp_main();
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_srp_random_seed(lua_State* L) {
   int SWIG_arg = 0;
   unsigned char *arg1 = (unsigned char *) 0 ;
@@ -112798,7 +112816,7 @@ static swig_lua_const_info swig_SwigModule_constants[]= {
     {SWIG_LUA_CONSTTAB_INT("LGS_DYNAMIC_VBO", LGS_DYNAMIC_VBO)},
     {SWIG_LUA_CONSTTAB_INT("LGS_TILEMAP", LGS_TILEMAP)},
     {SWIG_LUA_CONSTTAB_STRING("__LW_STRING_LINE__", "63")},
-    {SWIG_LUA_CONSTTAB_STRING("LWLOGPOS", "src/lwlog.h(64): ")},
+    {SWIG_LUA_CONSTTAB_STRING("LWLOGPOS", "src\\lwlog.h(64): ")},
     {SWIG_LUA_CONSTTAB_INT("LPT_GRID", LPT_GRID)},
     {SWIG_LUA_CONSTTAB_INT("LPT_SOLID_RED", LPT_SOLID_RED)},
     {SWIG_LUA_CONSTTAB_INT("LPT_SOLID_GREEN", LPT_SOLID_GREEN)},
@@ -113192,6 +113210,8 @@ static swig_lua_const_info swig_SwigModule_constants[]= {
     {SWIG_LUA_CONSTTAB_FLOAT("LNGLAT_SEA_CELL_UNIT_PER_DEGREES", ((86412)/180.0))},
     {SWIG_LUA_CONSTTAB_INT("LNGLAT_SEA_PING_EXTENT_IN_DEGREES", ((180.0/(86412))*(16)))},
     {SWIG_LUA_CONSTTAB_INT("LNGLAT_VIEW_SCALE_PING_MAX", (1 << 6))},
+    {SWIG_LUA_CONSTTAB_INT("SHARED_SRP_HASH", SHARED_SRP_HASH)},
+    {SWIG_LUA_CONSTTAB_INT("SHARED_SRP_NG", SHARED_SRP_NG)},
     {SWIG_LUA_CONSTTAB_INT("SHA1_DIGEST_LENGTH", 20)},
     {SWIG_LUA_CONSTTAB_INT("SHA224_DIGEST_LENGTH", 224)},
     {SWIG_LUA_CONSTTAB_INT("SHA256_DIGEST_LENGTH", 256)},
@@ -114023,6 +114043,7 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "msb_index", _wrap_msb_index},
     { "make_chunk_key", _wrap_make_chunk_key},
     { "aligned_chunk_index", _wrap_aligned_chunk_index},
+    { "test_srp_main", _wrap_test_srp_main},
     { "srp_random_seed", _wrap_srp_random_seed},
     { "srp_create_salted_verification_key", _wrap_srp_create_salted_verification_key},
     { "srp_verifier_new", _wrap_srp_verifier_new},

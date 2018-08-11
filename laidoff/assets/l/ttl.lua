@@ -26,6 +26,8 @@ local cell_menu_mode = CELL_MENU_MODE_NORMAL
 local select_var_name
 local selected_seaport_id
 
+lo.test_srp_main()
+
 if c.tcp_ttl ~= nil then
     print('Destroying the previous TCP connection...')
     lo.destroy_tcp(c.tcp_ttl)
@@ -421,8 +423,8 @@ function fire_captain(ship_id)
 end
 
 -- Shared constants regarding to auth
-local alg = lo.SRP_SHA1
-local ng_type = lo.SRP_NG_1024
+local alg = lo.SHARED_SRP_HASH
+local ng_type = lo.SHARED_SRP_NG
 local n_hex = nil
 local g_hex = nil
 local auth_context = {}
@@ -504,18 +506,26 @@ end
 
 function create_account_ex(force)
     print('create_account_ex')
+    print('alg:'..alg)
+    print('ng_type:'..ng_type)
     local errcode_username, username = lo.read_user_data_file_string(c, 'account-id')
     local errcode_s, bytes_s, len_s = lo.read_user_data_file_binary(c, 'account-s')
     local errcode_v, bytes_v, len_v = lo.read_user_data_file_binary(c, 'account-v')
     local errcode_pw, bytes_pw, len_pw = lo.read_user_data_file_binary(c, 'account-pw')
-    print(username, bytes_s, len_s, bytes_v, len_v, bytes_pw, len_pw)
-    if force == false and errcode_username == 0 and errcode_s == 0 and errcode_v == 0 and errcode_pw == 0 then
+    print('username(cached):',username, bytes_s, len_s, bytes_v, len_v, bytes_pw, len_pw)
+    if force == false
+       and errcode_username == 0
+       and errcode_s == 0
+       and errcode_v == 0
+       and errcode_pw == 0 then
         lo.show_sys_msg(c.def_sys_msg, '이미 \''..username..'\' 계정 캐시 존재!')
         auth_context.username = username
     else
         username = auth_context.username --'testuser2'
 
         -- [1] Client: Register a new account
+        -- INPUT: username, password
+        -- OUTPUT: s, v
         len_pw = 8
         bytes_pw = lo.new_LWUNSIGNEDCHAR(len_pw)
 
@@ -527,6 +537,7 @@ function create_account_ex(force)
         lo.LWUNSIGNEDCHAR_setitem(bytes_pw, 5, 0xbc)
         lo.LWUNSIGNEDCHAR_setitem(bytes_pw, 6, 0xde)
         lo.LWUNSIGNEDCHAR_setitem(bytes_pw, 7, 0xf0)
+        lo.LWUNSIGNEDCHAR_setitem(bytes_pw, 8, 0x00) -- debugging purpose (null-terminated string)
         bytes_s, len_s, bytes_v, len_v = lo.srp_create_salted_verification_key(
             alg,
             ng_type,
@@ -536,6 +547,80 @@ function create_account_ex(force)
             nil,
             nil)
         print(bytes_s, len_s, bytes_v, len_v)
+
+        -- *** User -> Host: (username, s, v) ***
+    end
+
+    local hexstr_s = lo.srp_hexify(bytes_s, len_s)
+    local hexstr_v = lo.srp_hexify(bytes_v, len_v)
+    print('len_s:',len_s,'s:',hexstr_s)
+    print('len_v:',len_v,'v:',hexstr_v)
+    
+    -- [2] Client: Create an account object for authentication
+    -- INPUT: username, password
+    -- OUTPUT: usr, A
+    local usr = lo.srp_user_new(alg, ng_type, username, bytes_pw, len_pw, n_hex, g_hex)
+    local auth_username, bytes_A, len_A = lo.srp_user_start_authentication(usr)
+    print(auth_username, bytes_A, len_A)
+
+    local hexstr_A = lo.srp_hexify(bytes_A, len_A)
+    print('len_A:',len_A,'A:',hexstr_A)
+
+    -- *** User -> Host: (username, A) ***
+
+    -- [3] Server: Create a verifier
+    -- INPUT: username, s, v, A
+    -- OUTPUT: ver, B, K(internal)
+    local ver, bytes_B, len_B = lo.srp_verifier_new(alg, ng_type, username,
+                                                    bytes_s, len_s,
+                                                    bytes_v, len_v,
+                                                    bytes_A, len_A,
+                                                    n_hex, g_hex)
+    print(ver, bytes_B, len_B)
+    if bytes_B == nil then
+        print('Verifier SRP-6a safety check violated!')
+        return
+    end
+
+    local hexstr_B = lo.srp_hexify(bytes_B, len_B)
+    print('len_B:',len_B,'B:',hexstr_B)
+
+    -- *** Host -> User: (s, B) ***
+
+    -- [4] Client
+    -- INPUT: s, A(in usr), B
+    -- OUTPUT: M, K(in usr)
+    local bytes_M, len_M = lo.srp_user_process_challenge(usr, bytes_s, len_s, bytes_B, len_B)
+    print(bytes_M, len_M)
+    if bytes_M == nil then
+        print('User SRP-6a safety check violation!')
+        return
+    end
+
+    local hexstr_M = lo.srp_hexify(bytes_M, len_M)
+    print('len_M:',len_M,'M:',hexstr_M)
+
+    -- *** User -> Host: (username, M) ***
+
+    -- [5] Server
+    -- INPUT: ver, M
+    -- OUTPUT: HAMK
+    local bytes_HAMK = lo.srp_verifier_verify_session(ver, bytes_M)
+    print(bytes_HAMK)
+    if bytes_HAMK == nil then
+        print('User authentication failed!')
+        return
+    end
+
+    -- *** Host -> User: (HAMK) ***
+
+    -- [6] Client
+    -- INTPUT: usr, HAMK
+    -- OUTPUT: is authed?
+    lo.srp_user_verify_session(usr, bytes_HAMK)
+    if lo.srp_user_is_authenticated(usr) ~= 1 then
+        print('Server authentication failed!')
+        return
     end
 
     -- save these values to disk only after successful response received.
@@ -547,59 +632,14 @@ function create_account_ex(force)
     auth_context.len_pw = len_pw
 
     -- Send I(username), s and v to server
-    local hexstr_s = lo.srp_hexify(bytes_s, len_s)
-    local hexstr_v = lo.srp_hexify(bytes_v, len_v)
-    print('len_s:',len_s,'s:',hexstr_s)
-    print('len_v:',len_v,'v:',hexstr_v)
-
     add_custom_http_header('X-Account-Id', username)
     add_custom_http_header('X-Account-S', hexstr_s)
     add_custom_http_header('X-Account-V', hexstr_v)
     lo.htmlui_execute_anchor_click(c.htmlui, '/createAccount')
 
-    
-    -- [2] Client: Create an account object for authentication
-    local usr = lo.srp_user_new(alg, ng_type, username, bytes_pw, len_pw, n_hex, g_hex)
-    local auth_username, bytes_A, len_A = lo.srp_user_start_authentication(usr)
-    print(auth_username, bytes_A, len_A)
-    -- store 'A' for debugging purpose
-    auth_context.bytes_A = bytes_A
-    auth_context.len_A = len_A
 
-    -- [3] Server: Create a verifier
-    local ver, bytes_B, len_B = lo.srp_verifier_new(alg, ng_type, username, bytes_s, len_s, bytes_v, len_v, bytes_A, len_A, n_hex, g_hex)
-    print(ver, bytes_B, len_B)
-    if bytes_B == nil then
-        print('Verifier SRP-6a safety check violated!')
-        return
-    end
-
-    -- [4] Client
-    local bytes_M, len_M = lo.srp_user_process_challenge(usr, bytes_s, len_s, bytes_B, len_B)
-    print(bytes_M, len_M)
-    if bytes_M == nil then
-        print('User SRP-6a safety check violation!')
-        return
-    end
-
-    -- [5] Server
-    local bytes_HAMK = lo.srp_verifier_verify_session(ver, bytes_M)
-    print(bytes_HAMK)
-    if bytes_HAMK == nil then
-        print('User authentication failed!')
-        return
-    end
-
-    -- [6] Client check
-    lo.srp_user_verify_session(usr, bytes_HAMK)
-    if lo.srp_user_is_authenticated(usr) ~= 1 then
-        print('Server authentication failed!')
-        return
-    end
-
-    lo.delete_LWUNSIGNEDCHAR(pw)
-
-    
+    --lo.delete_LWUNSIGNEDCHAR(bytes_pw)
+    --len_pw = 0
 end
 
 function on_json_body(json_body)
@@ -639,6 +679,7 @@ function on_json_body(json_body)
         add_custom_http_header('X-Account-M', hexstr_M)
         lo.htmlui_execute_anchor_click(c.htmlui, '/startAuth2')
 
+        --[====[
         -- simulate on client side (debugging)
         -- [3] Server: Create a verifier
         local ver_debug, bytes_B_debug, len_B_debug = lo.srp_verifier_new(alg,
@@ -652,6 +693,8 @@ function on_json_body(json_body)
                                                         auth_context.len_A,
                                                         n_hex, g_hex)
         print('ver(debug):',ver_debug,'bytes_B(debug):',bytes_B_debug,'len_B(debug):',len_B_debug)
+        local hexstr_B_debug = lo.srp_hexify(bytes_B_debug, len_B_debug)
+        print('B_debug', hexstr_B_debug)
         if bytes_B_debug == nil then
             print('[Debug] Verifier SRP-6a safety check violated!')
             return
@@ -663,6 +706,7 @@ function on_json_body(json_body)
             print('[Debug] User authentication failed!')
             return
         end
+        ]====]--
     elseif jb.HAMK ~= nil then
         -- startAuth2 step result
         print('HAMK', jb.HAMK)

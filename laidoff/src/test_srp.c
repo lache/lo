@@ -6,10 +6,7 @@
 #else
 #include <sys/time.h>
 #endif
-
-#include "srp.h"
-
-
+#include "test_srp.h"
 #ifdef WIN32
 #include <time.h>
 #include <windows.h>
@@ -57,10 +54,7 @@ int gettimeofday(struct timeval *tv, struct timezone *tz) {
 }
 #endif
 
-
 #define NITER          1
-#define TEST_HASH      SRP_SHA1
-#define TEST_NG        SRP_NG_1024
 
 unsigned long long get_usec() {
     struct timeval t;
@@ -97,22 +91,24 @@ int test_srp_main() {
     unsigned long long start;
     unsigned long long duration;
 
-    const char * username = "testuser"; // SHARED
-    const char * password = "password"; // CLIENT-PRIVATE
+    const char * username = "g"; // SHARED
+    const char * password = "\x12\x34\x56\x78\x9a\xbc\xde\xf0"; // CLIENT-PRIVATE
 
     const char * auth_username = 0;
     const char * n_hex = 0;
     const char * g_hex = 0;
 
-    SRP_HashAlgorithm alg = TEST_HASH; // SHARED
-    SRP_NGType        ng_type = SRP_NG_512; //TEST_NG; SHARED
+    SRP_HashAlgorithm alg = SHARED_SRP_HASH; // SHARED
+    SRP_NGType        ng_type = SHARED_SRP_NG; // SHARED
 
     if (ng_type == SRP_NG_CUSTOM) {
         n_hex = test_n_hex;
         g_hex = test_g_hex;
     }
 
-    // CLIENT
+    // [1] Client: Register a new account
+    // INPUT: username, password
+    // OUTPUT: s, v
     const unsigned char* password_cuchar = (const unsigned char *)password;
     srp_create_salted_verification_key(alg, ng_type, username,
                                        password_cuchar,
@@ -120,22 +116,26 @@ int test_srp_main() {
                                        &bytes_s, &len_s,
                                        &bytes_v, &len_v,
                                        n_hex, g_hex);
-    // User-> Host: (username, bytes_s, bytes_v)
-
+    
+    // *** User -> Host: (username, s, v) ***
 
     start = get_usec();
 
     for (i = 0; i < NITER; i++) {
         printf("iter %d\n", i);
-        // CLIENT - open a new session
+        // [2] Client: Create an account object for authentication
+        // INPUT: username, password
+        // OUTPUT: usr, A
         usr = srp_user_new(alg, ng_type, username,
                            password_cuchar,
                            strlen(password), n_hex, g_hex);
-        // CLIENT
         srp_user_start_authentication(usr, &auth_username, &bytes_A, &len_A);
 
-        /* User -> Host: (username, bytes_A) */
-        // HOST
+        // *** User -> Host: (username, A) ***
+
+        // [3] Server: Create a verifier
+        // INPUT: username, s, v, A
+        // OUTPUT: ver, B, K(in ver)
         ver = srp_verifier_new(alg, ng_type, username, bytes_s, len_s, bytes_v, len_v,
                                bytes_A, len_A, &bytes_B, &len_B, n_hex, g_hex);
         // HOST REJECTED AUTH
@@ -144,8 +144,11 @@ int test_srp_main() {
             goto cleanup;
         }
 
-        /* Host -> User: (bytes_s, bytes_B) */
-        // CLIENT
+        // *** Host -> User: (s, B) ***
+
+        // [4] Client
+        // INPUT: s, A(in usr), B
+        // OUTPUT : M, K(in usr)
         srp_user_process_challenge(usr, bytes_s, len_s, bytes_B, len_B, &bytes_M, &len_M);
         // CLIENT REJECTED AUTH
         if (!bytes_M) {
@@ -153,8 +156,11 @@ int test_srp_main() {
             goto cleanup;
         }
 
-        /* User -> Host: (bytes_M) */
-        // HOST
+        // *** User -> Host: (username, M) ***
+
+        // [5] Server
+        // INPUT: ver, M
+        // OUTPUT : HAMK
         srp_verifier_verify_session(ver, bytes_M, &bytes_HAMK);
         // HOST REJECTED AUTH
         if (!bytes_HAMK) {
@@ -162,8 +168,11 @@ int test_srp_main() {
             goto cleanup;
         }
 
-        /* Host -> User: (HAMK) */
-        // CLIENT
+        // *** Host -> User: (HAMK) ***
+
+        // [6] Client
+        // INTPUT: usr, HAMK
+        // OUTPUT : is authed ?
         srp_user_verify_session(usr, bytes_HAMK);
         // CLIENT AUTH FAILED
         if (!srp_user_is_authenticated(usr)) {

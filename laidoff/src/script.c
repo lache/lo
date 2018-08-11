@@ -871,7 +871,13 @@ int script_http_header(void* L, char* header, size_t header_max_len) {
         LOGEP("error: %s", lua_tostring(L, -1));
         ret = -1;
     } else {
-        strncpy(header, lua_tostring(L, -1), header_max_len - 1);
+        size_t header_len;
+        const char* header_str = lua_tolstring(L, -1, &header_len);
+        if (header_len > header_max_len - 1) {
+            LOGE("Script header will be truncated!!! (max buf len: %zu, header total len: %zu", header_max_len - 1, header_len);
+            abort();
+        }
+        strncpy(header, header_str, header_max_len - 1);
         header[header_max_len - 1] = 0;
     }
     lua_pop(L, 1); // pop returned value

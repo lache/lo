@@ -491,7 +491,8 @@ const char* lwttl_seaarea(LWTTL* ttl) {
 }
 
 const char* lwttl_http_header(const LWTTL* ttl) {
-    static char http_header[2048];
+    // https://stackoverflow.com/questions/686217/maximum-on-http-header-values
+    static char http_header[1024 * 8];
     const LWTTLLNGLAT* lnglat = lwttl_center(ttl);
     LWTTLLNGLAT selected_pos;
     const int selected = lwttl_selected(ttl, &selected_pos);

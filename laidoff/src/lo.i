@@ -136,6 +136,7 @@ if (*$1) free(*$1);
 #include "lwlnglat.h"
 #include "lwhostaddr.h"
 #include "srp.h"
+#include "test_srp.h"
 #ifdef WIN32
 #pragma warning(pop)
 #endif
@@ -258,6 +259,7 @@ if (*$1) free(*$1);
 %include "lwttl.h"
 %include "lwlnglat.h"
 %include "lwhostaddr.h"
+%include "test_srp.h"
 
 // srp_create_salted_verification_key
 // srp_user_start_authentication
