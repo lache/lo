@@ -26,7 +26,7 @@ local cell_menu_mode = CELL_MENU_MODE_NORMAL
 local select_var_name
 local selected_seaport_id
 
-lo.test_srp_main()
+--lo.test_srp_main()
 
 if c.tcp_ttl ~= nil then
     print('Destroying the previous TCP connection...')
