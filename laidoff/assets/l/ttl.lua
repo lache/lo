@@ -735,4 +735,5 @@ function on_chat(line)
     lo.lwttl_udp_send_ttlchat(c.ttl, lo.lwttl_sea_udp(c.ttl), line)
     c.show_chat_window = 0
     c.focus_chat_input = 0
+    on_nickname_change(line)
 end

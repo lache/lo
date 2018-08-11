@@ -10,12 +10,11 @@
 #ifdef WIN32
 #include <time.h>
 #include <windows.h>
-
 #if defined(_MSC_VER) || defined(_MSC_EXTENSIONS)
 #define DELTA_EPOCH_IN_MICROSECS  11644473600000000Ui64
 #else
 #define DELTA_EPOCH_IN_MICROSECS  11644473600000000ULL
-#endif
+#endif // #if defined(_MSC_VER) || defined(_MSC_EXTENSIONS)
 
 struct timezone {
     int  tz_minuteswest; /* minutes W of Greenwich */

@@ -345,6 +345,7 @@ static BIGNUM * calculate_x(SRP_HashAlgorithm alg, const BIGNUM * salt, const ch
     HashCTX       ctx;
 
     hash_init(alg, &ctx);
+    hash_start(alg, &ctx);
 
     hash_update(alg, &ctx, username, strlen(username));
     hash_update(alg, &ctx, ":", 1);
@@ -395,7 +396,8 @@ static void calculate_M(SRP_HashAlgorithm alg, NGConstant *ng, unsigned char * d
         H_xor[i] = H_N[i] ^ H_g[i];
 
     hash_init(alg, &ctx);
-
+    hash_start(alg, &ctx);
+    
     hash_update(alg, &ctx, H_xor, hash_len);
     hash_update(alg, &ctx, H_I, hash_len);
     update_hash_n(alg, &ctx, s);
@@ -410,6 +412,7 @@ static void calculate_H_AMK(SRP_HashAlgorithm alg, unsigned char *dest, const BI
     HashCTX ctx;
 
     hash_init(alg, &ctx);
+    hash_start(alg, &ctx);
 
     update_hash_n(alg, &ctx, A);
     hash_update(alg, &ctx, M, hash_length(alg));
@@ -619,7 +622,8 @@ struct SRPVerifier *  srp_verifier_new(SRP_HashAlgorithm alg, SRP_NGType ng_type
         /* B = kv + g^b */
         mbedtls_mpi_mul_mpi(tmp1, k, v);
         mbedtls_mpi_exp_mod(tmp2, ng->g, b, ng->N, RR);
-        mbedtls_mpi_add_mpi(B, tmp1, tmp2);
+        mbedtls_mpi_add_mpi(tmp1, tmp1, tmp2);
+        mbedtls_mpi_mod_mpi( B, tmp1, ng->N );
 
         u = H_nn(alg, A, B);
 
@@ -908,10 +912,13 @@ void  srp_user_process_challenge(struct SRPUser * usr,
         mbedtls_mpi_exp_mod(v, usr->ng->g, x, usr->ng->N, RR);
         /* S = (B - k*(g^x)) ^ (a + ux) */
         mbedtls_mpi_mul_mpi(tmp1, u, x);
+        mbedtls_mpi_mod_mpi( tmp1, tmp1, usr->ng->N);
         mbedtls_mpi_add_mpi(tmp2, usr->a, tmp1);
+        mbedtls_mpi_mod_mpi( tmp2, tmp2, usr->ng->N);
         /* tmp2 = (a + ux)      */
         mbedtls_mpi_exp_mod(tmp1, usr->ng->g, x, usr->ng->N, RR);
         mbedtls_mpi_mul_mpi(tmp3, k, tmp1);
+        mbedtls_mpi_mod_mpi( tmp3, tmp3, usr->ng->N);
         /* tmp3 = k*(g^x)       */
         mbedtls_mpi_sub_mpi(tmp1, B, tmp3);
         /* tmp1 = (B - K*(g^x)) */
