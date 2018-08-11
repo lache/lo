@@ -113,7 +113,7 @@ napi_value SrpVerifierNew(napi_env env, napi_callback_info info) {
   if (status != napi_ok) {
     napi_throw_error(env, NULL, "Return value 'B' could not be created");
   }
-  (void)free(bytes_B), bytes_B = NULL;
+  // !!! bytes_B should not be freed (owned by member variable of 'ver')
 
   status = napi_create_external(env, ver, finalize_verifier, NULL, &verifier);
   if (status != napi_ok) {
