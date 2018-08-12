@@ -719,15 +719,77 @@ function on_json_body(json_body)
             return
         end
         print('Authed :)')
-        local bytes_key, len_key = lo.srp_user_get_session_key(auth_context.usr)
-        local hexstr_key = lo.srp_hexify(bytes_key, len_key)
-        print('Session key:', hexstr_key)
+        
 
         auth_context.username = lo.srp_user_get_username(auth_context.usr)
         lo.show_sys_msg(c.def_sys_msg, '계정 \''..auth_context.username..'\' 인증 성공 :)')
+        
     else
         print('Unknown JSON body')
     end
+end
+
+function test_aes()
+    local bytes_key, len_key = lo.srp_user_get_session_key(auth_context.usr)
+    local hexstr_key = lo.srp_hexify(bytes_key, len_key)
+    print('Session key:', hexstr_key)
+    
+    local aes_context = lo.mbedtls_aes_context()
+    local keybits = 256 -- see comments on 'mbedtls_aes_setkey_enc()'
+    if lo.mbedtls_aes_setkey_enc(aes_context, bytes_key, keybits) ~= 0 then
+        error('aes key set fail')
+    end
+    
+    local len_input = 16
+    local len_output = len_input
+    
+    local bytes_iv = lo.new_LWUNSIGNEDCHAR(16)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_iv, 0, 0x12)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_iv, 1, 0x34)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_iv, 2, 0x56)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_iv, 3, 0x78)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_iv, 4, 0x9a)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_iv, 5, 0xbc)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_iv, 6, 0xde)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_iv, 7, 0xf0)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_iv, 8, 0x71)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_iv, 9, 0x11)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_iv, 10, 0x72)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_iv, 11, 0x03)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_iv, 12, 0x33)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_iv, 13, 0x85)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_iv, 14, 0x56)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_iv, 15, 0x18)
+    
+    local bytes_input = lo.new_LWUNSIGNEDCHAR(len_input)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_input, 0, 0x00)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_input, 1, 0x00)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_input, 2, 0x00)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_input, 3, 0x01)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_input, 4, 0x00)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_input, 5, 0x00)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_input, 6, 0x00)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_input, 7, 0x02)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_input, 8, 0x00)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_input, 9, 0x00)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_input, 10, 0x00)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_input, 11, 0x03)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_input, 12, 0x00)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_input, 13, 0x00)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_input, 14, 0x00)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_input, 15, 0x04)
+    
+    local bytes_output = lo.new_LWUNSIGNEDCHAR(len_output)
+    
+    if lo.mbedtls_aes_crypt_cbc(aes_context, lo.MBEDTLS_AES_ENCRYPT,
+                                16, bytes_iv, bytes_input, bytes_output) ~= 0 then
+        error('encrypt failed')
+    end
+    
+    local hexstr_input = lo.srp_hexify(bytes_input, len_input)
+    print('input:', hexstr_input)
+    local hexstr_output = lo.srp_hexify(bytes_output, len_output)
+    print('output:', hexstr_output)
 end
 
 function on_chat(line)

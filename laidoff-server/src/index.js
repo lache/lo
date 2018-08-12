@@ -7,11 +7,6 @@ const dgram = require('dgram')
 const seaUdpClient = dgram.createSocket('udp4')
 const app = express()
 const glob = require('glob')
-const addon = require('../build/Debug/module')
-const value = 8
-
-const r = addon.my_function(value, 9)
-console.log(`${value} times 2 equals`, r)
 
 if (argv.init) {
   init.initialize()

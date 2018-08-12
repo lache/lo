@@ -179,21 +179,42 @@ napi_value SrpVerifierVerifySession(napi_env env, napi_callback_info info) {
   return HAMK;
 }
 
+napi_value SrpVerifierGetSessionKey(napi_env env, napi_callback_info info) {
+  napi_status status;
+  size_t argc = 1;
+  napi_value argv[1];
+  struct SRPVerifier * ver; // HOST-PRIVATE
+  const unsigned char* bytes_key; // output
+  int len_key;
+  void* key_result_data;
+  napi_value key;
+
+  status = napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
+  if (status != napi_ok) {
+    napi_throw_error(env, NULL, "Failed to parse arguments");
+  }
+
+  status = napi_get_value_external(env, argv[0], (void**)&ver);
+  if (status != napi_ok) {
+    napi_throw_error(env, NULL, "Invalid 'verifier' was passed as argument");
+  }
+
+  bytes_key = srp_verifier_get_session_key(ver, &len_key);
+  printf("bytes_key=%d\n", bytes_key ? 1 : 0);
+  printf("len_key=%d\n", len_key);
+
+  status = napi_create_buffer_copy(env, bytes_key ? (size_t)len_key : 0, bytes_key, &key_result_data, &key);
+  if (status != napi_ok) {
+    napi_throw_error(env, NULL, "Return value 'key' could not be created");
+  }
+  return key;
+}
+
 napi_value Init(napi_env env, napi_value exports) {
   napi_status status;
-  napi_value fn;
   napi_value fnVerifierNew;
   napi_value fnVerifierVerifySession;
-
-  status = napi_create_function(env, NULL, 0, MyFunction, NULL, &fn);
-  if (status != napi_ok) {
-    napi_throw_error(env, NULL, "Unable to wrap native function");
-  }
-
-  status = napi_set_named_property(env, exports, "my_function", fn);
-  if (status != napi_ok) {
-    napi_throw_error(env, NULL, "Unable to populate exports");
-  }
+  napi_value fnVerifierGetSessionKey;
 
   status = napi_create_function(env, NULL, 0, SrpVerifierNew, NULL, &fnVerifierNew);
   if (status != napi_ok) {
@@ -202,7 +223,7 @@ napi_value Init(napi_env env, napi_value exports) {
 
   status = napi_set_named_property(env, exports, "VerifierNew", fnVerifierNew);
   if (status != napi_ok) {
-    napi_throw_error(env, NULL, "Unable to populate exports");
+    napi_throw_error(env, NULL, "Unable to populate VerifierNew exports");
   }
 
   status = napi_create_function(env, NULL, 0, SrpVerifierVerifySession, NULL, &fnVerifierVerifySession);
@@ -212,10 +233,20 @@ napi_value Init(napi_env env, napi_value exports) {
 
   status = napi_set_named_property(env, exports, "VerifierVerifySession", fnVerifierVerifySession);
   if (status != napi_ok) {
-    napi_throw_error(env, NULL, "Unable to populate exports");
+    napi_throw_error(env, NULL, "Unable to populate VerifierVerifySession exports");
   }
 
-  test_srp_main();
+  status = napi_create_function(env, NULL, 0, SrpVerifierGetSessionKey, NULL, &fnVerifierGetSessionKey);
+  if (status != napi_ok) {
+    napi_throw_error(env, NULL, "Unable to wrap SrpVerifierGetSessionKey function");
+  }
+
+  status = napi_set_named_property(env, exports, "VerifierGetSessionKey", fnVerifierGetSessionKey);
+  if (status != napi_ok) {
+    napi_throw_error(env, NULL, "Unable to populate VerifierGetSessionKey exports");
+  }
+
+  //test_srp_main();
   
   return exports;
 }

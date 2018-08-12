@@ -19,8 +19,14 @@ module.exports = app => {
         const mBuf = Buffer.from(m, 'hex')
         const hamkBuf = srp.VerifierVerifySession(ver, mBuf)
         if (hamkBuf.length > 0) {
+          const hamkStr = hamkBuf.toString('hex')
+          console.log(`HAMK: ${hamkStr}`)
+          const keyBuf = srp.VerifierGetSessionKey(ver)
+          const keyStr = keyBuf.toString('hex')
+          console.log(`Session key: ${keyStr}`)
+          console.log('User authentication ok')
           res.setHeader('Content-Type', 'application/json')
-          res.send(JSON.stringify({ HAMK: hamkBuf.toString('hex') }))
+          res.send(JSON.stringify({ HAMK: hamkStr }))
         } else {
           console.error('User authentication failed!')
           errMsg = '인증 실패'

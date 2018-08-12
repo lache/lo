@@ -137,6 +137,8 @@ if (*$1) free(*$1);
 #include "lwhostaddr.h"
 #include "srp.h"
 #include "test_srp.h"
+#include "../mbedtls/include/mbedtls/mbedtls-config.h"
+#include "../mbedtls/include/mbedtls/aes.h"
 #ifdef WIN32
 #pragma warning(pop)
 #endif
@@ -260,6 +262,8 @@ if (*$1) free(*$1);
 %include "lwlnglat.h"
 %include "lwhostaddr.h"
 %include "test_srp.h"
+%include "../mbedtls/include/mbedtls/mbedtls-config.h"
+%include "../mbedtls/include/mbedtls/aes.h"
 
 // srp_create_salted_verification_key
 // srp_user_start_authentication

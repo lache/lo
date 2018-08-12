@@ -694,7 +694,7 @@ static void render_stat(const LWCONTEXT* pLwc) {
         return;
     }
     LWTEXTBLOCK text_block;
-    text_block.align = LTBA_RIGHT_BOTTOM;
+    text_block.align = LTBA_CENTER_TOP;
     text_block.text_block_width = DEFAULT_TEXT_BLOCK_WIDTH / 2;
     text_block.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_F;
     text_block.size = DEFAULT_TEXT_BLOCK_SIZE_F;
@@ -715,8 +715,8 @@ static void render_stat(const LWCONTEXT* pLwc) {
     text_block.text_bytelen = (int)strlen(text_block.text);
     text_block.begin_index = 0;
     text_block.end_index = text_block.text_bytelen;
-    text_block.text_block_x = +pLwc->viewport_rt_x;
-    text_block.text_block_y = -pLwc->viewport_rt_y;
+    text_block.text_block_x = 0;
+    text_block.text_block_y = +pLwc->viewport_rt_y;
     text_block.multiline = 1;
     text_block.pixel_perfect = 0;
     render_text_block(pLwc, &text_block);
@@ -727,7 +727,7 @@ void render_addr(const LWCONTEXT* pLwc) {
         return;
     }
     LWTEXTBLOCK text_block;
-    text_block.align = LTBA_LEFT_BOTTOM;
+    text_block.align = LTBA_CENTER_BOTTOM;
     text_block.text_block_width = DEFAULT_TEXT_BLOCK_WIDTH;
     text_block.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_F;
     text_block.size = DEFAULT_TEXT_BLOCK_SIZE_F;
@@ -744,7 +744,7 @@ void render_addr(const LWCONTEXT* pLwc) {
     text_block.text_bytelen = (int)strlen(text_block.text);
     text_block.begin_index = 0;
     text_block.end_index = text_block.text_bytelen;
-    text_block.text_block_x = -pLwc->viewport_rt_x;
+    text_block.text_block_x = 0;
     text_block.text_block_y = -pLwc->viewport_rt_y;
     text_block.multiline = 1;
     text_block.pixel_perfect = 0;
