@@ -111870,6 +111870,33 @@ fail:
 }
 
 
+static int _wrap_srp_fill_random_bytes(lua_State* L) {
+  int SWIG_arg = 0;
+  unsigned char *arg1 = (unsigned char *) 0 ;
+  int arg2 ;
+  int result;
+  
+  SWIG_check_num_args("srp_fill_random_bytes",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("srp_fill_random_bytes",1,"unsigned char *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("srp_fill_random_bytes",2,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_unsigned_char,0))){
+    SWIG_fail_ptr("srp_fill_random_bytes",1,SWIGTYPE_p_unsigned_char);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  result = (int)srp_fill_random_bytes(arg1,arg2);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_lw_init_initial_size(lua_State* L) {
   int SWIG_arg = 0;
   int arg1 ;
@@ -114000,7 +114027,7 @@ static swig_lua_const_info swig_SwigModule_constants[]= {
     {SWIG_LUA_CONSTTAB_INT("LGS_DYNAMIC_VBO", LGS_DYNAMIC_VBO)},
     {SWIG_LUA_CONSTTAB_INT("LGS_TILEMAP", LGS_TILEMAP)},
     {SWIG_LUA_CONSTTAB_STRING("__LW_STRING_LINE__", "63")},
-    {SWIG_LUA_CONSTTAB_STRING("LWLOGPOS", "src\\lwlog.h(64): ")},
+    {SWIG_LUA_CONSTTAB_STRING("LWLOGPOS", "src/lwlog.h(64): ")},
     {SWIG_LUA_CONSTTAB_INT("LPT_GRID", LPT_GRID)},
     {SWIG_LUA_CONSTTAB_INT("LPT_SOLID_RED", LPT_SOLID_RED)},
     {SWIG_LUA_CONSTTAB_INT("LPT_SOLID_GREEN", LPT_SOLID_GREEN)},
@@ -115275,6 +115302,7 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "srp_user_verify_session", _wrap_srp_user_verify_session},
     { "srp_hexify", _wrap_srp_hexify},
     { "srp_unhexify", _wrap_srp_unhexify},
+    { "srp_fill_random_bytes", _wrap_srp_fill_random_bytes},
     { "lw_init_initial_size", _wrap_lw_init_initial_size},
     { "lw_init", _wrap_lw_init},
     { "lw_deinit", _wrap_lw_deinit},

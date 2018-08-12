@@ -438,7 +438,7 @@ function start_account_auth()
     if errcode_username == 0 and errcode_s == 0 and errcode_v == 0 and errcode_pw == 0 then
         print('Auth data loaded successfully.')
     else
-        print('Auth data empty or corrupted!')
+        error('Auth data empty or corrupted!')
         lo.show_sys_msg(c.def_sys_msg, '계정 정보가 없거나 잘못됨')
         return
     end
@@ -578,7 +578,7 @@ function create_account_ex(force)
                                                     n_hex, g_hex)
     print(ver, bytes_B, len_B)
     if bytes_B == nil then
-        print('Verifier SRP-6a safety check violated!')
+        error('Verifier SRP-6a safety check violated!')
         return
     end
 
@@ -593,7 +593,7 @@ function create_account_ex(force)
     local bytes_M, len_M = lo.srp_user_process_challenge(usr, bytes_s, len_s, bytes_B, len_B)
     print(bytes_M, len_M)
     if bytes_M == nil then
-        print('User SRP-6a safety check violation!')
+        error('User SRP-6a safety check violation!')
         return
     end
 
@@ -608,7 +608,7 @@ function create_account_ex(force)
     local bytes_HAMK = lo.srp_verifier_verify_session(ver, bytes_M)
     print(bytes_HAMK)
     if bytes_HAMK == nil then
-        print('User authentication failed!')
+        error('User authentication failed!')
         return
     end
 
@@ -619,7 +619,7 @@ function create_account_ex(force)
     -- OUTPUT: is authed?
     lo.srp_user_verify_session(usr, bytes_HAMK)
     if lo.srp_user_is_authenticated(usr) ~= 1 then
-        print('Server authentication failed!')
+        error('Server authentication failed!')
         return
     end
 
@@ -668,7 +668,7 @@ function on_json_body(json_body)
                                                              auth_context.bytes_B,
                                                              auth_context.len_B)
         if bytes_M == nil then
-            print('User SRP-6a safety check violation!')
+            error('User SRP-6a safety check violation!')
             lo.show_sys_msg(c.def_sys_msg, '인증 실패! :(')
             return
         end
@@ -714,7 +714,7 @@ function on_json_body(json_body)
         print(bytes_HAMK, len_HAMK)
         lo.srp_user_verify_session(auth_context.usr, bytes_HAMK)
         if lo.srp_user_is_authenticated(auth_context.usr) ~= 1 then
-            print('Server authentication failed!')
+            error('Server authentication failed!')
             lo.show_sys_msg(c.def_sys_msg, '인증 실패!! :(')
             return
         end
@@ -725,11 +725,15 @@ function on_json_body(json_body)
         lo.show_sys_msg(c.def_sys_msg, '계정 \''..auth_context.username..'\' 인증 성공 :)')
         
     else
-        print('Unknown JSON body')
+        error('Unknown JSON body')
     end
 end
 
 function test_aes()
+    if auth_context.usr == nil or lo.srp_user_is_authenticated(auth_context.usr) ~= 1 then
+        lo.show_sys_msg(c.def_sys_msg, 'Invalid auth.')
+        error('Invalid auth.')
+    end
     local bytes_key, len_key = lo.srp_user_get_session_key(auth_context.usr)
     local hexstr_key = lo.srp_hexify(bytes_key, len_key)
     print('Session key:', hexstr_key)
@@ -737,29 +741,19 @@ function test_aes()
     local aes_context = lo.mbedtls_aes_context()
     local keybits = 256 -- see comments on 'mbedtls_aes_setkey_enc()'
     if lo.mbedtls_aes_setkey_enc(aes_context, bytes_key, keybits) ~= 0 then
+        lo.show_sys_msg(c.def_sys_msg, 'aes key set fail')
         error('aes key set fail')
     end
     
-    local len_input = 16
+    local len_iv = 16 -- fixed to 16
+    local len_input = 16 -- should be multiple of 16
     local len_output = len_input
-    
-    local bytes_iv = lo.new_LWUNSIGNEDCHAR(16)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_iv, 0, 0x12)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_iv, 1, 0x34)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_iv, 2, 0x56)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_iv, 3, 0x78)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_iv, 4, 0x9a)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_iv, 5, 0xbc)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_iv, 6, 0xde)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_iv, 7, 0xf0)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_iv, 8, 0x71)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_iv, 9, 0x11)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_iv, 10, 0x72)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_iv, 11, 0x03)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_iv, 12, 0x33)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_iv, 13, 0x85)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_iv, 14, 0x56)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_iv, 15, 0x18)
+
+    local bytes_iv = lo.new_LWUNSIGNEDCHAR(len_iv)
+    if lo.srp_fill_random_bytes(bytes_iv, len_iv) ~= 0 then
+        lo.show_sys_msg(c.def_sys_msg, 'cannot seed iv')
+        error('cannot seed iv')
+    end
     
     local bytes_input = lo.new_LWUNSIGNEDCHAR(len_input)
     lo.LWUNSIGNEDCHAR_setitem(bytes_input, 0, 0x00)
@@ -781,15 +775,22 @@ function test_aes()
     
     local bytes_output = lo.new_LWUNSIGNEDCHAR(len_output)
     
+    local hexstr_iv = lo.srp_hexify(bytes_iv, len_iv)
+    print('iv (before):', hexstr_iv)
+    
     if lo.mbedtls_aes_crypt_cbc(aes_context, lo.MBEDTLS_AES_ENCRYPT,
                                 16, bytes_iv, bytes_input, bytes_output) ~= 0 then
+        lo.show_sys_msg(c.def_sys_msg, 'encrypt failed')
         error('encrypt failed')
     end
     
+    hexstr_iv = lo.srp_hexify(bytes_iv, len_iv)
+    print('iv (after):', hexstr_iv)
     local hexstr_input = lo.srp_hexify(bytes_input, len_input)
     print('input:', hexstr_input)
     local hexstr_output = lo.srp_hexify(bytes_output, len_output)
     print('output:', hexstr_output)
+    lo.show_sys_msg(c.def_sys_msg, 'input:'..hexstr_input..'\n'..'output:'..hexstr_output)
 end
 
 function on_chat(line)
