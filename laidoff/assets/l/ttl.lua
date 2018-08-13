@@ -447,9 +447,11 @@ function start_account_auth()
 
     -- [2] Client: Create an account object for authentication
     auth_context.usr = lo.srp_user_new(alg, ng_type, username, bytes_pw, len_pw, n_hex, g_hex)
-    local auth_username, bytes_A, len_A = lo.srp_user_start_authentication(auth_context.usr)
+    local auth_username, bytes_A = lo.srp_user_start_authentication(auth_context.usr)
+    local len_A = #bytes_A
     print('username:',auth_username, 'bytes_A:',bytes_A, 'len_A:',len_A)
-    local hexstr_A = lo.srp_hexify(bytes_A, len_A)
+    local hexstr_A = lo.srp_hexify(bytes_A)
+    print('hexstr_A', hexstr_A)
     -- Send 'A' to server
     add_custom_http_header('X-Account-Id', username)
     add_custom_http_header('X-Account-A', hexstr_A)
@@ -473,7 +475,7 @@ function start_account_auth()
     local hexstr_B = lo.srp_hexify(bytes_B, len_B)
     print('hexstr_s', hexstr_s)
     print('hexstr_v', hexstr_v)
-    print('hexstr_A', hexstr_A)
+    
     print('hexstr_B', hexstr_B)
     ]]--
 end
@@ -662,51 +664,24 @@ function on_json_body(json_body)
         auth_context.bytes_B, auth_context.len_B = lo.srp_unhexify(jb.B)
         print('bytes_B:',auth_context.bytes_B,'len_B:',auth_context.len_B)
         -- [4] Client
-        local bytes_M, len_M = lo.srp_user_process_challenge(auth_context.usr,
-                                                             auth_context.bytes_s,
-                                                             auth_context.len_s,
-                                                             auth_context.bytes_B,
-                                                             auth_context.len_B)
+        local bytes_M = lo.srp_user_process_challenge(auth_context.usr,
+                                                      auth_context.bytes_s,
+                                                      auth_context.len_s,
+                                                      auth_context.bytes_B,
+                                                      auth_context.len_B)
         if bytes_M == nil then
             error('User SRP-6a safety check violation!')
             lo.show_sys_msg(c.def_sys_msg, '인증 실패! :(')
             return
         end
+        local len_M = #bytes_M
+        print('bytes_M',bytes_M,'len_M',len_M)
 
-        local hexstr_M = lo.srp_hexify(bytes_M, len_M)
+        local hexstr_M = lo.srp_hexify(bytes_M)
         print('len_M:',len_M,'M:',hexstr_M)
 
         add_custom_http_header('X-Account-M', hexstr_M)
         lo.htmlui_execute_anchor_click(c.htmlui, '/startAuth2')
-
-        --[====[
-        -- simulate on client side (debugging)
-        -- [3] Server: Create a verifier
-        local ver_debug, bytes_B_debug, len_B_debug = lo.srp_verifier_new(alg,
-                                                        ng_type,
-                                                        lo.srp_user_get_username(auth_context.usr),
-                                                        auth_context.bytes_s,
-                                                        auth_context.len_s,
-                                                        auth_context.bytes_v,
-                                                        auth_context.len_v,
-                                                        auth_context.bytes_A,
-                                                        auth_context.len_A,
-                                                        n_hex, g_hex)
-        print('ver(debug):',ver_debug,'bytes_B(debug):',bytes_B_debug,'len_B(debug):',len_B_debug)
-        local hexstr_B_debug = lo.srp_hexify(bytes_B_debug, len_B_debug)
-        print('B_debug', hexstr_B_debug)
-        if bytes_B_debug == nil then
-            print('[Debug] Verifier SRP-6a safety check violated!')
-            return
-        end
-        -- [5] Server
-        local bytes_HAMK_debug = lo.srp_verifier_verify_session(ver_debug, bytes_M)
-        print('bytes_HAMK(debug):',bytes_HAMK_debug)
-        if bytes_HAMK_debug == nil then
-            print('[Debug] User authentication failed!')
-            return
-        end
-        ]====]--
     elseif jb.HAMK ~= nil then
         -- startAuth2 step result
         print('HAMK', jb.HAMK)
@@ -734,8 +709,10 @@ function test_aes()
         lo.show_sys_msg(c.def_sys_msg, 'Invalid auth.')
         error('Invalid auth.')
     end
-    local bytes_key, len_key = lo.srp_user_get_session_key(auth_context.usr)
-    local hexstr_key = lo.srp_hexify(bytes_key, len_key)
+    local bytes_key = lo.srp_user_get_session_key(auth_context.usr)
+    local len_key = #bytes_key
+    print('bytes_key',bytes_key,'len_key',len_key)
+    local hexstr_key = lo.srp_hexify(bytes_key)
     print('Session key:', hexstr_key)
     
     local aes_context = lo.mbedtls_aes_context()
@@ -754,6 +731,7 @@ function test_aes()
         lo.show_sys_msg(c.def_sys_msg, 'cannot seed iv')
         error('cannot seed iv')
     end
+    print('bytes_iv',bytes_iv,'len_iv',len_iv)
     
     --[[local bytes_input = lo.new_LWUNSIGNEDCHAR(len_input)
     lo.LWUNSIGNEDCHAR_setitem(bytes_input, 0, 0x00)
@@ -776,9 +754,13 @@ function test_aes()
     
     local bytes_output = lo.new_LWUNSIGNEDCHAR(len_output)
     
-    local hexstr_iv = lo.srp_hexify(bytes_iv, len_iv)
+    local hexstr_iv = lo.srp_hexify(bytes_iv)
     print('iv (before):', hexstr_iv)
     
+    local crypt_result, bytes_iv_after, bytes_output = lo.mbedtls_aes_crypt_cbc(aes_context,
+                                                                                lo.MBEDTLS_AES_ENCRYPT,
+                                                                                bytes_iv,
+                                                                                bytes_input)
     if lo.mbedtls_aes_crypt_cbc(aes_context, lo.MBEDTLS_AES_ENCRYPT,
                                 16, bytes_iv, bytes_input, bytes_output) ~= 0 then
         lo.show_sys_msg(c.def_sys_msg, 'encrypt failed')

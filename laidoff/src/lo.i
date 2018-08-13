@@ -17,12 +17,12 @@
 
 %}
 
-%typemap(in, numinputs=0) const char **OUTPUT_NO_FREE (char * temp) { $1 = &temp; }
+%typemap(in, numinputs=0) const char **OUTPUT_NO_FREE (char * temp) { temp = 0; $1 = &temp; }
 %typemap(argout) const char **OUTPUT_NO_FREE {
 if ($1==0) { lua_pushnil(L); } else { lua_pushstring(L, *$1); } SWIG_arg++;
 }
 
-%typemap(in, numinputs=0) const char **OUTPUT (char * temp) { $1 = &temp; }
+%typemap(in, numinputs=0) const char **OUTPUT (char * temp) { temp = 0; $1 = &temp; }
 %typemap(argout) const char **OUTPUT {
 if ($1==0) { lua_pushnil(L); } else { lua_pushstring(L, *$1); } SWIG_arg++;
 }
@@ -275,14 +275,73 @@ if (*$1) free(*$1);
 // read_user_data_file_string
 // read_user_data_file_binary
 %apply SWIGTYPE** OUTPUT {const unsigned char **};
-%apply SWIGTYPE** OUTPUT {unsigned char **};
 %apply const char** OUTPUT_NO_FREE {const char **username};
 %apply const char** OUTPUT {const char **str};
 %apply int* OUTPUT {int *};
 
-%typemap(in) const unsigned char *input
-%{  $1 = ($ltype)SWIG_get_int_num_array_fixed(L,$input,10000);
-	if (!$1) SWIG_fail;%}
+// srp_user_start_authentication
+%typemap(in,numinputs=0) SWIGTYPE** OUTPUT, int* OUTPUT (const unsigned char ** bytes_A, int * len_A)
+%{  $1 = &bytes_A;
+    $2 = &len_A; %}
+%typemap(argout) (const unsigned char ** bytes_A, int * len_A)
+%{  SWIG_write_uchar_num_array(L,*$1,*$2); SWIG_arg++;
+    /*should not call free(*$1) -- it is owned by arg1! */ %}
+
+// srp_user_process_challenge
+%typemap(in,numinputs=0) SWIGTYPE** OUTPUT, int* OUTPUT (const unsigned char ** bytes_M, int * len_M)
+%{  $1 = &bytes_M;
+    $2 = &len_M; %}
+%typemap(argout) (const unsigned char ** bytes_M, int * len_M)
+%{  SWIG_write_uchar_num_array(L,*$1,*$2); SWIG_arg++;
+    /*should not call free(*$1) -- it is owned by arg1! */ %}
+
+// srp_user_get_session_key
+%typemap(argout) (struct SRPUser * usr, int * key_length)
+%{  SWIG_write_uchar_num_array(L,$result,*$2); SWIG_arg++; %}
+%typemap(out) const unsigned char *
+%{ %} /* empty out typemap needed */
+
+// srp_verifier_get_session_key
+%typemap(argout) (struct SRPVerifier * , int * )
+%{  SWIG_write_uchar_num_array(L,$result,*$2); SWIG_arg++; %}
+%typemap(out) const unsigned char *
+%{ %} /* empty out typemap needed */
+
+
+%typemap(in,numinputs=0) SWIGTYPE** OUTPUTXXX, int INPUT (unsigned char ** b, int len_b)
+%{  unsigned char* b = 0; $1 = &b; %}
+%typemap(argout) (unsigned char ** b, int len_b)
+%{  SWIG_write_uchar_num_array(L,*$1,$2); SWIG_arg++;
+    free(*$1); %}
+%apply SWIGTYPE** OUTPUTXXX {unsigned char **};
+
+//mbedtls_aes_crypt_cbc
+//%apply SWIGTYPE* INOUT[ANY] {unsigned char iv[16]};
+//%apply SWIGTYPE* OUTPUT[ANY] {unsigned char *output};
+%typemap(in,numinputs=0) (size_t length, unsigned char iv[16], const unsigned char *input, unsigned char *output)
+%{  $2 = (unsigned char *)SWIG_get_uchar_num_array_fixed(L,$input+1,16);
+    int $3_dim;
+    $3 = (unsigned char *)SWIG_get_uchar_num_array_var(L,$input+2,&$3_dim);
+    $1 = $3_dim;
+	if (!$3) SWIG_fail;
+    int $4_dim0 = $3_dim;
+    $4 = (unsigned char*)malloc($3_dim); %}
+%typemap(argout) (size_t length, unsigned char iv[16], const unsigned char *input, unsigned char *output)
+%{  SWIG_write_uchar_num_array(L,$2,16); SWIG_arg++; 
+    SWIG_write_uchar_num_array(L,$4,$4_dim0); SWIG_arg++; %}
+%typemap(freearg) (size_t length, unsigned char iv[16], const unsigned char *input, unsigned char *output)
+%{	SWIG_FREE_ARRAY($2);
+    SWIG_FREE_ARRAY($3);
+    free($4); %}
+%apply const unsigned char *input { const unsigned char *key };
+
+%typemap(in) (const unsigned char * b, int len_b)
+%{  int $1_dim;
+    $1 = ($ltype)SWIG_get_uchar_num_array_var(L,$input,&$1_dim);
+	if (!$1) SWIG_fail;
+    $2 = $1_dim;%}
+%typemap(freearg) (const unsigned char * b, int len_b)
+%{	SWIG_FREE_ARRAY($1);%}
 
 %include "../mbedtls/include/mbedtls/mbedtls-config.h"
 %include "../mbedtls/include/mbedtls/aes.h"
