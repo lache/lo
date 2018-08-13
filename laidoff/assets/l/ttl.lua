@@ -749,13 +749,13 @@ function test_aes()
     local len_input = 16 -- should be multiple of 16
     local len_output = len_input
 
-    local bytes_iv = lo.new_LWUNSIGNEDCHAR(len_iv)
-    if lo.srp_fill_random_bytes(bytes_iv, len_iv) ~= 0 then
+    local result_iv, bytes_iv = lo.srp_alloc_random_bytes(len_iv)
+    if result_iv ~= 0 then
         lo.show_sys_msg(c.def_sys_msg, 'cannot seed iv')
         error('cannot seed iv')
     end
     
-    local bytes_input = lo.new_LWUNSIGNEDCHAR(len_input)
+    --[[local bytes_input = lo.new_LWUNSIGNEDCHAR(len_input)
     lo.LWUNSIGNEDCHAR_setitem(bytes_input, 0, 0x00)
     lo.LWUNSIGNEDCHAR_setitem(bytes_input, 1, 0x00)
     lo.LWUNSIGNEDCHAR_setitem(bytes_input, 2, 0x00)
@@ -771,7 +771,8 @@ function test_aes()
     lo.LWUNSIGNEDCHAR_setitem(bytes_input, 12, 0x00)
     lo.LWUNSIGNEDCHAR_setitem(bytes_input, 13, 0x00)
     lo.LWUNSIGNEDCHAR_setitem(bytes_input, 14, 0x00)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_input, 15, 0x04)
+    lo.LWUNSIGNEDCHAR_setitem(bytes_input, 15, 0x04)]]--
+    local bytes_input = {0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0b,0x0c,0x0d,0x0e,0x0f}
     
     local bytes_output = lo.new_LWUNSIGNEDCHAR(len_output)
     

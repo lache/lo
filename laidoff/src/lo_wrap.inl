@@ -110695,6 +110695,7 @@ static int _wrap_mbedtls_aes_crypt_cbc(lua_State* L) {
   unsigned char *arg4 ;
   unsigned char *arg5 = (unsigned char *) 0 ;
   unsigned char *arg6 = (unsigned char *) 0 ;
+  unsigned char const *input5 ;
   int result;
   
   SWIG_check_num_args("mbedtls_aes_crypt_cbc",6,6)
@@ -110702,7 +110703,6 @@ static int _wrap_mbedtls_aes_crypt_cbc(lua_State* L) {
   if(!lua_isnumber(L,2)) SWIG_fail_arg("mbedtls_aes_crypt_cbc",2,"int");
   if(!lua_isnumber(L,3)) SWIG_fail_arg("mbedtls_aes_crypt_cbc",3,"size_t");
   if(!SWIG_isptrtype(L,4)) SWIG_fail_arg("mbedtls_aes_crypt_cbc",4,"unsigned char [16]");
-  if(!SWIG_isptrtype(L,5)) SWIG_fail_arg("mbedtls_aes_crypt_cbc",5,"unsigned char const *");
   if(!SWIG_isptrtype(L,6)) SWIG_fail_arg("mbedtls_aes_crypt_cbc",6,"unsigned char *");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_mbedtls_aes_context,0))){
@@ -110717,11 +110717,8 @@ static int _wrap_mbedtls_aes_crypt_cbc(lua_State* L) {
     SWIG_fail_ptr("mbedtls_aes_crypt_cbc",4,SWIGTYPE_p_unsigned_char);
   }
   
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,5,(void**)&arg5,SWIGTYPE_p_unsigned_char,0))){
-    SWIG_fail_ptr("mbedtls_aes_crypt_cbc",5,SWIGTYPE_p_unsigned_char);
-  }
-  
+  arg5 = (unsigned char *)SWIG_get_int_num_array_fixed(L,55,10000);
+  if (!arg5) SWIG_fail;
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,6,(void**)&arg6,SWIGTYPE_p_unsigned_char,0))){
     SWIG_fail_ptr("mbedtls_aes_crypt_cbc",6,SWIGTYPE_p_unsigned_char);
@@ -110747,6 +110744,7 @@ static int _wrap_mbedtls_aes_crypt_xts(lua_State* L) {
   unsigned char *arg4 ;
   unsigned char *arg5 = (unsigned char *) 0 ;
   unsigned char *arg6 = (unsigned char *) 0 ;
+  unsigned char const *input5 ;
   int result;
   
   SWIG_check_num_args("mbedtls_aes_crypt_xts",6,6)
@@ -110754,7 +110752,6 @@ static int _wrap_mbedtls_aes_crypt_xts(lua_State* L) {
   if(!lua_isnumber(L,2)) SWIG_fail_arg("mbedtls_aes_crypt_xts",2,"int");
   if(!lua_isnumber(L,3)) SWIG_fail_arg("mbedtls_aes_crypt_xts",3,"size_t");
   if(!SWIG_isptrtype(L,4)) SWIG_fail_arg("mbedtls_aes_crypt_xts",4,"unsigned char const [16]");
-  if(!SWIG_isptrtype(L,5)) SWIG_fail_arg("mbedtls_aes_crypt_xts",5,"unsigned char const *");
   if(!SWIG_isptrtype(L,6)) SWIG_fail_arg("mbedtls_aes_crypt_xts",6,"unsigned char *");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_mbedtls_aes_xts_context,0))){
@@ -110769,11 +110766,8 @@ static int _wrap_mbedtls_aes_crypt_xts(lua_State* L) {
     SWIG_fail_ptr("mbedtls_aes_crypt_xts",4,SWIGTYPE_p_unsigned_char);
   }
   
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,5,(void**)&arg5,SWIGTYPE_p_unsigned_char,0))){
-    SWIG_fail_ptr("mbedtls_aes_crypt_xts",5,SWIGTYPE_p_unsigned_char);
-  }
-  
+  arg5 = (unsigned char *)SWIG_get_int_num_array_fixed(L,55,10000);
+  if (!arg5) SWIG_fail;
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,6,(void**)&arg6,SWIGTYPE_p_unsigned_char,0))){
     SWIG_fail_ptr("mbedtls_aes_crypt_xts",6,SWIGTYPE_p_unsigned_char);
@@ -110800,6 +110794,7 @@ static int _wrap_mbedtls_aes_crypt_cfb128(lua_State* L) {
   unsigned char *arg5 ;
   unsigned char *arg6 = (unsigned char *) 0 ;
   unsigned char *arg7 = (unsigned char *) 0 ;
+  unsigned char const *input6 ;
   int result;
   
   SWIG_check_num_args("mbedtls_aes_crypt_cfb128",7,7)
@@ -110808,7 +110803,6 @@ static int _wrap_mbedtls_aes_crypt_cfb128(lua_State* L) {
   if(!lua_isnumber(L,3)) SWIG_fail_arg("mbedtls_aes_crypt_cfb128",3,"size_t");
   if(!SWIG_isptrtype(L,4)) SWIG_fail_arg("mbedtls_aes_crypt_cfb128",4,"size_t *");
   if(!SWIG_isptrtype(L,5)) SWIG_fail_arg("mbedtls_aes_crypt_cfb128",5,"unsigned char [16]");
-  if(!SWIG_isptrtype(L,6)) SWIG_fail_arg("mbedtls_aes_crypt_cfb128",6,"unsigned char const *");
   if(!SWIG_isptrtype(L,7)) SWIG_fail_arg("mbedtls_aes_crypt_cfb128",7,"unsigned char *");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_mbedtls_aes_context,0))){
@@ -110828,11 +110822,8 @@ static int _wrap_mbedtls_aes_crypt_cfb128(lua_State* L) {
     SWIG_fail_ptr("mbedtls_aes_crypt_cfb128",5,SWIGTYPE_p_unsigned_char);
   }
   
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,6,(void**)&arg6,SWIGTYPE_p_unsigned_char,0))){
-    SWIG_fail_ptr("mbedtls_aes_crypt_cfb128",6,SWIGTYPE_p_unsigned_char);
-  }
-  
+  arg6 = (unsigned char *)SWIG_get_int_num_array_fixed(L,66,10000);
+  if (!arg6) SWIG_fail;
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,7,(void**)&arg7,SWIGTYPE_p_unsigned_char,0))){
     SWIG_fail_ptr("mbedtls_aes_crypt_cfb128",7,SWIGTYPE_p_unsigned_char);
@@ -110858,6 +110849,7 @@ static int _wrap_mbedtls_aes_crypt_cfb8(lua_State* L) {
   unsigned char *arg4 ;
   unsigned char *arg5 = (unsigned char *) 0 ;
   unsigned char *arg6 = (unsigned char *) 0 ;
+  unsigned char const *input5 ;
   int result;
   
   SWIG_check_num_args("mbedtls_aes_crypt_cfb8",6,6)
@@ -110865,7 +110857,6 @@ static int _wrap_mbedtls_aes_crypt_cfb8(lua_State* L) {
   if(!lua_isnumber(L,2)) SWIG_fail_arg("mbedtls_aes_crypt_cfb8",2,"int");
   if(!lua_isnumber(L,3)) SWIG_fail_arg("mbedtls_aes_crypt_cfb8",3,"size_t");
   if(!SWIG_isptrtype(L,4)) SWIG_fail_arg("mbedtls_aes_crypt_cfb8",4,"unsigned char [16]");
-  if(!SWIG_isptrtype(L,5)) SWIG_fail_arg("mbedtls_aes_crypt_cfb8",5,"unsigned char const *");
   if(!SWIG_isptrtype(L,6)) SWIG_fail_arg("mbedtls_aes_crypt_cfb8",6,"unsigned char *");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_mbedtls_aes_context,0))){
@@ -110880,11 +110871,8 @@ static int _wrap_mbedtls_aes_crypt_cfb8(lua_State* L) {
     SWIG_fail_ptr("mbedtls_aes_crypt_cfb8",4,SWIGTYPE_p_unsigned_char);
   }
   
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,5,(void**)&arg5,SWIGTYPE_p_unsigned_char,0))){
-    SWIG_fail_ptr("mbedtls_aes_crypt_cfb8",5,SWIGTYPE_p_unsigned_char);
-  }
-  
+  arg5 = (unsigned char *)SWIG_get_int_num_array_fixed(L,55,10000);
+  if (!arg5) SWIG_fail;
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,6,(void**)&arg6,SWIGTYPE_p_unsigned_char,0))){
     SWIG_fail_ptr("mbedtls_aes_crypt_cfb8",6,SWIGTYPE_p_unsigned_char);
@@ -110910,6 +110898,7 @@ static int _wrap_mbedtls_aes_crypt_ofb(lua_State* L) {
   unsigned char *arg4 ;
   unsigned char *arg5 = (unsigned char *) 0 ;
   unsigned char *arg6 = (unsigned char *) 0 ;
+  unsigned char const *input5 ;
   int result;
   
   SWIG_check_num_args("mbedtls_aes_crypt_ofb",6,6)
@@ -110917,7 +110906,6 @@ static int _wrap_mbedtls_aes_crypt_ofb(lua_State* L) {
   if(!lua_isnumber(L,2)) SWIG_fail_arg("mbedtls_aes_crypt_ofb",2,"size_t");
   if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("mbedtls_aes_crypt_ofb",3,"size_t *");
   if(!SWIG_isptrtype(L,4)) SWIG_fail_arg("mbedtls_aes_crypt_ofb",4,"unsigned char [16]");
-  if(!SWIG_isptrtype(L,5)) SWIG_fail_arg("mbedtls_aes_crypt_ofb",5,"unsigned char const *");
   if(!SWIG_isptrtype(L,6)) SWIG_fail_arg("mbedtls_aes_crypt_ofb",6,"unsigned char *");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_mbedtls_aes_context,0))){
@@ -110936,11 +110924,8 @@ static int _wrap_mbedtls_aes_crypt_ofb(lua_State* L) {
     SWIG_fail_ptr("mbedtls_aes_crypt_ofb",4,SWIGTYPE_p_unsigned_char);
   }
   
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,5,(void**)&arg5,SWIGTYPE_p_unsigned_char,0))){
-    SWIG_fail_ptr("mbedtls_aes_crypt_ofb",5,SWIGTYPE_p_unsigned_char);
-  }
-  
+  arg5 = (unsigned char *)SWIG_get_int_num_array_fixed(L,55,10000);
+  if (!arg5) SWIG_fail;
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,6,(void**)&arg6,SWIGTYPE_p_unsigned_char,0))){
     SWIG_fail_ptr("mbedtls_aes_crypt_ofb",6,SWIGTYPE_p_unsigned_char);
@@ -110967,6 +110952,7 @@ static int _wrap_mbedtls_aes_crypt_ctr(lua_State* L) {
   unsigned char *arg5 ;
   unsigned char *arg6 = (unsigned char *) 0 ;
   unsigned char *arg7 = (unsigned char *) 0 ;
+  unsigned char const *input6 ;
   int result;
   
   SWIG_check_num_args("mbedtls_aes_crypt_ctr",7,7)
@@ -110975,7 +110961,6 @@ static int _wrap_mbedtls_aes_crypt_ctr(lua_State* L) {
   if(!SWIG_isptrtype(L,3)) SWIG_fail_arg("mbedtls_aes_crypt_ctr",3,"size_t *");
   if(!SWIG_isptrtype(L,4)) SWIG_fail_arg("mbedtls_aes_crypt_ctr",4,"unsigned char [16]");
   if(!SWIG_isptrtype(L,5)) SWIG_fail_arg("mbedtls_aes_crypt_ctr",5,"unsigned char [16]");
-  if(!SWIG_isptrtype(L,6)) SWIG_fail_arg("mbedtls_aes_crypt_ctr",6,"unsigned char const *");
   if(!SWIG_isptrtype(L,7)) SWIG_fail_arg("mbedtls_aes_crypt_ctr",7,"unsigned char *");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_mbedtls_aes_context,0))){
@@ -110999,11 +110984,8 @@ static int _wrap_mbedtls_aes_crypt_ctr(lua_State* L) {
     SWIG_fail_ptr("mbedtls_aes_crypt_ctr",5,SWIGTYPE_p_unsigned_char);
   }
   
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,6,(void**)&arg6,SWIGTYPE_p_unsigned_char,0))){
-    SWIG_fail_ptr("mbedtls_aes_crypt_ctr",6,SWIGTYPE_p_unsigned_char);
-  }
-  
+  arg6 = (unsigned char *)SWIG_get_int_num_array_fixed(L,66,10000);
+  if (!arg6) SWIG_fail;
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,7,(void**)&arg7,SWIGTYPE_p_unsigned_char,0))){
     SWIG_fail_ptr("mbedtls_aes_crypt_ctr",7,SWIGTYPE_p_unsigned_char);
@@ -111870,23 +111852,21 @@ fail:
 }
 
 
-static int _wrap_srp_fill_random_bytes(lua_State* L) {
+static int _wrap_srp_alloc_random_bytes(lua_State* L) {
   int SWIG_arg = 0;
-  unsigned char *arg1 = (unsigned char *) 0 ;
+  unsigned char **arg1 = (unsigned char **) 0 ;
   int arg2 ;
+  unsigned char *temp1 ;
   int result;
   
-  SWIG_check_num_args("srp_fill_random_bytes",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("srp_fill_random_bytes",1,"unsigned char *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("srp_fill_random_bytes",2,"int");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_unsigned_char,0))){
-    SWIG_fail_ptr("srp_fill_random_bytes",1,SWIGTYPE_p_unsigned_char);
-  }
-  
-  arg2 = (int)lua_tonumber(L, 2);
-  result = (int)srp_fill_random_bytes(arg1,arg2);
+  temp1 = (unsigned char *)0;
+  arg1 = &temp1; 
+  SWIG_check_num_args("srp_alloc_random_bytes",1,1)
+  if(!lua_isnumber(L,1)) SWIG_fail_arg("srp_alloc_random_bytes",1,"int");
+  arg2 = (int)lua_tonumber(L, 1);
+  result = (int)srp_alloc_random_bytes(arg1,arg2);
   lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  SWIG_NewPointerObj(L,*arg1,SWIGTYPE_p_unsigned_char,1); SWIG_arg++; 
   return SWIG_arg;
   
   if(0) SWIG_fail;
@@ -114027,7 +114007,7 @@ static swig_lua_const_info swig_SwigModule_constants[]= {
     {SWIG_LUA_CONSTTAB_INT("LGS_DYNAMIC_VBO", LGS_DYNAMIC_VBO)},
     {SWIG_LUA_CONSTTAB_INT("LGS_TILEMAP", LGS_TILEMAP)},
     {SWIG_LUA_CONSTTAB_STRING("__LW_STRING_LINE__", "63")},
-    {SWIG_LUA_CONSTTAB_STRING("LWLOGPOS", "src/lwlog.h(64): ")},
+    {SWIG_LUA_CONSTTAB_STRING("LWLOGPOS", "src\\lwlog.h(64): ")},
     {SWIG_LUA_CONSTTAB_INT("LPT_GRID", LPT_GRID)},
     {SWIG_LUA_CONSTTAB_INT("LPT_SOLID_RED", LPT_SOLID_RED)},
     {SWIG_LUA_CONSTTAB_INT("LPT_SOLID_GREEN", LPT_SOLID_GREEN)},
@@ -115302,7 +115282,7 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "srp_user_verify_session", _wrap_srp_user_verify_session},
     { "srp_hexify", _wrap_srp_hexify},
     { "srp_unhexify", _wrap_srp_unhexify},
-    { "srp_fill_random_bytes", _wrap_srp_fill_random_bytes},
+    { "srp_alloc_random_bytes", _wrap_srp_alloc_random_bytes},
     { "lw_init_initial_size", _wrap_lw_init_initial_size},
     { "lw_init", _wrap_lw_init},
     { "lw_deinit", _wrap_lw_deinit},

@@ -32,6 +32,10 @@ if ($1==0) { lua_pushnil(L); } else { lua_pushstring(L, *$1); } SWIG_arg++;
 if (*$1) free(*$1);
 }
 
+%typemap(in) const unsigned char *INPUTTABLE (const unsigned char *) {
+//hey!
+}
+
 %begin %{
 #ifdef WIN32
 #pragma warning(push)
@@ -262,8 +266,6 @@ if (*$1) free(*$1);
 %include "lwlnglat.h"
 %include "lwhostaddr.h"
 %include "test_srp.h"
-%include "../mbedtls/include/mbedtls/mbedtls-config.h"
-%include "../mbedtls/include/mbedtls/aes.h"
 
 // srp_create_salted_verification_key
 // srp_user_start_authentication
@@ -273,9 +275,18 @@ if (*$1) free(*$1);
 // read_user_data_file_string
 // read_user_data_file_binary
 %apply SWIGTYPE** OUTPUT {const unsigned char **};
+%apply SWIGTYPE** OUTPUT {unsigned char **};
 %apply const char** OUTPUT_NO_FREE {const char **username};
 %apply const char** OUTPUT {const char **str};
 %apply int* OUTPUT {int *};
+
+%typemap(in) const unsigned char *input
+%{  $1 = ($ltype)SWIG_get_int_num_array_fixed(L,$input,10000);
+	if (!$1) SWIG_fail;%}
+
+%include "../mbedtls/include/mbedtls/mbedtls-config.h"
+%include "../mbedtls/include/mbedtls/aes.h"
+
 
 %include "srp.h"
 %include "laidoff.h"
