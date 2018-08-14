@@ -715,11 +715,19 @@ function test_aes()
     local hexstr_key = lo.srp_hexify(bytes_key)
     print('Session key:', hexstr_key)
     bytes_key = {table.unpack(bytes_key, 1, 32)} -- truncate bytes_key from 512-bit to 256-bit
+    hexstr_key = lo.srp_hexify(bytes_key)
+    print('Session key (truncated):', hexstr_key)
     local aes_context = lo.mbedtls_aes_context()
     local keybits = 256 -- keybits max is 256. bytes_key may be longer then this...see comments on 'mbedtls_aes_setkey_enc()'
     if lo.mbedtls_aes_setkey_enc(aes_context, bytes_key) ~= 0 then
-        lo.show_sys_msg(c.def_sys_msg, 'aes key set fail')
-        error('aes key set fail')
+        lo.show_sys_msg(c.def_sys_msg, 'aes enc key set fail')
+        error('aes enc key set fail')
+    end
+    hexstr_key = lo.srp_hexify(bytes_key)
+    print('Session key (truncated):', hexstr_key)
+    if lo.mbedtls_aes_setkey_dec(aes_context, bytes_key) ~= 0 then
+        lo.show_sys_msg(c.def_sys_msg, 'aes dec key set fail')
+        error('aes dec key set fail')
     end
     
     local len_iv = 16 -- fixed to 16
@@ -756,6 +764,8 @@ function test_aes()
     
     local hexstr_iv = lo.srp_hexify(bytes_iv)
     print('iv (before):', hexstr_iv)
+    local hexstr_input = lo.srp_hexify(bytes_input)
+    print('input (before):', hexstr_input)
     
     local crypt_result, bytes_iv_after, bytes_output = lo.mbedtls_aes_crypt_cbc(aes_context,
                                                                                 lo.MBEDTLS_AES_ENCRYPT,
@@ -765,6 +775,14 @@ function test_aes()
         lo.show_sys_msg(c.def_sys_msg, 'encrypt failed')
         error('encrypt failed')
     end
+
+    hexstr_iv = lo.srp_hexify(bytes_iv)
+    print('iv (again--the same var):', hexstr_iv)
+
+    hexstr_input = lo.srp_hexify(bytes_input)
+    print('input (again):', hexstr_input)
+
+    
     
     local hexstr_iv_after = lo.srp_hexify(bytes_iv_after)
     print('iv (after):', hexstr_iv_after)
@@ -772,7 +790,21 @@ function test_aes()
     print('input:', hexstr_input)
     local hexstr_output = lo.srp_hexify(bytes_output)
     print('output:', hexstr_output)
-    lo.show_sys_msg(c.def_sys_msg, 'input:'..hexstr_input..'\n'..'output:'..hexstr_output)
+    
+
+    local decrypt_result, bytes_dec_iv_after, bytes_dec_output = lo.mbedtls_aes_crypt_cbc(aes_context,
+                                                                                lo.MBEDTLS_AES_DECRYPT,
+                                                                                bytes_iv,
+                                                                                bytes_output)
+    if decrypt_result ~= 0 then
+        lo.show_sys_msg(c.def_sys_msg, 'decrypt failed')
+        error('decrypt failed')
+    end
+
+    local hexstr_dec_output = lo.srp_hexify(bytes_dec_output)
+    print('dec:', hexstr_dec_output)
+
+    lo.show_sys_msg(c.def_sys_msg, 'input:'..hexstr_input..'\n'..'output:'..hexstr_output..'\n'..'dec:'..hexstr_dec_output)
 end
 
 function on_chat(line)
