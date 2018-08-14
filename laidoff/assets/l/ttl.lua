@@ -737,37 +737,17 @@ function test_aes()
     end
     print('bytes_iv',bytes_iv,'len_iv',len_iv)
     
-    --[[local bytes_input = lo.new_LWUNSIGNEDCHAR(len_input)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_input, 0, 0x00)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_input, 1, 0x00)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_input, 2, 0x00)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_input, 3, 0x01)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_input, 4, 0x00)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_input, 5, 0x00)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_input, 6, 0x00)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_input, 7, 0x02)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_input, 8, 0x00)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_input, 9, 0x00)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_input, 10, 0x00)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_input, 11, 0x03)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_input, 12, 0x00)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_input, 13, 0x00)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_input, 14, 0x00)
-    lo.LWUNSIGNEDCHAR_setitem(bytes_input, 15, 0x04)]]--
-    local bytes_input = {0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0b,0x0c,0x0d,0x0e,0x0f}
-    
-    --local bytes_output = lo.new_LWUNSIGNEDCHAR(len_output)
-    
+    local bytes_plaintext = {0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0b,0x0c,0x0d,0x0e,0x0f}
     local hexstr_iv = lo.srp_hexify(bytes_iv)
     print('iv (before):', hexstr_iv)
-    local hexstr_input = lo.srp_hexify(bytes_input)
-    print('input (before):', hexstr_input)
+    local hexstr_plaintext = lo.srp_hexify(bytes_plaintext)
+    print('plaintext (before):', hexstr_plaintext)
     
-    local crypt_result, bytes_iv_after, bytes_output = lo.mbedtls_aes_crypt_cbc(aes_context,
-                                                                                lo.MBEDTLS_AES_ENCRYPT,
-                                                                                bytes_iv,
-                                                                                bytes_input)
-    if crypt_result ~= 0 then
+    local encrypt_result, bytes_iv_after, bytes_ciphertext = lo.mbedtls_aes_crypt_cbc(aes_context,
+                                                                                      lo.MBEDTLS_AES_ENCRYPT,
+                                                                                      bytes_iv,
+                                                                                      bytes_plaintext)
+    if encrypt_result ~= 0 then
         lo.show_sys_msg(c.def_sys_msg, 'encrypt failed')
         error('encrypt failed')
     end
@@ -775,17 +755,17 @@ function test_aes()
     hexstr_iv = lo.srp_hexify(bytes_iv)
     print('iv (again--the same var):', hexstr_iv)
 
-    hexstr_input = lo.srp_hexify(bytes_input)
-    print('input (again):', hexstr_input)
+    hexstr_plaintext = lo.srp_hexify(bytes_plaintext)
+    print('plaintext (again):', hexstr_plaintext)
 
     
     
     local hexstr_iv_after = lo.srp_hexify(bytes_iv_after)
     print('iv (after):', hexstr_iv_after)
-    local hexstr_input = lo.srp_hexify(bytes_input)
-    print('input:', hexstr_input)
-    local hexstr_output = lo.srp_hexify(bytes_output)
-    print('output:', hexstr_output)
+    local hexstr_plaintext = lo.srp_hexify(bytes_plaintext)
+    print('plaintext', hexstr_plaintext)
+    local hexstr_ciphertext = lo.srp_hexify(bytes_ciphertext)
+    print('ciphertext', hexstr_ciphertext)
     
     -- decryption
 
@@ -795,19 +775,19 @@ function test_aes()
         error('aes dec key set fail')
     end
     
-    local decrypt_result, bytes_dec_iv_after, bytes_dec_output = lo.mbedtls_aes_crypt_cbc(aes_dec_context,
-                                                                                lo.MBEDTLS_AES_DECRYPT,
-                                                                                bytes_iv,
-                                                                                bytes_output)
+    local decrypt_result, bytes_dec_iv_after, bytes_dec_plaintext = lo.mbedtls_aes_crypt_cbc(aes_dec_context,
+                                                                                             lo.MBEDTLS_AES_DECRYPT,
+                                                                                             bytes_iv,
+                                                                                             bytes_ciphertext)
     if decrypt_result ~= 0 then
         lo.show_sys_msg(c.def_sys_msg, 'decrypt failed')
         error('decrypt failed')
     end
 
-    local hexstr_dec_output = lo.srp_hexify(bytes_dec_output)
-    print('dec:', hexstr_dec_output)
+    local hexstr_dec_plaintext = lo.srp_hexify(bytes_dec_plaintext)
+    print('dec plaintext', hexstr_dec_plaintext)
 
-    lo.show_sys_msg(c.def_sys_msg, 'input:'..hexstr_input..'\n'..'output:'..hexstr_output..'\n'..'dec:'..hexstr_dec_output)
+    lo.show_sys_msg(c.def_sys_msg, 'plaintext:'..hexstr_plaintext..'\n'..'ciphertext:'..hexstr_ciphertext..'\n'..'dec plaintext:'..hexstr_dec_plaintext)
 end
 
 function on_chat(line)
