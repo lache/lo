@@ -110011,6 +110011,78 @@ fail:
 }
 
 
+static int _wrap_mbedtls_aes_crypt_cbc(lua_State* L) {
+  int SWIG_arg = 0;
+  mbedtls_aes_context *arg1 = (mbedtls_aes_context *) 0 ;
+  int arg2 ;
+  size_t arg3 ;
+  unsigned char *arg4 ;
+  unsigned char *arg5 = (unsigned char *) 0 ;
+  unsigned char *arg6 = (unsigned char *) 0 ;
+  int result;
+  
+  arg4 = 0; 
+  size_t* plength = &arg3; 
+  unsigned char** poutput = &arg6; 
+  SWIG_check_num_args("mbedtls_aes_crypt_cbc",4,4)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("mbedtls_aes_crypt_cbc",1,"mbedtls_aes_context *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("mbedtls_aes_crypt_cbc",2,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_mbedtls_aes_context,0))){
+    SWIG_fail_ptr("mbedtls_aes_crypt_cbc",1,SWIGTYPE_p_mbedtls_aes_context);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  arg4 = (unsigned char *)SWIG_get_uchar_num_array_fixed(L,3,16); 
+  int input_length; arg5 = (unsigned char *)SWIG_get_uchar_num_array_var(L,4,&input_length), *plength = (size_t)input_length; *poutput = (unsigned char*)malloc(input_length); 
+  result = (int)mbedtls_aes_crypt_cbc(arg1,arg2,arg3,arg4,(unsigned char const *)arg5,arg6);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  SWIG_write_uchar_num_array(L,arg4,16); SWIG_arg++; 
+  SWIG_write_uchar_num_array(L,arg6,input_length); SWIG_arg++; 
+  SWIG_FREE_ARRAY(arg4); 
+  SWIG_FREE_ARRAY(arg5); 
+  free(arg6); 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  SWIG_FREE_ARRAY(arg4); 
+  SWIG_FREE_ARRAY(arg5); 
+  free(arg6); 
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_mbedtls_aes_setkey_enc(lua_State* L) {
+  int SWIG_arg = 0;
+  mbedtls_aes_context *arg1 = (mbedtls_aes_context *) 0 ;
+  unsigned char *arg2 = (unsigned char *) 0 ;
+  unsigned int arg3 ;
+  int result;
+  
+  unsigned int* pkeybits = &arg3; /*in(0): keybits*/ 
+  SWIG_check_num_args("mbedtls_aes_setkey_enc",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("mbedtls_aes_setkey_enc",1,"mbedtls_aes_context *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_mbedtls_aes_context,0))){
+    SWIG_fail_ptr("mbedtls_aes_setkey_enc",1,SWIGTYPE_p_mbedtls_aes_context);
+  }
+  
+  int input_length; arg2 = (unsigned char *)SWIG_get_uchar_num_array_var(L,2,&input_length), *pkeybits = (unsigned int)(input_length * 8); /*in: key*/ 
+  result = (int)mbedtls_aes_setkey_enc(arg1,(unsigned char const *)arg2,arg3);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_mbedtls_aes_context_nr_set(lua_State* L) {
   int SWIG_arg = 0;
   mbedtls_aes_context *arg1 = (mbedtls_aes_context *) 0 ;
@@ -110506,41 +110578,6 @@ fail:
 }
 
 
-static int _wrap_mbedtls_aes_setkey_enc(lua_State* L) {
-  int SWIG_arg = 0;
-  mbedtls_aes_context *arg1 = (mbedtls_aes_context *) 0 ;
-  unsigned char *arg2 = (unsigned char *) 0 ;
-  unsigned int arg3 ;
-  int result;
-  
-  SWIG_check_num_args("mbedtls_aes_setkey_enc",3,3)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("mbedtls_aes_setkey_enc",1,"mbedtls_aes_context *");
-  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("mbedtls_aes_setkey_enc",2,"unsigned char const *");
-  if(!lua_isnumber(L,3)) SWIG_fail_arg("mbedtls_aes_setkey_enc",3,"unsigned int");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_mbedtls_aes_context,0))){
-    SWIG_fail_ptr("mbedtls_aes_setkey_enc",1,SWIGTYPE_p_mbedtls_aes_context);
-  }
-  
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_unsigned_char,0))){
-    SWIG_fail_ptr("mbedtls_aes_setkey_enc",2,SWIGTYPE_p_unsigned_char);
-  }
-  
-  SWIG_contract_assert((lua_tonumber(L,3)>=0),"number must not be negative")
-  arg3 = (unsigned int)lua_tonumber(L, 3);
-  result = (int)mbedtls_aes_setkey_enc(arg1,(unsigned char const *)arg2,arg3);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
 static int _wrap_mbedtls_aes_setkey_dec(lua_State* L) {
   int SWIG_arg = 0;
   mbedtls_aes_context *arg1 = (mbedtls_aes_context *) 0 ;
@@ -110548,22 +110585,15 @@ static int _wrap_mbedtls_aes_setkey_dec(lua_State* L) {
   unsigned int arg3 ;
   int result;
   
-  SWIG_check_num_args("mbedtls_aes_setkey_dec",3,3)
+  unsigned int* pkeybits = &arg3; /*in(0): keybits*/ 
+  SWIG_check_num_args("mbedtls_aes_setkey_dec",2,2)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("mbedtls_aes_setkey_dec",1,"mbedtls_aes_context *");
-  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("mbedtls_aes_setkey_dec",2,"unsigned char const *");
-  if(!lua_isnumber(L,3)) SWIG_fail_arg("mbedtls_aes_setkey_dec",3,"unsigned int");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_mbedtls_aes_context,0))){
     SWIG_fail_ptr("mbedtls_aes_setkey_dec",1,SWIGTYPE_p_mbedtls_aes_context);
   }
   
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_unsigned_char,0))){
-    SWIG_fail_ptr("mbedtls_aes_setkey_dec",2,SWIGTYPE_p_unsigned_char);
-  }
-  
-  SWIG_contract_assert((lua_tonumber(L,3)>=0),"number must not be negative")
-  arg3 = (unsigned int)lua_tonumber(L, 3);
+  int input_length; arg2 = (unsigned char *)SWIG_get_uchar_num_array_var(L,2,&input_length), *pkeybits = (unsigned int)(input_length * 8); /*in: key*/ 
   result = (int)mbedtls_aes_setkey_dec(arg1,(unsigned char const *)arg2,arg3);
   lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
   return SWIG_arg;
@@ -110583,22 +110613,15 @@ static int _wrap_mbedtls_aes_xts_setkey_enc(lua_State* L) {
   unsigned int arg3 ;
   int result;
   
-  SWIG_check_num_args("mbedtls_aes_xts_setkey_enc",3,3)
+  unsigned int* pkeybits = &arg3; /*in(0): keybits*/ 
+  SWIG_check_num_args("mbedtls_aes_xts_setkey_enc",2,2)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("mbedtls_aes_xts_setkey_enc",1,"mbedtls_aes_xts_context *");
-  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("mbedtls_aes_xts_setkey_enc",2,"unsigned char const *");
-  if(!lua_isnumber(L,3)) SWIG_fail_arg("mbedtls_aes_xts_setkey_enc",3,"unsigned int");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_mbedtls_aes_xts_context,0))){
     SWIG_fail_ptr("mbedtls_aes_xts_setkey_enc",1,SWIGTYPE_p_mbedtls_aes_xts_context);
   }
   
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_unsigned_char,0))){
-    SWIG_fail_ptr("mbedtls_aes_xts_setkey_enc",2,SWIGTYPE_p_unsigned_char);
-  }
-  
-  SWIG_contract_assert((lua_tonumber(L,3)>=0),"number must not be negative")
-  arg3 = (unsigned int)lua_tonumber(L, 3);
+  int input_length; arg2 = (unsigned char *)SWIG_get_uchar_num_array_var(L,2,&input_length), *pkeybits = (unsigned int)(input_length * 8); /*in: key*/ 
   result = (int)mbedtls_aes_xts_setkey_enc(arg1,(unsigned char const *)arg2,arg3);
   lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
   return SWIG_arg;
@@ -110618,22 +110641,15 @@ static int _wrap_mbedtls_aes_xts_setkey_dec(lua_State* L) {
   unsigned int arg3 ;
   int result;
   
-  SWIG_check_num_args("mbedtls_aes_xts_setkey_dec",3,3)
+  unsigned int* pkeybits = &arg3; /*in(0): keybits*/ 
+  SWIG_check_num_args("mbedtls_aes_xts_setkey_dec",2,2)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("mbedtls_aes_xts_setkey_dec",1,"mbedtls_aes_xts_context *");
-  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("mbedtls_aes_xts_setkey_dec",2,"unsigned char const *");
-  if(!lua_isnumber(L,3)) SWIG_fail_arg("mbedtls_aes_xts_setkey_dec",3,"unsigned int");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_mbedtls_aes_xts_context,0))){
     SWIG_fail_ptr("mbedtls_aes_xts_setkey_dec",1,SWIGTYPE_p_mbedtls_aes_xts_context);
   }
   
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_unsigned_char,0))){
-    SWIG_fail_ptr("mbedtls_aes_xts_setkey_dec",2,SWIGTYPE_p_unsigned_char);
-  }
-  
-  SWIG_contract_assert((lua_tonumber(L,3)>=0),"number must not be negative")
-  arg3 = (unsigned int)lua_tonumber(L, 3);
+  int input_length; arg2 = (unsigned char *)SWIG_get_uchar_num_array_var(L,2,&input_length), *pkeybits = (unsigned int)(input_length * 8); /*in: key*/ 
   result = (int)mbedtls_aes_xts_setkey_dec(arg1,(unsigned char const *)arg2,arg3);
   lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
   return SWIG_arg;
@@ -110682,52 +110698,6 @@ static int _wrap_mbedtls_aes_crypt_ecb(lua_State* L) {
   if(0) SWIG_fail;
   
 fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_mbedtls_aes_crypt_cbc(lua_State* L) {
-  int SWIG_arg = 0;
-  mbedtls_aes_context *arg1 = (mbedtls_aes_context *) 0 ;
-  int arg2 ;
-  size_t arg3 ;
-  unsigned char *arg4 ;
-  unsigned char *arg5 = (unsigned char *) 0 ;
-  unsigned char *arg6 = (unsigned char *) 0 ;
-  int result;
-  
-  arg4 = (unsigned char *)SWIG_get_uchar_num_array_fixed(L,$input+1,16);
-  int arg5_dim;
-  arg5 = (unsigned char *)SWIG_get_uchar_num_array_var(L,$input+2,&arg5_dim);
-  arg3 = arg5_dim;
-  if (!arg5) SWIG_fail;
-  int arg6_dim0 = arg5_dim;
-  arg6 = (unsigned char*)malloc(arg5_dim); 
-  SWIG_check_num_args("mbedtls_aes_crypt_cbc",2,2)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("mbedtls_aes_crypt_cbc",1,"mbedtls_aes_context *");
-  if(!lua_isnumber(L,2)) SWIG_fail_arg("mbedtls_aes_crypt_cbc",2,"int");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_mbedtls_aes_context,0))){
-    SWIG_fail_ptr("mbedtls_aes_crypt_cbc",1,SWIGTYPE_p_mbedtls_aes_context);
-  }
-  
-  arg2 = (int)lua_tonumber(L, 2);
-  result = (int)mbedtls_aes_crypt_cbc(arg1,arg2,arg3,arg4,(unsigned char const *)arg5,arg6);
-  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  SWIG_write_uchar_num_array(L,arg4,16); SWIG_arg++; 
-  SWIG_write_uchar_num_array(L,arg6,arg6_dim0); SWIG_arg++; 
-  SWIG_FREE_ARRAY(arg4);
-  SWIG_FREE_ARRAY(arg5);
-  free(arg6); 
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  SWIG_FREE_ARRAY(arg4);
-  SWIG_FREE_ARRAY(arg5);
-  free(arg6); 
   lua_error(L);
   return SWIG_arg;
 }
@@ -110854,37 +110824,43 @@ static int _wrap_mbedtls_aes_crypt_cfb8(lua_State* L) {
   unsigned char *arg6 = (unsigned char *) 0 ;
   int result;
   
-  arg4 = (unsigned char *)SWIG_get_uchar_num_array_fixed(L,$input+1,16);
-  int arg5_dim;
-  arg5 = (unsigned char *)SWIG_get_uchar_num_array_var(L,$input+2,&arg5_dim);
-  arg3 = arg5_dim;
-  if (!arg5) SWIG_fail;
-  int arg6_dim0 = arg5_dim;
-  arg6 = (unsigned char*)malloc(arg5_dim); 
-  SWIG_check_num_args("mbedtls_aes_crypt_cfb8",2,2)
+  SWIG_check_num_args("mbedtls_aes_crypt_cfb8",6,6)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("mbedtls_aes_crypt_cfb8",1,"mbedtls_aes_context *");
   if(!lua_isnumber(L,2)) SWIG_fail_arg("mbedtls_aes_crypt_cfb8",2,"int");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("mbedtls_aes_crypt_cfb8",3,"size_t");
+  if(!SWIG_isptrtype(L,4)) SWIG_fail_arg("mbedtls_aes_crypt_cfb8",4,"unsigned char [16]");
+  if(!SWIG_isptrtype(L,5)) SWIG_fail_arg("mbedtls_aes_crypt_cfb8",5,"unsigned char const *");
+  if(!SWIG_isptrtype(L,6)) SWIG_fail_arg("mbedtls_aes_crypt_cfb8",6,"unsigned char *");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_mbedtls_aes_context,0))){
     SWIG_fail_ptr("mbedtls_aes_crypt_cfb8",1,SWIGTYPE_p_mbedtls_aes_context);
   }
   
   arg2 = (int)lua_tonumber(L, 2);
+  SWIG_contract_assert((lua_tonumber(L,3)>=0),"number must not be negative")
+  arg3 = (size_t)lua_tonumber(L, 3);
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,4,(void**)&arg4,SWIGTYPE_p_unsigned_char,0))){
+    SWIG_fail_ptr("mbedtls_aes_crypt_cfb8",4,SWIGTYPE_p_unsigned_char);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,5,(void**)&arg5,SWIGTYPE_p_unsigned_char,0))){
+    SWIG_fail_ptr("mbedtls_aes_crypt_cfb8",5,SWIGTYPE_p_unsigned_char);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,6,(void**)&arg6,SWIGTYPE_p_unsigned_char,0))){
+    SWIG_fail_ptr("mbedtls_aes_crypt_cfb8",6,SWIGTYPE_p_unsigned_char);
+  }
+  
   result = (int)mbedtls_aes_crypt_cfb8(arg1,arg2,arg3,arg4,(unsigned char const *)arg5,arg6);
   lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
-  SWIG_write_uchar_num_array(L,arg4,16); SWIG_arg++; 
-  SWIG_write_uchar_num_array(L,arg6,arg6_dim0); SWIG_arg++; 
-  SWIG_FREE_ARRAY(arg4);
-  SWIG_FREE_ARRAY(arg5);
-  free(arg6); 
   return SWIG_arg;
   
   if(0) SWIG_fail;
   
 fail:
-  SWIG_FREE_ARRAY(arg4);
-  SWIG_FREE_ARRAY(arg5);
-  free(arg6); 
   lua_error(L);
   return SWIG_arg;
 }
@@ -115245,16 +115221,16 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "make_chunk_key", _wrap_make_chunk_key},
     { "aligned_chunk_index", _wrap_aligned_chunk_index},
     { "test_srp_main", _wrap_test_srp_main},
+    { "mbedtls_aes_crypt_cbc", _wrap_mbedtls_aes_crypt_cbc},
+    { "mbedtls_aes_setkey_enc", _wrap_mbedtls_aes_setkey_enc},
     { "mbedtls_aes_init", _wrap_mbedtls_aes_init},
     { "mbedtls_aes_free", _wrap_mbedtls_aes_free},
     { "mbedtls_aes_xts_init", _wrap_mbedtls_aes_xts_init},
     { "mbedtls_aes_xts_free", _wrap_mbedtls_aes_xts_free},
-    { "mbedtls_aes_setkey_enc", _wrap_mbedtls_aes_setkey_enc},
     { "mbedtls_aes_setkey_dec", _wrap_mbedtls_aes_setkey_dec},
     { "mbedtls_aes_xts_setkey_enc", _wrap_mbedtls_aes_xts_setkey_enc},
     { "mbedtls_aes_xts_setkey_dec", _wrap_mbedtls_aes_xts_setkey_dec},
     { "mbedtls_aes_crypt_ecb", _wrap_mbedtls_aes_crypt_ecb},
-    { "mbedtls_aes_crypt_cbc", _wrap_mbedtls_aes_crypt_cbc},
     { "mbedtls_aes_crypt_xts", _wrap_mbedtls_aes_crypt_xts},
     { "mbedtls_aes_crypt_cfb128", _wrap_mbedtls_aes_crypt_cfb128},
     { "mbedtls_aes_crypt_cfb8", _wrap_mbedtls_aes_crypt_cfb8},

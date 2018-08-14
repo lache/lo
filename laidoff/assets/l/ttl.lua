@@ -714,10 +714,10 @@ function test_aes()
     print('bytes_key',bytes_key,'len_key',len_key)
     local hexstr_key = lo.srp_hexify(bytes_key)
     print('Session key:', hexstr_key)
-    
+    bytes_key = {table.unpack(bytes_key, 1, 32)} -- truncate bytes_key from 512-bit to 256-bit
     local aes_context = lo.mbedtls_aes_context()
-    local keybits = 256 -- see comments on 'mbedtls_aes_setkey_enc()'
-    if lo.mbedtls_aes_setkey_enc(aes_context, bytes_key, keybits) ~= 0 then
+    local keybits = 256 -- keybits max is 256. bytes_key may be longer then this...see comments on 'mbedtls_aes_setkey_enc()'
+    if lo.mbedtls_aes_setkey_enc(aes_context, bytes_key) ~= 0 then
         lo.show_sys_msg(c.def_sys_msg, 'aes key set fail')
         error('aes key set fail')
     end
@@ -752,7 +752,7 @@ function test_aes()
     lo.LWUNSIGNEDCHAR_setitem(bytes_input, 15, 0x04)]]--
     local bytes_input = {0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0b,0x0c,0x0d,0x0e,0x0f}
     
-    local bytes_output = lo.new_LWUNSIGNEDCHAR(len_output)
+    --local bytes_output = lo.new_LWUNSIGNEDCHAR(len_output)
     
     local hexstr_iv = lo.srp_hexify(bytes_iv)
     print('iv (before):', hexstr_iv)
@@ -761,17 +761,16 @@ function test_aes()
                                                                                 lo.MBEDTLS_AES_ENCRYPT,
                                                                                 bytes_iv,
                                                                                 bytes_input)
-    if lo.mbedtls_aes_crypt_cbc(aes_context, lo.MBEDTLS_AES_ENCRYPT,
-                                16, bytes_iv, bytes_input, bytes_output) ~= 0 then
+    if crypt_result ~= 0 then
         lo.show_sys_msg(c.def_sys_msg, 'encrypt failed')
         error('encrypt failed')
     end
     
-    hexstr_iv = lo.srp_hexify(bytes_iv, len_iv)
-    print('iv (after):', hexstr_iv)
-    local hexstr_input = lo.srp_hexify(bytes_input, len_input)
+    local hexstr_iv_after = lo.srp_hexify(bytes_iv_after)
+    print('iv (after):', hexstr_iv_after)
+    local hexstr_input = lo.srp_hexify(bytes_input)
     print('input:', hexstr_input)
-    local hexstr_output = lo.srp_hexify(bytes_output, len_output)
+    local hexstr_output = lo.srp_hexify(bytes_output)
     print('output:', hexstr_output)
     lo.show_sys_msg(c.def_sys_msg, 'input:'..hexstr_input..'\n'..'output:'..hexstr_output)
 end

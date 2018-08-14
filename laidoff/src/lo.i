@@ -315,26 +315,6 @@ if (*$1) free(*$1);
     free(*$1); %}
 %apply SWIGTYPE** OUTPUTXXX {unsigned char **};
 
-//mbedtls_aes_crypt_cbc
-//%apply SWIGTYPE* INOUT[ANY] {unsigned char iv[16]};
-//%apply SWIGTYPE* OUTPUT[ANY] {unsigned char *output};
-%typemap(in,numinputs=0) (size_t length, unsigned char iv[16], const unsigned char *input, unsigned char *output)
-%{  $2 = (unsigned char *)SWIG_get_uchar_num_array_fixed(L,$input+1,16);
-    int $3_dim;
-    $3 = (unsigned char *)SWIG_get_uchar_num_array_var(L,$input+2,&$3_dim);
-    $1 = $3_dim;
-	if (!$3) SWIG_fail;
-    int $4_dim0 = $3_dim;
-    $4 = (unsigned char*)malloc($3_dim); %}
-%typemap(argout) (size_t length, unsigned char iv[16], const unsigned char *input, unsigned char *output)
-%{  SWIG_write_uchar_num_array(L,$2,16); SWIG_arg++; 
-    SWIG_write_uchar_num_array(L,$4,$4_dim0); SWIG_arg++; %}
-%typemap(freearg) (size_t length, unsigned char iv[16], const unsigned char *input, unsigned char *output)
-%{	SWIG_FREE_ARRAY($2);
-    SWIG_FREE_ARRAY($3);
-    free($4); %}
-%apply const unsigned char *input { const unsigned char *key };
-
 %typemap(in) (const unsigned char * b, int len_b)
 %{  int $1_dim;
     $1 = ($ltype)SWIG_get_uchar_num_array_var(L,$input,&$1_dim);
@@ -343,10 +323,42 @@ if (*$1) free(*$1);
 %typemap(freearg) (const unsigned char * b, int len_b)
 %{	SWIG_FREE_ARRAY($1);%}
 
+%typemap(in,numinputs=0)    size_t length               %{ size_t* plength = &$1; %}
+%typemap(arginit)           unsigned char iv[16]        %{ $1 = 0; %}
+%typemap(in)                unsigned char iv[16]        %{ $1 = (unsigned char *)SWIG_get_uchar_num_array_fixed(L,$input,16); %}
+%typemap(argout)            unsigned char iv[16]        %{ SWIG_write_uchar_num_array(L,$1,16); SWIG_arg++; %}
+%typemap(freearg)           unsigned char iv[16]        %{ SWIG_FREE_ARRAY($1); %}
+%typemap(in)                const unsigned char *input  %{ int input_length; $1 = (unsigned char *)SWIG_get_uchar_num_array_var(L,$input,&input_length), *plength = (size_t)input_length; *poutput = (unsigned char*)malloc(input_length); %}
+%typemap(freearg)           const unsigned char *input  %{ SWIG_FREE_ARRAY($1); %}
+%typemap(in,numinputs=0)    unsigned char *output       %{ unsigned char** poutput = &$1; %}
+%typemap(argout)            unsigned char *output       %{ SWIG_write_uchar_num_array(L,$1,input_length); SWIG_arg++; %}
+%typemap(freearg)           unsigned char *output       %{ free($1); %}
+int mbedtls_aes_crypt_cbc( mbedtls_aes_context *ctx,
+                           int mode,
+                           size_t length,
+                           unsigned char iv[16],
+                           const unsigned char *input,
+                           unsigned char *output );
+%clear    size_t length;
+%clear    unsigned char iv[16];
+%clear    const unsigned char *input;
+%clear    unsigned char *output;
+
+// mbedtls_aes_setkey_enc
+%typemap(in)                const unsigned char *key    %{ int input_length; $1 = (unsigned char *)SWIG_get_uchar_num_array_var(L,$input,&input_length), *pkeybits = (unsigned int)(input_length * 8); /*in: key*/ %}
+%typemap(in,numinputs=0)    unsigned int keybits        %{ unsigned int* pkeybits = &$1; /*in(0): keybits*/ %}
+int mbedtls_aes_setkey_enc( mbedtls_aes_context *ctx,
+                            const unsigned char *key,
+                            unsigned int keybits );
+                            
 %include "../mbedtls/include/mbedtls/mbedtls-config.h"
 %include "../mbedtls/include/mbedtls/aes.h"
 
 
+
+
+                    
+                    
 %include "srp.h"
 %include "laidoff.h"
 
