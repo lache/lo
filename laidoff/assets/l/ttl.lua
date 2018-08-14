@@ -725,10 +725,6 @@ function test_aes()
     end
     hexstr_key = lo.srp_hexify(bytes_key)
     print('Session key (truncated):', hexstr_key)
-    if lo.mbedtls_aes_setkey_dec(aes_context, bytes_key) ~= 0 then
-        lo.show_sys_msg(c.def_sys_msg, 'aes dec key set fail')
-        error('aes dec key set fail')
-    end
     
     local len_iv = 16 -- fixed to 16
     local len_input = 16 -- should be multiple of 16
@@ -791,8 +787,15 @@ function test_aes()
     local hexstr_output = lo.srp_hexify(bytes_output)
     print('output:', hexstr_output)
     
+    -- decryption
 
-    local decrypt_result, bytes_dec_iv_after, bytes_dec_output = lo.mbedtls_aes_crypt_cbc(aes_context,
+    local aes_dec_context = lo.mbedtls_aes_context()
+    if lo.mbedtls_aes_setkey_dec(aes_dec_context, bytes_key) ~= 0 then
+        lo.show_sys_msg(c.def_sys_msg, 'aes dec key set fail')
+        error('aes dec key set fail')
+    end
+    
+    local decrypt_result, bytes_dec_iv_after, bytes_dec_output = lo.mbedtls_aes_crypt_cbc(aes_dec_context,
                                                                                 lo.MBEDTLS_AES_DECRYPT,
                                                                                 bytes_iv,
                                                                                 bytes_output)
