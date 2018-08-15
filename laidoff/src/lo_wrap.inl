@@ -3622,7 +3622,7 @@ static int _wrap_srp_user_new(lua_State* L) {
   arg6 = (char *)lua_tostring(L, 5);
   arg7 = (char *)lua_tostring(L, 6);
   result = (struct SRPUser *)srp_user_new(arg1,arg2,(char const *)arg3,(unsigned char const *)arg4,arg5,(char const *)arg6,(char const *)arg7);
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_SRPUser,0); SWIG_arg++; 
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_SRPUser,1); SWIG_arg++; 
   SWIG_FREE_ARRAY(arg4);
   return SWIG_arg;
   
@@ -3681,7 +3681,7 @@ static int _wrap_srp_verifier_new(lua_State* L) {
   arg12 = (char *)lua_tostring(L, 7);
   arg13 = (char *)lua_tostring(L, 8);
   result = (struct SRPVerifier *)srp_verifier_new(arg1,arg2,(char const *)arg3,(unsigned char const *)arg4,arg5,(unsigned char const *)arg6,arg7,(unsigned char const *)arg8,arg9,(unsigned char const **)arg10,arg11,(char const *)arg12,(char const *)arg13);
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_SRPVerifier,0); SWIG_arg++; 
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_SRPVerifier,1); SWIG_arg++; 
   SWIG_write_uchar_num_array(L,*arg10,*arg11); SWIG_arg++;
   /*should not call free(*arg10) -- it is owned by arg1! */ 
   SWIG_FREE_ARRAY(arg4);
@@ -111292,7 +111292,7 @@ static int _wrap_srp_verifier_delete(lua_State* L) {
   SWIG_check_num_args("srp_verifier_delete",1,1)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("srp_verifier_delete",1,"struct SRPVerifier *");
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_SRPVerifier,0))){
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_SRPVerifier,SWIG_POINTER_DISOWN))){
     SWIG_fail_ptr("srp_verifier_delete",1,SWIGTYPE_p_SRPVerifier);
   }
   
@@ -111415,7 +111415,7 @@ static int _wrap_srp_user_delete(lua_State* L) {
   SWIG_check_num_args("srp_user_delete",1,1)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("srp_user_delete",1,"struct SRPUser *");
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_SRPUser,0))){
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_SRPUser,SWIG_POINTER_DISOWN))){
     SWIG_fail_ptr("srp_user_delete",1,SWIGTYPE_p_SRPUser);
   }
   

@@ -445,6 +445,8 @@ function start_account_auth()
 
 
     -- [2] Client: Create an account object for authentication
+    print('previous auth_context.usr', auth_context.usr)
+    if auth_context.usr ~= nil then lo.srp_user_delete(auth_context.usr) end
     auth_context.usr = lo.srp_user_new(alg, ng_type, username, bytes_pw, n_hex, g_hex)
     local auth_username, bytes_A = lo.srp_user_start_authentication(auth_context.usr)
     local len_A = #bytes_A
@@ -465,18 +467,6 @@ function start_account_auth()
     -- store 'A' for debugging purpose
     auth_context.bytes_A = bytes_A
     auth_context.len_A = len_A
-
-    --[[
-    local ver, bytes_B, len_B = lo.srp_verifier_new(alg, ng_type, username, bytes_s, len_s, bytes_v, len_v, bytes_A, len_A, n_hex, g_hex)
-    print('ver:',ver, 'bytes_B:',bytes_B, 'len_B:',len_B)
-    local hexstr_s = lo.srp_hexify(bytes_s, len_s)
-    local hexstr_v = lo.srp_hexify(bytes_v, len_v)
-    local hexstr_B = lo.srp_hexify(bytes_B, len_B)
-    print('hexstr_s', hexstr_s)
-    print('hexstr_v', hexstr_v)
-    
-    print('hexstr_B', hexstr_B)
-    ]]--
 end
 
 function create_account_force()
@@ -574,6 +564,8 @@ function create_account_ex(force)
     local len_B = #bytes_B
     print('ver',ver,'B',bytes_B,'#B',len_B)
     if bytes_B == nil or len_B == 0 then
+        lo.srp_verifier_delete(ver)
+        lo.srp_user_delete(usr)
         error('Verifier SRP-6a safety check violated!')
         return
     end
@@ -590,8 +582,9 @@ function create_account_ex(force)
     local len_M = #bytes_M
     print('M',bytes_M,'#M',len_M)
     if bytes_M == nil or len_M == 0 then
+        lo.srp_verifier_delete(ver)
+        lo.srp_user_delete(usr)
         error('User SRP-6a safety check violation!')
-        return
     end
 
     local hexstr_M = lo.srp_hexify(bytes_M)
@@ -605,8 +598,9 @@ function create_account_ex(force)
     local bytes_HAMK = lo.srp_verifier_verify_session(ver, bytes_M)
     print(bytes_HAMK)
     if bytes_HAMK == nil or #bytes_HAMK == 0 then
+        lo.srp_verifier_delete(ver)
+        lo.srp_user_delete(usr)
         error('User authentication failed!')
-        return
     end
 
     -- *** Host -> User: (HAMK) ***
@@ -616,8 +610,9 @@ function create_account_ex(force)
     -- OUTPUT: is authed?
     lo.srp_user_verify_session(usr, bytes_HAMK)
     if lo.srp_user_is_authenticated(usr) ~= 1 then
+        lo.srp_verifier_delete(ver)
+        lo.srp_user_delete(usr)
         error('Server authentication failed!')
-        return
     end
 
     -- save these values to disk only after successful response received.
@@ -634,9 +629,8 @@ function create_account_ex(force)
     add_custom_http_header('X-Account-V', hexstr_v)
     lo.htmlui_execute_anchor_click(c.htmlui, '/createAccount')
 
-
-    --lo.delete_LWUNSIGNEDCHAR(bytes_pw)
-    --len_pw = 0
+    lo.srp_verifier_delete(ver)
+    lo.srp_user_delete(usr)
 end
 
 function on_json_body(json_body)

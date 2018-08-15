@@ -290,13 +290,16 @@ void srp_create_salted_verification_key(SRP_HashAlgorithm alg,
                                         const unsigned char ** bytes_s, int * len_s,
                                         const unsigned char ** bytes_v, int * len_v,
                                         const char * n_hex, const char * g_hex);
-                                        
 
-                                        
+%newobject srp_user_new;
+%delobject srp_user_delete;
 struct SRPUser * srp_user_new(SRP_HashAlgorithm alg, SRP_NGType ng_type, const char * username,
                               const unsigned char * password, int len_password,
                               const char * n_hex, const char * g_hex);
+                              
 
+%newobject srp_verifier_new;
+%delobject srp_verifier_delete;
 struct SRPVerifier * srp_verifier_new(SRP_HashAlgorithm alg, SRP_NGType ng_type, const char * username,
                                       const unsigned char * password, int len_password, // const unsigned char * bytes_s, int len_s,
                                       const unsigned char * password, int len_password, // const unsigned char * bytes_v, int len_v,
