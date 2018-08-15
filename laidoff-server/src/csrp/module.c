@@ -148,7 +148,7 @@ napi_value SrpVerifierVerifySession(napi_env env, napi_callback_info info) {
   unsigned char* bytes_HAMK; // output
   void* HAMK_result_data;
   napi_value HAMK;
-  const int len_HAMK = 512;
+  const int len_HAMK = SHA512_DIGEST_LENGTH;
 
   status = napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
   if (status != napi_ok) {
