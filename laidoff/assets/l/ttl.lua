@@ -706,10 +706,10 @@ function test_aes()
     end
     local bytes_key = lo.srp_user_get_session_key(auth_context.usr)
     local len_key = #bytes_key
-    print('bytes_key',bytes_key,'len_key',len_key)
+    print('bytes_key',bytes_key,'len_key (bytes)',len_key,'len_key (bits)',len_key*8)
     local hexstr_key = lo.srp_hexify(bytes_key)
     print('Session key:', hexstr_key)
-    bytes_key = {table.unpack(bytes_key, 1, 32)} -- truncate bytes_key from 512-bit to 256-bit
+    bytes_key = {table.unpack(bytes_key, 1, 256/8)} -- truncate bytes_key from 512-bit to 256-bit
     hexstr_key = lo.srp_hexify(bytes_key)
     print('Session key (truncated):', hexstr_key)
     local aes_context = lo.mbedtls_aes_context()
