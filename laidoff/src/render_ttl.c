@@ -516,16 +516,18 @@ static void render_shipyard_icon(const LWCONTEXT* pLwc,
     const float cell_width_in_ui_space = ui_point_2[0] - ui_point[0];
     mat4x4 identity_view;
     mat4x4_identity(identity_view);
-    lazy_tex_atlas_glBindTexture(pLwc, LAE_TTL_CONTAINER_WHITE);
-    lazy_tex_atlas_glBindTexture(pLwc, LAE_TTL_CONTAINER_WHITE_ALPHA);
+    int lae_shipyard = LAE_TTL_SHIPYARD;
+    int lae_shipyard_alpha = LAE_TTL_SHIPYARD_ALPHA;
+    lazy_tex_atlas_glBindTexture(pLwc, lae_shipyard);
+    lazy_tex_atlas_glBindTexture(pLwc, lae_shipyard_alpha);
     const int view_scale = lwttl_viewport_view_scale(vp);
     render_solid_vb_ui_alpha_uv_shader_view_proj(pLwc,
                                                  ui_point[0],
                                                  ui_point[1],
                                                  cell_width_in_ui_space / view_scale, //w * 0.075f,
                                                  cell_width_in_ui_space / view_scale, //h * 0.075f,
-                                                 pLwc->tex_atlas[LAE_TTL_CONTAINER_WHITE],
-                                                 pLwc->tex_atlas[LAE_TTL_CONTAINER_WHITE_ALPHA],
+                                                 pLwc->tex_atlas[lae_shipyard],
+                                                 pLwc->tex_atlas[lae_shipyard_alpha],
                                                  LVT_CENTER_CENTER_ANCHORED_SQUARE,
                                                  1.0f,
                                                  1.0f,
