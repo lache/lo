@@ -650,8 +650,8 @@ static void init_gl_context(LWCONTEXT* pLwc) {
     // load all textures
     init_load_textures(pLwc);
     // load font metadata
-    //pLwc->pFnt = load_fnt(ASSETS_BASE_PATH "fnt" PATH_SEPARATOR "test7.fnt");
-    pLwc->pFnt = load_fnt(ASSETS_BASE_PATH "fnt" PATH_SEPARATOR "neo.fnt");
+    pLwc->pFnt = load_fnt(ASSETS_BASE_PATH "fnt" PATH_SEPARATOR "test7.fnt");
+    //pLwc->pFnt = load_fnt(ASSETS_BASE_PATH "fnt" PATH_SEPARATOR "neo.fnt");
     // Enable culling (CCW is default)
     glEnable(GL_CULL_FACE);
     // set default clear color
