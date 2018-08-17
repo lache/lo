@@ -2922,36 +2922,37 @@ SWIG_Lua_dostring(lua_State *L, const char *str) {
 #define SWIGTYPE_p_float swig_types[262]
 #define SWIGTYPE_p_int swig_types[263]
 #define SWIGTYPE_p_int64_t swig_types[264]
-#define SWIGTYPE_p_mbedtls_aes_context swig_types[265]
-#define SWIGTYPE_p_mbedtls_aes_xts_context swig_types[266]
-#define SWIGTYPE_p_p__LWDELTATIME swig_types[267]
-#define SWIGTYPE_p_p__LWPS swig_types[268]
-#define SWIGTYPE_p_p__LWPUCKGAME swig_types[269]
-#define SWIGTYPE_p_p__LWSKILL swig_types[270]
-#define SWIGTYPE_p_p__LWTTL swig_types[271]
-#define SWIGTYPE_p_p__kvmsg swig_types[272]
-#define SWIGTYPE_p_p_char swig_types[273]
-#define SWIGTYPE_p_p_tinyobj_material_t swig_types[274]
-#define SWIGTYPE_p_p_tinyobj_shape_t swig_types[275]
-#define SWIGTYPE_p_p_unsigned_char swig_types[276]
-#define SWIGTYPE_p_p_void swig_types[277]
-#define SWIGTYPE_p_pcg_state_setseq_64 swig_types[278]
-#define SWIGTYPE_p_short swig_types[279]
-#define SWIGTYPE_p_size_t swig_types[280]
-#define SWIGTYPE_p_tinyobj_attrib_t swig_types[281]
-#define SWIGTYPE_p_tinyobj_material_t swig_types[282]
-#define SWIGTYPE_p_tinyobj_shape_t swig_types[283]
-#define SWIGTYPE_p_tinyobj_vertex_index_t swig_types[284]
-#define SWIGTYPE_p_uint32_t swig_types[285]
-#define SWIGTYPE_p_uint64_t swig_types[286]
-#define SWIGTYPE_p_unsigned_char swig_types[287]
-#define SWIGTYPE_p_unsigned_int swig_types[288]
-#define SWIGTYPE_p_unsigned_long swig_types[289]
-#define SWIGTYPE_p_unsigned_short swig_types[290]
-#define SWIGTYPE_p_void swig_types[291]
-#define SWIGTYPE_p_zhash_t swig_types[292]
-static swig_type_info *swig_types[294];
-static swig_module_info swig_module = {swig_types, 293, 0, 0, 0, 0};
+#define SWIGTYPE_p_lua_State swig_types[265]
+#define SWIGTYPE_p_mbedtls_aes_context swig_types[266]
+#define SWIGTYPE_p_mbedtls_aes_xts_context swig_types[267]
+#define SWIGTYPE_p_p__LWDELTATIME swig_types[268]
+#define SWIGTYPE_p_p__LWPS swig_types[269]
+#define SWIGTYPE_p_p__LWPUCKGAME swig_types[270]
+#define SWIGTYPE_p_p__LWSKILL swig_types[271]
+#define SWIGTYPE_p_p__LWTTL swig_types[272]
+#define SWIGTYPE_p_p__kvmsg swig_types[273]
+#define SWIGTYPE_p_p_char swig_types[274]
+#define SWIGTYPE_p_p_tinyobj_material_t swig_types[275]
+#define SWIGTYPE_p_p_tinyobj_shape_t swig_types[276]
+#define SWIGTYPE_p_p_unsigned_char swig_types[277]
+#define SWIGTYPE_p_p_void swig_types[278]
+#define SWIGTYPE_p_pcg_state_setseq_64 swig_types[279]
+#define SWIGTYPE_p_short swig_types[280]
+#define SWIGTYPE_p_size_t swig_types[281]
+#define SWIGTYPE_p_tinyobj_attrib_t swig_types[282]
+#define SWIGTYPE_p_tinyobj_material_t swig_types[283]
+#define SWIGTYPE_p_tinyobj_shape_t swig_types[284]
+#define SWIGTYPE_p_tinyobj_vertex_index_t swig_types[285]
+#define SWIGTYPE_p_uint32_t swig_types[286]
+#define SWIGTYPE_p_uint64_t swig_types[287]
+#define SWIGTYPE_p_unsigned_char swig_types[288]
+#define SWIGTYPE_p_unsigned_int swig_types[289]
+#define SWIGTYPE_p_unsigned_long swig_types[290]
+#define SWIGTYPE_p_unsigned_short swig_types[291]
+#define SWIGTYPE_p_void swig_types[292]
+#define SWIGTYPE_p_zhash_t swig_types[293]
+static swig_type_info *swig_types[295];
+static swig_module_info swig_module = {swig_types, 294, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -3622,7 +3623,12 @@ static int _wrap_srp_user_new(lua_State* L) {
   arg6 = (char *)lua_tostring(L, 5);
   arg7 = (char *)lua_tostring(L, 6);
   result = (struct SRPUser *)srp_user_new(arg1,arg2,(char const *)arg3,(unsigned char const *)arg4,arg5,(char const *)arg6,(char const *)arg7);
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_SRPUser,1); SWIG_arg++; 
+  
+  // should have metatable so have custom __gc function
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_SRPUser,1); SWIG_arg++;
+  luaL_getmetatable(L, "SRPUser");
+  lua_setmetatable(L, -2);
+  
   SWIG_FREE_ARRAY(arg4);
   return SWIG_arg;
   
@@ -3681,7 +3687,12 @@ static int _wrap_srp_verifier_new(lua_State* L) {
   arg12 = (char *)lua_tostring(L, 7);
   arg13 = (char *)lua_tostring(L, 8);
   result = (struct SRPVerifier *)srp_verifier_new(arg1,arg2,(char const *)arg3,(unsigned char const *)arg4,arg5,(unsigned char const *)arg6,arg7,(unsigned char const *)arg8,arg9,(unsigned char const **)arg10,arg11,(char const *)arg12,(char const *)arg13);
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_SRPVerifier,1); SWIG_arg++; 
+  
+  // should have metatable so have custom __gc function
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_SRPVerifier,1); SWIG_arg++;
+  luaL_getmetatable(L, "SRPVerifier");
+  lua_setmetatable(L, -2);
+  
   SWIG_write_uchar_num_array(L,*arg10,*arg11); SWIG_arg++;
   /*should not call free(*arg10) -- it is owned by arg1! */ 
   SWIG_FREE_ARRAY(arg4);
@@ -18630,7 +18641,7 @@ static int _wrap_tex_font_atlas_filename_set(lua_State* L) {
   char **arg1 ;
   
   SWIG_check_num_args("tex_font_atlas_filename",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("tex_font_atlas_filename",1,"char const *[9]");
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("tex_font_atlas_filename",1,"char const *[2]");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_p_char,0))){
     SWIG_fail_ptr("tex_font_atlas_filename_set",1,SWIGTYPE_p_p_char);
@@ -18639,7 +18650,7 @@ static int _wrap_tex_font_atlas_filename_set(lua_State* L) {
   {
     size_t ii;
     char const * *b = (char const * *) tex_font_atlas_filename;
-    for (ii = 0; ii < (size_t)9; ii++) b[ii] = *((char const * *) arg1 + ii);
+    for (ii = 0; ii < (size_t)2; ii++) b[ii] = *((char const * *) arg1 + ii);
   }
   
   return SWIG_arg;
@@ -112736,6 +112747,42 @@ fail:
 }
 
 
+static int _wrap_srpwrap_user_delete(lua_State* L) {
+  int SWIG_arg = 0;
+  lua_State *arg1 = (lua_State *) 0 ;
+  
+  arg1 = L;
+  SWIG_check_num_args("srpwrap_user_delete",0,0)
+  srpwrap_user_delete(arg1);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_srpwrap_verifier_delete(lua_State* L) {
+  int SWIG_arg = 0;
+  lua_State *arg1 = (lua_State *) 0 ;
+  
+  arg1 = L;
+  SWIG_check_num_args("srpwrap_verifier_delete",0,0)
+  srpwrap_verifier_delete(arg1);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_default_uv_offset_get(lua_State* L) {
   int SWIG_arg = 0;
   float *result = 0 ;
@@ -113296,6 +113343,16 @@ fail:
 }
 
 
+
+SWIGINTERN int  SWIG_Lua_class_is_own(lua_State *L)
+{
+  swig_lua_userdata *usr;
+  assert(lua_isuserdata(L,-1));  /* just in case */
+  usr=(swig_lua_userdata*)lua_touserdata(L,-1);  /* get it */
+  
+  return usr->own;
+}
+
 static swig_lua_attribute swig_SwigModule_attributes[] = {
     { "action_filename", _wrap_action_filename_get, _wrap_action_filename_set },
     { "tex_atlas_filename", _wrap_tex_atlas_filename_get, SWIG_Lua_set_immutable },
@@ -113536,6 +113593,10 @@ static swig_lua_const_info swig_SwigModule_constants[]= {
     {SWIG_LUA_CONSTTAB_INT("LAE_TTL_MARK", LAE_TTL_MARK)},
     {SWIG_LUA_CONSTTAB_INT("LAE_TTL_PORT_ALPHA", LAE_TTL_PORT_ALPHA)},
     {SWIG_LUA_CONSTTAB_INT("LAE_TTL_PORT", LAE_TTL_PORT)},
+    {SWIG_LUA_CONSTTAB_INT("LAE_TTL_SHIPYARD_ALPHA", LAE_TTL_SHIPYARD_ALPHA)},
+    {SWIG_LUA_CONSTTAB_INT("LAE_TTL_SHIPYARD", LAE_TTL_SHIPYARD)},
+    {SWIG_LUA_CONSTTAB_INT("LAE_TTL_TERMINAL_ALPHA", LAE_TTL_TERMINAL_ALPHA)},
+    {SWIG_LUA_CONSTTAB_INT("LAE_TTL_TERMINAL", LAE_TTL_TERMINAL)},
     {SWIG_LUA_CONSTTAB_INT("LAE_COUNT", LAE_COUNT)},
     {SWIG_LUA_CONSTTAB_INT("LAS_COMMAND_SELECTED_BG", LAS_COMMAND_SELECTED_BG)},
     {SWIG_LUA_CONSTTAB_INT("LAS_HANNIBAL_FAT", LAS_HANNIBAL_FAT)},
@@ -114966,6 +115027,8 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "load_pkm_hw_decoding", _wrap_load_pkm_hw_decoding},
     { "write_user_data_file_string", _wrap_write_user_data_file_string},
     { "read_user_data_file_string", _wrap_read_user_data_file_string},
+    { "srpwrap_user_delete", _wrap_srpwrap_user_delete},
+    { "srpwrap_verifier_delete", _wrap_srpwrap_verifier_delete},
     { "new_int", _wrap_new_int},
     { "delete_int", _wrap_delete_int},
     { "int_getitem", _wrap_int_getitem},
@@ -115439,6 +115502,7 @@ static swig_type_info _swigt__p_f_p_struct__LWTCP_p_q_const__char__void = {"_p_f
 static swig_type_info _swigt__p_float = {"_p_float", "float *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_int = {"_p_int", "int *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_int64_t = {"_p_int64_t", "int64_t *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_lua_State = {"_p_lua_State", "struct lua_State *|lua_State *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_mbedtls_aes_context = {"_p_mbedtls_aes_context", "mbedtls_aes_context *", 0, 0, (void*)&_wrap_class_mbedtls_aes_context, 0};
 static swig_type_info _swigt__p_mbedtls_aes_xts_context = {"_p_mbedtls_aes_xts_context", "mbedtls_aes_xts_context *", 0, 0, (void*)&_wrap_class_mbedtls_aes_xts_context, 0};
 static swig_type_info _swigt__p_p__LWDELTATIME = {"_p_p__LWDELTATIME", "struct _LWDELTATIME **|LWDELTATIME **", 0, 0, (void*)0, 0};
@@ -115734,6 +115798,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_float,
   &_swigt__p_int,
   &_swigt__p_int64_t,
+  &_swigt__p_lua_State,
   &_swigt__p_mbedtls_aes_context,
   &_swigt__p_mbedtls_aes_xts_context,
   &_swigt__p_p__LWDELTATIME,
@@ -116029,6 +116094,7 @@ static swig_cast_info _swigc__p_f_p_struct__LWTCP_p_q_const__char__void[] = {  {
 static swig_cast_info _swigc__p_float[] = {  {&_swigt__p_float, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_int[] = {  {&_swigt__p_int, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_int64_t[] = {  {&_swigt__p_int64_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_lua_State[] = {  {&_swigt__p_lua_State, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_mbedtls_aes_context[] = {  {&_swigt__p_mbedtls_aes_context, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_mbedtls_aes_xts_context[] = {  {&_swigt__p_mbedtls_aes_xts_context, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p__LWDELTATIME[] = {  {&_swigt__p_p__LWDELTATIME, 0, 0, 0},{0, 0, 0, 0}};
@@ -116324,6 +116390,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_float,
   _swigc__p_int,
   _swigc__p_int64_t,
+  _swigc__p_lua_State,
   _swigc__p_mbedtls_aes_context,
   _swigc__p_mbedtls_aes_xts_context,
   _swigc__p_p__LWDELTATIME,

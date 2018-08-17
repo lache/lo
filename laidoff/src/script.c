@@ -11,6 +11,7 @@
 #include <assert.h>
 #include "zmq.h"
 #include "logic.h"
+#include "srp.h"
 
 #define LW_SCRIPT_PREFIX_PATH ASSETS_BASE_PATH "l" PATH_SEPARATOR
 #define LW_MAX_CORO (32)
@@ -393,7 +394,21 @@ int l_load_module(lua_State* L) {
 }
 
 static int coro_gc(lua_State* L) {
-    puts("__gc called");
+    LOGI("coro_gc __gc called");
+    return 0;
+}
+
+static int SRPUser_gc(lua_State* L) {
+    LOGI("SRPUser_gc __gc called");
+    struct SRPUser* usr = luaL_checkudata(L, 1, "SRPUser");
+    srpwrap_user_delete(L);
+    return 0;
+}
+
+static int SRPVerifier_gc(lua_State* L) {
+    LOGI("SRPVerifier_gc __gc called");
+    struct SRPVerifier* ver = luaL_checkudata(L, 1, "SRPVerifier");
+    srpwrap_verifier_delete(L);
     return 0;
 }
 
@@ -448,7 +463,7 @@ void init_lua(LWCONTEXT* pLwc) {
         lua_getglobal(L, "_G");
         static const struct luaL_Reg printlib[] = {
             { "print", l_my_print },
-        { NULL, NULL } /* end of array */
+            { NULL, NULL } /* end of array */
         };
         // luaL_register(L, NULL, printlib); // for Lua versions < 5.2
         luaL_setfuncs(L, printlib, 0);  // for Lua versions 5.2 or greater
@@ -501,13 +516,27 @@ void init_lua(LWCONTEXT* pLwc) {
     lua_setglobal(L, "pLwc");
     // Load 'lo' library generated from swig
     luaopen_lo(L);
-    // Register coroutine(lua thread) gc callback
+    // Register coroutine(lua thread) gc callback (unused ???)
     struct luaL_Reg coro_metatable_funcs[] = {
         { "__gc", coro_gc },
         {NULL, NULL},
     };
     luaL_newmetatable(L, "coro_metatable");
     luaL_setfuncs(L, coro_metatable_funcs, 0);
+    // Register SRPUser(lua thread) gc callback
+    struct luaL_Reg SRPUser_metatable_funcs[] = {
+        { "__gc", SRPUser_gc },
+        { NULL, NULL },
+    };
+    luaL_newmetatable(L, "SRPUser");
+    luaL_setfuncs(L, SRPUser_metatable_funcs, 0);
+    // Register SRPVerifier(lua thread) gc callback
+    struct luaL_Reg SRPVerifier_metatable_funcs[] = {
+        { "__gc", SRPVerifier_gc },
+        { NULL, NULL },
+    };
+    luaL_newmetatable(L, "SRPVerifier");
+    luaL_setfuncs(L, SRPVerifier_metatable_funcs, 0);
     // Set pLwc context to shared static variable for acessing from scripts
     script_set_context(pLwc);
 

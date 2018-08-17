@@ -13,6 +13,7 @@ extern "C" {;
 
 typedef struct _LWCONTEXT LWCONTEXT;
 typedef struct GLFWwindow GLFWwindow;
+typedef struct lua_State lua_State;
 
 LWCONTEXT* lw_init_initial_size(int width, int height);
 LWCONTEXT* lw_init(void);
@@ -74,6 +75,9 @@ void write_user_data_file_string(const LWCONTEXT* pLwc, const char* filename, co
 void write_user_data_file_binary(const LWCONTEXT* pLwc, const char* filename, const unsigned char* dat, int dat_len);
 int read_user_data_file_string(const LWCONTEXT* pLwc, const char* filename, const char** str);
 int read_user_data_file_binary(const LWCONTEXT* pLwc, const char* filename, const unsigned char** dat, int* dat_len);
+
+void srpwrap_user_delete(lua_State* L);
+void srpwrap_verifier_delete(lua_State* L);
 
 extern const float default_uv_offset[2];
 extern const float default_uv_scale[2];

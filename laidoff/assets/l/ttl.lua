@@ -446,7 +446,6 @@ function start_account_auth()
 
     -- [2] Client: Create an account object for authentication
     print('previous auth_context.usr', auth_context.usr)
-    if auth_context.usr ~= nil then lo.srp_user_delete(auth_context.usr) end
     auth_context.usr = lo.srp_user_new(alg, ng_type, username, bytes_pw, n_hex, g_hex)
     local auth_username, bytes_A = lo.srp_user_start_authentication(auth_context.usr)
     local len_A = #bytes_A
@@ -564,8 +563,6 @@ function create_account_ex(force)
     local len_B = #bytes_B
     print('ver',ver,'B',bytes_B,'#B',len_B)
     if bytes_B == nil or len_B == 0 then
-        lo.srp_verifier_delete(ver)
-        lo.srp_user_delete(usr)
         error('Verifier SRP-6a safety check violated!')
         return
     end
@@ -582,8 +579,6 @@ function create_account_ex(force)
     local len_M = #bytes_M
     print('M',bytes_M,'#M',len_M)
     if bytes_M == nil or len_M == 0 then
-        lo.srp_verifier_delete(ver)
-        lo.srp_user_delete(usr)
         error('User SRP-6a safety check violation!')
     end
 
@@ -598,8 +593,6 @@ function create_account_ex(force)
     local bytes_HAMK = lo.srp_verifier_verify_session(ver, bytes_M)
     print(bytes_HAMK)
     if bytes_HAMK == nil or #bytes_HAMK == 0 then
-        lo.srp_verifier_delete(ver)
-        lo.srp_user_delete(usr)
         error('User authentication failed!')
     end
 
@@ -610,8 +603,6 @@ function create_account_ex(force)
     -- OUTPUT: is authed?
     lo.srp_user_verify_session(usr, bytes_HAMK)
     if lo.srp_user_is_authenticated(usr) ~= 1 then
-        lo.srp_verifier_delete(ver)
-        lo.srp_user_delete(usr)
         error('Server authentication failed!')
     end
 
@@ -628,9 +619,6 @@ function create_account_ex(force)
     add_custom_http_header('X-Account-S', hexstr_s)
     add_custom_http_header('X-Account-V', hexstr_v)
     lo.htmlui_execute_anchor_click(c.htmlui, '/createAccount')
-
-    lo.srp_verifier_delete(ver)
-    lo.srp_user_delete(usr)
 end
 
 function on_json_body(json_body)
@@ -707,6 +695,7 @@ function test_aes()
     hexstr_key = lo.srp_hexify(bytes_key)
     print('Session key (truncated):', hexstr_key)
     local aes_context = lo.mbedtls_aes_context()
+    lo.mbedtls_aes_init(aes_context)
     local keybits = 256 -- keybits max is 256. bytes_key may be longer then this...see comments on 'mbedtls_aes_setkey_enc()'
     if lo.mbedtls_aes_setkey_enc(aes_context, bytes_key) ~= 0 then
         lo.show_sys_msg(c.def_sys_msg, 'aes enc key set fail')
@@ -759,6 +748,7 @@ function test_aes()
     -- decryption
 
     local aes_dec_context = lo.mbedtls_aes_context()
+    lo.mbedtls_aes_init(aes_dec_context)
     if lo.mbedtls_aes_setkey_dec(aes_dec_context, bytes_key) ~= 0 then
         lo.show_sys_msg(c.def_sys_msg, 'aes dec key set fail')
         error('aes dec key set fail')

@@ -1855,3 +1855,37 @@ int read_user_data_file_binary(const LWCONTEXT* pLwc, const char* filename, cons
     *dat_len = (int)out_len;
     return ret_code;
 }
+
+void srpwrap_user_delete(lua_State* L) {
+    struct SRPUser *usr = (struct SRPUser *) 0;
+    if (!SWIG_isptrtype(L, 1)) {
+        LOGE("Not a swig pointer type!");
+        return;
+    }
+    if (!SWIG_IsOK(SWIG_ConvertPtr(L, 1, (void**)&usr, SWIGTYPE_p_SRPUser, 0))) {
+        LOGE("Not a SRPUser type!");
+        return;
+    }
+
+    if (SWIG_Lua_class_is_own(L)) {
+        SWIG_Lua_class_disown(L);
+        srp_user_delete(usr);
+    }
+}
+
+void srpwrap_verifier_delete(lua_State* L) {
+    struct SRPVerifier *ver = (struct SRPVerifier *) 0;
+    if (!SWIG_isptrtype(L, 1)) {
+        LOGE("Not a swig pointer type!");
+        return;
+    }
+    if (!SWIG_IsOK(SWIG_ConvertPtr(L, 1, (void**)&ver, SWIGTYPE_p_SRPVerifier, 0))) {
+        LOGE("Not a SRPVerifier type!");
+        return;
+    }
+
+    if (SWIG_Lua_class_is_own(L)) {
+        SWIG_Lua_class_disown(L);
+        srp_verifier_delete(ver);
+    }
+}

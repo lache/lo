@@ -293,6 +293,12 @@ void srp_create_salted_verification_key(SRP_HashAlgorithm alg,
 
 %newobject srp_user_new;
 %delobject srp_user_delete;
+%typemap(out) struct SRPUser * %{
+    // should have metatable so have custom __gc function
+    SWIG_NewPointerObj(L,$result,$descriptor,1); SWIG_arg++;
+    luaL_getmetatable(L, "SRPUser");
+    lua_setmetatable(L, -2);
+%}
 struct SRPUser * srp_user_new(SRP_HashAlgorithm alg, SRP_NGType ng_type, const char * username,
                               const unsigned char * password, int len_password,
                               const char * n_hex, const char * g_hex);
@@ -300,6 +306,12 @@ struct SRPUser * srp_user_new(SRP_HashAlgorithm alg, SRP_NGType ng_type, const c
 
 %newobject srp_verifier_new;
 %delobject srp_verifier_delete;
+%typemap(out) struct SRPVerifier * %{
+    // should have metatable so have custom __gc function
+    SWIG_NewPointerObj(L,$result,$descriptor,1); SWIG_arg++;
+    luaL_getmetatable(L, "SRPVerifier");
+    lua_setmetatable(L, -2);
+%}
 struct SRPVerifier * srp_verifier_new(SRP_HashAlgorithm alg, SRP_NGType ng_type, const char * username,
                                       const unsigned char * password, int len_password, // const unsigned char * bytes_s, int len_s,
                                       const unsigned char * password, int len_password, // const unsigned char * bytes_v, int len_v,
@@ -430,3 +442,15 @@ void srp_user_verify_session(struct SRPUser * usr,
 %array_functions(LWUNSIGNEDCHAR,LWUNSIGNEDCHAR)
 %array_functions(LWPUCKGAMEOBJECT,PUCKGAMEOBJECT)
 %array_functions(LWPUCKGAMETOWER,PUCKGAMETOWER)
+
+// supplementary SWIG functions supporting custom __gc function call
+%wrapper %{
+SWIGINTERN int  SWIG_Lua_class_is_own(lua_State *L)
+{
+  swig_lua_userdata *usr;
+  assert(lua_isuserdata(L,-1));  /* just in case */
+  usr=(swig_lua_userdata*)lua_touserdata(L,-1);  /* get it */
+  
+  return usr->own;
+}
+%}
