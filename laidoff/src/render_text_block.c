@@ -307,8 +307,10 @@ void render_query_text_block_alpha(const LWCONTEXT* pLwc, const LWTEXTBLOCK* tex
     if (!pLwc->pFnt) {
         return;
     }
-
-    int shader_index = LWST_PIXEL_FONT;
+    /* test7.fnt */
+    int shader_index = LWST_FONT;
+    /* neo.fnt */
+    //int shader_index = LWST_PIXEL_FONT;
     LW_VBO_TYPE lvt = LVT_DONTCARE;
     if (query_only == 0) {
         lazy_glUseProgram(pLwc, shader_index);

@@ -292,7 +292,9 @@ static void render_terminal_icon(const LWCONTEXT* pLwc,
                                  float w,
                                  float h,
                                  LW_ATLAS_ENUM lae,
-                                 LW_ATLAS_ENUM lae_alpha) {
+                                 LW_ATLAS_ENUM lae_alpha,
+                                 float xdiff,
+                                 int lvt) {
     mat4x4 proj_view;
     mat4x4_identity(proj_view);
     mat4x4_mul(proj_view,
@@ -305,7 +307,7 @@ static void render_terminal_icon(const LWCONTEXT* pLwc,
         1,
     };
     const vec4 obj_pos_2_vec4 = {
-        x + 1,
+        x + xdiff,
         y,
         z,
         1,
@@ -327,7 +329,7 @@ static void render_terminal_icon(const LWCONTEXT* pLwc,
                                                  cell_width_in_ui_space / view_scale,
                                                  pLwc->tex_atlas[lae],
                                                  pLwc->tex_atlas[lae_alpha],
-                                                 LVT_CENTER_BOTTOM_ANCHORED_SQUARE,
+                                                 lvt,
                                                  1.0f,
                                                  1.0f,
                                                  1.0f,
@@ -355,7 +357,9 @@ static void render_seaport_icon(const LWCONTEXT* pLwc,
                          w,
                          h,
                          LAE_TTL_PORT,
-                         LAE_TTL_PORT_ALPHA);
+                         LAE_TTL_PORT_ALPHA,
+                         1.0f,
+                         LVT_CENTER_BOTTOM_ANCHORED_SQUARE);
 }
 
 static void render_truck_terminal_icon(const LWCONTEXT* pLwc,
@@ -369,11 +373,13 @@ static void render_truck_terminal_icon(const LWCONTEXT* pLwc,
                          vp,
                          x,
                          y,
-                         z,
+                         z - 0.5f,
                          w,
                          h,
-                         LAE_TTL_CONTAINER_WHITE,
-                         LAE_TTL_CONTAINER_WHITE_ALPHA);
+                         LAE_TTL_TERMINAL,
+                         LAE_TTL_TERMINAL_ALPHA,
+                         2.0f,
+                         LVT_CENTER_BOTTOM_ANCHORED_SQUARE);
 }
 
 static void render_city_icon(const LWCONTEXT* pLwc,
@@ -500,13 +506,13 @@ static void render_shipyard_icon(const LWCONTEXT* pLwc,
     const vec4 obj_pos_vec4 = {
         x,
         y,
-        z,
+        z + 0.3f,
         1,
     };
     const vec4 obj_pos_2_vec4 = {
-        x + 1,
+        x + 2,
         y,
-        z,
+        z + 0.3f,
         1,
     };
     vec2 ui_point;
@@ -516,16 +522,18 @@ static void render_shipyard_icon(const LWCONTEXT* pLwc,
     const float cell_width_in_ui_space = ui_point_2[0] - ui_point[0];
     mat4x4 identity_view;
     mat4x4_identity(identity_view);
-    lazy_tex_atlas_glBindTexture(pLwc, LAE_TTL_CONTAINER_WHITE);
-    lazy_tex_atlas_glBindTexture(pLwc, LAE_TTL_CONTAINER_WHITE_ALPHA);
+    int lae_shipyard = LAE_TTL_SHIPYARD;
+    int lae_shipyard_alpha = LAE_TTL_SHIPYARD_ALPHA;
+    lazy_tex_atlas_glBindTexture(pLwc, lae_shipyard);
+    lazy_tex_atlas_glBindTexture(pLwc, lae_shipyard_alpha);
     const int view_scale = lwttl_viewport_view_scale(vp);
     render_solid_vb_ui_alpha_uv_shader_view_proj(pLwc,
                                                  ui_point[0],
                                                  ui_point[1],
                                                  cell_width_in_ui_space / view_scale, //w * 0.075f,
                                                  cell_width_in_ui_space / view_scale, //h * 0.075f,
-                                                 pLwc->tex_atlas[LAE_TTL_CONTAINER_WHITE],
-                                                 pLwc->tex_atlas[LAE_TTL_CONTAINER_WHITE_ALPHA],
+                                                 pLwc->tex_atlas[lae_shipyard],
+                                                 pLwc->tex_atlas[lae_shipyard_alpha],
                                                  LVT_CENTER_CENTER_ANCHORED_SQUARE,
                                                  1.0f,
                                                  1.0f,

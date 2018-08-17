@@ -181,6 +181,10 @@ typedef enum _LW_ATLAS_ENUM {
     LAE_TTL_MARK,
     LAE_TTL_PORT_ALPHA,
     LAE_TTL_PORT,
+    LAE_TTL_SHIPYARD_ALPHA,
+    LAE_TTL_SHIPYARD,
+    LAE_TTL_TERMINAL_ALPHA,
+    LAE_TTL_TERMINAL,
     
     LAE_COUNT
 } LW_ATLAS_ENUM;
@@ -366,6 +370,10 @@ static const char *tex_atlas_filename[] = {
     ASSETS_BASE_PATH "ktx" PATH_SEPARATOR "ttl-mark-a.ktx",
     ASSETS_BASE_PATH "ktx" PATH_SEPARATOR "ttl-port-a_alpha.ktx",
     ASSETS_BASE_PATH "ktx" PATH_SEPARATOR "ttl-port-a.ktx",
+    ASSETS_BASE_PATH "ktx" PATH_SEPARATOR "ttl-shipyard-a_alpha.ktx",
+    ASSETS_BASE_PATH "ktx" PATH_SEPARATOR "ttl-shipyard-a.ktx",
+    ASSETS_BASE_PATH "ktx" PATH_SEPARATOR "ttl-terminal-a_alpha.ktx",
+    ASSETS_BASE_PATH "ktx" PATH_SEPARATOR "ttl-terminal-a.ktx",
 };
 
 #define MAX_TEX_ATLAS LAE_COUNT
