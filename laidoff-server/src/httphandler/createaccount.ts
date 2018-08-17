@@ -1,10 +1,10 @@
 import { Application } from 'express';
 import * as db from '../db';
-import { numbers } from '../utils';
 
+// noinspection JSUnusedGlobalSymbols
 export default (app: Application) => {
   app.get('/createAccount', (req, res) => {
-    const [accountId] = numbers(req, 'X-Account-Id');
+    const accountId = req.get('X-Account-Id')!;
     const s = req.get('X-Account-S');
     const v = req.get('X-Account-V');
     console.log('X-Account-Id');

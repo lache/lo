@@ -19,6 +19,7 @@ export const loadSheet = (fileName: string, sheetName: string) => {
   const data: DataTemplateStore = {};
   const dataHeaders: string[] = [];
   const dataKeys: string[] = [];
+  let dataRow: DataTemplate = {};
   for (let R = totalRange.s.r; R <= totalRange.e.r; ++R) {
     for (let C = totalRange.s.c; C <= totalRange.e.c; ++C) {
       const cellAddress = { c: C, r: R };
@@ -30,9 +31,11 @@ export const loadSheet = (fileName: string, sheetName: string) => {
           dataHeaders.push(v);
         } else {
           if (C === 0) {
+            data[v] = {};
+            dataRow = data[v];
             dataKeys.push(v);
           }
-          data[v][dataHeaders[C]] = v;
+          dataRow[dataHeaders[C]] = v;
         }
       }
     }

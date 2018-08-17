@@ -1,13 +1,13 @@
 import { Application } from 'express';
 import * as url from 'url';
 import * as db from '../db';
-import { numbers } from '../utils';
 
 const srp = require('../../build/Debug/module'); // tslint:disable-line
 
+// noinspection JSUnusedGlobalSymbols
 export default (app: Application) => {
   app.get('/startAuth2', (req, res) => {
-    const [accountId] = numbers(req, 'X-Account-Id');
+    const accountId = req.get('X-Account-Id')!;
     const m = req.get('X-Account-M');
     const resultMsg = '';
     let errMsg = '';

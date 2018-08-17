@@ -27,18 +27,16 @@ app.set('verifierMap', {});
 
 // register all HTTP handlers
 // It should be executed after tsc.
-glob(path.join(__dirname, 'httphandler', '*.js'), (err, files) => {
-  if (!err) {
-    for (const file of files) {
-      const requireModuleName = file
-        .replace(/^\.\/src\//, './')
-        .replace(/\.js$/, '');
-      require(requireModuleName)(app);
-    }
-  } else {
-    console.error(err);
-  }
-});
+const dirname = __dirname.replace(/\\/gi, '/');
+const files = glob.sync(path.join(__dirname, 'httphandler', '*.js'));
+for (const file of files) {
+  const requireModuleName = file
+    .replace(/\\/gi, '/')
+    .replace(dirname, '.')
+    .replace(/\.js$/, '');
+  const r = require(requireModuleName);
+  r.default(app);
+}
 
 seaUdpClient.on('message', async (buf, remote) => {
   if (buf[0] === 1) {

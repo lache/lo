@@ -207,7 +207,7 @@ export const findCaptain = (captainId: number): Captain =>
 export const deleteCaptain = (captainId: number) =>
   queryCaptain.deleteCaptain.run(captainId);
 
-export const createAccount = (accountId: number, s: string, v: string) => {
+export const createAccount = (accountId: string, s: string, v: string) => {
   try {
     const account = queryAccount.insertAccount.run(accountId, s, v);
     return lastId(account);
@@ -219,5 +219,5 @@ export const createAccount = (accountId: number, s: string, v: string) => {
     return null;
   }
 };
-export const findAccount = (accountId: number): Account =>
+export const findAccount = (accountId: string): Account =>
   queryAccount.findAccount.get(accountId);

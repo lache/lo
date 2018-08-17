@@ -5,6 +5,7 @@ import shipData from '../data/ship';
 import * as db from '../db';
 import * as dbUser from '../dbuser';
 
+// noinspection JSUnusedGlobalSymbols
 export default (app: Application) => {
   app.get('/openShipyard', (req, res) => {
     const u = dbUser.findOrCreateUser(
