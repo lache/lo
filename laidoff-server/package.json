@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "src/index.js",
   "scripts": {
-    "start": "npm run build && npm run run",
+    "start": "npm run gyp && npm run build && npm run run",
     "run": "node .build/index.js",
     "init": "node .build/index.js --init",
     "build": "tsc --project tsconfig.json",
