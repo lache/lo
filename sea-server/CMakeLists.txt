@@ -109,7 +109,7 @@ set(ServerSources
 )
 
 add_msvc_precompiled_header("precompiled.hpp" "precompiled.cpp" ServerSources)
-add_executable(sea-server ${ServerSources} AStar.c AStar.h CohenSutherland.c CohenSutherland.h)
+add_executable(sea-server ${ServerSources} AStar.c AStar.h CohenSutherland.c CohenSutherland.h jsmn.c jsmn.h)
 
 target_link_libraries(sea-server LINK_PUBLIC ${Boost_LIBRARIES} lz4_static ${CMAKE_THREAD_LIBS_INIT} mbedtls)
 

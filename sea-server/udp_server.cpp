@@ -11,6 +11,8 @@
 #include "endpoint_aoi_object.hpp"
 #include "salvage.hpp"
 #include "shipyard.hpp"
+#include "mbedtls/aes.h"
+#include "jsmn.h"
 using namespace ss;
 
 const auto update_interval = boost::posix_time::milliseconds(75);
@@ -601,6 +603,41 @@ void udp_server::send_seaarea(float lng, float lat) {
     }
 }
 
+// Based on https://stackoverflow.com/a/23898449/266720
+static void srp_unhexify(const char * str, unsigned char ** b, int * len_b) {
+    int  pos;
+    int  idx0;
+    int  idx1;
+
+    // mapping of ASCII characters to hex values
+    const uint8_t hashmap[] =
+    {
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, // 01234567
+        0x08, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // 89:;<=>?
+        0x00, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x00, // @ABCDEFG
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // HIJKLMNO
+    };
+
+    int slen = static_cast<int>(strlen(str));
+    int blen = slen / 2;
+    unsigned char* bb = (unsigned char*)malloc(blen);
+    for (pos = 0; ((pos < (blen * 2)) && (pos < slen)); pos += 2) {
+        idx0 = ((uint8_t)str[pos + 0] & 0x1F) ^ 0x10;
+        idx1 = ((uint8_t)str[pos + 1] & 0x1F) ^ 0x10;
+        bb[pos / 2] = (uint8_t)(hashmap[idx0] << 4) | hashmap[idx1];
+    };
+    *b = bb;
+    *len_b = blen;
+}
+
+static int jsoneq(const char *json, jsmntok_t *tok, const char *s) {
+    if (tok->type == JSMN_STRING && (int)strlen(s) == tok->end - tok->start &&
+        strncmp(json + tok->start, s, tok->end - tok->start) == 0) {
+        return 0;
+    }
+    return -1;
+}
+
 void udp_server::handle_receive(const boost::system::error_code& error, std::size_t bytes_transferred) {
     if (!error || error == boost::asio::error::message_size) {
         unsigned char type = *reinterpret_cast<unsigned char*>(recv_buffer_.data() + 0x00); // type
@@ -776,7 +813,70 @@ void udp_server::handle_receive(const boost::system::error_code& error, std::siz
                 LOGEP("Invalid message parameter p->to=%||", p);
             }
         } else if (type == LPGP_LWPTTLJSON) {
-            LOGI("JSON received.");
+            LOGI("JSON received (%zu bytes).", bytes_transferred);
+            // cipher JSON payload
+            unsigned char* bytes_iv = reinterpret_cast<unsigned char*>(recv_buffer_.data() + 0x04);
+            unsigned char* bytes_ciphertext = reinterpret_cast<unsigned char*>(recv_buffer_.data() + 0x04 + 0x10);
+            unsigned char* bytes_key;
+            int len_key;
+            srp_unhexify("5d5d4860656bb06f027ff06250424ee59a53ca2750ed8e88369d820c94da9220", &bytes_key, &len_key);
+            std::vector<unsigned char> bytes_plaintext(bytes_transferred - 0x04 - 0x10);
+            mbedtls_aes_context aes_context;
+            mbedtls_aes_init(&aes_context);
+            mbedtls_aes_setkey_dec(&aes_context, bytes_key, len_key * 8);
+            if (mbedtls_aes_crypt_cbc(&aes_context,
+                                      MBEDTLS_AES_DECRYPT,
+                                      bytes_transferred - 0x04 - 0x10,
+                                      bytes_iv,
+                                      bytes_ciphertext,
+                                      bytes_plaintext.data())) {
+                LOGE("mbedtls_aes_crypt_cbc failed.");
+            }
+            mbedtls_aes_free(&aes_context);
+            size_t sentinel_index = 0;
+            for (size_t i = bytes_plaintext.size() - 1; i >= 0; i--) {
+                if (bytes_plaintext[i] == 0x80) {
+                    sentinel_index = i;
+                    break;
+                }
+            }
+            if (sentinel_index == 0) {
+                LOGE("Sentinel at zero index");
+            } else {
+                bytes_plaintext.resize(sentinel_index);
+            }
+            jsmn_parser json_parser;
+            jsmn_init(&json_parser);
+            const int LW_MAX_JSON_TOKEN = 1024;
+            std::vector<jsmntok_t> json_token(LW_MAX_JSON_TOKEN);
+            const char* json_str = reinterpret_cast<const char*>(bytes_plaintext.data());
+            int token_count = jsmn_parse(&json_parser,
+                                         json_str,
+                                         bytes_plaintext.size(),
+                                         json_token.data(),
+                                         LW_MAX_JSON_TOKEN);
+            if (token_count == JSMN_ERROR_NOMEM) {
+                LOGE("JSON parser NOMEM error...");
+            } else if (token_count == JSMN_ERROR_INVAL) {
+                LOGE("JSON parser INVALID CHARACTER error... : check for '\\c' kind of thing in json file");
+            } else if (token_count == JSMN_ERROR_PART) {
+                LOGE("JSON parser NOT COMPLETE error...");
+            } else {
+                if (token_count < 1 || json_token[0].type != JSMN_OBJECT) {
+                    LOGE("JSON data broken...");
+                } else {
+                    for (int i = 1; i < token_count; i++) {
+                        if (jsoneq(json_str,
+                                   &json_token[i], "c") == 0) {
+                            // LOGI(boost::format) does not support %.*s?
+                            printf("JSON c: %.*s",
+                                   json_token[i + 1].end - json_token[i + 1].start,
+                                   json_str + json_token[i + 1].start);
+                        }
+                    }
+                }
+            }
+            free(bytes_key);
         } else {
             LOGIP("Unknown UDP request of type %1%", static_cast<int>(type));
         }

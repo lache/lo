@@ -1,6 +1,7 @@
 local inspect = require('inspect')
 local neturl = require('neturl')
 local json = require('json')
+require('tablecopy')
 
 local c = lo.script_context()
 lo.htmlui_set_online(c.htmlui, 0)
@@ -799,7 +800,7 @@ local function test_encrypt_decrypt(bytes_key, bytes_plaintext)
     local hexstr_dec_plaintext = lo.srp_hexify(bytes_dec_plaintext)
     print('dec plaintext', hexstr_dec_plaintext)
 
-    return bytes_ciphertext, bytes_dec_plaintext
+    return bytes_iv, bytes_ciphertext, bytes_dec_plaintext
 end
 
 function utf8_from(t)
@@ -830,27 +831,27 @@ function test_aes()
     --local bytes_plaintext = {0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a}
     --local bytes_plaintext = {0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0b,0x0c,0x0d,0x0e,0x0f,0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0b,0x0c,0x0d,0x0e,0x0f}
     
-    local json_plaintext = json.stringify({hello=10,world=20,dict={1,2,3},str='hello my friend',kor=[==[한국루아의 표준 함수 나 제공된 문자열 기능은 utf-8을 인식하지 못한다.]==]})
+    local json_plaintext = json.stringify({c=1985,hello=10,world=20,dict={1,2,3},str='hello my friend',kor=[==[한국루아의 표준 함수 나 제공된 문자열 기능은 utf-8을 인식하지 못한다.]==]})
     print('json_plaintext', json_plaintext)
     local bytes_plaintext = { string.byte(json_plaintext, 1, -1) }
     local hexstr_plaintext = lo.srp_hexify(bytes_plaintext)
     print('hexstr_plaintext',hexstr_plaintext)
     add_padding_bytes_inplace(bytes_plaintext)
     
-    local bytes_ciphertext, bytes_dec_plaintext = test_encrypt_decrypt(bytes_key, bytes_plaintext)
+    local bytes_iv, bytes_ciphertext, bytes_dec_plaintext = test_encrypt_decrypt(bytes_key, bytes_plaintext)
     
     remove_padding_bytes_inplace(bytes_dec_plaintext)
     local hexstr_dec_plaintext = lo.srp_hexify(bytes_dec_plaintext)
     print('hexstr_dec_plaintext',hexstr_dec_plaintext)
     local json_dec_plaintext = utf8_from(bytes_dec_plaintext)
     print('json_dec_plaintext', json_dec_plaintext)
-    
+    local hexstr_iv = lo.srp_hexify(bytes_iv)
+    print('iv', hexstr_iv)
     lo.show_sys_msg(c.def_sys_msg,
                     'plaintext:' .. json_plaintext .. '\n'
                     ..'plaintext:' .. json_dec_plaintext)
-                    
-    local JSON_HEADER_BYTE = 0x89
-    lo.udp_send(lo.lwttl_sea_udp(c.ttl), {JSON_HEADER_BYTE, table.unpack(bytes_ciphertext)})
+    local msg = table.copy({lo.LPGP_LWPTTLJSON, 0, 0, 0}, bytes_iv, bytes_ciphertext)
+    lo.udp_send(lo.lwttl_sea_udp(c.ttl), msg)
 end
 
 function on_chat(line)
