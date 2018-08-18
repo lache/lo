@@ -83,7 +83,7 @@ export const purchaseNewShipyard = async (req: Request, res: Response) => {
   let resultMsg = '';
   let errMsg = '';
   const r0 = await execCreateShipyard(req.app.get('seaUdpClient'), u, xc0, yc0);
-  if (r0.shipyardId && r0.shipyardId > 0 && r0.err === null) {
+  if (r0.shipyardId && r0.shipyardId > 0 && !r0.err) {
     resultMsg = '새 조선소 건설 완료';
   } else {
     errMsg = '새 조선소 건설 실패';

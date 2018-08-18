@@ -1,7 +1,7 @@
 import * as raname from 'random-name';
 import * as queryAccount from './query/account';
 import * as queryCaptain from './query/captain';
-import { iterable, lastId } from './query/db';
+import { lastId } from './query/db';
 import {
   Account,
   Captain,
@@ -85,7 +85,7 @@ export const findShipShiproute = (shipId: number): ShipShiproute =>
 
 export const listShipShiproute = (onRow: (each: ShipShiproute) => void) => {
   // noinspection JSUnresolvedFunction
-  for (const row of iterable(queryShip.listShipShiproute)) {
+  for (const row of queryShip.listShipShiproute.all()) {
     onRow(row);
   }
 };
@@ -98,7 +98,7 @@ export const listShipShiprouteToArray = () => {
 };
 export const listPort = async (onRow: (each: Seaport) => void) => {
   // noinspection JSUnresolvedFunction
-  for (const row of iterable(querySeaport.listPort)) {
+  for (const row of querySeaport.listPort.all()) {
     await onRow(row);
   }
 };
@@ -111,7 +111,7 @@ export const listPortToArray = async () => {
 };
 export const listShipyard = async (onRow: (each: Shipyard) => void) => {
   // noinspection JSUnresolvedFunction
-  for (const row of iterable(queryShipyard.listShipyard)) {
+  for (const row of queryShipyard.listShipyard.all()) {
     await onRow(row);
   }
 };
@@ -127,7 +127,7 @@ export const listShipDockedAtShipyard = (
   onRow: (each: ShipDockedAtShipyard) => void,
 ) => {
   // noinspection JSUnresolvedFunction
-  for (const row of iterable(queryShip.listShipDockedAtShipyard, shipyardId)) {
+  for (const row of queryShip.listShipDockedAtShipyard.all(shipyardId)) {
     onRow(row);
   }
 };

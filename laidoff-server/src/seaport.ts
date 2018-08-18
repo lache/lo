@@ -101,7 +101,7 @@ export const purchaseNewPort = async (
     +yc0,
     expectLand,
   );
-  if (r0.seaportId && r0.seaportId > 0 && r0.err === null) {
+  if (r0.seaportId && r0.seaportId > 0 && !r0.err) {
     resultMsg = '새 항구 건설 완료';
   } else {
     errMsg = '새 항구 건설 실패';
