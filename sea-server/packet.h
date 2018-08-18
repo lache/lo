@@ -39,6 +39,7 @@ typedef enum _LW_PUCK_GAME_PACKET {
     LPGP_LWPTTLCHAT = 129, // server <-> client
     LPGP_LWPTTLTRANSFORMSINGLECELL = 130, // client -> server
     LPGP_LWPTTLSHIPYARDSTATE = 136, // server -> client
+    LPGP_LWPTTLJSON = 137, // client -> server
     LPGP_LWPQUEUE2 = 200,
     LPGP_LWPMAYBEMATCHED = 201,
     LPGP_LWPMATCHED2 = 202,

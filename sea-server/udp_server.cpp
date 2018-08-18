@@ -775,6 +775,8 @@ void udp_server::handle_receive(const boost::system::error_code& error, std::siz
             } else {
                 LOGEP("Invalid message parameter p->to=%||", p);
             }
+        } else if (type == LPGP_LWPTTLJSON) {
+            LOGI("JSON received.");
         } else {
             LOGIP("Unknown UDP request of type %1%", static_cast<int>(type));
         }

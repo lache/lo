@@ -120,6 +120,7 @@
 #include "test_srp.h"
 #include "../mbedtls/include/mbedtls/mbedtls-config.h"
 #include "../mbedtls/include/mbedtls/aes.h"
+#include "lwudp.h"
 #ifdef WIN32
 #pragma warning(pop)
 #endif
@@ -335,6 +336,16 @@ void srp_verifier_verify_session(struct SRPVerifier * ver,
 void srp_user_verify_session(struct SRPUser * usr,
                              const unsigned char * user_M//const unsigned char * bytes_HAMK
                              );
+
+%typemap(in) (const char* data, int size)
+%{  int $1_dim;
+    $1 = ($ltype)SWIG_get_schar_num_array_var(L,$input,&$1_dim);
+	if (!$1) SWIG_fail;
+    $2 = $1_dim;%}
+%typemap(freearg) (const char* data, int size)
+%{	SWIG_FREE_ARRAY($1);%}
+void udp_send(LWUDP* udp, const char* data, int size);
+
 %include "../glfw/deps/linmath.h"
 %include "lwmacro.h"
 %include "constants.h"
@@ -434,6 +445,7 @@ void srp_user_verify_session(struct SRPUser * usr,
 %include "../mbedtls/include/mbedtls/aes.h"
 %include "srp.h"
 %include "laidoff.h"
+%include "lwudp.h"
 
 // using the C-array
 %include <carrays.i>

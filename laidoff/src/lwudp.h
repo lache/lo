@@ -59,7 +59,6 @@ void udp_update_addr(LWUDP* udp, unsigned long ip, unsigned short port);
 void destroy_udp(LWUDP** udp);
 void udp_send(LWUDP* udp, const char* data, int size);
 void udp_update(LWCONTEXT* pLwc, LWUDP* udp);
-void udp_sea_update(LWCONTEXT* pLwc, LWUDP* udp);
 const char* lw_udp_addr(const LWCONTEXT* pLwc);
 unsigned long lw_udp_addr_resolved(const LWCONTEXT* pLwc);
 int lw_udp_port(const LWCONTEXT* pLwc);

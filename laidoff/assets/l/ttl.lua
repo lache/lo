@@ -703,19 +703,32 @@ function on_json_body(json_body)
     end
 end
 
-function test_aes()
-    if auth_context.usr == nil or lo.srp_user_is_authenticated(auth_context.usr) ~= 1 then
-        lo.show_sys_msg(c.def_sys_msg, 'Invalid auth.')
-        error('Invalid auth.')
+local CIPHER_BLOCK_PADDING_SENTINEL = 0x80
+local CIPHER_BLOCK_BYTES = 16
+
+function add_padding_bytes_inplace(bytes_plaintext)
+    --print('before add padding length',#bytes_plaintext)
+    table.insert(bytes_plaintext, CIPHER_BLOCK_PADDING_SENTINEL)
+    local remainder = #bytes_plaintext % CIPHER_BLOCK_BYTES
+    if remainder > 0 then
+        for i=1,16 - remainder do
+            table.insert(bytes_plaintext, 0)
+        end
     end
-    local bytes_key = lo.srp_user_get_session_key(auth_context.usr)
-    local len_key = #bytes_key
-    print('bytes_key',bytes_key,'len_key (bytes)',len_key,'len_key (bits)',len_key*8)
-    local hexstr_key = lo.srp_hexify(bytes_key)
-    print('Session key:', hexstr_key)
-    bytes_key = {table.unpack(bytes_key, 1, 256/8)} -- truncate bytes_key from 512-bit to 256-bit
-    hexstr_key = lo.srp_hexify(bytes_key)
-    print('Session key (truncated):', hexstr_key)
+    --print('after add padding length',#bytes_plaintext)
+end
+
+function remove_padding_bytes_inplace(bytes_ciphertext)
+    for i=#bytes_ciphertext,1,-1 do
+        if bytes_ciphertext[i] == CIPHER_BLOCK_PADDING_SENTINEL then
+            bytes_ciphertext[i] = nil
+            break
+        end
+        bytes_ciphertext[i] = nil
+    end
+end
+
+local function test_encrypt_decrypt(bytes_key, bytes_plaintext)
     local aes_context = lo.mbedtls_aes_context()
     lo.mbedtls_aes_init(aes_context)
     local keybits = 256 -- keybits max is 256. bytes_key may be longer then this...see comments on 'mbedtls_aes_setkey_enc()'
@@ -723,13 +736,13 @@ function test_aes()
         lo.show_sys_msg(c.def_sys_msg, 'aes enc key set fail')
         error('aes enc key set fail')
     end
-    hexstr_key = lo.srp_hexify(bytes_key)
-    print('Session key (truncated):', hexstr_key)
     
-    local len_iv = 16 -- fixed to 16
-    local len_input = 16 -- should be multiple of 16
-    local len_output = len_input
-
+    local len_iv = 16 -- fixed to 16-byte
+    if #bytes_plaintext % 16 ~= 0 then
+        lo.show_sys_msg(c.def_sys_msg, 'input plaintext length should be multiple of 16-byte')
+        error('input plaintext length should be multiple of 16-byte')
+    end
+    
     local result_iv, bytes_iv = lo.srp_alloc_random_bytes(len_iv)
     if result_iv ~= 0 then
         lo.show_sys_msg(c.def_sys_msg, 'cannot seed iv')
@@ -737,11 +750,14 @@ function test_aes()
     end
     print('bytes_iv',bytes_iv,'len_iv',len_iv)
     
-    local bytes_plaintext = {0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0b,0x0c,0x0d,0x0e,0x0f}
+    
+    local block_count = #bytes_plaintext / 16
+    print('blocks', block_count)
+
+    
     local hexstr_iv = lo.srp_hexify(bytes_iv)
     print('iv (before):', hexstr_iv)
-    local hexstr_plaintext = lo.srp_hexify(bytes_plaintext)
-    print('plaintext (before):', hexstr_plaintext)
+
     
     local encrypt_result, bytes_iv_after, bytes_ciphertext = lo.mbedtls_aes_crypt_cbc(aes_context,
                                                                                       lo.MBEDTLS_AES_ENCRYPT,
@@ -754,11 +770,6 @@ function test_aes()
 
     hexstr_iv = lo.srp_hexify(bytes_iv)
     print('iv (again--the same var):', hexstr_iv)
-
-    hexstr_plaintext = lo.srp_hexify(bytes_plaintext)
-    print('plaintext (again):', hexstr_plaintext)
-
-    
     
     local hexstr_iv_after = lo.srp_hexify(bytes_iv_after)
     print('iv (after):', hexstr_iv_after)
@@ -788,7 +799,58 @@ function test_aes()
     local hexstr_dec_plaintext = lo.srp_hexify(bytes_dec_plaintext)
     print('dec plaintext', hexstr_dec_plaintext)
 
-    lo.show_sys_msg(c.def_sys_msg, 'plaintext:'..hexstr_plaintext..'\n'..'ciphertext:'..hexstr_ciphertext..'\n'..'dec plaintext:'..hexstr_dec_plaintext)
+    return bytes_ciphertext, bytes_dec_plaintext
+end
+
+function utf8_from(t)
+  local bytearr = {}
+  for _, v in ipairs(t) do
+    local utf8byte = v < 0 and (0xff + v + 1) or v
+    table.insert(bytearr, string.char(utf8byte))
+  end
+  return table.concat(bytearr)
+end
+
+function test_aes()
+    if auth_context.usr == nil or lo.srp_user_is_authenticated(auth_context.usr) ~= 1 then
+        lo.show_sys_msg(c.def_sys_msg, 'Invalid auth.')
+        error('Invalid auth.')
+    end
+    local bytes_key = lo.srp_user_get_session_key(auth_context.usr)
+    local len_key = #bytes_key
+    print('bytes_key',bytes_key,'len_key (bytes)',len_key,'len_key (bits)',len_key*8)
+    local hexstr_key = lo.srp_hexify(bytes_key)
+    print('Session key:', hexstr_key)
+    bytes_key = {table.unpack(bytes_key, 1, 256/8)} -- truncate bytes_key to 256-bit (32-byte)
+    hexstr_key = lo.srp_hexify(bytes_key)
+    print('Session key (truncated):', hexstr_key)
+    hexstr_key = lo.srp_hexify(bytes_key)
+    print('Session key (truncated):', hexstr_key)
+    
+    --local bytes_plaintext = {0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a}
+    --local bytes_plaintext = {0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0b,0x0c,0x0d,0x0e,0x0f,0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0b,0x0c,0x0d,0x0e,0x0f}
+    
+    local json_plaintext = json.stringify({hello=10,world=20,dict={1,2,3},str='hello my friend',kor=[==[한국루아의 표준 함수 나 제공된 문자열 기능은 utf-8을 인식하지 못한다.]==]})
+    print('json_plaintext', json_plaintext)
+    local bytes_plaintext = { string.byte(json_plaintext, 1, -1) }
+    local hexstr_plaintext = lo.srp_hexify(bytes_plaintext)
+    print('hexstr_plaintext',hexstr_plaintext)
+    add_padding_bytes_inplace(bytes_plaintext)
+    
+    local bytes_ciphertext, bytes_dec_plaintext = test_encrypt_decrypt(bytes_key, bytes_plaintext)
+    
+    remove_padding_bytes_inplace(bytes_dec_plaintext)
+    local hexstr_dec_plaintext = lo.srp_hexify(bytes_dec_plaintext)
+    print('hexstr_dec_plaintext',hexstr_dec_plaintext)
+    local json_dec_plaintext = utf8_from(bytes_dec_plaintext)
+    print('json_dec_plaintext', json_dec_plaintext)
+    
+    lo.show_sys_msg(c.def_sys_msg,
+                    'plaintext:' .. json_plaintext .. '\n'
+                    ..'plaintext:' .. json_dec_plaintext)
+                    
+    local JSON_HEADER_BYTE = 0x89
+    lo.udp_send(lo.lwttl_sea_udp(c.ttl), {JSON_HEADER_BYTE, table.unpack(bytes_ciphertext)})
 end
 
 function on_chat(line)
