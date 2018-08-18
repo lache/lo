@@ -105,7 +105,7 @@ function json.stringify(obj, as_key)
     if as_key then error('Can\'t encode array as key.') end
     s[#s + 1] = '['
     for i, val in ipairs(obj) do
-      if i > 1 then s[#s + 1] = ', ' end
+      if i > 1 then s[#s + 1] = ',' end
       s[#s + 1] = json.stringify(val)
     end
     s[#s + 1] = ']'
@@ -113,7 +113,7 @@ function json.stringify(obj, as_key)
     if as_key then error('Can\'t encode table as key.') end
     s[#s + 1] = '{'
     for k, v in pairs(obj) do
-      if #s > 1 then s[#s + 1] = ', ' end
+      if #s > 1 then s[#s + 1] = ',' end
       s[#s + 1] = json.stringify(k, true)
       s[#s + 1] = ':'
       s[#s + 1] = json.stringify(v)
