@@ -37,7 +37,10 @@ end
 if c.tcp_ttl == nil then
     --lo.lw_new_tcp_ttl_custom(c, '54.175.243.215', '8000', 8000)
     --lo.lw_new_tcp_ttl_custom(c, '127.0.0.1', '8000', 8000)
-    lo.lw_new_tcp_ttl_custom(c, c.tcp_ttl_host_addr.host, c.tcp_ttl_host_addr.port_str, tonumber(c.tcp_ttl_host_addr.port_str))
+    lo.lw_new_tcp_ttl_custom(c,
+                             c.tcp_ttl_host_addr.host,
+                             c.tcp_ttl_host_addr.port_str,
+                             tonumber(c.tcp_ttl_host_addr.port_str))
 end
 
 function on_ttl_enter()
@@ -49,7 +52,10 @@ function worldmap_scroll(dlng, dlat, dscale)
 end
 
 function worldmap_scroll_to_cell_center(xc, yc)
-    lo.lwttl_worldmap_scroll_to_cell_center(c.ttl, xc, yc, lo.lwttl_sea_udp(c.ttl))
+    lo.lwttl_worldmap_scroll_to_cell_center(c.ttl,
+                                            xc,
+                                            yc,
+                                            lo.lwttl_sea_udp(c.ttl))
 end
 
 function go_online()
@@ -90,7 +96,12 @@ function http_header()
     local r = ''
     -- Select Context
     for key, value in pairs(select_context) do
-        r = r .. 'X-Select-' .. key:sub(1,1):upper()..key:sub(2) .. ': ' .. table.concat(value, ',') .. '\r\n'
+        r = r .. 'X-Select-'
+              .. key:sub(1,1):upper()
+              .. key:sub(2)
+              .. ': '
+              .. table.concat(value, ',')
+              .. '\r\n'
     end
     -- Custom Headers
     for key, value in pairs(custom_http_headers) do
@@ -129,7 +140,11 @@ function transform_single_cell_water_to_land()
     if lo.lwttl_selected(c.ttl, nil) == 1 then
         local xc0 = lo.lwttl_selected_int_x(c.ttl)
         local yc0 = lo.lwttl_selected_int_y(c.ttl)
-        lo.lwttl_udp_send_ttltransformsinglecell(c.ttl, lo.lwttl_sea_udp(c.ttl), xc0, yc0, 0)
+        lo.lwttl_udp_send_ttltransformsinglecell(c.ttl,
+                                                 lo.lwttl_sea_udp(c.ttl),
+                                                 xc0,
+                                                 yc0,
+                                                 0)
         lo.lwttl_send_ping_now(c.ttl)
     else
         print('No selection')
@@ -140,7 +155,11 @@ function transform_single_cell_land_to_water()
     if lo.lwttl_selected(c.ttl, nil) == 1 then
         local xc0 = lo.lwttl_selected_int_x(c.ttl)
         local yc0 = lo.lwttl_selected_int_y(c.ttl)
-        lo.lwttl_udp_send_ttltransformsinglecell(c.ttl, lo.lwttl_sea_udp(c.ttl), xc0, yc0, 1)
+        lo.lwttl_udp_send_ttltransformsinglecell(c.ttl,
+                                                 lo.lwttl_sea_udp(c.ttl),
+                                                 xc0,
+                                                 yc0,
+                                                 1)
         lo.lwttl_send_ping_now(c.ttl)
     else
         print('No selection')
@@ -162,7 +181,8 @@ end
 
 function execute_anchor_click_with_history(url)
     -- prevent from the duplicated entry inserted to history
-    if #ttl_url_history == 0 or (#ttl_url_history > 0 and ttl_url_history[#ttl_url_history] ~= url) then
+    if #ttl_url_history == 0 or (#ttl_url_history > 0
+        and ttl_url_history[#ttl_url_history] ~= url) then
         table.insert(ttl_url_history, url)
     end
     lo.htmlui_execute_anchor_click(c.htmlui, url)
@@ -175,7 +195,9 @@ end
 
 function demolish_port(port_id)
     print('demolish_port')
-    lo.htmlui_execute_anchor_click(c.htmlui, string.format('/demolishPort?portId=%d', port_id))
+    lo.htmlui_execute_anchor_click(c.htmlui,
+                                   string.format('/demolishPort?portId=%d',
+                                                 port_id))
 end
 
 function purchase_new_shipyard()
