@@ -6,7 +6,7 @@
 #include "render_solid.h"
 #include "render_text_block.h"
 
-#define LW_SYS_MSG_MAX_LEN (256)
+#define LW_SYS_MSG_MAX_LEN (1024)
 
 typedef struct _LWSYSMSG {
     char msg[LW_SYS_MSG_MAX_LEN];
@@ -54,7 +54,7 @@ static void s_render(const LWCONTEXT* pLwc, const char* msg) {
                                  1.0f,
                                  0);
     LWTEXTBLOCK text_block;
-    text_block.align = LTBA_CENTER_CENTER;
+    text_block.align = LTBA_LEFT_CENTER;
     text_block.text_block_width = DEFAULT_TEXT_BLOCK_WIDTH;
     text_block.text_block_line_height = DEFAULT_TEXT_BLOCK_LINE_HEIGHT_E;
     text_block.size = DEFAULT_TEXT_BLOCK_SIZE_D;
@@ -66,7 +66,7 @@ static void s_render(const LWCONTEXT* pLwc, const char* msg) {
     text_block.text_bytelen = (int)strlen(text_block.text);
     text_block.begin_index = 0;
     text_block.end_index = text_block.text_bytelen;
-    text_block.text_block_x = 0;
+    text_block.text_block_x = -pLwc->viewport_rt_x;
     text_block.text_block_y = 0;
     text_block.multiline = 1;
     text_block.pixel_perfect = 0;
