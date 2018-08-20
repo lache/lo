@@ -733,14 +733,14 @@ function remove_padding_bytes_inplace(bytes_ciphertext)
 end
 
 function add_padding_bytes_inplace_custom(bytes, block_size, padding_value)
-    print('before add_padding_bytes_inplace_custom() length',#bytes)
+    --print('before add_padding_bytes_inplace_custom() length',#bytes)
     local remainder = #bytes % block_size
     if remainder > 0 then
         for i=1,block_size - remainder do
             table.insert(bytes, padding_value)
         end
     end
-    print('after add_padding_bytes_inplace_custom() length',#bytes)
+    --print('after add_padding_bytes_inplace_custom() length',#bytes)
 end
 
 local function test_encrypt_decrypt(bytes_key, bytes_plaintext)
@@ -763,15 +763,15 @@ local function test_encrypt_decrypt(bytes_key, bytes_plaintext)
         lo.show_sys_msg(c.def_sys_msg, 'cannot seed iv')
         error('cannot seed iv')
     end
-    print('bytes_iv',bytes_iv,'len_iv',len_iv)
+    --print('bytes_iv',bytes_iv,'len_iv',len_iv)
     
     
     local block_count = #bytes_plaintext / 16
-    print('blocks', block_count)
+    --print('blocks', block_count)
 
     
-    local hexstr_iv = lo.srp_hexify(bytes_iv)
-    print('iv (before):', hexstr_iv)
+    --local hexstr_iv = lo.srp_hexify(bytes_iv)
+    --print('iv (before):', hexstr_iv)
 
     
     local encrypt_result, bytes_iv_after, bytes_ciphertext = lo.mbedtls_aes_crypt_cbc(aes_context,
@@ -783,15 +783,12 @@ local function test_encrypt_decrypt(bytes_key, bytes_plaintext)
         error('encrypt failed')
     end
 
-    hexstr_iv = lo.srp_hexify(bytes_iv)
-    print('iv (again--the same var):', hexstr_iv)
-    
-    local hexstr_iv_after = lo.srp_hexify(bytes_iv_after)
-    print('iv (after):', hexstr_iv_after)
-    local hexstr_plaintext = lo.srp_hexify(bytes_plaintext)
-    print('plaintext', hexstr_plaintext)
-    local hexstr_ciphertext = lo.srp_hexify(bytes_ciphertext)
-    print('ciphertext', hexstr_ciphertext)
+    --local hexstr_iv_after = lo.srp_hexify(bytes_iv_after)
+    --print('iv (after):', hexstr_iv_after)
+    --local hexstr_plaintext = lo.srp_hexify(bytes_plaintext)
+    --print('plaintext', hexstr_plaintext)
+    --local hexstr_ciphertext = lo.srp_hexify(bytes_ciphertext)
+    --print('ciphertext', hexstr_ciphertext)
     
     -- decryption
 
@@ -811,8 +808,8 @@ local function test_encrypt_decrypt(bytes_key, bytes_plaintext)
         error('decrypt failed')
     end
 
-    local hexstr_dec_plaintext = lo.srp_hexify(bytes_dec_plaintext)
-    print('dec plaintext', hexstr_dec_plaintext)
+    --local hexstr_dec_plaintext = lo.srp_hexify(bytes_dec_plaintext)
+    --print('dec plaintext', hexstr_dec_plaintext)
 
     return bytes_iv, bytes_ciphertext, bytes_dec_plaintext
 end
@@ -832,40 +829,31 @@ function test_aes()
         error('Invalid auth.')
     end
     local bytes_key = lo.srp_user_get_session_key(auth_context.usr)
-    local len_key = #bytes_key
-    print('bytes_key',bytes_key,'len_key (bytes)',len_key,'len_key (bits)',len_key*8)
-    local hexstr_key = lo.srp_hexify(bytes_key)
-    print('Session key:', hexstr_key)
     bytes_key = {table.unpack(bytes_key, 1, 256/8)} -- truncate bytes_key to 256-bit (32-byte)
-    hexstr_key = lo.srp_hexify(bytes_key)
-    print('Session key (truncated):', hexstr_key)
-    hexstr_key = lo.srp_hexify(bytes_key)
-    print('Session key (truncated):', hexstr_key)
+    --local hexstr_key = lo.srp_hexify(bytes_key)
+    --print('Session key (truncated):', hexstr_key)
     
-    --local bytes_plaintext = {0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a}
-    --local bytes_plaintext = {0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0b,0x0c,0x0d,0x0e,0x0f,0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0b,0x0c,0x0d,0x0e,0x0f}
-    
-    local json_plaintext = json.stringify({c=1985,hello=10,world=20,dict={1,2,3},str='hello my friend',kor=[==[한국루아의 표준 함수 나 제공된 문자열 기능은 utf-8을 인식하지 못한다.]==]})
-    print('json_plaintext', json_plaintext)
+    local json_plaintext = json.stringify({c=2018,hello=10,world=20,dict={1,2,3},str='hello my friend',kor=[==[한국루아의 표준 함수 나 제공된 문자열 기능은 utf-8을 인식하지 못한다.]==]})
+    --print('json_plaintext', json_plaintext)
     local bytes_plaintext = { string.byte(json_plaintext, 1, -1) }
-    local hexstr_plaintext = lo.srp_hexify(bytes_plaintext)
-    print('hexstr_plaintext',hexstr_plaintext)
+    --local hexstr_plaintext = lo.srp_hexify(bytes_plaintext)
+    --print('hexstr_plaintext',hexstr_plaintext)
     add_padding_bytes_inplace(bytes_plaintext)
     
     local bytes_iv, bytes_ciphertext, bytes_dec_plaintext = test_encrypt_decrypt(bytes_key, bytes_plaintext)
     
     remove_padding_bytes_inplace(bytes_dec_plaintext)
-    local hexstr_dec_plaintext = lo.srp_hexify(bytes_dec_plaintext)
-    print('hexstr_dec_plaintext',hexstr_dec_plaintext)
+    --local hexstr_dec_plaintext = lo.srp_hexify(bytes_dec_plaintext)
+    --print('hexstr_dec_plaintext',hexstr_dec_plaintext)
     local json_dec_plaintext = utf8_from(bytes_dec_plaintext)
-    print('json_dec_plaintext', json_dec_plaintext)
-    local hexstr_iv = lo.srp_hexify(bytes_iv)
-    print('iv', hexstr_iv)
+    --print('json_dec_plaintext', json_dec_plaintext)
+    --local hexstr_iv = lo.srp_hexify(bytes_iv)
+    --print('iv', hexstr_iv)
     lo.show_sys_msg(c.def_sys_msg,
                     'plaintext:' .. json_plaintext .. '\n'
                     ..'plaintext:' .. json_dec_plaintext)
     local bytes_account_id = { string.byte(auth_context.username, 1, -1) }
-    table.insert(bytes_account_id, 0)
+    table.insert(bytes_account_id, 0) -- null terminate
     add_padding_bytes_inplace_custom(bytes_account_id, 4, 0)
     local msg = table.copy({lo.LPGP_LWPTTLJSON, 0, 0, 0}, bytes_account_id, bytes_iv, bytes_ciphertext)
     lo.udp_send(lo.lwttl_sea_udp(c.ttl), msg)
