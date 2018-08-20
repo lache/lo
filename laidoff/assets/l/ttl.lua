@@ -20,12 +20,15 @@ local CELL_MENU_PURCHASE_NEW_SHIPYARD               = 5
 local CELL_MENU_DEMOLISH_SHIPYARD                   = 6
 local CELL_MENU_SHIPYARD                            = 7
 local CELL_MENU_SELECT_SEAPORT                      = 8
+local CELL_MENU_TAG_CITY                            = 9
 
 local CELL_MENU_MODE_NORMAL = 1
 local CELL_MENU_MODE_SELECT_SEAPORT = 2
 local cell_menu_mode = CELL_MENU_MODE_NORMAL
 local select_var_name
 local selected_seaport_id
+
+local secure_message_counter = 0
 
 --lo.test_srp_main()
 
@@ -314,6 +317,9 @@ function reset_cell_menu()
         if sc.shipyard_id > 0 then
             lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_DEMOLISH_SHIPYARD, '조선소철거')
             lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_SHIPYARD, '상세메뉴')
+        end
+        if sc.city_id > 0 then
+        lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_TAG_CITY, '태그')
         end
     end
 end
@@ -833,7 +839,8 @@ function test_aes()
     --local hexstr_key = lo.srp_hexify(bytes_key)
     --print('Session key (truncated):', hexstr_key)
     
-    local json_plaintext = json.stringify({c=2018,hello=10,world=20,dict={1,2,3},str='hello my friend',kor=[==[한국루아의 표준 함수 나 제공된 문자열 기능은 utf-8을 인식하지 못한다.]==]})
+    local json_plaintext = json.stringify({c=secure_message_counter,hello=10,world=20,dict={1,2,3},str='hello my friend',kor=[==[한국루아의 표준 함수 나 제공된 문자열 기능은 utf-8을 인식하지 못한다.]==]})
+    secure_message_counter = secure_message_counter + 1
     --print('json_plaintext', json_plaintext)
     local bytes_plaintext = { string.byte(json_plaintext, 1, -1) }
     --local hexstr_plaintext = lo.srp_hexify(bytes_plaintext)
