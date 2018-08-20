@@ -6,6 +6,7 @@ WORKDIR /app
 COPY package.json /app/package.json
 COPY package-lock.json /app/package-lock.json
 RUN npm install --production
+RUN npm install -g node-gyp
 
 FROM node:8-alpine
 
