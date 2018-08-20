@@ -112,3 +112,16 @@ struct query_nearest_shipyard_for_ship_command_reply {
     int ship_id;
     int shipyard_id;
 };
+
+struct register_shared_secret_session_key_command {
+    command _;
+    int reply_id;
+    char account_id[32];
+    char key_str[64]; // hex-string(0x??) 64 characters --- (32-byte) "NOT NULL TERMINATED"
+    int key_str_len;
+};
+
+struct register_shared_secret_session_key_command_reply {
+    command _;
+    int reply_id;
+};

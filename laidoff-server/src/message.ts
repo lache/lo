@@ -192,3 +192,22 @@ export const QueryNearestShipyardForShipReplyStruct = Struct()
   .word32Sle('shipId')
   .word32Sle('shipyardId');
 QueryNearestShipyardForShipReplyStruct.allocate();
+
+export const RegisterSharedSecretSessionKeyStruct = Struct()
+  .word8Sle('type')
+  .word8Sle('padding0')
+  .word8Sle('padding1')
+  .word8Sle('padding2')
+  .word32Sle('replyId')
+  .chars('accountId', 32)
+  .chars('keyStr', 64) // hex-string(0x??) 64 characters --- (32-byte) "NOT NULL TERMINATED"
+  .word32Sle('keyStrLen');
+RegisterSharedSecretSessionKeyStruct.allocate();
+
+export const RegisterSharedSecretSessionKeyReplyStruct = Struct()
+  .word8Sle('type')
+  .word8Sle('padding0')
+  .word8Sle('padding1')
+  .word8Sle('padding2')
+  .word32Sle('replyId');
+RegisterSharedSecretSessionKeyReplyStruct.allocate();

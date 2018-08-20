@@ -4,11 +4,13 @@ import * as db from '../db';
 import * as spawnPort from '../toseaserver/spawnport';
 import * as spawnShip from '../toseaserver/spawnship';
 import * as spawnShipyard from '../toseaserver/spawnshipyard';
+import * as registerSharedSecretSessionKey from "../toseaserver/registersharedsecretsessionkey";
 
 export const receive = async (
   seaUdpClient: Socket,
   buf: any,
   remote: AddressInfo,
+  sessionKeyMap:{[key:string]:string;}
 ) => {
   // RecoverAllShips
   console.log(
@@ -71,5 +73,8 @@ export const receive = async (
   console.log(
     `  ${shipShiprouteCount} ship(s) recovered... (${shipDockedCount} docked ships excluded)`,
   );
+  for (const accountId in sessionKeyMap) {
+    await registerSharedSecretSessionKey.send(seaUdpClient, accountId, sessionKeyMap[accountId])
+  }
   console.log(`Recovering Done.`);
 };

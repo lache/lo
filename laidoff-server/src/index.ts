@@ -23,7 +23,8 @@ app.use(express.static('./src/html'));
 app.set('views', './src/views');
 app.set('view engine', 'pug');
 app.set('seaUdpClient', seaUdpClient);
-app.set('verifierMap', {});
+app.set('verifierMap', {}); // Account ID + ':' + SRP 'B' --> SRP Verifier object
+app.set('sessionKeyMap', {}); // Account ID --> Shared secret key string
 
 // register all HTTP handlers
 // It should be executed after tsc.
@@ -46,6 +47,7 @@ seaUdpClient.on('message', async (buf, remote) => {
       seaUdpClient,
       buf,
       remote,
+      app.get('sessionKeyMap')
     );
   } else if (buf[0] === 3) {
     require('./fromseaserver/arrival').receive(buf, remote);
@@ -58,6 +60,8 @@ seaUdpClient.on('message', async (buf, remote) => {
       buf,
       remote,
     );
+  } else if (buf[0] === 7) {
+    require('./fromseaserver/registersharedsecretsessionkeyreply').receive(buf, remote);
   }
 });
 

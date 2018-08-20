@@ -9,6 +9,7 @@
 #include "packet.h"
 #include "shipyard.hpp"
 #include "adminmessage.h"
+#include "session.hpp"
 using namespace ss;
 
 static std::string make_daytime_string() {
@@ -22,13 +23,15 @@ udp_admin_server::udp_admin_server(boost::asio::io_service& io_service,
                                    std::shared_ptr<sea_static> sea_static,
                                    std::shared_ptr<seaport> seaport,
                                    std::shared_ptr<shipyard> shipyard,
-                                   std::shared_ptr<udp_server> udp_server)
+                                   std::shared_ptr<udp_server> udp_server,
+                                   std::shared_ptr<session> session)
     : socket_(io_service, udp::endpoint(udp::v4(), 4000))
     , sea_(sea)
     , sea_static_(sea_static)
     , seaport_(seaport)
     , shipyard_(shipyard)
     , udp_server_(udp_server)
+    , session_(session)
     , resolver_(io_service)
     , web_server_query_(udp::v4(), "localhost", "3003")
     , web_server_endpoint_(*resolver_.resolve(web_server_query_))
@@ -294,6 +297,24 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
             reply.shipyard_id = nearest_shipyard_id;
             socket_.async_send_to(boost::asio::buffer(&reply,
                                                       sizeof(spawn_shipyard_command_reply)),
+                                  remote_endpoint_,
+                                  boost::bind(&udp_admin_server::handle_send, this,
+                                              boost::asio::placeholders::error,
+                                              boost::asio::placeholders::bytes_transferred));
+            break;
+        }
+        case 12: // Register Shared Secret Session Key
+        {
+            assert(bytes_transferred == sizeof(register_shared_secret_session_key_command));
+            LOGI("Register Shared Secret Session Key type: %1%", static_cast<int>(cp->type));
+            auto cmd = reinterpret_cast<register_shared_secret_session_key_command*>(recv_buffer_.data());
+            session_->register_key(cmd->account_id, cmd->key_str, cmd->key_str_len);
+            register_shared_secret_session_key_command_reply reply;
+            memset(&reply, 0, sizeof(register_shared_secret_session_key_command_reply));
+            reply._.type = 7;
+            reply.reply_id = cmd->reply_id;
+            socket_.async_send_to(boost::asio::buffer(&reply,
+                                                      sizeof(register_shared_secret_session_key_command_reply)),
                                   remote_endpoint_,
                                   boost::bind(&udp_admin_server::handle_send, this,
                                               boost::asio::placeholders::error,

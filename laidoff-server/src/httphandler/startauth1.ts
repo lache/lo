@@ -33,9 +33,10 @@ export default (app: Application) => {
       console.log(ver.B.length);
       console.log(ver.B.toString('hex'));
       if (ver.B.length > 0) {
-        req.app.get('verifierMap')[accountId] = ver.verifier;
+        const bStr = ver.B.toString('hex');
+        req.app.get('verifierMap')[accountId + ':' + bStr] = ver.verifier;
         res.setHeader('Content-Type', 'application/json');
-        res.send(JSON.stringify({ B: ver.B.toString('hex') }));
+        res.send(JSON.stringify({ B: bStr }));
       } else {
         errMsg = '데이터 오류';
         res.redirect(

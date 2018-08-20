@@ -9,6 +9,7 @@
 #include "city.hpp"
 #include "salvage.hpp"
 #include "shipyard.hpp"
+#include "session.hpp"
 using namespace ss;
 
 int main(int argc, char* argv[]) {
@@ -59,6 +60,7 @@ int main(int argc, char* argv[]) {
             LOGI("Preparation is completed.");
             return 0;
         }
+        std::shared_ptr<session> session_instance(new session());
         std::shared_ptr<udp_server> udp_server_instance(new udp_server(io_service,
                                                                        sea_instance,
                                                                        sea_static_instance,
@@ -66,14 +68,17 @@ int main(int argc, char* argv[]) {
                                                                        region_instance,
                                                                        city_instance,
                                                                        salvage_instance,
-                                                                       shipyard_instance));
+                                                                       shipyard_instance,
+                                                                       session_instance));
+        
         tcp_server tcp_server_instance(io_service);
         std::shared_ptr<udp_admin_server> udp_admin_server_instance(new udp_admin_server(io_service,
                                                                                          sea_instance,
                                                                                          sea_static_instance,
                                                                                          seaport_instance,
                                                                                          shipyard_instance,
-                                                                                         udp_server_instance));
+                                                                                         udp_server_instance,
+                                                                                         session_instance));
         sea_instance->set_udp_admin_server(udp_admin_server_instance);
         udp_admin_server_instance->send_recover_all_ships();
         LOGI("Start to server.");

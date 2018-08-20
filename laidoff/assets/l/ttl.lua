@@ -678,7 +678,10 @@ function on_json_body(json_body)
 
         local hexstr_M = lo.srp_hexify(bytes_M)
         print('len_M:',len_M,'M:',hexstr_M)
+        
+        local hexstr_B = lo.srp_hexify(auth_context.bytes_B)
 
+        add_custom_http_header('X-Account-B', hexstr_B)
         add_custom_http_header('X-Account-M', hexstr_M)
         lo.htmlui_execute_anchor_click(c.htmlui, '/startAuth2')
     elseif jb.HAMK ~= nil then
@@ -712,7 +715,7 @@ function add_padding_bytes_inplace(bytes_plaintext)
     table.insert(bytes_plaintext, CIPHER_BLOCK_PADDING_SENTINEL)
     local remainder = #bytes_plaintext % CIPHER_BLOCK_BYTES
     if remainder > 0 then
-        for i=1,16 - remainder do
+        for i=1,CIPHER_BLOCK_BYTES - remainder do
             table.insert(bytes_plaintext, 0)
         end
     end
@@ -727,6 +730,17 @@ function remove_padding_bytes_inplace(bytes_ciphertext)
         end
         bytes_ciphertext[i] = nil
     end
+end
+
+function add_padding_bytes_inplace_custom(bytes, block_size, padding_value)
+    print('before add_padding_bytes_inplace_custom() length',#bytes)
+    local remainder = #bytes % block_size
+    if remainder > 0 then
+        for i=1,block_size - remainder do
+            table.insert(bytes, padding_value)
+        end
+    end
+    print('after add_padding_bytes_inplace_custom() length',#bytes)
 end
 
 local function test_encrypt_decrypt(bytes_key, bytes_plaintext)
@@ -850,7 +864,10 @@ function test_aes()
     lo.show_sys_msg(c.def_sys_msg,
                     'plaintext:' .. json_plaintext .. '\n'
                     ..'plaintext:' .. json_dec_plaintext)
-    local msg = table.copy({lo.LPGP_LWPTTLJSON, 0, 0, 0}, bytes_iv, bytes_ciphertext)
+    local bytes_account_id = { string.byte(auth_context.username, 1, -1) }
+    table.insert(bytes_account_id, 0)
+    add_padding_bytes_inplace_custom(bytes_account_id, 4, 0)
+    local msg = table.copy({lo.LPGP_LWPTTLJSON, 0, 0, 0}, bytes_account_id, bytes_iv, bytes_ciphertext)
     lo.udp_send(lo.lwttl_sea_udp(c.ttl), msg)
 end
 

@@ -106,6 +106,8 @@ set(ServerSources
     shipyard.hpp
     shipyard_object.cpp
     shipyard_object.hpp
+	session.cpp
+	session.hpp
 )
 
 add_msvc_precompiled_header("precompiled.hpp" "precompiled.cpp" ServerSources)

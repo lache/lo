@@ -19,6 +19,7 @@ namespace ss {
     class salvage;
     class shipyard;
     struct cargo_notification;
+    class session;
     class udp_server {
     public:
         udp_server(boost::asio::io_service& io_service,
@@ -28,7 +29,8 @@ namespace ss {
                    std::shared_ptr<region> region,
                    std::shared_ptr<city> city,
                    std::shared_ptr<salvage> salvage,
-                   std::shared_ptr<shipyard> shipyard);
+                   std::shared_ptr<shipyard> shipyard,
+                   std::shared_ptr<session> session);
         bool set_route(int id, int seaport_id1, int seaport_id2, int expect_land, std::shared_ptr<astarrtree::coro_context> coro);
         void gold_earned(int xc, int yc, int amount) {
             if (amount > 0) {
@@ -112,6 +114,7 @@ namespace ss {
         std::shared_ptr<city> city_;
         std::shared_ptr<salvage> salvage_;
         std::shared_ptr<shipyard> shipyard_;
+        std::shared_ptr<session> session_;
         std::unordered_map<int, std::shared_ptr<route> > route_map_; // id -> route
         int tick_seq_;
         std::map<udp::endpoint, std::chrono::steady_clock::duration> client_endpoints_;

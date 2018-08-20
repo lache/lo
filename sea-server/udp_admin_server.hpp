@@ -9,6 +9,7 @@ namespace ss {
     class seaport;
     class shipyard;
     class udp_server;
+    class session;
     class udp_admin_server {
 
     public:
@@ -17,7 +18,8 @@ namespace ss {
                          std::shared_ptr<sea_static> sea_static,
                          std::shared_ptr<seaport> seaport,
                          std::shared_ptr<shipyard> shipyard,
-                         std::shared_ptr<udp_server> udp_server);
+                         std::shared_ptr<udp_server> udp_server,
+                         std::shared_ptr<session> session);
         void send_recover_all_ships();
         void send_arrival(int ship_id);
     private:
@@ -40,6 +42,7 @@ namespace ss {
         std::shared_ptr<seaport> seaport_;
         std::shared_ptr<shipyard> shipyard_;
         std::shared_ptr<udp_server> udp_server_;
+        std::shared_ptr<session> session_;
         // sea-server -> web-server requests
         udp::resolver resolver_;
         udp::resolver::query web_server_query_;
