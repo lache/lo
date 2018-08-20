@@ -11,10 +11,13 @@ FROM node:8-alpine
 
 WORKDIR /app
 COPY --from=builder /app/node_modules /app/node_modules
-COPY --from=builder /app/build /app/build
 COPY . /app
 
+RUN npm run gyp
+RUN npm run build
 RUN npm run init
+
+COPY --from=builder /app/build /app/build
 
 EXPOSE 3000 3003/udp
 CMD ["npm", "run", "start"]
