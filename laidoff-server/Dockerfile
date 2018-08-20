@@ -8,7 +8,7 @@ COPY package-lock.json /app/package-lock.json
 COPY binding.gyp /app/binding.gyp
 COPY src /app/src
 COPY include /app/include
-RUN npm install --production
+RUN npm install
 RUN npm run gyp
 
 COPY tsconfig.json /app/tsconfig.json
