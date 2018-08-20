@@ -6,19 +6,18 @@ WORKDIR /app
 COPY package.json /app/package.json
 COPY package-lock.json /app/package-lock.json
 RUN npm install --production
-RUN npm install -g node-gyp
+RUN npm run gyp
+RUN npm run build
 
 FROM node:8-alpine
 
 WORKDIR /app
 COPY --from=builder /app/node_modules /app/node_modules
+COPY --from=builder /app/build /app/build
+COPY --from=builder /app/.build /app/.build
 COPY . /app
 
-RUN npm run gyp
-RUN npm run build
 RUN npm run init
-
-COPY --from=builder /app/build /app/build
 
 EXPOSE 3000 3003/udp
 CMD ["npm", "run", "start"]
