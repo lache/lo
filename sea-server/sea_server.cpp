@@ -10,6 +10,7 @@
 #include "salvage.hpp"
 #include "shipyard.hpp"
 #include "session.hpp"
+#include "contract.hpp"
 using namespace ss;
 
 int main(int argc, char* argv[]) {
@@ -36,16 +37,6 @@ int main(int argc, char* argv[]) {
         LOGI("Current path: %s", boost::filesystem::current_path());
 
         boost::asio::io_service io_service;
-
-        //boost::asio::spawn([&io_service](boost::asio::yield_context yield) {
-        //    boost::asio::deadline_timer timer(io_service);
-        //    while (true) {
-        //        //std::cout << "Hello?";
-        //        timer.expires_from_now(boost::posix_time::seconds(5));
-        //        timer.async_wait(yield);
-        //    }
-        //});
-
         std::shared_ptr<sea> sea_instance(new sea(io_service));
         std::shared_ptr<sea_static> sea_static_instance(new sea_static());
         std::shared_ptr<seaport> seaport_instance(new seaport(io_service));
@@ -55,12 +46,14 @@ int main(int argc, char* argv[]) {
         std::shared_ptr<salvage> salvage_instance(new salvage(io_service,
                                                               sea_static_instance));
         std::shared_ptr<shipyard> shipyard_instance(new shipyard(io_service,
-                                                                sea_static_instance));
+                                                                 sea_static_instance));
+        std::shared_ptr<session> session_instance(new session());
+        std::shared_ptr<contract> contract_instance(new contract(io_service,
+                                                                 sea_static_instance));
         if (argc > 1 && strcmp(argv[1], "--prepare") == 0) {
             LOGI("Preparation is completed.");
             return 0;
         }
-        std::shared_ptr<session> session_instance(new session());
         std::shared_ptr<udp_server> udp_server_instance(new udp_server(io_service,
                                                                        sea_instance,
                                                                        sea_static_instance,
@@ -69,8 +62,9 @@ int main(int argc, char* argv[]) {
                                                                        city_instance,
                                                                        salvage_instance,
                                                                        shipyard_instance,
-                                                                       session_instance));
-        
+                                                                       session_instance,
+                                                                       contract_instance));
+
         tcp_server tcp_server_instance(io_service);
         std::shared_ptr<udp_admin_server> udp_admin_server_instance(new udp_admin_server(io_service,
                                                                                          sea_instance,

@@ -40,6 +40,7 @@ typedef enum _LW_PUCK_GAME_PACKET {
     LPGP_LWPTTLTRANSFORMSINGLECELL = 130, // client -> server
     LPGP_LWPTTLSHIPYARDSTATE = 136, // server -> client
     LPGP_LWPTTLJSON = 137, // client -> server
+    LPGP_LWPTTLCONTRACTSTATE = 125, // server -> client
     LPGP_LWPQUEUE2 = 200,
     LPGP_LWPMAYBEMATCHED = 201,
     LPGP_LWPMATCHED2 = 202,
@@ -452,6 +453,7 @@ typedef enum _LW_TTL_STATIC_OBJECT_TYPE {
     LTSOT_SEAPORT,
     LTSOT_CITY,
     LTSOT_SALVAGE,
+    LTSOT_CONTRACT,
     LTSOT_SHIPYARD,
 } LW_TTL_STATIC_OBJECT_TYPE;
 
@@ -554,6 +556,29 @@ typedef struct _LWPTTLSALVAGESTATE {
     int count;
     LWPTTLSALVAGEOBJECT obj[256];
 } LWPTTLSALVAGESTATE;
+
+
+// UDP
+typedef struct _LWPTTLCONTRACTOBJECT {
+    signed char x_scaled_offset_0;
+    signed char y_scaled_offset_0;
+    unsigned char padding0;
+    unsigned char padding1;
+} LWPTTLCONTRACTOBJECT;
+
+// UDP
+typedef struct _LWPTTLCONTRACTSTATE {
+    unsigned char type;
+    unsigned char padding0;
+    unsigned char padding1;
+    unsigned char padding2;
+    long long ts;
+    int xc0;
+    int yc0;
+    int view_scale;
+    int count;
+    LWPTTLCONTRACTOBJECT obj[256];
+} LWPTTLCONTRACTSTATE;
 
 // UDP
 typedef struct _LWPTTLSHIPYARDOBJECT {

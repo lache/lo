@@ -100,14 +100,18 @@ set(ServerSources
     salvage.hpp
     salvage_object.cpp
     salvage_object.hpp
-	crypt.cpp
-	crypt.hpp
+    crypt.cpp
+    crypt.hpp
     shipyard.cpp
     shipyard.hpp
     shipyard_object.cpp
     shipyard_object.hpp
-	session.cpp
-	session.hpp
+    session.cpp
+    session.hpp
+    contract.cpp
+    contract.hpp
+    contract_object.cpp
+    contract_object.hpp
 )
 
 add_msvc_precompiled_header("precompiled.hpp" "precompiled.cpp" ServerSources)

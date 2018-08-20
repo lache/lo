@@ -14,11 +14,13 @@
 #include "mbedtls/aes.h"
 #include "jsmn.h"
 #include "session.hpp"
+#include "contract.hpp"
 using namespace ss;
 
 const auto update_interval = boost::posix_time::milliseconds(75);
 //const auto update_interval = boost::posix_time::milliseconds(250);
 const auto salvage_update_interval = boost::posix_time::milliseconds(30 * 60 * 1000);
+const auto contract_update_interval = boost::posix_time::milliseconds(30 * 60 * 1000);
 
 udp_server::udp_server(boost::asio::io_service& io_service,
                        std::shared_ptr<sea> sea,
@@ -28,10 +30,12 @@ udp_server::udp_server(boost::asio::io_service& io_service,
                        std::shared_ptr<city> city,
                        std::shared_ptr<salvage> salvage,
                        std::shared_ptr<shipyard> shipyard,
-                       std::shared_ptr<session> session)
+                       std::shared_ptr<session> session,
+                       std::shared_ptr<contract> contract)
     : socket_(io_service, udp::endpoint(udp::v4(), 3100))
     , timer_(io_service, update_interval)
     , salvage_timer_(io_service, salvage_update_interval)
+    , contract_timer_(io_service, contract_update_interval)
     , sea_(sea)
     , sea_static_(sea_static)
     , seaport_(seaport)
@@ -40,12 +44,14 @@ udp_server::udp_server(boost::asio::io_service& io_service,
     , salvage_(salvage)
     , shipyard_(shipyard)
     , session_(session)
+    , contract_(contract)
     , tick_seq_(0)
     , client_endpoint_aoi_int_key_(0)
     , gold_(0) {
     start_receive();
     timer_.async_wait(boost::bind(&udp_server::update, this));
     salvage_timer_.async_wait(boost::bind(&udp_server::salvage_update, this));
+    contract_timer_.async_wait(boost::bind(&udp_server::contract_update, this));
 }
 
 bool udp_server::set_route(int id, int seaport_id1, int seaport_id2, int expect_land, std::shared_ptr<astarrtree::coro_context> coro) {
@@ -95,6 +101,20 @@ void udp_server::salvage_update() {
         auto salvage_existing = false;
         auto salvage_id = salvage_->spawn_random("Random", aoi_box, salvage_existing);
         LOGIx("Salvage spawned: ID=%1% (existing=%2%)", salvage_id, salvage_existing);
+    }
+}
+
+void udp_server::contract_update() {
+    contract_timer_.expires_at(contract_timer_.expires_at() + contract_update_interval);
+    contract_timer_.async_wait(boost::bind(&udp_server::contract_update, this));
+
+    float delta_time = contract_update_interval.total_milliseconds() / 1000.0f;
+
+    for (const auto& e : client_endpoint_aoi_values_) {
+        const auto& aoi_box = e.second.first;
+        auto contract_existing = false;
+        auto contract_id = contract_->spawn_random("Random", aoi_box, contract_existing);
+        LOGIx("Contract spawned: ID=%1% (existing=%2%)", contract_id, contract_existing);
     }
 }
 
@@ -542,6 +562,48 @@ void udp_server::send_salvage_cell_aligned(int xc0_aligned, int yc0_aligned, flo
     }
 }
 
+void udp_server::send_contract_cell_aligned(int xc0_aligned, int yc0_aligned, float ex_lng, float ex_lat, int view_scale) {
+    const auto half_lng_cell_pixel_extent = boost::math::iround(ex_lng / 2.0f * view_scale);
+    const auto half_lat_cell_pixel_extent = boost::math::iround(ex_lat / 2.0f * view_scale);
+    auto sop_list = contract_->query_near_to_packet(xc0_aligned,
+                                                   yc0_aligned,
+                                                   ex_lng * view_scale,
+                                                   ex_lat * view_scale);
+    std::shared_ptr<LWPTTLCONTRACTSTATE> reply(new LWPTTLCONTRACTSTATE);
+    memset(reply.get(), 0, sizeof(LWPTTLCONTRACTSTATE));
+    reply->type = LPGP_LWPTTLCONTRACTSTATE;
+    reply->ts = contract_->query_ts(xc0_aligned, yc0_aligned, view_scale);
+    reply->xc0 = xc0_aligned;
+    reply->yc0 = yc0_aligned;
+    reply->view_scale = view_scale;
+    size_t reply_obj_index = 0;
+    const int view_scale_msb_index = msb_index(view_scale);
+    for (const auto& v : sop_list) {
+        reply->obj[reply_obj_index].x_scaled_offset_0 = aligned_scaled_offset(v.x0, xc0_aligned, view_scale, view_scale_msb_index, false, 0, 0);
+        reply->obj[reply_obj_index].y_scaled_offset_0 = aligned_scaled_offset(v.y0, yc0_aligned, view_scale, view_scale_msb_index, false, 0, 0);
+        reply_obj_index++;
+        if (reply_obj_index >= boost::size(reply->obj)) {
+            break;
+        }
+    }
+    reply->count = static_cast<int>(reply_obj_index);
+    if (reply->count < sop_list.size()) {
+        LOGEP("packet truncated; capacity %1%, actual %2%", reply->count, sop_list.size());
+    }
+    char compressed[1500];
+    int compressed_size = LZ4_compress_default((char*)reply.get(), compressed, sizeof(LWPTTLCONTRACTSTATE), static_cast<int>(boost::size(compressed)));
+    if (compressed_size > 0) {
+        socket_.async_send_to(boost::asio::buffer(compressed, compressed_size),
+                              remote_endpoint_,
+                              boost::bind(&udp_server::handle_send,
+                                          this,
+                                          boost::asio::placeholders::error,
+                                          boost::asio::placeholders::bytes_transferred));
+    } else {
+        LOGEP("LZ4_compress_default() error! - %1%", compressed_size);
+    }
+}
+
 void udp_server::send_shipyard_cell_aligned(int xc0_aligned, int yc0_aligned, float ex_lng, float ex_lat, int view_scale) {
     const auto half_lng_cell_pixel_extent = boost::math::iround(ex_lng / 2.0f * view_scale);
     const auto half_lat_cell_pixel_extent = boost::math::iround(ex_lat / 2.0f * view_scale);
@@ -776,6 +838,24 @@ void udp_server::handle_receive(const boost::system::error_code& error, std::siz
                           p->ts);
                 } else {
                     LOGIx("Salvages chunk key (%1%,%2%,%3%) Not Sent! (server ts %4%, client ts %5%)",
+                          static_cast<int>(chunk_key.bf.xcc0),
+                          static_cast<int>(chunk_key.bf.ycc0),
+                          static_cast<int>(chunk_key.bf.view_scale_msb),
+                          ts,
+                          p->ts);
+                }
+            } else if (p->static_object == LTSOT_CONTRACT) {
+                const auto ts = contract_->query_ts(chunk_key);
+                if (ts > p->ts) {
+                    send_contract_cell_aligned(xc0_aligned, yc0_aligned, ex_lng, ex_lat, clamped_view_scale);
+                    LOGIx("Contracts chunk key (%1%,%2%,%3%) Sent! (server ts %4%, client ts %5%)",
+                          static_cast<int>(chunk_key.bf.xcc0),
+                          static_cast<int>(chunk_key.bf.ycc0),
+                          static_cast<int>(chunk_key.bf.view_scale_msb),
+                          ts,
+                          p->ts);
+                } else {
+                    LOGIx("Contracts chunk key (%1%,%2%,%3%) Not Sent! (server ts %4%, client ts %5%)",
                           static_cast<int>(chunk_key.bf.xcc0),
                           static_cast<int>(chunk_key.bf.ycc0),
                           static_cast<int>(chunk_key.bf.view_scale_msb),

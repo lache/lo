@@ -20,6 +20,7 @@ namespace ss {
     class shipyard;
     struct cargo_notification;
     class session;
+    class contract;
     class udp_server {
     public:
         udp_server(boost::asio::io_service& io_service,
@@ -30,7 +31,8 @@ namespace ss {
                    std::shared_ptr<city> city,
                    std::shared_ptr<salvage> salvage,
                    std::shared_ptr<shipyard> shipyard,
-                   std::shared_ptr<session> session);
+                   std::shared_ptr<session> session,
+                   std::shared_ptr<contract> contract);
         bool set_route(int id, int seaport_id1, int seaport_id2, int expect_land, std::shared_ptr<astarrtree::coro_context> coro);
         void gold_earned(int xc, int yc, int amount) {
             if (amount > 0) {
@@ -51,6 +53,7 @@ namespace ss {
     private:
         void update();
         void salvage_update();
+        void contract_update();
         void start_receive();
         void send_route_state(float lng, float lat, float ex_lng, float ex_lat, int view_scale);
         void send_land_cell(float lng, float lat, float ex_lng, float ex_lat, int view_scale);
@@ -59,6 +62,7 @@ namespace ss {
         void send_seaport_cell_aligned(int xc0_aligned, int yc0_aligned, float ex_lng, float ex_lat, int view_scale);
         void send_city_cell_aligned(int xc0_aligned, int yc0_aligned, float ex_lng, float ex_lat, int view_scale);
         void send_salvage_cell_aligned(int xc0_aligned, int yc0_aligned, float ex_lng, float ex_lat, int view_scale);
+        void send_contract_cell_aligned(int xc0_aligned, int yc0_aligned, float ex_lng, float ex_lat, int view_scale);
         void send_shipyard_cell_aligned(int xc0_aligned, int yc0_aligned, float ex_lng, float ex_lat, int view_scale);
         void send_land_cell_aligned_bitmap(int xc0_aligned, int yc0_aligned, float ex_lng, float ex_lat, int view_scale);
         void send_track_object_coords(int track_object_id, int track_object_ship_id);
@@ -107,6 +111,7 @@ namespace ss {
         std::array<char, 1024> recv_buffer_;
         boost::asio::deadline_timer timer_;
         boost::asio::deadline_timer salvage_timer_;
+        boost::asio::deadline_timer contract_timer_;
         std::shared_ptr<sea> sea_;
         std::shared_ptr<sea_static> sea_static_;
         std::shared_ptr<seaport> seaport_;
@@ -115,6 +120,7 @@ namespace ss {
         std::shared_ptr<salvage> salvage_;
         std::shared_ptr<shipyard> shipyard_;
         std::shared_ptr<session> session_;
+        std::shared_ptr<contract> contract_;
         std::unordered_map<int, std::shared_ptr<route> > route_map_; // id -> route
         int tick_seq_;
         std::map<udp::endpoint, std::chrono::steady_clock::duration> client_endpoints_;
