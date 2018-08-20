@@ -11,6 +11,7 @@ COPY include /app/include
 RUN npm install --production
 RUN npm run gyp
 
+COPY tsconfig.json /app/tsconfig.json
 RUN npm install -g typescript
 RUN npm run build
 
