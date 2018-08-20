@@ -5,6 +5,9 @@ RUN apk add --no-cache gcc g++ make python
 WORKDIR /app
 COPY package.json /app/package.json
 COPY package-lock.json /app/package-lock.json
+COPY binding.gyp /app/binding.gyp
+COPY src /app/src
+COPY include /app/include
 RUN npm install --production
 RUN npm run gyp
 RUN npm run build
