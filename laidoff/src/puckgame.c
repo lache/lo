@@ -1095,6 +1095,8 @@ void puck_game_update_tick(LWPUCKGAME* puck_game, int update_frequency) {
             }
         } else if (puck_game->game_state == LPGS_TUTORIAL) {
             // do nothing on tutorial
+        } else if (puck_game->game_state == LPGS_PRACTICE) {
+            // do nothing on practice
         } else {
             // WTF?
             LOGEP("Unknown case");
