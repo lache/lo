@@ -20,7 +20,7 @@ using namespace ss;
 const auto update_interval = boost::posix_time::milliseconds(75);
 //const auto update_interval = boost::posix_time::milliseconds(250);
 const auto salvage_update_interval = boost::posix_time::milliseconds(30 * 60 * 1000);
-const auto contract_update_interval = boost::posix_time::milliseconds(30 * 60 * 1000);
+const auto contract_update_interval = boost::posix_time::milliseconds(1 * 1000);
 
 udp_server::udp_server(boost::asio::io_service& io_service,
                        std::shared_ptr<sea> sea,
@@ -1117,6 +1117,12 @@ void udp_server::send_single_cell(int xc0, int yc0) {
         strncpy(reply->shipyard_name, shipyard_name, boost::size(reply->shipyard_name));
         reply->shipyard_name[boost::size(reply->shipyard_name) - 1] = 0;
     }
+    // contract details
+    int contract_id = -1;
+    int contract_gold_amount = 0;
+    contract_->query_single_cell(xc0, yc0, contract_id, contract_gold_amount);
+    reply->contract_id = contract_id;
+    // SEND!
     char compressed[1500];
     int compressed_size = LZ4_compress_default((char*)reply.get(), compressed, sizeof(LWPTTLSINGLECELL), static_cast<int>(boost::size(compressed)));
     if (compressed_size > 0) {

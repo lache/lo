@@ -40,7 +40,7 @@ typedef enum _LW_PUCK_GAME_PACKET {
     LPGP_LWPTTLTRANSFORMSINGLECELL = 130, // client -> server
     LPGP_LWPTTLSHIPYARDSTATE = 136, // server -> client
     LPGP_LWPTTLJSON = 137, // client -> server
-    LPGP_LWPTTLCONTRACTSTATE = 125, // server -> client
+    LPGP_LWPTTLCONTRACTSTATE = 138, // server -> client
     LPGP_LWPQUEUE2 = 200,
     LPGP_LWPMAYBEMATCHED = 201,
     LPGP_LWPMATCHED2 = 202,
@@ -500,6 +500,7 @@ typedef struct _LWPTTLSINGLECELL {
     int land_box[4];
     int water_box_valid;
     int water_box[4];
+    int contract_id;
 } LWPTTLSINGLECELL;
 
 // UDP

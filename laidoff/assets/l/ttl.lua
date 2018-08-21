@@ -319,7 +319,10 @@ function reset_cell_menu()
             lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_SHIPYARD, '상세메뉴')
         end
         if sc.city_id > 0 then
-        lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_TAG_CITY, '태그')
+            lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_TAG_CITY, '태그')
+        end
+        if sc.contract_id > 0 then
+            lo.lwttl_add_cell_menu(c.ttl, CELL_MENU_TAG_CITY, '계약')
         end
     end
 end

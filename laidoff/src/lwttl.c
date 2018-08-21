@@ -31,6 +31,7 @@
 #define TTL_OBJECT_CACHE_SEAPORT_COUNT (TTL_OBJECT_CACHE_CHUNK_COUNT*32)
 #define TTL_OBJECT_CACHE_CITY_COUNT (TTL_OBJECT_CACHE_CHUNK_COUNT*16)
 #define TTL_OBJECT_CACHE_SALVAGE_COUNT (TTL_OBJECT_CACHE_CHUNK_COUNT*8)
+#define TTL_OBJECT_CACHE_CONTRACT_COUNT (TTL_OBJECT_CACHE_CHUNK_COUNT*8)
 #define TTL_OBJECT_CACHE_SHIPYARD_COUNT (TTL_OBJECT_CACHE_CHUNK_COUNT*16)
 
 typedef struct _LWTTLCHUNKVALUE {
@@ -80,6 +81,10 @@ typedef struct _LWTTLOBJECTCACHEGROUP {
     LWTTLOBJECTCACHE salvage_cache;
     LWPTTLSALVAGEOBJECT salvage_array[TTL_OBJECT_CACHE_SALVAGE_COUNT];
     int salvage_count;
+
+    LWTTLOBJECTCACHE contract_cache;
+    LWPTTLCONTRACTOBJECT contract_array[TTL_OBJECT_CACHE_CONTRACT_COUNT];
+    int contract_count;
 
     LWTTLOBJECTCACHE shipyard_cache;
     LWPTTLSHIPYARDOBJECT shipyard_array[TTL_OBJECT_CACHE_SHIPYARD_COUNT];
@@ -222,7 +227,7 @@ typedef struct _LWTTL {
     int cell_box_count;
     LWTTLCELLBOX cell_box[512];
     int cell_menu_count;
-    LWTTLCELLMENU cell_menu[3];
+    LWTTLCELLMENU cell_menu[4];
 } LWTTL;
 
 static const LWTTLSELECTED* lwttl_main_viewport_selected(const LWTTL* ttl) {
@@ -877,6 +882,24 @@ static int add_to_object_cache_salvage(LWTTLOBJECTCACHE* c,
                                s2->obj);
 }
 
+static int add_to_object_cache_contract(LWTTLOBJECTCACHE* c,
+                                        LWPTTLCONTRACTOBJECT* contract_array,
+                                        const size_t contract_array_size,
+                                        int* contract_count,
+                                        const LWPTTLCONTRACTSTATE* s2) {
+    return add_to_object_cache(c,
+                               contract_count,
+                               contract_array,
+                               sizeof(LWPTTLCONTRACTOBJECT),
+                               contract_array_size,
+                               s2->ts,
+                               s2->xc0,
+                               s2->yc0,
+                               s2->view_scale,
+                               s2->count,
+                               s2->obj);
+}
+
 static int add_to_object_cache_shipyard(LWTTLOBJECTCACHE* c,
                                         LWPTTLSHIPYARDOBJECT* shipyard_array,
                                         const size_t shipyard_array_size,
@@ -1054,6 +1077,7 @@ void lwttl_udp_send_ttlping(const LWTTL* ttl, LWUDP* udp, int ping_seq) {
                 { &ttl->object_cache.seaport_cache, LTSOT_SEAPORT, 1 },
                 { &ttl->object_cache.city_cache, LTSOT_CITY, 1 },
                 { &ttl->object_cache.salvage_cache, LTSOT_SALVAGE, 1 },
+                { &ttl->object_cache.contract_cache, LTSOT_CONTRACT, 1 },
                 { &ttl->object_cache.shipyard_cache, LTSOT_SHIPYARD, 1 },
             };
             for (int k = 0; k < ARRAY_SIZE(cache_list); k++) {
@@ -1508,6 +1532,54 @@ int lwttl_query_chunk_range_salvage(const LWTTL* ttl,
                                    ycc1);
 }
 
+int lwttl_query_chunk_range_contract_vp(const LWTTL* ttl,
+                                        const LWTTLFIELDVIEWPORT* vp,
+                                        int* chunk_index_array,
+                                        const int chunk_index_array_len,
+                                        int* xcc0,
+                                        int* ycc0,
+                                        int* xcc1,
+                                        int* ycc1) {
+    return lwttl_query_chunk_range_contract(ttl,
+                                            vp->lng_min,
+                                            vp->lat_min,
+                                            vp->lng_max,
+                                            vp->lat_max,
+                                            vp->clamped_view_scale,
+                                            chunk_index_array,
+                                            chunk_index_array_len,
+                                            xcc0,
+                                            ycc0,
+                                            xcc1,
+                                            ycc1);
+}
+
+int lwttl_query_chunk_range_contract(const LWTTL* ttl,
+                                     const float lng_min,
+                                     const float lat_min,
+                                     const float lng_max,
+                                     const float lat_max,
+                                     const int view_scale,
+                                     int* chunk_index_array,
+                                     const int chunk_index_array_len,
+                                     int* xcc0,
+                                     int* ycc0,
+                                     int* xcc1,
+                                     int* ycc1) {
+    return lwttl_query_chunk_range(lng_min,
+                                   lat_min,
+                                   lng_max,
+                                   lat_max,
+                                   view_scale,
+                                   &ttl->object_cache.contract_cache,
+                                   chunk_index_array,
+                                   chunk_index_array_len,
+                                   xcc0,
+                                   ycc0,
+                                   xcc1,
+                                   ycc1);
+}
+
 int lwttl_query_chunk_range_shipyard_vp(const LWTTL* ttl,
                                         const LWTTLFIELDVIEWPORT* vp,
                                         int* chunk_index_array,
@@ -1631,6 +1703,21 @@ const LWPTTLSALVAGEOBJECT* lwttl_query_chunk_salvage(const LWTTL* ttl,
                              chunk_index,
                              ttl->object_cache.salvage_array,
                              sizeof(LWPTTLSALVAGEOBJECT),
+                             xc0,
+                             yc0,
+                             count);
+}
+
+const LWPTTLCONTRACTOBJECT* lwttl_query_chunk_contract(const LWTTL* ttl,
+                                                       const int chunk_index,
+                                                       int* xc0,
+                                                       int* yc0,
+                                                       int* count) {
+    return lwttl_query_chunk(ttl,
+                             &ttl->object_cache.contract_cache,
+                             chunk_index,
+                             ttl->object_cache.contract_array,
+                             sizeof(LWPTTLCONTRACTOBJECT),
                              xc0,
                              yc0,
                              count);
@@ -1795,15 +1882,15 @@ void lwttl_fill_world_seaports_bookmarks(LWHTMLUI* htmlui) {
     htmlui_set_loop_key_value(htmlui, "world-seaport", "script", script);
 
 
-	htmlui_clear_loop(htmlui, "gazza-user");
-	for (int i = 0; i < 4; i++) {
-		char script[128];
-		sprintf(script, "script:gazza_select_user('%s%d')", "guidguidguid", i + 1);
-		htmlui_set_loop_key_value(htmlui, "gazza-user", "user_anchor", script);
-		htmlui_set_loop_key_value(htmlui, "gazza-user", "user_nickname", "nickname");
-		htmlui_set_loop_key_value(htmlui, "gazza-user", "user_portrait", "atlas/captain/01.png");
-		htmlui_set_loop_key_value(htmlui, "gazza-user", "user_hp", "100");
-	}
+    htmlui_clear_loop(htmlui, "gazza-user");
+    for (int i = 0; i < 4; i++) {
+        char script[128];
+        sprintf(script, "script:gazza_select_user('%s%d')", "guidguidguid", i + 1);
+        htmlui_set_loop_key_value(htmlui, "gazza-user", "user_anchor", script);
+        htmlui_set_loop_key_value(htmlui, "gazza-user", "user_nickname", "nickname");
+        htmlui_set_loop_key_value(htmlui, "gazza-user", "user_portrait", "atlas/captain/01.png");
+        htmlui_set_loop_key_value(htmlui, "gazza-user", "user_hp", "100");
+    }
 }
 
 void lwttl_send_ping_now(LWTTL* ttl) {
@@ -2055,10 +2142,10 @@ void lwttl_on_release(LWTTL* ttl, LWCONTEXT* pLwc, float nx, float ny) {
                          &yc,
                          &lnglat);
         lwttl_change_selected_cell_to(ttl,
-                                        pLwc,
-                                        xc,
-                                        yc,
-                                        &lnglat);
+                                      pLwc,
+                                      xc,
+                                      yc,
+                                      &lnglat);
         selected->pressing = 0;
     }
     if (selected->dragging) {
@@ -2530,6 +2617,22 @@ void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc) {
                                                                 p);
                 break;
             }
+            case LPGP_LWPTTLCONTRACTSTATE:
+            {
+                if (decompressed_bytes != sizeof(LWPTTLCONTRACTSTATE)) {
+                    LOGE("LWPTTLcontractSTATE: Size error %d (%zu expected)",
+                         decompressed_bytes,
+                         sizeof(LWPTTLCONTRACTSTATE));
+                }
+                LWPTTLCONTRACTSTATE* p = (LWPTTLCONTRACTSTATE*)decompressed;
+                LOGIx("LWPTTLCONTRACTSTATE: %d objects.", p->count);
+                const int add_ret = add_to_object_cache_contract(&ttl->object_cache.contract_cache,
+                                                                 ttl->object_cache.contract_array,
+                                                                 ARRAY_SIZE(ttl->object_cache.contract_array),
+                                                                 &ttl->object_cache.contract_count,
+                                                                 p);
+                break;
+            }
             case LPGP_LWPTTLSHIPYARDSTATE:
             {
                 if (decompressed_bytes != sizeof(LWPTTLSHIPYARDSTATE)) {
@@ -2576,24 +2679,24 @@ void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc) {
                       p->port_name);
                 memcpy(&ttl->ttl_single_cell, p, sizeof(LWPTTLSINGLECELL));
                 assert((p->land_box_valid && p->water_box_valid) == 0);
-				if (ttl->cell_box_count < ARRAY_SIZE(ttl->cell_box)) {
-					if (p->land_box_valid) {
-						ttl->cell_box[ttl->cell_box_count].xc0 = p->land_box[0];
-						ttl->cell_box[ttl->cell_box_count].yc0 = p->land_box[1];
-						ttl->cell_box[ttl->cell_box_count].xc1 = p->land_box[2];
-						ttl->cell_box[ttl->cell_box_count].yc1 = p->land_box[3];
-						ttl->cell_box_count++;
-					} else if (p->water_box_valid) {
-						ttl->cell_box[ttl->cell_box_count].xc0 = p->water_box[0];
-						ttl->cell_box[ttl->cell_box_count].yc0 = p->water_box[1];
-						ttl->cell_box[ttl->cell_box_count].xc1 = p->water_box[2];
-						ttl->cell_box[ttl->cell_box_count].yc1 = p->water_box[3];
-						ttl->cell_box_count++;
-					}
-					script_evaluate_async(pLwc, "on_ttl_single_cell()", strlen("on_ttl_single_cell()"));
-				} else {
-					LOGE("Cell box count exceeded!");
-				}
+                if (ttl->cell_box_count < ARRAY_SIZE(ttl->cell_box)) {
+                    if (p->land_box_valid) {
+                        ttl->cell_box[ttl->cell_box_count].xc0 = p->land_box[0];
+                        ttl->cell_box[ttl->cell_box_count].yc0 = p->land_box[1];
+                        ttl->cell_box[ttl->cell_box_count].xc1 = p->land_box[2];
+                        ttl->cell_box[ttl->cell_box_count].yc1 = p->land_box[3];
+                        ttl->cell_box_count++;
+                    } else if (p->water_box_valid) {
+                        ttl->cell_box[ttl->cell_box_count].xc0 = p->water_box[0];
+                        ttl->cell_box[ttl->cell_box_count].yc0 = p->water_box[1];
+                        ttl->cell_box[ttl->cell_box_count].xc1 = p->water_box[2];
+                        ttl->cell_box[ttl->cell_box_count].yc1 = p->water_box[3];
+                        ttl->cell_box_count++;
+                    }
+                    script_evaluate_async(pLwc, "on_ttl_single_cell()", strlen("on_ttl_single_cell()"));
+                } else {
+                    LOGE("Cell box count exceeded!");
+                }
                 break;
             }
             case LPGP_LWPTTLGOLDEARNED:
@@ -2779,7 +2882,7 @@ void lwttl_update(LWTTL* ttl, LWCONTEXT* pLwc, float delta_time) {
             ttl->panning = 1;
         }
         lwttl_worldmap_scroll_to(ttl,
-                                 (float)(vp->smooth_scroll.ratio * vp->smooth_scroll.target.lng + (1.0 - vp->smooth_scroll.ratio) * vp->smooth_scroll.current.lng),
+            (float)(vp->smooth_scroll.ratio * vp->smooth_scroll.target.lng + (1.0 - vp->smooth_scroll.ratio) * vp->smooth_scroll.current.lng),
                                  (float)(vp->smooth_scroll.ratio * vp->smooth_scroll.target.lat + (1.0 - vp->smooth_scroll.ratio) * vp->smooth_scroll.current.lat),
                                  0);
     }
@@ -3264,6 +3367,8 @@ int lwttl_selected_cell_menu_index(const LWTTL* ttl, int xc, int yc) {
             return ttl->cell_menu[1].command_id > 0 ? 1 : -1;
         } else if (selected->pos_xc - 0 == xc && selected->pos_yc - 2 == yc) {
             return ttl->cell_menu[2].command_id > 0 ? 2 : -1;
+        } else if (selected->pos_xc - 1 == xc && selected->pos_yc - 1 == yc) {
+            return ttl->cell_menu[3].command_id > 0 ? 3 : -1;
         }
     }
     return -1;
@@ -3309,7 +3414,10 @@ void lwttl_cell_menu_offset(const LWTTL* ttl, int index, int* xc_offset, int* yc
         *xc_offset = -2;
         *yc_offset = -2;
     } else if (index == 2) {
-        *xc_offset = -0;
+        *xc_offset = +0;
         *yc_offset = -2;
+    } else if (index == 3) {
+        *xc_offset = -1;
+        *yc_offset = -1;
     }
 }

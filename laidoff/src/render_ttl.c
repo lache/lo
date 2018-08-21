@@ -491,6 +491,60 @@ static void render_salvage_icon(const LWCONTEXT* pLwc,
                                                  lwttl_viewport_ui_proj(vp));
 }
 
+static void render_contract_icon(const LWCONTEXT* pLwc,
+                                 const LWTTLFIELDVIEWPORT* vp,
+                                 float x,
+                                 float y,
+                                 float z,
+                                 float w,
+                                 float h) {
+    mat4x4 proj_view;
+    mat4x4_identity(proj_view);
+    mat4x4_mul(proj_view,
+               lwttl_viewport_proj(vp),
+               lwttl_viewport_view(vp));
+    const vec4 obj_pos_vec4 = {
+        x,
+        y,
+        z,
+        1,
+    };
+    const vec4 obj_pos_2_vec4 = {
+        x + 1,
+        y,
+        z,
+        1,
+    };
+    vec2 ui_point;
+    calculate_ui_point_from_world_point(pLwc->viewport_aspect_ratio, proj_view, obj_pos_vec4, ui_point);
+    vec2 ui_point_2;
+    calculate_ui_point_from_world_point(pLwc->viewport_aspect_ratio, proj_view, obj_pos_2_vec4, ui_point_2);
+    const float cell_width_in_ui_space = ui_point_2[0] - ui_point[0];
+    mat4x4 identity_view;
+    mat4x4_identity(identity_view);
+    lazy_tex_atlas_glBindTexture(pLwc, LAE_TTL_CONTAINER_GREEN);
+    lazy_tex_atlas_glBindTexture(pLwc, LAE_TTL_CONTAINER_GREEN_ALPHA);
+    const int view_scale = lwttl_viewport_view_scale(vp);
+    render_solid_vb_ui_alpha_uv_shader_view_proj(pLwc,
+                                                 ui_point[0],
+                                                 ui_point[1],
+                                                 cell_width_in_ui_space / view_scale, //w * 0.075f,
+                                                 cell_width_in_ui_space / view_scale, //h * 0.075f,
+                                                 pLwc->tex_atlas[LAE_TTL_CONTAINER_GREEN],
+                                                 pLwc->tex_atlas[LAE_TTL_CONTAINER_GREEN_ALPHA],
+                                                 LVT_CENTER_CENTER_ANCHORED_SQUARE,
+                                                 1.0f,
+                                                 1.0f,
+                                                 1.0f,
+                                                 1.0f,
+                                                 0.0f,
+                                                 default_uv_offset,
+                                                 default_uv_scale,
+                                                 LWST_ETC1,
+                                                 identity_view,
+                                                 lwttl_viewport_ui_proj(vp));
+}
+
 static void render_shipyard_icon(const LWCONTEXT* pLwc,
                                  const LWTTLFIELDVIEWPORT* vp,
                                  float x,
@@ -1595,6 +1649,68 @@ static void render_salvages(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp)
     }
 }
 
+static void render_contracts(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp) {
+    const float icon_width = lwttl_viewport_icon_width(vp);
+    const float icon_height = lwttl_viewport_icon_height(vp);
+
+    int chunk_index_array[LNGLAT_RENDER_EXTENT_MULTIPLIER_LNG_WITH_MARGIN*LNGLAT_RENDER_EXTENT_MULTIPLIER_LAT_WITH_MARGIN];
+    int bound_xcc0, bound_ycc0, bound_xcc1, bound_ycc1;
+    const int chunk_index_array_count = lwttl_query_chunk_range_contract_vp(pLwc->ttl,
+                                                                            vp,
+                                                                            chunk_index_array,
+                                                                            ARRAY_SIZE(chunk_index_array),
+                                                                            &bound_xcc0,
+                                                                            &bound_ycc0,
+                                                                            &bound_xcc1,
+                                                                            &bound_ycc1);
+    if (chunk_index_array_count > ARRAY_SIZE(chunk_index_array)) {
+        LOGEP("incorrect query result");
+        assert(0);
+    }
+    if (bound_xcc1 - bound_xcc0 > LNGLAT_RENDER_EXTENT_MULTIPLIER_LNG_WITH_MARGIN) {
+        LOGEP("incorrect query result");
+        assert(0);
+    }
+    if (bound_ycc1 - bound_ycc0 > LNGLAT_RENDER_EXTENT_MULTIPLIER_LAT_WITH_MARGIN) {
+        LOGEP("incorrect query result");
+        assert(0);
+    }
+    const int chunk_index_max = LWMIN(chunk_index_array_count, ARRAY_SIZE(chunk_index_array));
+    for (int ci = 0; ci < chunk_index_max; ci++) {
+        int obj_count = 0;
+        int xc0 = 0;
+        int yc0 = 0;
+        const LWPTTLCONTRACTOBJECT* obj_begin = lwttl_query_chunk_contract(pLwc->ttl,
+                                                                           chunk_index_array[ci],
+                                                                           &xc0,
+                                                                           &yc0,
+                                                                           &obj_count);
+        if (obj_begin && obj_count > 0) {
+            for (int i = 0; i < obj_count; i++) {
+                float cell_x0, cell_y0, cell_z0;
+                if (lwttl_viewport_icon_render_info(pLwc->ttl,
+                                                    vp,
+                                                    xc0,
+                                                    obj_begin[i].x_scaled_offset_0,
+                                                    yc0,
+                                                    obj_begin[i].y_scaled_offset_0,
+                                                    &cell_x0,
+                                                    &cell_y0,
+                                                    &cell_z0) != 0) {
+                    continue;
+                }
+                render_contract_icon(pLwc,
+                                     vp,
+                                     cell_x0,
+                                     cell_y0,
+                                     cell_z0,
+                                     icon_width,
+                                     icon_height);
+            }
+        }
+    }
+}
+
 static void render_shipyards(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp) {
     const float icon_width = lwttl_viewport_icon_width(vp);
     const float icon_height = lwttl_viewport_icon_height(vp);
@@ -2247,6 +2363,9 @@ static void lwc_render_ttl_field_viewport(const LWCONTEXT* pLwc,
     }
     if (render_flags & LTFVRF_SALVAGE) {
         render_salvages(pLwc, vp);
+    }
+    if (render_flags & LTFVRF_CONTRACT) {
+        render_contracts(pLwc, vp);
     }
     if (render_flags & LTFVRF_SHIPYARD) {
         render_shipyards(pLwc, vp);

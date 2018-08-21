@@ -21,6 +21,7 @@ typedef struct _LWPTTLSTATICOBJECT2 LWPTTLSTATICOBJECT2;
 typedef struct _LWPTTLSEAPORTOBJECT LWPTTLSEAPORTOBJECT;
 typedef struct _LWPTTLCITYOBJECT LWPTTLCITYOBJECT;
 typedef struct _LWPTTLSALVAGEOBJECT LWPTTLSALVAGEOBJECT;
+typedef struct _LWPTTLCONTRACTOBJECT LWPTTLCONTRACTOBJECT;
 typedef struct _LWPTTLSHIPYARDOBJECT LWPTTLSHIPYARDOBJECT;
 typedef struct _LWHTMLUI LWHTMLUI;
 typedef struct _LWPTTLSINGLECELL LWPTTLSINGLECELL;
@@ -51,6 +52,7 @@ typedef enum _LW_TTL_FIELD_VIEWPORT_RENDER_FLAG {
     LTFVRF_CELL_BOX_BOUNDARY = 1 << 14,
     LTFVRF_SHIPYARD = 1 << 15,
     LTFVRF_SEA_OBJECT_SELECTABLE = 1 << 16,
+    LTFVRF_CONTRACT = 1 << 8,
 
     LTFVRF_ALL = -1,
 } LW_TTL_FIELD_VIEWPORT_RENDER_FLAG;
@@ -169,6 +171,26 @@ int lwttl_query_chunk_range_salvage(const LWTTL* ttl,
                                     int* ycc0,
                                     int* xcc1,
                                     int* ycc1);
+int lwttl_query_chunk_range_contract_vp(const LWTTL* ttl,
+                                        const LWTTLFIELDVIEWPORT* vp,
+                                        int* chunk_index_array,
+                                        const int chunk_index_array_len,
+                                        int* xcc0,
+                                        int* ycc0,
+                                        int* xcc1,
+                                        int* ycc1);
+int lwttl_query_chunk_range_contract(const LWTTL* ttl,
+                                     const float lng_min,
+                                     const float lat_min,
+                                     const float lng_max,
+                                     const float lat_max,
+                                     const int view_scale,
+                                     int* chunk_index_array,
+                                     const int chunk_index_array_len,
+                                     int* xcc0,
+                                     int* ycc0,
+                                     int* xcc1,
+                                     int* ycc1);
 int lwttl_query_chunk_range_shipyard_vp(const LWTTL* ttl,
                                         const LWTTLFIELDVIEWPORT* vp,
                                         int* chunk_index_array,
@@ -209,6 +231,11 @@ const LWPTTLSALVAGEOBJECT* lwttl_query_chunk_salvage(const LWTTL* ttl,
                                                      int* xc0,
                                                      int* yc0,
                                                      int* count);
+const LWPTTLCONTRACTOBJECT* lwttl_query_chunk_contract(const LWTTL* ttl,
+                                                      const int chunk_index,
+                                                      int* xc0,
+                                                      int* yc0,
+                                                      int* count);
 const LWPTTLSHIPYARDOBJECT* lwttl_query_chunk_shipyard(const LWTTL* ttl,
                                                        const int chunk_index,
                                                        int* xc0,
