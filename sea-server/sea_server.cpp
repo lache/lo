@@ -11,7 +11,22 @@
 #include "shipyard.hpp"
 #include "session.hpp"
 #include "contract.hpp"
+#include "ss_wrap.inl"
 using namespace ss;
+
+extern "C" int lua_main(int argc, char **argv, void custom_init_func(lua_State* L));
+
+void custom_lua_init(lua_State* L) {
+    SWIG_init(L);
+}
+
+boost::asio::io_service io_service;
+std::shared_ptr<udp_admin_server> udp_admin_server_instance;
+void post_admin_message(const unsigned char* b, int len_b) {
+    io_service.post([] {
+        udp_admin_server_instance->send_recover_all_ships();
+    });
+}
 
 int main(int argc, char* argv[]) {
     try {
@@ -36,7 +51,8 @@ int main(int argc, char* argv[]) {
 
         LOGI("Current path: %s", boost::filesystem::current_path());
 
-        boost::asio::io_service io_service;
+
+
         std::shared_ptr<sea> sea_instance(new sea(io_service));
         std::shared_ptr<sea_static> sea_static_instance(new sea_static());
         std::shared_ptr<seaport> seaport_instance(new seaport(io_service));
@@ -66,17 +82,22 @@ int main(int argc, char* argv[]) {
                                                                        contract_instance));
 
         tcp_server tcp_server_instance(io_service);
-        std::shared_ptr<udp_admin_server> udp_admin_server_instance(new udp_admin_server(io_service,
-                                                                                         sea_instance,
-                                                                                         sea_static_instance,
-                                                                                         seaport_instance,
-                                                                                         shipyard_instance,
-                                                                                         udp_server_instance,
-                                                                                         session_instance));
+        udp_admin_server_instance.reset(new udp_admin_server(io_service,
+                                                         sea_instance,
+                                                         sea_static_instance,
+                                                         seaport_instance,
+                                                         shipyard_instance,
+                                                         udp_server_instance,
+                                                         session_instance));
         sea_instance->set_udp_admin_server(udp_admin_server_instance);
         udp_admin_server_instance->send_recover_all_ships();
-        LOGI("Start to server.");
-        io_service.run();
+        LOGI("Starting to server IO service thread....");
+        boost::thread thread(boost::bind(&boost::asio::io_service::run, &io_service));
+
+        lua_main(argc, argv, custom_lua_init);
+
+        thread.join();
+
     } catch (std::exception& e) {
         LOGE(e.what());
     }

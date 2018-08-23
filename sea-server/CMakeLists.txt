@@ -4,7 +4,7 @@ project(sea-server)
 if (NOT APPLE)
     set(Boost_USE_STATIC_LIBS ON)
 endif ()
-find_package(Boost 1.58 COMPONENTS system date_time regex filesystem atomic REQUIRED)
+find_package(Boost 1.58 COMPONENTS system date_time regex filesystem atomic thread REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 if (MSVC)
   add_definitions(
@@ -43,8 +43,11 @@ endmacro(ADD_MSVC_PRECOMPILED_HEADER)
 
 # mbedtls 의존성 추가
 add_subdirectory(mbedtls)
-
 include_directories(mbedtls/include)
+
+# lua 의존성 추가
+add_subdirectory(lua-5.3.5)
+include_directories(lua-5.3.5)
 
 # lz4
 
@@ -117,7 +120,7 @@ set(ServerSources
 add_msvc_precompiled_header("precompiled.hpp" "precompiled.cpp" ServerSources)
 add_executable(sea-server ${ServerSources} AStar.c AStar.h CohenSutherland.c CohenSutherland.h jsmn.c jsmn.h)
 
-target_link_libraries(sea-server LINK_PUBLIC ${Boost_LIBRARIES} lz4_static ${CMAKE_THREAD_LIBS_INIT} mbedtls)
+target_link_libraries(sea-server LINK_PUBLIC ${Boost_LIBRARIES} lz4_static ${CMAKE_THREAD_LIBS_INIT} mbedtls lua)
 
 if (UNIX AND NOT APPLE)
   include(PrecompiledHeader.cmake)

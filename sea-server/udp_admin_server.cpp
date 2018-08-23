@@ -306,7 +306,7 @@ void udp_admin_server::handle_receive(const boost::system::error_code& error, st
         case 12: // Register Shared Secret Session Key
         {
             assert(bytes_transferred == sizeof(register_shared_secret_session_key_command));
-            LOGI("Register Shared Secret Session Key type: %1%", static_cast<int>(cp->type));
+            LOGI("Registering Shared Secret Session Key type: %1%", static_cast<int>(cp->type));
             auto cmd = reinterpret_cast<register_shared_secret_session_key_command*>(recv_buffer_.data());
             session_->register_key(cmd->account_id, cmd->key_str, cmd->key_str_len);
             register_shared_secret_session_key_command_reply reply;
