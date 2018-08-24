@@ -1,18 +1,22 @@
 sudo: required
 language: bash
 env:
-  - DOCKER_COMPOSE_VERSION=1.21.0
+- DOCKER_COMPOSE_VERSION=1.21.0
 before_install:
-  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-  - sudo apt-get update
-  - sudo apt-get -y install docker-ce
-  - docker --version
-  - sudo curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
-  - sudo chmod +x /usr/local/bin/docker-compose
-  - /usr/local/bin/docker-compose --version
+- curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+- sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu
+  $(lsb_release -cs) stable"
+- sudo apt-get update
+- sudo apt-get -y install docker-ce
+- docker --version
+- sudo curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname
+  -s)-$(uname -m) -o /usr/local/bin/docker-compose
+- sudo chmod +x /usr/local/bin/docker-compose
+- "/usr/local/bin/docker-compose --version"
 script:
-  - echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
-  - /usr/local/bin/docker-compose build
-  - /usr/local/bin/docker-compose push
-
+- echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
+- "/usr/local/bin/docker-compose build"
+- "/usr/local/bin/docker-compose push"
+notifications:
+  slack:
+    secure: Hr3O2zoAolxU2YPvOB80XLhyJ9G5NsI8hFwlwfgeg+RZHqFcVdmO2gGiFpHeuEslLwVrdEw4kOs9Cjv3OTuJ7o57oz0xyJDxWAW/oTZsx1a4dRXsdlkdkThJZxegRMQ/m8up5WjNJT6ID1zBsp7Qgsr7KJXWcq04M6/uZPgfiz+N04kDRbqpCdUhK6kNGPbUtz1IQ1UWSPUHzA9sXzA4XkXgPQUQaDCqKZMehWjE9zUmK1tdxQekAHiojaCu1vhe0NT6m+H4Kl/4f6qk745v7EuQ5453xQbYv0qKIQCeHMrW72XBWxtDoWtW+vqqxbXpeymcVRvS0eWHTBgAUpmEiHtSq3nWvKZIr54L5LaAy2KpQ74VUX4xQj4RX8liD9CBiJ05bXg5NhfQCpVEko8UdzixlxqGijG1TBkryB6tMsO/CU1+QNpApncoNu9w/xUr2mKy7NUvSHniE3gAh8vRZDEvJCfpvTvlWZ1sMYUJ0HGZJGISZk5qSeo24qaO8oV7NKXjNrJ9ysFEIi2uuOiNW76vQ22TIQ0BZmVuvZJwVVqFJEIsl3pR5PL1akm7AsKdS5cbjNHg0DK8R4gXX+4hYxMvz8QifbOSHcSFUUanIyhhNWGpTbwVsu0eYxcpilUzzRFthrm5OAE8kwgbRp0vctWESJrVLOEwH5r64WE3/ag=
