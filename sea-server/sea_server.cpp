@@ -11,15 +11,7 @@
 #include "shipyard.hpp"
 #include "session.hpp"
 #include "contract.hpp"
-#include <future>
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic warning "-fpermissive"
-#endif
 #include "ss_wrap.inl"
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
 using namespace ss;
 
 extern "C" int lua_main(int argc, char **argv, void custom_init_func(lua_State* L));

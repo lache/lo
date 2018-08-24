@@ -15,9 +15,6 @@ int post_admin_message(const unsigned char * b);
 
 %include "adminmessage.h"
 
-
 %typemap(in) (const unsigned char * b)
-%{  int $1_dim = 0;
-    swig_lua_userdata *usr = (swig_lua_userdata*)lua_touserdata(L,$input);
-    $1 = ($ltype)usr->ptr;%}
+%{  $1 = ($ltype)(((swig_lua_userdata*)lua_touserdata(L,$input))->ptr);%}
 int post_admin_message(const unsigned char * b);

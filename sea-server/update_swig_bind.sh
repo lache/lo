@@ -1,1 +1,1 @@
-swig -lua -o src/ss_wrap.inl src/ss.i
+swig -lua -o ss_wrap.inl ss.i

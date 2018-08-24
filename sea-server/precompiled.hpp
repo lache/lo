@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <chrono>
+#include <future>
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
 //#include <boost/asio/spawn.hpp>
