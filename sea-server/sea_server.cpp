@@ -11,6 +11,7 @@
 #include "shipyard.hpp"
 #include "session.hpp"
 #include "contract.hpp"
+#include <future>
 #ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic warning "-fpermissive"
@@ -31,7 +32,7 @@ void custom_lua_init(lua_State* L) {
 boost::asio::io_service io_service;
 std::shared_ptr<udp_admin_server> udp_admin_server_instance;
 int post_admin_message(const unsigned char* b) {
-    boost::promise<int> prom;
+    std::promise<int> prom;
     io_service.post([b, &prom] {
         prom.set_value(udp_admin_server_instance->process_command(b, false));
     });
