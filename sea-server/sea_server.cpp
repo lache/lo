@@ -15,6 +15,7 @@
 using namespace ss;
 
 extern "C" int lua_main(int argc, char **argv, void custom_init_func(lua_State* L));
+extern "C" int handle_script(lua_State *L, char **argv);
 
 void custom_lua_init(lua_State* L) {
     SWIG_init(L);
@@ -22,10 +23,12 @@ void custom_lua_init(lua_State* L) {
 
 boost::asio::io_service io_service;
 std::shared_ptr<udp_admin_server> udp_admin_server_instance;
-void post_admin_message(const unsigned char* b, int len_b) {
-    io_service.post([] {
-        udp_admin_server_instance->send_recover_all_ships();
+int post_admin_message(const unsigned char* b) {
+    std::promise<int> prom;
+    io_service.post([b, &prom] {
+        prom.set_value(udp_admin_server_instance->process_command(b, false));
     });
+    return prom.get_future().get();
 }
 
 int main(int argc, char* argv[]) {
@@ -94,7 +97,8 @@ int main(int argc, char* argv[]) {
         LOGI("Starting to server IO service thread....");
         boost::thread thread(boost::bind(&boost::asio::io_service::run, &io_service));
 
-        lua_main(argc, argv, custom_lua_init);
+        const char* argv[] = { "ss", "-i", "--", "assets/l/ss.lua" };
+        lua_main(4, (char**)argv, custom_lua_init);
 
         thread.join();
 

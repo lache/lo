@@ -2675,8 +2675,9 @@ SWIG_Lua_dostring(lua_State *L, const char *str) {
 #define SWIGTYPE_p_spawn_shipyard_command_reply swig_types[15]
 #define SWIGTYPE_p_teleport_to_command swig_types[16]
 #define SWIGTYPE_p_travel_to_command swig_types[17]
-static swig_type_info *swig_types[19];
-static swig_module_info swig_module = {swig_types, 18, 0, 0, 0, 0};
+#define SWIGTYPE_p_unsigned_char swig_types[18]
+static swig_type_info *swig_types[20];
+static swig_module_info swig_module = {swig_types, 19, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -2689,7 +2690,7 @@ static swig_module_info swig_module = {swig_types, 18, 0, 0, 0, 0};
 #define SWIG_LUACODE   luaopen_ss_luacode
 
 #include "adminmessage.h"
-void post_admin_message(const unsigned char * b, int len_b);
+int post_admin_message(const unsigned char * b);
 #ifdef WIN32
 #pragma warning(pop)
 #endif
@@ -7836,6 +7837,27 @@ static swig_lua_class *swig_register_shared_secret_session_key_command_reply_bas
 static const char *swig_register_shared_secret_session_key_command_reply_base_names[] = {0};
 static swig_lua_class _wrap_class_register_shared_secret_session_key_command_reply = { "register_shared_secret_session_key_command_reply", "register_shared_secret_session_key_command_reply", &SWIGTYPE_p_register_shared_secret_session_key_command_reply,_proxy__wrap_new_register_shared_secret_session_key_command_reply, swig_delete_register_shared_secret_session_key_command_reply, swig_register_shared_secret_session_key_command_reply_methods, swig_register_shared_secret_session_key_command_reply_attributes, &swig_register_shared_secret_session_key_command_reply_Sf_SwigStatic, swig_register_shared_secret_session_key_command_reply_meta, swig_register_shared_secret_session_key_command_reply_bases, swig_register_shared_secret_session_key_command_reply_base_names };
 
+static int _wrap_post_admin_message(lua_State* L) {
+  int SWIG_arg = 0;
+  unsigned char *arg1 = (unsigned char *) 0 ;
+  int result;
+  
+  SWIG_check_num_args("post_admin_message",1,1)
+  int arg1_dim = 0;
+  swig_lua_userdata *usr = (swig_lua_userdata*)lua_touserdata(L,1);
+  arg1 = (unsigned char *)usr->ptr;
+  result = (int)post_admin_message((unsigned char const *)arg1);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static swig_lua_attribute swig_SwigModule_attributes[] = {
     {0,0,0}
 };
@@ -7843,6 +7865,7 @@ static swig_lua_const_info swig_SwigModule_constants[]= {
     {0,0,0,0,0,0}
 };
 static swig_lua_method swig_SwigModule_methods[]= {
+    { "post_admin_message", _wrap_post_admin_message},
     {0,0}
 };
 static swig_lua_class* swig_SwigModule_classes[]= {
@@ -7901,6 +7924,7 @@ static swig_type_info _swigt__p_spawn_shipyard_command = {"_p_spawn_shipyard_com
 static swig_type_info _swigt__p_spawn_shipyard_command_reply = {"_p_spawn_shipyard_command_reply", "struct spawn_shipyard_command_reply *|spawn_shipyard_command_reply *", 0, 0, (void*)&_wrap_class_spawn_shipyard_command_reply, 0};
 static swig_type_info _swigt__p_teleport_to_command = {"_p_teleport_to_command", "struct teleport_to_command *|teleport_to_command *", 0, 0, (void*)&_wrap_class_teleport_to_command, 0};
 static swig_type_info _swigt__p_travel_to_command = {"_p_travel_to_command", "struct travel_to_command *|travel_to_command *", 0, 0, (void*)&_wrap_class_travel_to_command, 0};
+static swig_type_info _swigt__p_unsigned_char = {"_p_unsigned_char", "unsigned char *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
   &_swigt__p_char,
@@ -7921,6 +7945,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_spawn_shipyard_command_reply,
   &_swigt__p_teleport_to_command,
   &_swigt__p_travel_to_command,
+  &_swigt__p_unsigned_char,
 };
 
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
@@ -7941,6 +7966,7 @@ static swig_cast_info _swigc__p_spawn_shipyard_command[] = {  {&_swigt__p_spawn_
 static swig_cast_info _swigc__p_spawn_shipyard_command_reply[] = {  {&_swigt__p_spawn_shipyard_command_reply, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_teleport_to_command[] = {  {&_swigt__p_teleport_to_command, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_travel_to_command[] = {  {&_swigt__p_travel_to_command, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_unsigned_char[] = {  {&_swigt__p_unsigned_char, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_char,
@@ -7961,6 +7987,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_spawn_shipyard_command_reply,
   _swigc__p_teleport_to_command,
   _swigc__p_travel_to_command,
+  _swigc__p_unsigned_char,
 };
 
 

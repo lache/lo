@@ -7,7 +7,7 @@
 %}
 %{
 #include "adminmessage.h"
-void post_admin_message(const unsigned char * b, int len_b);
+int post_admin_message(const unsigned char * b);
 #ifdef WIN32
 #pragma warning(pop)
 #endif
@@ -16,13 +16,8 @@ void post_admin_message(const unsigned char * b, int len_b);
 %include "adminmessage.h"
 
 
-%typemap(in) (const unsigned char * b, int len_b)
-%{  /*int $1_dim;
-    swig_lua_userdata *usr = (swig_lua_userdata*)lua_touserdata(L,$input);*/
-    //$1 = ($ltype)SWIG_get_uchar_num_array_var(L,$input,&$1_dim,$type);
-	//if (!$1) SWIG_fail;
-    /*$2 = $1_dim;*/%}
-%typemap(freearg) (const unsigned char * b, int len_b)
-%{	/*SWIG_FREE_ARRAY($1);*/%}
-//void post_admin_message(const unsigned char * b, int len_b);
-
+%typemap(in) (const unsigned char * b)
+%{  int $1_dim = 0;
+    swig_lua_userdata *usr = (swig_lua_userdata*)lua_touserdata(L,$input);
+    $1 = ($ltype)usr->ptr;%}
+int post_admin_message(const unsigned char * b);

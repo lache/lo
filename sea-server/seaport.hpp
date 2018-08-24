@@ -18,8 +18,8 @@ namespace ss {
         int get_nearest_two(const xy32& pos, int& id1, std::string& name1, int& id2, std::string& name2) const;
         int lng_to_xc(float lng) const;
         int lat_to_yc(float lat) const;
-        int spawn(int expected_db_id, const char* name, int xc0, int yc0, int owner_id, bool& existing, seaport_type st);
-        void despawn(int id);
+        int spawn(int expected_db_id, const char* name, int xc0, int yc0, int owner_id, bool& existing_location, seaport_type st);
+        int despawn(int id);
         void set_name(int id, const char* name, int owner_id, int port_type);
         long long query_ts(const int xc0, const int yc0, const int view_scale) const;
         long long query_ts(const LWTTLCHUNKKEY& chunk_key) const;

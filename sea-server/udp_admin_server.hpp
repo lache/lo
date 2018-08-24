@@ -22,6 +22,7 @@ namespace ss {
                          std::shared_ptr<session> session);
         void send_recover_all_ships();
         void send_arrival(int ship_id);
+        int process_command(const unsigned char* command, bool send_reply);
     private:
         void start_receive();
 
