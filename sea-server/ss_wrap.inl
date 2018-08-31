@@ -8024,18 +8024,19 @@ static int _wrap_endpoints(lua_State* L) {
   
   char** eps;
   int l;
+  int i;
   arg1 = &eps;
   arg2 = &l; 
   SWIG_check_num_args("endpoints",0,0)
   result = (int)endpoints(arg1,arg2);
   lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
   lua_newtable(L);
-  for (int i = 0; i < l; i++) {
+  for (i = 0; i < l; i++) {
     lua_pushstring(L,eps[i]);
     lua_rawseti(L,-2,i+1);
   }
   SWIG_arg++;
-  for (int i = 0; i < l; i++) {
+  for (i = 0; i < l; i++) {
     free(eps[i]);
   }
   free(eps); /*should call free()*/ 
