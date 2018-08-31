@@ -20,3 +20,7 @@ function despawn_seaport(id)
     msg.port_id = id
     return ss.post_admin_message(msg)
 end
+
+function endpoints()
+    return ss.endpoints()
+end

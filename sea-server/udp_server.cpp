@@ -1250,3 +1250,11 @@ void udp_server::send_stat() {
         LOGEP("LZ4_compress_default() error! - %1%", compressed_size);
     }
 }
+
+std::vector<udp::endpoint> udp_server::endpoints() const {
+    std::vector<udp::endpoint> endpoints;
+    for (const auto& e : client_endpoints_) {
+        endpoints.push_back(e.first);
+    }
+    return endpoints;
+}
