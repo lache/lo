@@ -6,10 +6,11 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <chrono>
+#include <future>
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
 //#include <boost/asio/spawn.hpp>
-//#include <boost/thread.hpp>
+#include <boost/thread.hpp>
 #include <boost/geometry.hpp>
 #include <boost/geometry/geometries/point.hpp>
 #include <boost/geometry/geometries/box.hpp>
@@ -32,6 +33,7 @@
 #include <Windows.h>
 #include <Wincrypt.h>
 #endif
+#include "lua.hpp"
 
 #define WORLD_MAP_PIXEL_RESOLUTION_WIDTH (172824)
 #define WORLD_MAP_PIXEL_RESOLUTION_HEIGHT (86412)

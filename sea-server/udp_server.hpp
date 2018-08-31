@@ -50,6 +50,7 @@ namespace ss {
                 LOGEP("Zero or negative using gold not expected.");
             }
         }
+        std::vector<udp::endpoint> endpoints() const;
     private:
         void update();
         void salvage_update();

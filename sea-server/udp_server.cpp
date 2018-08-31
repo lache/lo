@@ -20,7 +20,7 @@ using namespace ss;
 const auto update_interval = boost::posix_time::milliseconds(75);
 //const auto update_interval = boost::posix_time::milliseconds(250);
 const auto salvage_update_interval = boost::posix_time::milliseconds(30 * 60 * 1000);
-const auto contract_update_interval = boost::posix_time::milliseconds(1 * 1000);
+const auto contract_update_interval = boost::posix_time::milliseconds(30 * 60 * 1000);
 
 udp_server::udp_server(boost::asio::io_service& io_service,
                        std::shared_ptr<sea> sea,
@@ -1249,4 +1249,13 @@ void udp_server::send_stat() {
     } else {
         LOGEP("LZ4_compress_default() error! - %1%", compressed_size);
     }
+}
+
+std::vector<udp::endpoint> udp_server::endpoints() const {
+    std::vector<udp::endpoint> endpoints;
+    endpoints.reserve(client_endpoints_.size());
+    for (const auto& e : client_endpoints_) {
+        endpoints.push_back(e.first);
+    }
+    return endpoints;
 }

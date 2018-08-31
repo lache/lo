@@ -175,13 +175,32 @@ void seaport::update_single_chunk_key_ts(const LWTTLCHUNKKEY& chunk_key, long lo
     }*/
 }
 
-int seaport::spawn(int expected_db_id, const char* name, int xc0, int yc0, int owner_id, bool& existing, seaport::seaport_type st) {
-    existing = false;
+int seaport::spawn(int expected_db_id, const char* name, int xc0, int yc0, int owner_id, bool& existing_location, seaport::seaport_type st) {
+    existing_location = false;
+
+    if (expected_db_id <= 0) {
+        LOGEP("Seaport with requested ID <= 0 cannot be spawned. (seaport id = %1%)", expected_db_id);
+        return -1;
+    }
+
+    auto existing_point = id_point.find(expected_db_id);
+    if (id_point.find(expected_db_id) != id_point.end()) {
+        LOGEP("Seaport cannot be spawned with duplicated ID. (seaport id = %1%) Existing location is {%2%,%3%}",
+              expected_db_id,
+              existing_point->second.get<0>(),
+              existing_point->second.get<1>());
+        return -1;
+    }
+
     seaport_object::point new_port_point{ xc0, yc0 };
     const auto existing_it = rtree_ptr->qbegin(bgi::intersects(new_port_point));
     if (existing_it != rtree_ptr->qend()) {
-        // already exists; return the existing one
-        existing = true;
+        // already exists; return the existing_location one
+        existing_location = true;
+        LOGEP("Seaport [%1%] already exists at {%2%,%3%}",
+              existing_it->second,
+              existing_it->first.get<0>(),
+              existing_it->first.get<1>());
         return existing_it->second;
     }
 
@@ -199,11 +218,11 @@ int seaport::spawn(int expected_db_id, const char* name, int xc0, int yc0, int o
     return expected_db_id;
 }
 
-void seaport::despawn(int id) {
+int seaport::despawn(int id) {
     auto it = id_point.find(id);
     if (it == id_point.end()) {
         LOGEP("id not found (%1%)", id);
-        return;
+        return -1;
     }
 
     const auto xc0 = it->second.get<0>();
@@ -218,6 +237,7 @@ void seaport::despawn(int id) {
     id_cargo_unloaded.erase(id);
     id_owner_id.erase(id);
     id_type.erase(id);
+    return 0;
 }
 
 void seaport::set_name(int id, const char* name, int owner_id, int port_type) {
