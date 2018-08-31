@@ -1253,6 +1253,7 @@ void udp_server::send_stat() {
 
 std::vector<udp::endpoint> udp_server::endpoints() const {
     std::vector<udp::endpoint> endpoints;
+    endpoints.reserve(client_endpoints_.size());
     for (const auto& e : client_endpoints_) {
         endpoints.push_back(e.first);
     }
