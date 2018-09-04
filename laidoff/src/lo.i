@@ -121,6 +121,7 @@
 #include "../mbedtls/include/mbedtls/mbedtls-config.h"
 #include "../mbedtls/include/mbedtls/aes.h"
 #include "lwudp.h"
+#include "lwasf.h"
 #ifdef WIN32
 #pragma warning(pop)
 #endif
@@ -466,3 +467,5 @@ SWIGINTERN int  SWIG_Lua_class_is_own(lua_State *L)
   return usr->own;
 }
 %}
+
+LWASF* lwasf_new_from_file(const char* filename);

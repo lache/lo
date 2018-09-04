@@ -876,3 +876,6 @@ function on_chat(line)
     c.focus_chat_input = 0
     on_nickname_change(line)
 end
+
+lo.lwasf_new_from_file('assets/asf/07-walk.asf')
+
