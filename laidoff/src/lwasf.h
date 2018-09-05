@@ -1,8 +1,7 @@
 #pragma once
 
 #include "lwasfbone.h"
-
-#define MAX_BONES_IN_ASF_FILE 256
+#include "lwasfmacro.h"
 
 typedef struct _LWASF {
     LWASFBONE bones[MAX_BONES_IN_ASF_FILE];
@@ -12,3 +11,6 @@ typedef struct _LWASF {
 } LWASF;
 
 LWASF* lwasf_new_from_file(const char* filename);
+void lwasf_delete(LWASF** asf);
+void lwasf_enable_all_rotational_dofs(LWASF* asf);
+int lwasf_name2idx(const LWASF* asf, const char* name);

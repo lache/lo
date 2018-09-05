@@ -16,7 +16,7 @@ static void remove_rn(char* line) {
         line[strlen(line) - 1] = 0;
 }
 
-static int name2idx(const LWASF* asf, const char* name) {
+int lwasf_name2idx(const LWASF* asf, const char* name) {
     int i = 0;
     while (strcmp(asf->bones[i].name, name) != 0 && i++ < MAX_BONES_IN_ASF_FILE);
     return asf->bones[i].idx;
@@ -83,36 +83,108 @@ static void matrix_transform_affine(double M[4][4], double x, double y, double z
     out[2] = M[2][0] * x + M[2][1] * y + M[2][2] * z + M[2][3];
 }
 
-// v = Rz(rz) Ry(ry) Rx(rx) v
-static void rotate_vector_xyz(double* v, double rx, double ry, double rz) {
+// v = (Rz(rz) Ry(ry) Rx(rx))^(-1) v
+static void inverse_rotate_vector_xyz(double* v, double rx, double ry, double rz) {
     double Rx[4][4], Ry[4][4], Rz[4][4];
-    rotation_z(Rz, rz);
-    rotation_y(Ry, ry);
-    rotation_x(Rx, rx);
+    rotation_z(Rz, -rz);
+    rotation_y(Ry, -ry);
+    rotation_x(Rx, -rx);
     matrix_transform_affine(Rz, v[0], v[1], v[2], v);
     matrix_transform_affine(Ry, v[0], v[1], v[2], v);
     matrix_transform_affine(Rx, v[0], v[1], v[2], v);
 }
 
-static void rotate_bone_dir_to_local(LWASF* asf) {
+static void rotate_bone_dir_to_local_coordinate(LWASF* asf) {
     int i;
+    // exclude root bone
     for (i = 1; i < asf->bone_count; i++) {
-        rotate_vector_xyz(asf->bones[i].dir,
-                          -asf->bones[i].axis_x,
-                          -asf->bones[i].axis_y,
-                          -asf->bones[i].axis_z);
+        inverse_rotate_vector_xyz(asf->bones[i].dir,
+                                  asf->bones[i].axis_x,
+                                  asf->bones[i].axis_y,
+                                  asf->bones[i].axis_z);
     }
 }
 
-static void compute_rotation_to_parent(LWASF* asf) {
+static void matrix_mult(double a[4][4], double b[4][4], double c[4][4]) {
+    int i, j, k;
+    for (i = 0; i < 4; i++) {
+        for (j = 0; j < 4; j++) {
+            c[i][j] = 0;
+            for (k = 0; k < 4; k++) {
+                c[i][j] += a[i][k] * b[k][j];
+            }
+        }
+    }
+}
+
+static void matrix_transpose(double a[4][4], double b[4][4]) {
+    int i, j;
+    for (i = 0; i < 4; i++) {
+        for (j = 0; j < 4; j++) {
+            b[i][j] = a[i][j];
+        }
+    }
+}
+
+static void compute_coordinate_transform_from_child_to_parent(LWASFBONE* parent, LWASFBONE* child) {
+    if (parent && child) {
+        double Rx[4][4], Ry[4][4], Rz[4][4], tmp[4][4], tmp1[4][4], tmp2[4][4];
+        // tmp1 := (coordinate transform matrix from inertia frame to parent)^(-1)
+        //       = (coordinate transform matrix from parent to inertia frame)
+        //       = (RzRyRx)^(-1)
+        //       = Rx^(-1)Ry^(-1)Rz^(-1)
+        rotation_z(Rz, -parent->axis_z);
+        rotation_y(Ry, -parent->axis_y);
+        rotation_x(Rx, -parent->axis_x);
+        matrix_mult(Rx, Ry, tmp);
+        matrix_mult(tmp, Rz, tmp1);
+        // tmp2 := (coordinate transform matrix from inertia frome to child)
+        rotation_z(Rz, child->axis_z);
+        rotation_y(Ry, child->axis_y);
+        rotation_x(Rx, child->axis_x);
+        matrix_mult(Rz, Ry, tmp);
+        matrix_mult(tmp, Rx, tmp2);
+        // tmp := tmp1 * tmp2
+        matrix_mult(tmp1, tmp2, tmp);
+        // child->rot_parent_current := (coordinate transform matrix from child to parent)
+        //                            = (coordinate transform matrix from child to inertia frame) * (coordinate transform matrix from inertia frame to parent)
+        //                            = ((coordinate transform matrix from parent to inertia frame) * (coordinate transform matrix from inertia frame to child))^T
+        //                            = (coordinate transform matrix from inertia frame to child)^T * (coordinate transform matrix from parent to inertia frame)^T
+        //                            = tmp2^T * tmp1^T
+        //                            = (tmp1 * tmp2)^T
+        matrix_transpose(tmp, child->rot_parent_current);
+    } else {
+        LOGE("asf: Unexpected NULL");
+    }
+}
+
+static void compute_coordinate_transform_from_child_to_parent_all(LWASF* asf) {
     int i;
     double Rx[4][4], Ry[4][4], Rz[4][4], tmp[4][4], tmp2[4][4];
+    // root first
+    // tmp2 := o_R_A
     rotation_z(Rz, asf->bones[0].axis_z);
     rotation_y(Ry, asf->bones[0].axis_y);
     rotation_x(Rx, asf->bones[0].axis_x);
+    matrix_mult(Rz, Ry, tmp);
+    matrix_mult(tmp, Rx, tmp2);
+    // rot_parent_current := A_R_o
+    matrix_transpose(tmp2, asf->bones[0].rot_parent_current);
+    // for all other child bones
+    for (i = 0; i < asf->bone_count; i++) {
+        if (asf->bones[i].child) {
+            LWASFBONE* sibling;
+            compute_coordinate_transform_from_child_to_parent(&asf->bones[i], asf->bones[i].child);
+            sibling = asf->bones[i].child->sibling;
+            while (sibling) {
+                compute_coordinate_transform_from_child_to_parent(&asf->bones[i], sibling);
+                sibling = sibling->sibling;
+            }
+        }
+    }
 }
 
-LWASF* lwasf_new_from_file(const char* filename) {
+static LWASF* load_asf(const char* filename) {
     LWASF* asf;
     char line[2048];
     char keyword[256];
@@ -191,6 +263,8 @@ LWASF* lwasf_new_from_file(const char* filename) {
             if (strcmp(keyword, "name") == 0) {
                 sscanf(line, "%s %s", keyword, asf->bones[i].name);
             }
+            // bone direction is in world coordinate system
+            // this will be transformed in local coordinate system later
             if (strcmp(keyword, "direction") == 0) {
                 sscanf(line, "%s %lf %lf %lf",
                        keyword,
@@ -245,7 +319,7 @@ LWASF* lwasf_new_from_file(const char* filename) {
         asf->bones[i].length = length;
     }
     LOGI("%d bones loaded", asf->bone_count);
-    
+
     // hierarchy
     // skip begin line
     if (fgets(line, sizeof(line), file) == 0) {
@@ -267,21 +341,61 @@ LWASF* lwasf_new_from_file(const char* filename) {
                  token;
                  i++, token = lwstrtok_r(0, " ", &token_last)) {
                 if (i == 0) {
-                    parent = name2idx(asf, token);
+                    parent = lwasf_name2idx(asf, token);
                 } else {
-                    set_children_and_sibling(asf, parent, &asf->bones[name2idx(asf, token)]);
+                    set_children_and_sibling(asf, parent, &asf->bones[lwasf_name2idx(asf, token)]);
                 }
             }
         }
     }
     fclose(file), file = 0;
-
-    rotate_bone_dir_to_local(asf);
-
-    compute_rotation_to_parent(asf);
-
     return asf;
 FAIL:
     free(asf), asf = 0;
     return 0;
+}
+
+LWASF* lwasf_new_from_file(const char* filename) {
+    LWASF* asf;
+    asf = load_asf(filename);
+    if (asf) {
+        rotate_bone_dir_to_local_coordinate(asf);
+        compute_coordinate_transform_from_child_to_parent_all(asf);
+    }
+    return asf;
+}
+
+void lwasf_delete(LWASF** asf) {
+    free(*asf);
+    *asf = 0;
+}
+
+void lwasf_enable_all_rotational_dofs(LWASF* asf) {
+    int i;
+    for (i = 0; i < asf->bone_count; i++) {
+        if (asf->bones[i].dof == 0) {
+            continue;
+        }
+        if (asf->bones[i].dofrx) {
+            asf->bones[i].dofrx = 1;
+            asf->bones[i].rx = 0;
+            asf->bones[i].dof++;
+            asf->bones[i].dofo[asf->bones[i].dof - 1] = 1;
+            asf->bones[i].dofo[asf->bones[i].dof] = 0;
+        }
+        if (asf->bones[i].dofry) {
+            asf->bones[i].dofry = 1;
+            asf->bones[i].ry = 0;
+            asf->bones[i].dof++;
+            asf->bones[i].dofo[asf->bones[i].dof - 1] = 2;
+            asf->bones[i].dofo[asf->bones[i].dof] = 0;
+        }
+        if (asf->bones[i].dofrz) {
+            asf->bones[i].dofrz = 1;
+            asf->bones[i].rz = 0;
+            asf->bones[i].dof++;
+            asf->bones[i].dofo[asf->bones[i].dof - 1] = 3;
+            asf->bones[i].dofo[asf->bones[i].dof] = 0;
+        }
+    }
 }
