@@ -62,6 +62,7 @@
 #include "render_font_test.h"
 #include "render_dynamic_vbo.h"
 #include "render_tilemap.h"
+#include "render_mocap.h"
 #include "lwfbo.h"
 #include "test_srp.h"
 // SWIG output file
@@ -1147,6 +1148,7 @@ void lwc_prerender_mutable_context(LWCONTEXT* pLwc) {
     if (pLwc->htmlui) {
         if (pLwc->game_scene == LGS_TTL
             || pLwc->game_scene == LGS_GAZZA
+            || pLwc->game_scene == LGS_MOCAP
             || (pLwc->game_scene == LGS_PUCK_GAME && pLwc->puck_game->show_html_ui)) {
             htmlui_update_on_render_thread(pLwc->htmlui);
         }
@@ -1189,6 +1191,8 @@ void lwc_render(const LWCONTEXT* pLwc) {
         lwc_render_ttl(pLwc);
     } else if (pLwc->game_scene == LGS_GAZZA) {
         lwc_render_gazza(pLwc);
+    } else if (pLwc->game_scene == LGS_MOCAP) {
+        lwc_render_mocap(pLwc);
     } else if (pLwc->game_scene == LGS_ADMIN) {
         lwc_render_admin(pLwc);
     } else if (pLwc->game_scene == LGS_BATTLE_RESULT) {

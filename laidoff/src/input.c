@@ -73,6 +73,7 @@ void lw_trigger_mouse_press(LWCONTEXT* pLwc, float nx, float ny, int pointer_id)
     if (pLwc->htmlui) {
         if (pLwc->game_scene == LGS_TTL
 			|| pLwc->game_scene == LGS_GAZZA
+            || pLwc->game_scene == LGS_MOCAP
             || (pLwc->game_scene == LGS_PUCK_GAME && pLwc->puck_game->game_state == LPGS_MAIN_MENU && pLwc->puck_game->show_html_ui && pLwc->puck_game->world_roll_dirty == 0)) {
             const float nx = (x + pLwc->viewport_rt_x) / (2.0f * pLwc->viewport_rt_x);
             const float ny = (pLwc->viewport_rt_y - y) / (2.0f * pLwc->viewport_rt_y);
@@ -243,6 +244,7 @@ void lw_trigger_mouse_move(LWCONTEXT* pLwc, float nx, float ny, int pointer_id) 
     if (pLwc->htmlui) {
         if (pLwc->game_scene == LGS_TTL
 			|| pLwc->game_scene == LGS_GAZZA
+            || pLwc->game_scene == LGS_MOCAP
             || (pLwc->game_scene == LGS_PUCK_GAME && pLwc->puck_game->show_html_ui)) {
             const float nx = (x + pLwc->viewport_rt_x) / (2.0f * pLwc->viewport_rt_x);
             const float ny = (pLwc->viewport_rt_y - y) / (2.0f * pLwc->viewport_rt_y);
@@ -332,7 +334,7 @@ void lw_trigger_mouse_release(LWCONTEXT* pLwc, float nx, float ny, int pointer_i
         mq_publish_now(pLwc, pLwc->mq, 1);
     }
 
-    if (pLwc->game_scene != LGS_TTL && pLwc->game_scene != LGS_GAZZA) {
+    if (pLwc->game_scene != LGS_TTL && pLwc->game_scene != LGS_GAZZA && pLwc->game_scene != LGS_MOCAP) {
         float w_ratio, h_ratio;
         int released_idx = lwbutton_press(pLwc, &pLwc->button_list, x, y, &w_ratio, &h_ratio);
         if (released_idx >= 0) {

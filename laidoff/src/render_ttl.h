@@ -1,6 +1,6 @@
 #pragma once
 #ifdef __cplusplus
-extern "C" {
+extern "C" {;
 #endif
 typedef struct _LWCONTEXT LWCONTEXT;
 

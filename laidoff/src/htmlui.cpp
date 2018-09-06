@@ -10,6 +10,7 @@
 #include "lwcontext.h"
 #include "file.h"
 #include "render_ttl.h"
+#include "render_mocap.h"
 #include "lwtcp.h"
 #include "lwmutex.h"
 #include "logic.h"
@@ -195,22 +196,24 @@ public:
     }
     void load_next_html_body() {
         if (refresh_html_body) {
-			LOGIx("=== load_next_html_body ===");
-			LOGIx(pLwc->tcp_ttl->html_body);
-			if (pLwc->tcp_ttl) {
+            LOGIx("=== load_next_html_body ===");
+            LOGIx(pLwc->tcp_ttl->html_body);
+            if (pLwc->tcp_ttl) {
                 if (pLwc->game_scene == LGS_TTL) {
                     lwc_render_ttl_fbo_body(pLwc, pLwc->tcp_ttl->html_body);
+                } else if (pLwc->game_scene == LGS_MOCAP) {
+                    lwc_render_mocap_fbo_body(pLwc, pLwc->tcp_ttl->html_body);
                 } else if (pLwc->game_scene == LGS_GAZZA) {
                     // online Gazza!!!!
-                    char s[1024*512];
+                    char s[1024 * 512];
                     sprintf(s, "on_json_body([===[%s]===])", pLwc->tcp_ttl->html_body);
                     size_t s_len = strlen(s);
                     logic_emit_evalute_with_name_async(pLwc, s, s_len, s);
                 }
-			} else {
-				// offline
-				lwc_render_ttl_fbo_body(pLwc, last_html_str.c_str());
-			}
+            } else {
+                // offline
+                lwc_render_ttl_fbo_body(pLwc, last_html_str.c_str());
+            }
             refresh_html_body = 0;
         }
     }
@@ -434,10 +437,10 @@ void htmlui_clear_loop(void* c, const char* loop_name) {
 
 void htmlui_set_loop_key_value(void* c, const char* loop_name, const char* key, const char* value) {
     LWHTMLUI* htmlui = (LWHTMLUI*)c;
-	if (c == 0 || loop_name == 0 || key == 0 || value == 0) {
-		LOGE("htmlui_set_loop_key_value error!");
-		return;
-	}
+    if (c == 0 || loop_name == 0 || key == 0 || value == 0) {
+        LOGE("htmlui_set_loop_key_value error!");
+        return;
+    }
     htmlui->set_loop_key_value(loop_name, key, value);
 }
 

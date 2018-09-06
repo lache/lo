@@ -82,6 +82,18 @@ void change_to_ttl(LWCONTEXT* pLwc) {
                                     "on_ttl_enter()");
 }
 
+void change_to_mocap(LWCONTEXT* pLwc) {
+    pLwc->next_game_scene = LGS_MOCAP;
+    htmlui_set_render_command_container_mode(pLwc->htmlui);
+    lwfbo_init(&pLwc->shared_fbo, pLwc->window_width, pLwc->window_height);
+    // Render font FBO using render-to-texture
+    lwc_render_ttl_fbo(pLwc, ASSETS_BASE_PATH "html" PATH_SEPARATOR "mocap.html");
+    script_evaluate_with_name_async(pLwc,
+                                    "on_mocap_enter()",
+                                    strlen("on_mocap_enter()"),
+                                    "on_mocap_enter()");
+}
+
 void change_to_gazza(LWCONTEXT* pLwc) {
     pLwc->next_game_scene = LGS_GAZZA;
     lwfbo_init(&pLwc->shared_fbo, pLwc->window_width, pLwc->window_height);
@@ -759,6 +771,7 @@ void reset_runtime_context(LWCONTEXT* pLwc) {
         { LWU("Sign\nOut"), start_sign_out },
         { LWU("Remtex"), change_to_remtex },
         { LWU("Chat"), start_chat_text_input_activity },
+        { LWU("Mocap"), change_to_mocap},
     };
     assert(ARRAY_SIZE(handler_array) <= ARRAY_SIZE(pLwc->admin_button_command));
     for (int i = 0; i < ARRAY_SIZE(handler_array); i++) {
