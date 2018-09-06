@@ -12,6 +12,8 @@
 #include "zmq.h"
 #include "logic.h"
 #include "srp.h"
+#include "lwasf.h"
+#include "lwamc.h"
 
 #define LW_SCRIPT_PREFIX_PATH ASSETS_BASE_PATH "l" PATH_SEPARATOR
 #define LW_MAX_CORO (32)
@@ -400,15 +402,25 @@ static int coro_gc(lua_State* L) {
 
 static int SRPUser_gc(lua_State* L) {
     LOGI("SRPUser_gc __gc called");
-    struct SRPUser* usr = luaL_checkudata(L, 1, "SRPUser");
     srpwrap_user_delete(L);
     return 0;
 }
 
 static int SRPVerifier_gc(lua_State* L) {
     LOGI("SRPVerifier_gc __gc called");
-    struct SRPVerifier* ver = luaL_checkudata(L, 1, "SRPVerifier");
     srpwrap_verifier_delete(L);
+    return 0;
+}
+
+static int LWASF_gc(lua_State* L) {
+    LOGI("LWASF_gc __gc called");
+    lwasfwrap_delete(L);
+    return 0;
+}
+
+static int LWAMC_gc(lua_State* L) {
+    LOGI("LWAMC_gc __gc called");
+    lwamcwrap_delete(L);
     return 0;
 }
 
@@ -537,6 +549,20 @@ void init_lua(LWCONTEXT* pLwc) {
     };
     luaL_newmetatable(L, "SRPVerifier");
     luaL_setfuncs(L, SRPVerifier_metatable_funcs, 0);
+    // Register LWASF(lua thread) gc callback
+    struct luaL_Reg LWASF_metatable_funcs[] = {
+        { "__gc", LWASF_gc },
+        { NULL, NULL },
+    };
+    luaL_newmetatable(L, "LWASF");
+    luaL_setfuncs(L, LWASF_metatable_funcs, 0);
+    // Register LWAMC(lua thread) gc callback
+    struct luaL_Reg LWAMC_metatable_funcs[] = {
+        { "__gc", LWAMC_gc },
+        { NULL, NULL },
+    };
+    luaL_newmetatable(L, "LWAMC");
+    luaL_setfuncs(L, LWAMC_metatable_funcs, 0);
     // Set pLwc context to shared static variable for acessing from scripts
     script_set_context(pLwc);
 

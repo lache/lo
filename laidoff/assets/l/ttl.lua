@@ -877,5 +877,5 @@ function on_chat(line)
     on_nickname_change(line)
 end
 
-lo.lwasf_new_from_file('assets/asf/07-walk.asf')
-
+local asf = lo.lwasf_new_from_file('assets/asf/07-walk.asf')
+local amc = lo.lwamc_new_from_file('assets/amc/07_05-walk.amc', asf)

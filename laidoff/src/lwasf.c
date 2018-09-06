@@ -365,9 +365,8 @@ LWASF* lwasf_new_from_file(const char* filename) {
     return asf;
 }
 
-void lwasf_delete(LWASF** asf) {
-    free(*asf);
-    *asf = 0;
+void lwasf_delete(LWASF* asf) {
+    free(asf);
 }
 
 void lwasf_enable_all_rotational_dofs(LWASF* asf) {

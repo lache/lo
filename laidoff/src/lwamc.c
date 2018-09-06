@@ -72,7 +72,7 @@ static LWAMC* load_amc(const char* filename, LWASF* asf) {
         fgets(line, sizeof(line), file);
         frame_num = atoi(line);
         posture = &amc->postures[i];
-        for (j = 0; j < bone_count; j++) {
+        for (j = 0; j < moving_bone_count; j++) {
             fgets(line, sizeof(line), file);
             for (k = 0, token = lwstrtok_r(line, " ", &token_last);
                  token;
@@ -112,9 +112,16 @@ static LWAMC* load_amc(const char* filename, LWASF* asf) {
                         break;
                     }
                 }
+                if (strcmp(token, "root") == 0) {
+                    posture->root_pos[0] = posture->bone_translation[0][0];
+                    posture->root_pos[1] = posture->bone_translation[0][1];
+                    posture->root_pos[2] = posture->bone_translation[0][2];
+                }
             }
         }
     }
+    fclose(file), file = 0;
+    LOGI("amc: %d frames loaded from '%s'.", n, filename);
     return amc;
 }
 
@@ -126,8 +133,7 @@ LWAMC* lwamc_new_from_file(const char* filename, LWASF* asf) {
     return amc;
 }
 
-void lwamc_delete(LWAMC** amc) {
-    free((*amc)->postures);
-    free(*amc);
-    *amc = 0;
+void lwamc_delete(LWAMC* amc) {
+    free(amc->postures);
+    free(amc);
 }

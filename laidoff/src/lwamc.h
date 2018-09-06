@@ -9,4 +9,4 @@ typedef struct _LWAMC {
 } LWAMC;
 
 LWAMC* lwamc_new_from_file(const char* filename, LWASF* asf);
-void lwamc_delete(LWAMC** amc);
+void lwamc_delete(LWAMC* amc);

@@ -1889,3 +1889,37 @@ void srpwrap_verifier_delete(lua_State* L) {
         srp_verifier_delete(ver);
     }
 }
+
+void lwasfwrap_delete(lua_State* L) {
+    LWASF* asf = 0;
+    if (!SWIG_isptrtype(L, 1)) {
+        LOGE("Not a swig pointer type!");
+        return;
+    }
+    if (!SWIG_IsOK(SWIG_ConvertPtr(L, 1, (void**)&asf, SWIGTYPE_p__LWASF, 0))) {
+        LOGE("Not a LWASF type!");
+        return;
+    }
+
+    if (SWIG_Lua_class_is_own(L)) {
+        SWIG_Lua_class_disown(L);
+        lwasf_delete(asf);
+    }
+}
+
+void lwamcwrap_delete(lua_State* L) {
+    LWAMC* amc = 0;
+    if (!SWIG_isptrtype(L, 1)) {
+        LOGE("Not a swig pointer type!");
+        return;
+    }
+    if (!SWIG_IsOK(SWIG_ConvertPtr(L, 1, (void**)&amc, SWIGTYPE_p__LWAMC, 0))) {
+        LOGE("Not a LWAMC type!");
+        return;
+    }
+
+    if (SWIG_Lua_class_is_own(L)) {
+        SWIG_Lua_class_disown(L);
+        lwamc_delete(amc);
+    }
+}
