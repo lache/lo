@@ -56,7 +56,7 @@ static void update_view_proj(const vec3 cam_eye,
 }
 
 static void render_sgobject(const LWCONTEXT* pLwc, const LWSGOBJECT* sgobj) {
-    if (sgobj == 0) {
+    if (sgobj == 0 || sgobj->lvt == 0) {
         return;
     }
     vec3 cam_eye = { 0, 0, 10 };

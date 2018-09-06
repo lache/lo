@@ -127,7 +127,11 @@
 #ifdef WIN32
 #pragma warning(pop)
 #endif
+
+SWIGINTERN void SWIG_Lua_AddMetatableWithCustomDtor(lua_State *L,swig_type_info *type,int gc(lua_State*));
 %}
+
+
 
 %include <typemaps.i>
 
@@ -370,6 +374,17 @@ LWASF* lwasf_new_from_file(const char* filename);
 %}
 LWAMC* lwamc_new_from_file(const char* filename, LWASF* asf);
 
+%newobject lwsg_new;
+%delobject lwsg_delete;
+%typemap(out) LWSG * %{
+    // should have metatable so have custom __gc function
+    SWIG_NewPointerObj(L,$result,$descriptor,1); SWIG_arg++;
+    SWIG_Lua_AddMetatableWithCustomDtor(L,$descriptor,lwsgwrap_delete);
+    //luaL_getmetatable(L, "LWSG");
+    //lua_setmetatable(L, -2);
+%}
+LWSG* lwsg_new();
+
 %include "../glfw/deps/linmath.h"
 %include "lwmacro.h"
 %include "constants.h"
@@ -490,6 +505,25 @@ SWIGINTERN int  SWIG_Lua_class_is_own(lua_State *L)
   usr=(swig_lua_userdata*)lua_touserdata(L,-1);  /* get it */
   
   return usr->own;
+}
+
+/* helper to add metatable to new lua object */
+SWIGINTERN void SWIG_Lua_AddMetatableWithCustomDtor(lua_State *L,swig_type_info *type,int gc(lua_State*))
+{
+  if (type->clientdata)  /* there is clientdata: so add the metatable */
+  {
+    SWIG_Lua_get_class_metatable(L,((swig_lua_class*)(type->clientdata))->fqname);
+    if (lua_istable(L,-1))
+    {
+      lua_pushcfunction(L, gc);
+      lua_setfield(L, -2, "__gc");
+      lua_setmetatable(L,-2);
+    }
+    else
+    {
+      lua_pop(L,1);
+    }
+  }
 }
 %}
 

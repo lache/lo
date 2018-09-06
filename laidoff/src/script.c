@@ -424,6 +424,12 @@ static int LWAMC_gc(lua_State* L) {
     return 0;
 }
 
+static int LWSG_gc(lua_State* L) {
+    LOGI("LWSG_gc __gc called");
+    lwsgwrap_delete(L);
+    return 0;
+}
+
 void deinit_lua(LWCONTEXT* pLwc) {
     // Clear all coroutines
     script_cleanup_all_coros(pLwc);
@@ -563,6 +569,13 @@ void init_lua(LWCONTEXT* pLwc) {
     };
     luaL_newmetatable(L, "LWAMC");
     luaL_setfuncs(L, LWAMC_metatable_funcs, 0);
+    // Register LWSG(lua thread) gc callback
+    struct luaL_Reg LWSG_metatable_funcs[] = {
+        { "__gc", LWSG_gc },
+        { NULL, NULL },
+    };
+    luaL_newmetatable(L, "LWSG");
+    luaL_setfuncs(L, LWSG_metatable_funcs, 0);
     // Set pLwc context to shared static variable for acessing from scripts
     script_set_context(pLwc);
 

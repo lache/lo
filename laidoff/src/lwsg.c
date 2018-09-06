@@ -1,14 +1,26 @@
 #include "lwsg.h"
 #include "lwcontext.h"
+#include "lwlog.h"
 
-LWSG* lwsg_new(LWCONTEXT* pLwc) {
+LWSG* lwsg_new() {
     LWSG* sg = (LWSG*)calloc(1, sizeof(LWSG));
     sg->root = (LWSGOBJECT*)calloc(1, sizeof(LWSGOBJECT));
     return sg;
 }
 
-void lwsg_delete(LWSG* sg) {
+static void delete_recursive(LWSGOBJECT* sgobj) {
+    if (sgobj == 0) {
+        return;
+    }
+    delete_recursive(sgobj->child);
+    delete_recursive(sgobj->sibling);
+    LOGI("Releasing scene graph object '%s'...", sgobj->name);
+    free(sgobj);
+}
 
+void lwsg_delete(LWSG* sg) {
+    delete_recursive(sg->root);
+    free(sg);
 }
 
 LWSGOBJECT* lwsg_new_object(LWSG* sg, const char* objname, LWSGOBJECT* parent) {

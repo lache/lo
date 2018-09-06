@@ -8,7 +8,7 @@ end
 local asf = lo.lwasf_new_from_file('assets/asf/07-walk.asf')
 local amc = lo.lwamc_new_from_file('assets/amc/07_05-walk.amc', asf)
 
-local sg = lo.lwsg_new(c)
+local sg = lo.lwsg_new()
 local sgobj = lo.lwsg_new_object(sg, 'test obj', sg.root)
 sgobj.lvt = lo.LVT_PUCK_PLAYER
 lo.lwsg_set_local_pos(sgobj, 0,1,0)

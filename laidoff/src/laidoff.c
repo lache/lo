@@ -1927,3 +1927,22 @@ void lwamcwrap_delete(lua_State* L) {
         lwamc_delete(amc);
     }
 }
+
+int lwsgwrap_delete(lua_State* L) {
+    LWSG* sg = 0;
+    if (!SWIG_isptrtype(L, 1)) {
+        LOGE("Not a swig pointer type!");
+        return -1;
+    }
+    if (!SWIG_IsOK(SWIG_ConvertPtr(L, 1, (void**)&sg, SWIGTYPE_p__LWSG, 0))) {
+        LOGE("Not a LWSG type!");
+        return -1;
+    }
+
+    if (SWIG_Lua_class_is_own(L)) {
+        SWIG_Lua_class_disown(L);
+        lwsg_delete(sg);
+    }
+
+    return 0;
+}

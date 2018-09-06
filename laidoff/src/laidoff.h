@@ -80,6 +80,7 @@ void srpwrap_user_delete(lua_State* L);
 void srpwrap_verifier_delete(lua_State* L);
 void lwasfwrap_delete(lua_State* L);
 void lwamcwrap_delete(lua_State* L);
+int lwsgwrap_delete(lua_State* L);
 
 extern const float default_uv_offset[2];
 extern const float default_uv_scale[2];

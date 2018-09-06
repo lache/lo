@@ -3086,6 +3086,8 @@ static swig_module_info swig_module = {swig_types, 308, 0, 0, 0, 0};
 #pragma warning(pop)
 #endif
 
+SWIGINTERN void SWIG_Lua_AddMetatableWithCustomDtor(lua_State *L,swig_type_info *type,int gc(lua_State*));
+
 
 #ifdef __cplusplus	/* generic alloc/dealloc fns*/
 #define SWIG_ALLOC_ARRAY(TYPE,LEN) 	new TYPE[LEN]
@@ -3913,6 +3915,29 @@ static int _wrap_lwamc_new_from_file(lua_State* L) {
   SWIG_NewPointerObj(L,result,SWIGTYPE_p__LWAMC,1); SWIG_arg++;
   luaL_getmetatable(L, "LWAMC");
   lua_setmetatable(L, -2);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwsg_new(lua_State* L) {
+  int SWIG_arg = 0;
+  LWSG *result = 0 ;
+  
+  SWIG_check_num_args("lwsg_new",0,0)
+  result = (LWSG *)lwsg_new();
+  
+  // should have metatable so have custom __gc function
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p__LWSG,1); SWIG_arg++;
+  SWIG_Lua_AddMetatableWithCustomDtor(L,SWIGTYPE_p__LWSG,lwsgwrap_delete);
+  //luaL_getmetatable(L, "LWSG");
+  //lua_setmetatable(L, -2);
   
   return SWIG_arg;
   
@@ -28319,7 +28344,13 @@ static int _wrap_LWCONTEXT_sg_get(lua_State* L) {
   }
   
   result = (LWSG *) ((arg1)->sg);
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p__LWSG,0); SWIG_arg++; 
+  
+  // should have metatable so have custom __gc function
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p__LWSG,1); SWIG_arg++;
+  SWIG_Lua_AddMetatableWithCustomDtor(L,SWIGTYPE_p__LWSG,lwsgwrap_delete);
+  //luaL_getmetatable(L, "LWSG");
+  //lua_setmetatable(L, -2);
+  
   return SWIG_arg;
   
   if(0) SWIG_fail;
@@ -114065,6 +114096,25 @@ fail:
 }
 
 
+static int _wrap_lwsgwrap_delete(lua_State* L) {
+  int SWIG_arg = 0;
+  lua_State *arg1 = (lua_State *) 0 ;
+  int result;
+  
+  arg1 = L;
+  SWIG_check_num_args("lwsgwrap_delete",0,0)
+  result = (int)lwsgwrap_delete(arg1);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_default_uv_offset_get(lua_State* L) {
   int SWIG_arg = 0;
   float *result = 0 ;
@@ -116988,30 +117038,6 @@ static swig_lua_class *swig_LWSG_bases[] = {0};
 static const char *swig_LWSG_base_names[] = {0};
 static swig_lua_class _wrap_class_LWSG = { "LWSG", "LWSG", &SWIGTYPE_p__LWSG,_proxy__wrap_new_LWSG, swig_delete_LWSG, swig_LWSG_methods, swig_LWSG_attributes, &swig_LWSG_Sf_SwigStatic, swig_LWSG_meta, swig_LWSG_bases, swig_LWSG_base_names };
 
-static int _wrap_lwsg_new(lua_State* L) {
-  int SWIG_arg = 0;
-  LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
-  LWSG *result = 0 ;
-  
-  SWIG_check_num_args("lwsg_new",1,1)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwsg_new",1,"LWCONTEXT *");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWCONTEXT,0))){
-    SWIG_fail_ptr("lwsg_new",1,SWIGTYPE_p__LWCONTEXT);
-  }
-  
-  result = (LWSG *)lwsg_new(arg1);
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p__LWSG,0); SWIG_arg++; 
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
 static int _wrap_lwsg_delete(lua_State* L) {
   int SWIG_arg = 0;
   LWSG *arg1 = (LWSG *) 0 ;
@@ -117019,7 +117045,7 @@ static int _wrap_lwsg_delete(lua_State* L) {
   SWIG_check_num_args("lwsg_delete",1,1)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwsg_delete",1,"LWSG *");
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWSG,0))){
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWSG,SWIG_POINTER_DISOWN))){
     SWIG_fail_ptr("lwsg_delete",1,SWIGTYPE_p__LWSG);
   }
   
@@ -117765,6 +117791,25 @@ SWIGINTERN int  SWIG_Lua_class_is_own(lua_State *L)
   usr=(swig_lua_userdata*)lua_touserdata(L,-1);  /* get it */
   
   return usr->own;
+}
+
+/* helper to add metatable to new lua object */
+SWIGINTERN void SWIG_Lua_AddMetatableWithCustomDtor(lua_State *L,swig_type_info *type,int gc(lua_State*))
+{
+  if (type->clientdata)  /* there is clientdata: so add the metatable */
+  {
+    SWIG_Lua_get_class_metatable(L,((swig_lua_class*)(type->clientdata))->fqname);
+    if (lua_istable(L,-1))
+    {
+      lua_pushcfunction(L, gc);
+      lua_setfield(L, -2, "__gc");
+      lua_setmetatable(L,-2);
+    }
+    else
+    {
+      lua_pop(L,1);
+    }
+  }
 }
 
 static swig_lua_attribute swig_SwigModule_attributes[] = {
@@ -118565,6 +118610,7 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "udp_send", _wrap_udp_send},
     { "lwasf_new_from_file", _wrap_lwasf_new_from_file},
     { "lwamc_new_from_file", _wrap_lwamc_new_from_file},
+    { "lwsg_new", _wrap_lwsg_new},
     { "vec2_add", _wrap_vec2_add},
     { "vec2_sub", _wrap_vec2_sub},
     { "vec2_scale", _wrap_vec2_scale},
@@ -119460,6 +119506,7 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "srpwrap_verifier_delete", _wrap_srpwrap_verifier_delete},
     { "lwasfwrap_delete", _wrap_lwasfwrap_delete},
     { "lwamcwrap_delete", _wrap_lwamcwrap_delete},
+    { "lwsgwrap_delete", _wrap_lwsgwrap_delete},
     { "new_udp", _wrap_new_udp},
     { "udp_update_addr_host", _wrap_udp_update_addr_host},
     { "udp_update_addr", _wrap_udp_update_addr},
@@ -119472,7 +119519,6 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "lwasf_enable_all_rotational_dofs", _wrap_lwasf_enable_all_rotational_dofs},
     { "lwasf_name2idx", _wrap_lwasf_name2idx},
     { "lwamc_delete", _wrap_lwamc_delete},
-    { "lwsg_new", _wrap_lwsg_new},
     { "lwsg_delete", _wrap_lwsg_delete},
     { "lwsg_new_object", _wrap_lwsg_new_object},
     { "lwsg_find", _wrap_lwsg_find},

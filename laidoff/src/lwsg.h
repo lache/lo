@@ -20,7 +20,7 @@ typedef struct _LWSG {
     LWSGOBJECT* root;
 } LWSG;
 
-LWSG* lwsg_new(LWCONTEXT* pLwc);
+LWSG* lwsg_new();
 void lwsg_delete(LWSG* sg);
 LWSGOBJECT* lwsg_new_object(LWSG* sg, const char* objname, LWSGOBJECT* parent);
 LWSGOBJECT* lwsg_find(const char* objname);
