@@ -40,6 +40,7 @@ local Data = reload_require('data')
 print('Data loaded!')
 
 reload_require('ttl')
+reload_require('mocap')
 
 local data = Data:new()
 

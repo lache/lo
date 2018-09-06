@@ -113,6 +113,7 @@ typedef struct _LWTCP LWTCP;
 typedef struct _LWPSCONTEXT LWPSCONTEXT;
 typedef struct _LWTTL LWTTL;
 typedef struct _LWCHAT LWCHAT;
+typedef struct _LWSG LWSG;
 
 typedef enum _LW_CONTROL_FLAGS {
     LCF_PUCK_GAME_RIGHT_DIR_PAD = 1 << 0,
@@ -438,6 +439,7 @@ typedef struct _LWCONTEXT {
     LWCHATRINGBUFFER chat_ring_buffer;
     int show_chat_window;
     int focus_chat_input;
+    LWSG* sg;
 } LWCONTEXT;
 
 double lwcontext_delta_time(const LWCONTEXT* pLwc);

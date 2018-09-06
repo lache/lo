@@ -123,6 +123,7 @@
 #include "lwudp.h"
 #include "lwasf.h"
 #include "lwamc.h"
+#include "lwsg.h"
 #ifdef WIN32
 #pragma warning(pop)
 #endif
@@ -471,6 +472,7 @@ LWAMC* lwamc_new_from_file(const char* filename, LWASF* asf);
 %include "lwudp.h"
 %include "lwasf.h"
 %include "lwamc.h"
+%include "lwsg.h"
 // using the C-array
 %include <carrays.i>
 %array_functions(int,int)
@@ -490,3 +492,4 @@ SWIGINTERN int  SWIG_Lua_class_is_own(lua_State *L)
   return usr->own;
 }
 %}
+
