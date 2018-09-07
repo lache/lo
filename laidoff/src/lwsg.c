@@ -5,6 +5,9 @@
 LWSG* lwsg_new() {
     LWSG* sg = (LWSG*)calloc(1, sizeof(LWSG));
     sg->root = (LWSGOBJECT*)calloc(1, sizeof(LWSGOBJECT));
+    sg->cam_eye[0] = 0;
+    sg->cam_eye[1] = 0;
+    sg->cam_eye[2] = 10;
     return sg;
 }
 
@@ -54,18 +57,32 @@ void lwsg_set_local_pos(LWSGOBJECT* obj, float x, float y, float z) {
     obj->pos[2] = z;
 }
 
-void lwsg_set_local_quat(LWSGOBJECT* obj, float w, float x, float y, float z) {
-
+void lwsg_set_local_euler(LWSGOBJECT* obj, float rx, float ry, float rz) {
+    obj->rot[0] = rx;
+    obj->rot[1] = ry;
+    obj->rot[2] = rz;
 }
 
 void lwsg_set_local_scale(LWSGOBJECT* obj, float sx, float sy, float sz) {
-
+    obj->scale[0] = sx;
+    obj->scale[1] = sy;
+    obj->scale[2] = sz;
 }
 
 void lwsg_delete_object(LWSG* sg, LWSGOBJECT* sgobj) {
-
 }
 
 void lwsg_refresh(LWCONTEXT* pLwc, LWSG* sg) {
+}
 
+void lwsg_cam_eye(LWSG* sg, float x, float y, float z) {
+    sg->cam_eye[0] = x;
+    sg->cam_eye[1] = y;
+    sg->cam_eye[2] = z;
+}
+
+void lwsg_cam_look_at(LWSG* sg, float x, float y, float z) {
+    sg->cam_look_at[0] = x;
+    sg->cam_look_at[1] = y;
+    sg->cam_look_at[2] = z;
 }

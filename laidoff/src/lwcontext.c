@@ -91,3 +91,7 @@ void lwcontext_rt_corner(const float aspect_ratio, float* x, float* y) {
         *y = 1.0f;
     }
 }
+
+void lwcontext_set_sg(LWCONTEXT* pLwc, LWSG* sg) {
+    pLwc->sg = sg;
+}

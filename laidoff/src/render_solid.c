@@ -528,3 +528,58 @@ void render_solid_general(const LWCONTEXT* pLwc,
     glUniformMatrix4fv(shader->mvp_location, 1, GL_FALSE, (const GLfloat*)proj_view_model);
     glDrawArrays(GL_TRIANGLES, 0, pLwc->vertex_buffer[lvt].vertex_count);
 }
+
+void render_solid_general_mvp(const LWCONTEXT* pLwc,
+                              GLuint tex_index,
+                              GLuint tex_alpha_index,
+                              int lvt,
+                              float alpha_multiplier,
+                              float over_r,
+                              float over_g,
+                              float over_b,
+                              float oratio,
+                              const float* uv_offset,
+                              const float* uv_scale,
+                              int shader_index,
+                              const mat4x4 model,
+                              const mat4x4 view,
+                              const mat4x4 proj) {
+    const LWSHADER* shader = &pLwc->shader[shader_index];
+    lazy_glUseProgram(pLwc, shader_index);
+    glUniform2fv(shader->vuvoffset_location, 1, uv_offset);
+    glUniform2fv(shader->vuvscale_location, 1, uv_scale);
+    glUniform2fv(shader->vs9offset_location, 1, default_uv_offset);
+    glUniform1f(shader->alpha_multiplier_location, alpha_multiplier);
+    glUniform1i(shader->diffuse_location, 0); // 0 means GL_TEXTURE0
+    glUniform1i(shader->alpha_only_location, 1); // 1 means GL_TEXTURE1
+    glUniform3f(shader->overlay_color_location, over_r, over_g, over_b);
+    glUniform1f(shader->overlay_color_ratio_location, oratio);
+
+    mat4x4 view_model;
+    mat4x4 proj_view_model;
+    mat4x4_mul(view_model, view, model);
+    mat4x4_identity(proj_view_model);
+    mat4x4_mul(proj_view_model, proj, view_model);
+
+    lazy_glBindBuffer(pLwc, lvt);
+    if (shader_index == LWST_ETC1) {
+        bind_all_vertex_attrib_etc1_with_alpha(pLwc, lvt);
+        assert(tex_index);
+    } else {
+        bind_all_vertex_attrib(pLwc, lvt);
+    }
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, tex_index);
+    set_tex_filter(GL_LINEAR, GL_LINEAR);
+    //set_tex_filter(GL_NEAREST, GL_NEAREST);
+    if (shader_index == LWST_ETC1) {
+        glActiveTexture(GL_TEXTURE1);
+        assert(tex_alpha_index);
+        glBindTexture(GL_TEXTURE_2D, tex_alpha_index);
+        set_tex_filter(GL_LINEAR, GL_LINEAR);
+    } else {
+        assert(tex_alpha_index == 0);
+    }
+    glUniformMatrix4fv(shader->mvp_location, 1, GL_FALSE, (const GLfloat*)proj_view_model);
+    glDrawArrays(GL_TRIANGLES, 0, pLwc->vertex_buffer[lvt].vertex_count);
+}

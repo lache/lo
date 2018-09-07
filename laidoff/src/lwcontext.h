@@ -456,6 +456,7 @@ void lwcontext_set_update_frequency(LWCONTEXT* pLwc, int hz);
 float lwcontext_update_interval(LWCONTEXT* pLwc);
 int lwcontext_update_frequency(LWCONTEXT* pLwc);
 void lwcontext_rt_corner(const float aspect_ratio, float* x, float* y);
+void lwcontext_set_sg(LWCONTEXT* pLwc, LWSG* sg);
 #ifdef __cplusplus
 };
 #endif
