@@ -5,7 +5,8 @@
 #include <stdio.h>
 #include "lwlog.h"
 #include "lwstrtok_r.h"
-
+#include <stdlib.h> // ios atoi()
+#include <string.h> // ios strlen()
 static void remove_rn(char* line) {
     if (line[strlen(line) - 1] == '\r')
         line[strlen(line) - 1] = 0;

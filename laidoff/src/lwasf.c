@@ -4,7 +4,7 @@
 #include "lwlog.h"
 #include "lwstrtok_r.h"
 #include <math.h>
-
+#include <string.h> // ios strlen()
 #ifndef M_PI
 #define M_PI 3.14159265
 #endif

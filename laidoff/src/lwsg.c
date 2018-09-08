@@ -1,7 +1,8 @@
 #include "lwsg.h"
 #include "lwcontext.h"
 #include "lwlog.h"
-
+#include <stdlib.h> // ios free()
+#include <string.h> // ios strcpy()
 LWSG* lwsg_new() {
     LWSG* sg = (LWSG*)calloc(1, sizeof(LWSG));
     sg->root = (LWSGOBJECT*)calloc(1, sizeof(LWSGOBJECT));
