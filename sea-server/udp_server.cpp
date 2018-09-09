@@ -917,7 +917,7 @@ void udp_server::handle_receive(const boost::system::error_code& error, std::siz
                     break;
                 }
             }
-            if (bytes_account_id <= 0) {
+            if (bytes_account_id_len <= 0) {
                 LOGE("Invalid account ID");
             } else {
                 const int account_id_block_len = round_up(bytes_account_id_len + 1, 4); // plus 1 for a null-terminated character

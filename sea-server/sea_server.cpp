@@ -92,7 +92,7 @@ int main(int argc, char* argv[]) {
                                                               sea_static_instance));
         std::shared_ptr<shipyard> shipyard_instance(new shipyard(io_service,
                                                                  sea_static_instance));
-        std::shared_ptr<session> session_instance(new session());
+        std::shared_ptr<ss::session> session_instance(new ss::session());
         std::shared_ptr<contract> contract_instance(new contract(io_service,
                                                                  sea_static_instance));
         if (argc > 1 && strcmp(argv[1], "--prepare") == 0) {
