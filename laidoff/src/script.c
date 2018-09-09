@@ -677,14 +677,18 @@ static void s_cleanup_coro(LWSCRIPT* script, int idx) {
 }
 
 void script_cleanup_all_coros(LWCONTEXT* pLwc) {
+    LOGI("Cleaning up all running coroutines...");
+    int count = 0;
     LWSCRIPT* script = (LWSCRIPT*)pLwc->script;
     if (script) {
         for (int i = 0; i < LW_MAX_CORO; i++) {
             if (script->coro[i].valid) {
+                count++;
                 s_cleanup_coro(script, i);
             }
         }
     }
+    LOGI("Cleaning up all running coroutines... %d coroutine(s) aborted", count);
 }
 
 void script_update(LWCONTEXT* pLwc) {

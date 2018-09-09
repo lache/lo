@@ -70,15 +70,18 @@ static void render_sgobject(const LWCONTEXT* pLwc,
     mat4x4 identity;
     mat4x4_identity(identity);
     mat4x4_translate(local_trans, sgobj->pos[0], sgobj->pos[1], sgobj->pos[2]);
-    mat4x4_rotate_X(local_rot, local_rot, sgobj->rot[0]);
-    mat4x4_rotate_Y(local_rot, local_rot, sgobj->rot[1]);
+    // local_rot = rz * ry * rx
     mat4x4_rotate_Z(local_rot, local_rot, sgobj->rot[2]);
+    mat4x4_rotate_Y(local_rot, local_rot, sgobj->rot[1]);
+    mat4x4_rotate_X(local_rot, local_rot, sgobj->rot[0]);
     mat4x4 local_scale;
     mat4x4_identity(local_scale);
     mat4x4_scale_aniso(local_scale, identity, sgobj->scale[0], sgobj->scale[1], sgobj->scale[2]);
     mat4x4 local_model;
+    // local_model = (trans * rot) * scale
     mat4x4_mul(local_model, local_trans, local_rot);
     mat4x4_mul(local_model, local_model, local_scale);
+    // final model matrix
     mat4x4_mul(model, parent_model, local_model);
     
     lazy_tex_atlas_glBindTexture(pLwc, sgobj->lae);
