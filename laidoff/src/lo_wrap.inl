@@ -5251,39 +5251,6 @@ fail:
 }
 
 
-static int _wrap_mat4x4_rotate_Y_2(lua_State* L) {
-  int SWIG_arg = 0;
-  vec4 *arg1 ;
-  vec4 *arg2 ;
-  float arg3 ;
-  
-  SWIG_check_num_args("mat4x4_rotate_Y_2",3,3)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("mat4x4_rotate_Y_2",1,"mat4x4");
-  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("mat4x4_rotate_Y_2",2,"mat4x4");
-  if(!lua_isnumber(L,3)) SWIG_fail_arg("mat4x4_rotate_Y_2",3,"float");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_a_4__float,0))){
-    SWIG_fail_ptr("mat4x4_rotate_Y_2",1,SWIGTYPE_p_a_4__float);
-  }
-  
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_a_4__float,0))){
-    SWIG_fail_ptr("mat4x4_rotate_Y_2",2,SWIGTYPE_p_a_4__float);
-  }
-  
-  arg3 = (float)lua_tonumber(L, 3);
-  mat4x4_rotate_Y_2((float (*)[4])arg1,(float (*)[4])arg2,arg3);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
 static int _wrap_mat4x4_rotate_Z(lua_State* L) {
   int SWIG_arg = 0;
   vec4 *arg1 ;
@@ -5306,39 +5273,6 @@ static int _wrap_mat4x4_rotate_Z(lua_State* L) {
   
   arg3 = (float)lua_tonumber(L, 3);
   mat4x4_rotate_Z((float (*)[4])arg1,(float (*)[4])arg2,arg3);
-  
-  return SWIG_arg;
-  
-  if(0) SWIG_fail;
-  
-fail:
-  lua_error(L);
-  return SWIG_arg;
-}
-
-
-static int _wrap_mat4x4_rotate_Z_2(lua_State* L) {
-  int SWIG_arg = 0;
-  vec4 *arg1 ;
-  vec4 *arg2 ;
-  float arg3 ;
-  
-  SWIG_check_num_args("mat4x4_rotate_Z_2",3,3)
-  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("mat4x4_rotate_Z_2",1,"mat4x4");
-  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("mat4x4_rotate_Z_2",2,"mat4x4");
-  if(!lua_isnumber(L,3)) SWIG_fail_arg("mat4x4_rotate_Z_2",3,"float");
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_a_4__float,0))){
-    SWIG_fail_ptr("mat4x4_rotate_Z_2",1,SWIGTYPE_p_a_4__float);
-  }
-  
-  
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_a_4__float,0))){
-    SWIG_fail_ptr("mat4x4_rotate_Z_2",2,SWIGTYPE_p_a_4__float);
-  }
-  
-  arg3 = (float)lua_tonumber(L, 3);
-  mat4x4_rotate_Z_2((float (*)[4])arg1,(float (*)[4])arg2,arg3);
   
   return SWIG_arg;
   
@@ -118521,7 +118455,7 @@ static swig_lua_const_info swig_SwigModule_constants[]= {
     {SWIG_LUA_CONSTTAB_INT("LGS_TILEMAP", LGS_TILEMAP)},
     {SWIG_LUA_CONSTTAB_INT("LGS_MOCAP", LGS_MOCAP)},
     {SWIG_LUA_CONSTTAB_STRING("__LW_STRING_LINE__", "63")},
-    {SWIG_LUA_CONSTTAB_STRING("LWLOGPOS", "src\\lwlog.h(64): ")},
+    {SWIG_LUA_CONSTTAB_STRING("LWLOGPOS", "src/lwlog.h(64): ")},
     {SWIG_LUA_CONSTTAB_INT("LPT_GRID", LPT_GRID)},
     {SWIG_LUA_CONSTTAB_INT("LPT_SOLID_RED", LPT_SOLID_RED)},
     {SWIG_LUA_CONSTTAB_INT("LPT_SOLID_GREEN", LPT_SOLID_GREEN)},
@@ -119007,9 +118941,7 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "mat4x4_rotate", _wrap_mat4x4_rotate},
     { "mat4x4_rotate_X", _wrap_mat4x4_rotate_X},
     { "mat4x4_rotate_Y", _wrap_mat4x4_rotate_Y},
-    { "mat4x4_rotate_Y_2", _wrap_mat4x4_rotate_Y_2},
     { "mat4x4_rotate_Z", _wrap_mat4x4_rotate_Z},
-    { "mat4x4_rotate_Z_2", _wrap_mat4x4_rotate_Z_2},
     { "mat4x4_invert", _wrap_mat4x4_invert},
     { "mat4x4_orthonormalize", _wrap_mat4x4_orthonormalize},
     { "mat4x4_frustum", _wrap_mat4x4_frustum},

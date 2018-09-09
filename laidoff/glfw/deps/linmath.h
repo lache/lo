@@ -237,24 +237,12 @@ static inline void mat4x4_rotate_Y(mat4x4 Q, mat4x4 M, float angle)
 	float s = sinf(angle);
 	float c = cosf(angle);
 	mat4x4 R = {
-		{   c, 0.f,   s, 0.f},
+		{   c, 0.f,  -s, 0.f},
 		{ 0.f, 1.f, 0.f, 0.f},
-		{  -s, 0.f,   c, 0.f},
+		{   s, 0.f,   c, 0.f},
 		{ 0.f, 0.f, 0.f, 1.f}
 	};
 	mat4x4_mul(Q, M, R);
-}
-
-static inline void mat4x4_rotate_Y_2(mat4x4 Q, mat4x4 M, float angle) {
-    float s = sinf(angle);
-    float c = cosf(angle);
-    mat4x4 R = {
-        { c, 0.f,   s, 0.f },
-        { 0.f, 1.f, 0.f, 0.f },
-        { -s, 0.f,   c, 0.f },
-        { 0.f, 0.f, 0.f, 1.f }
-    };
-    mat4x4_mul(Q, R, M);
 }
 static inline void mat4x4_rotate_Z(mat4x4 Q, mat4x4 M, float angle)
 {
@@ -268,14 +256,15 @@ static inline void mat4x4_rotate_Z(mat4x4 Q, mat4x4 M, float angle)
 	};
 	mat4x4_mul(Q, M, R);
 }
-static inline void mat4x4_rotate_Z_2(mat4x4 Q, mat4x4 M, float angle) {
+static inline void mat4x4_rotate_Z_2(mat4x4 Q, mat4x4 M, float angle)
+{
     float s = sinf(angle);
     float c = cosf(angle);
     mat4x4 R = {
-        { c,   s, 0.f, 0.f },
-        { -s,   c, 0.f, 0.f },
-        { 0.f, 0.f, 1.f, 0.f },
-        { 0.f, 0.f, 0.f, 1.f }
+        {   c,   s, 0.f, 0.f},
+        {  -s,   c, 0.f, 0.f},
+        { 0.f, 0.f, 1.f, 0.f},
+        { 0.f, 0.f, 0.f, 1.f}
     };
     mat4x4_mul(Q, R, M);
 }
