@@ -10,8 +10,8 @@ function on_mocap_enter()
     --lo.script_cleanup_all_coros(c)
 end
 
-local asf = lo.lwasf_new_from_file('assets/asf/07-walk.asf')
-local amc = lo.lwamc_new_from_file('assets/amc/07_05-walk.amc', asf)
+local asf = lo.lwasf_new_from_file(lo.script_full_asset_path('asf', '07-walk.asf'))
+local amc = lo.lwamc_new_from_file(lo.script_full_asset_path('amc', '07_05-walk.amc'), asf)
 
 local sg = lo.lwsg_new()
 local sgobj = lo.lwsg_new_object(sg, 'test obj a', sg.root)

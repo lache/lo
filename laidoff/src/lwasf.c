@@ -9,6 +9,8 @@
 #define M_PI 3.14159265
 #endif
 
+char * resolve_path(const char * filename);
+
 static void remove_rn(char* line) {
     if (line[strlen(line) - 1] == '\r')
         line[strlen(line) - 1] = 0;
@@ -193,10 +195,13 @@ static LWASF* load_asf(const char* filename) {
     char* token_last;
     int i, x;
     int done = 0;
-    double length;
+    double length = 1;
     int parent = 0;
+    
+    char* resolved_filename = resolve_path(filename);
 
-    file = fopen(filename, "r");
+    file = fopen(resolved_filename, "r");
+    free(resolved_filename); resolved_filename = 0;
     if (file == 0) {
         LOGE("lwasf: file '%s' cannot be read.", filename);
         return 0;
@@ -286,19 +291,26 @@ static LWASF* load_asf(const char* filename) {
                 for (token = lwstrtok_r(line, " ", &token_last); token; token = lwstrtok_r(0, " ", &token_last)) {
                     int tdof = asf->bones[i].dof;
                     /****/ if (strcmp(token, "rx") == 0) {
-                        asf->bones[i].dofrx = 1, asf->bones[i].dofo[tdof] = 1;
+                        asf->bones[i].dofrx = 1;
+                        asf->bones[i].dofo[tdof] = 1;
                     } else if (strcmp(token, "ry") == 0) {
-                        asf->bones[i].dofry = 1, asf->bones[i].dofo[tdof] = 2;
+                        asf->bones[i].dofry = 1;
+                        asf->bones[i].dofo[tdof] = 2;
                     } else if (strcmp(token, "rz") == 0) {
-                        asf->bones[i].dofrz = 1, asf->bones[i].dofo[tdof] = 3;
+                        asf->bones[i].dofrz = 1;
+                        asf->bones[i].dofo[tdof] = 3;
                     } else if (strcmp(token, "tx") == 0) {
-                        asf->bones[i].doftx = 1, asf->bones[i].dofo[tdof] = 4;
+                        asf->bones[i].doftx = 1;
+                        asf->bones[i].dofo[tdof] = 4;
                     } else if (strcmp(token, "ty") == 0) {
-                        asf->bones[i].dofty = 1, asf->bones[i].dofo[tdof] = 5;
+                        asf->bones[i].dofty = 1;
+                        asf->bones[i].dofo[tdof] = 5;
                     } else if (strcmp(token, "tz") == 0) {
-                        asf->bones[i].doftz = 1, asf->bones[i].dofo[tdof] = 6;
+                        asf->bones[i].doftz = 1;
+                        asf->bones[i].dofo[tdof] = 6;
                     } else if (strcmp(token, "l") == 0) {
-                        asf->bones[i].doftl = 1, asf->bones[i].dofo[tdof] = 7;
+                        asf->bones[i].doftl = 1;
+                        asf->bones[i].dofo[tdof] = 7;
                     } else if (strcmp(token, "dof") == 0) {
                         continue;
                     } else {
@@ -348,10 +360,10 @@ static LWASF* load_asf(const char* filename) {
             }
         }
     }
-    fclose(file), file = 0;
+    fclose(file); file = 0;
     return asf;
 FAIL:
-    free(asf), asf = 0;
+    free(asf); asf = 0;
     return 0;
 }
 

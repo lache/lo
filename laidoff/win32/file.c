@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <string.h>
 #include "file.h"
 #include "lwlog.h"
 #include "platform_detection.h"
@@ -8,6 +8,10 @@
 #if LW_PLATFORM_OSX
 char* get_assets_path(const char* filename);
 #endif
+
+char* resolve_path(const char* filename) {
+    return strdup(filename);
+}
 
 char* create_string_from_file(const char* filename)
 {

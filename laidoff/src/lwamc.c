@@ -7,6 +7,9 @@
 #include "lwstrtok_r.h"
 #include <stdlib.h> // ios atoi()
 #include <string.h> // ios strlen()
+
+char * resolve_path(const char * filename);
+
 static void remove_rn(char* line) {
     if (line[strlen(line) - 1] == '\r')
         line[strlen(line) - 1] = 0;
@@ -29,8 +32,9 @@ static LWAMC* load_amc(const char* filename, LWASF* asf) {
     double v;
 
     bone = asf->root_bone;
-
-    file = fopen(filename, "r");
+    char* resolved_filename = resolve_path(filename);
+    file = fopen(resolved_filename, "r");
+    free(resolved_filename); resolved_filename = 0;
     if (file == 0) {
         LOGE("lwamc: file '%s' cannot be read.", filename);
         return 0;
