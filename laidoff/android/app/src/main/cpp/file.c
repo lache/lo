@@ -4,6 +4,7 @@
 #include <errno.h>
 #include "file.h"
 #include "laidoff.h"
+#include <string.h>
 
 #define  LOG_TAG    "And9"
 
@@ -168,4 +169,8 @@ void register_asset(const char* asset_path, int start_offset, int length) {
          start_offset, length);
 
     nativeAssetLength++;
+}
+
+char* resolve_path(const char* filename) {
+    return strdup(filename);
 }
