@@ -9,10 +9,6 @@
 char* get_assets_path(const char* filename);
 #endif
 
-char* resolve_path(const char* filename) {
-    return strdup(filename);
-}
-
 char* create_string_from_file(const char* filename)
 {
 #if LW_PLATFORM_OSX

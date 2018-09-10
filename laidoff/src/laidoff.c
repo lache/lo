@@ -1216,10 +1216,10 @@ void lwc_render(const LWCONTEXT* pLwc) {
     } else if (pLwc->game_scene == LGS_TILEMAP) {
         lwc_render_tilemap(pLwc);
     }
-    // Rendering a system message
-    render_sys_msg(pLwc, pLwc->def_sys_msg);
     // Rendering stats
     glDisable(GL_DEPTH_TEST);
+    // Rendering a system message
+    render_sys_msg(pLwc, pLwc->def_sys_msg);
     render_stat(pLwc);
     render_addr(pLwc);
     glEnable(GL_DEPTH_TEST);

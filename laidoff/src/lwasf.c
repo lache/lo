@@ -5,11 +5,11 @@
 #include "lwstrtok_r.h"
 #include <math.h>
 #include <string.h> // ios strlen()
+#include "file.h"
+#include "lwcharptrstream.h"
 #ifndef M_PI
 #define M_PI 3.14159265
 #endif
-
-char * resolve_path(const char * filename);
 
 static void remove_rn(char* line) {
     if (line[strlen(line) - 1] == '\r')
@@ -190,25 +190,22 @@ static LWASF* load_asf(const char* filename) {
     LWASF* asf;
     char line[2048];
     char keyword[256];
-    FILE* file;
     char* token;
     char* token_last;
     int i, x;
     int done = 0;
     double length = 1;
     int parent = 0;
-    
-    char* resolved_filename = resolve_path(filename);
+    LWCHARPTRSTREAM char_ptr_stream;
 
-    file = fopen(resolved_filename, "r");
-    free(resolved_filename); resolved_filename = 0;
-    if (file == 0) {
+    lwcharptrstream_init(&char_ptr_stream, create_string_from_file(filename));
+    if (char_ptr_stream.length == 0) {
         LOGE("lwasf: file '%s' cannot be read.", filename);
         return 0;
     }
 
     // skip to ':bonedata' line
-    while (fgets(line, sizeof(line), file)) {
+    while (lwcharptrstream_fgets(&char_ptr_stream, line, sizeof(line))) {
         remove_rn(line);
         sscanf(line, "%s", keyword);
         //LOGI("Line: %s", line);
@@ -246,7 +243,7 @@ static LWASF* load_asf(const char* filename) {
         asf->moving_bone_count++;
         // for each bone
         while (1) {
-            if (fgets(line, sizeof(line), file) == 0) {
+            if (lwcharptrstream_fgets(&char_ptr_stream, line, sizeof(line)) == 0) {
                 LOGE("Unexpectedly terminated ASF file.");
                 goto FAIL;
             }
@@ -334,13 +331,13 @@ static LWASF* load_asf(const char* filename) {
 
     // hierarchy
     // skip begin line
-    if (fgets(line, sizeof(line), file) == 0) {
+    if (lwcharptrstream_fgets(&char_ptr_stream, line, sizeof(line)) == 0) {
         LOGE("Unexpectedly terminated ASF file. (expecting hierarchy data)");
         goto FAIL;
     }
     remove_rn(line);
     while (1) {
-        if (fgets(line, sizeof(line), file) == 0) {
+        if (lwcharptrstream_fgets(&char_ptr_stream, line, sizeof(line)) == 0) {
             LOGE("Unexpectedly terminated ASF file. (expecting hierarchy data)");
             goto FAIL;
         }
@@ -360,9 +357,10 @@ static LWASF* load_asf(const char* filename) {
             }
         }
     }
-    fclose(file); file = 0;
+    lwcharptrstream_deinit(&char_ptr_stream);
     return asf;
 FAIL:
+    lwcharptrstream_deinit(&char_ptr_stream);
     free(asf); asf = 0;
     return 0;
 }

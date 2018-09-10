@@ -170,7 +170,3 @@ void register_asset(const char* asset_path, int start_offset, int length) {
 
     nativeAssetLength++;
 }
-
-char* resolve_path(const char* filename) {
-    return strdup(filename);
-}

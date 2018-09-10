@@ -7,8 +7,8 @@
 #include "lwstrtok_r.h"
 #include <stdlib.h> // ios atoi()
 #include <string.h> // ios strlen()
-
-char * resolve_path(const char * filename);
+#include "lwcharptrstream.h"
+#include "file.h"
 
 static void remove_rn(char* line) {
     if (line[strlen(line) - 1] == '\r')
@@ -20,7 +20,6 @@ static void remove_rn(char* line) {
 static LWAMC* load_amc(const char* filename, LWASF* asf) {
     LWAMC* amc;
     const LWASFBONE* bone;
-    FILE* file;
     int n = 0;
     char line[2048];
     int bone_count;
@@ -30,6 +29,7 @@ static LWAMC* load_amc(const char* filename, LWASF* asf) {
     char* token_last;
     int bone_idx;
     double v;
+    LWCHARPTRSTREAM char_ptr_stream;
 
     if (asf == 0) {
         LOGE("lwamf: ASF null.");
@@ -37,16 +37,14 @@ static LWAMC* load_amc(const char* filename, LWASF* asf) {
     }
 
     bone = asf->root_bone;
-    char* resolved_filename = resolve_path(filename);
-    file = fopen(resolved_filename, "r");
-    free(resolved_filename); resolved_filename = 0;
-    if (file == 0) {
+    lwcharptrstream_init(&char_ptr_stream, create_string_from_file(filename));
+    if (char_ptr_stream.length == 0) {
         LOGE("lwamc: file '%s' cannot be read.", filename);
         return 0;
     }
 
     // count lines
-    while (fgets(line, sizeof(line), file)) {
+    while (lwcharptrstream_fgets(&char_ptr_stream, line, sizeof(line))) {
         remove_rn(line);
         if (strcmp(line, "") != 0) {
             n++;
@@ -64,9 +62,9 @@ static LWAMC* load_amc(const char* filename, LWASF* asf) {
     amc->frame_count = n;
     amc->postures = (LWPOSTURE*)calloc(n, sizeof(LWPOSTURE));
 
-    fseek(file, 0, SEEK_SET);
+    lwcharptrstream_reset_cursor(&char_ptr_stream);
 
-    while (fgets(line, sizeof(line), file)) {
+    while (lwcharptrstream_fgets(&char_ptr_stream, line, sizeof(line))) {
         remove_rn(line);
         if (strcmp(line, ":FORCE-ALL-JOINTS-BE-3DOF") == 0) {
             lwasf_enable_all_rotational_dofs(asf);
@@ -79,11 +77,11 @@ static LWAMC* load_amc(const char* filename, LWASF* asf) {
     for (i = 0; i < amc->frame_count; i++) {
         int frame_num;
         LWPOSTURE* posture;
-        fgets(line, sizeof(line), file);
+        lwcharptrstream_fgets(&char_ptr_stream, line, sizeof(line));
         frame_num = atoi(line);
         posture = &amc->postures[i];
         for (j = 0; j < moving_bone_count; j++) {
-            fgets(line, sizeof(line), file);
+            lwcharptrstream_fgets(&char_ptr_stream, line, sizeof(line));
             for (k = 0, token = lwstrtok_r(line, " ", &token_last);
                  token;
                  k++, token = lwstrtok_r(0, " ", &token_last)) {
@@ -130,8 +128,8 @@ static LWAMC* load_amc(const char* filename, LWASF* asf) {
             }
         }
     }
-    fclose(file), file = 0;
     LOGI("amc: %d frames loaded from '%s'.", n, filename);
+    lwcharptrstream_deinit(&char_ptr_stream);
     return amc;
 }
 
