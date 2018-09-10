@@ -330,6 +330,7 @@
 		6C40DD9220F527F40055A782 /* ChatStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6C40DD9120F527F40055A782 /* ChatStoryboard.storyboard */; };
 		6C59053E207C60C500A14685 /* remtex.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C59053C207C60C400A14685 /* remtex.c */; };
 		6C59053F207C60C500A14685 /* render_remtex.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C59053D207C60C500A14685 /* render_remtex.c */; };
+		6C7381E521467EBB00492783 /* lwcharptrstream.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C7381E321467EBB00492783 /* lwcharptrstream.c */; };
 		6C7C10FB21112C0C00245ACB /* render_gazza.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C7C10F321112C0B00245ACB /* render_gazza.c */; };
 		6C7C10FC21112C0C00245ACB /* render_dynamic_vbo.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C7C10F521112C0C00245ACB /* render_dynamic_vbo.c */; };
 		6C7C10FD21112C0C00245ACB /* lwlog.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C7C10F721112C0C00245ACB /* lwlog.c */; };
@@ -1250,6 +1251,8 @@
 		6C59053B207C60C400A14685 /* render_remtex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = render_remtex.h; sourceTree = "<group>"; };
 		6C59053C207C60C400A14685 /* remtex.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = remtex.c; sourceTree = "<group>"; };
 		6C59053D207C60C500A14685 /* render_remtex.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = render_remtex.c; sourceTree = "<group>"; };
+		6C7381E321467EBB00492783 /* lwcharptrstream.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lwcharptrstream.c; sourceTree = "<group>"; };
+		6C7381E421467EBB00492783 /* lwcharptrstream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lwcharptrstream.h; sourceTree = "<group>"; };
 		6C7C10F221112C0B00245ACB /* render_gazza.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = render_gazza.h; sourceTree = "<group>"; };
 		6C7C10F321112C0B00245ACB /* render_gazza.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = render_gazza.c; sourceTree = "<group>"; };
 		6C7C10F421112C0C00245ACB /* render_tilemap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = render_tilemap.h; sourceTree = "<group>"; };
@@ -2976,25 +2979,6 @@
 		6CC83267205D50DA0031523A /* src */ = {
 			isa = PBXGroup;
 			children = (
-				6C99DBD221435083000C9798 /* lwamc.c */,
-				6C99DBD421435083000C9798 /* lwamc.h */,
-				6C99DBCA21435082000C9798 /* lwasf.c */,
-				6C99DBD521435083000C9798 /* lwasf.h */,
-				6C99DBC721435081000C9798 /* lwasfbone.c */,
-				6C99DBD621435083000C9798 /* lwasfbone.h */,
-				6C99DBCD21435082000C9798 /* lwasfmacro.h */,
-				6C99DBC821435082000C9798 /* lwmocap.c */,
-				6C99DBCE21435082000C9798 /* lwmocap.h */,
-				6C99DBD021435083000C9798 /* lwposture.c */,
-				6C99DBCB21435082000C9798 /* lwposture.h */,
-				6C99DBC921435082000C9798 /* lwsg.c */,
-				6C99DBD821435084000C9798 /* lwsg.h */,
-				6C99DBCC21435082000C9798 /* lwstrtok_r.c */,
-				6C99DBD121435083000C9798 /* lwstrtok_r.h */,
-				6C99DBD721435083000C9798 /* render_mocap.c */,
-				6C99DBD321435083000C9798 /* render_mocap.h */,
-				6C99DBC621435081000C9798 /* render_sg.c */,
-				6C99DBCF21435083000C9798 /* render_sg.h */,
 				6CC8326D205D50DA0031523A /* armature.c */,
 				6CC832E0205D50DA0031523A /* armature.h */,
 				6CC83269205D50DA0031523A /* battle_result.c */,
@@ -3040,8 +3024,15 @@
 				6CC83310205D50DA0031523A /* loadobj.c */,
 				6CC83290205D50DA0031523A /* logic.c */,
 				6CC832F0205D50DA0031523A /* logic.h */,
+				6C99DBD221435083000C9798 /* lwamc.c */,
+				6C99DBD421435083000C9798 /* lwamc.h */,
 				6CC832BB205D50DA0031523A /* lwanim.c */,
 				6CC83336205D50DA0031523A /* lwanim.h */,
+				6C99DBCA21435082000C9798 /* lwasf.c */,
+				6C99DBD521435083000C9798 /* lwasf.h */,
+				6C99DBC721435081000C9798 /* lwasfbone.c */,
+				6C99DBD621435083000C9798 /* lwasfbone.h */,
+				6C99DBCD21435082000C9798 /* lwasfmacro.h */,
 				6CC83301205D50DA0031523A /* lwatlasenum.c */,
 				6CC8327F205D50DA0031523A /* lwatlasenum.h */,
 				6CC832D5205D50DA0031523A /* lwatlassprite.c */,
@@ -3057,6 +3048,8 @@
 				6CC832CA205D50DA0031523A /* lwbutton.c */,
 				6CC83320205D50DA0031523A /* lwbutton.h */,
 				6CC8332B205D50DA0031523A /* lwbuttoncommand.h */,
+				6C7381E321467EBB00492783 /* lwcharptrstream.c */,
+				6C7381E421467EBB00492783 /* lwcharptrstream.h */,
 				6C3F143520F897660021A1FD /* lwchat.c */,
 				6C3F143620F897660021A1FD /* lwchat.h */,
 				EA30351E6C793142A9AC7BD3 /* lwchatringbuffer.c */,
@@ -3096,13 +3089,19 @@
 				6CC832F5205D50DA0031523A /* lwmacro.h */,
 				6CC832B5205D50DA0031523A /* lwmath.c */,
 				6CC83334205D50DA0031523A /* lwmath.h */,
+				6C99DBC821435082000C9798 /* lwmocap.c */,
+				6C99DBCE21435082000C9798 /* lwmocap.h */,
 				6C7C10F821112C0C00245ACB /* lwmutex.h */,
 				6CC8326A205D50DA0031523A /* lwparabola.c */,
 				6CC832EB205D50DA0031523A /* lwparabola.h */,
 				6CC8329F205D50DA0031523A /* lwpkm.h */,
+				6C99DBD021435083000C9798 /* lwposture.c */,
+				6C99DBCB21435082000C9798 /* lwposture.h */,
 				6CC83323205D50DA0031523A /* lwprogrammedtex.h */,
 				6CC832FC205D50DA0031523A /* lwringbuffer.c */,
 				6CC8328B205D50DA0031523A /* lwringbuffer.h */,
+				6C99DBC921435082000C9798 /* lwsg.c */,
+				6C99DBD821435084000C9798 /* lwsg.h */,
 				6CC8332D205D50DA0031523A /* lwshader.c */,
 				6CC832C1205D50DA0031523A /* lwshader.h */,
 				6CC83281205D50DA0031523A /* lwsimpleanim.c */,
@@ -3113,6 +3112,8 @@
 				6CC8332F205D50DA0031523A /* lwskinmesh.h */,
 				6CD6276B20EF4B90002A2164 /* lwsolid.c */,
 				6CD6276520EF4B8F002A2164 /* lwsolid.h */,
+				6C99DBCC21435082000C9798 /* lwstrtok_r.c */,
+				6C99DBD121435083000C9798 /* lwstrtok_r.h */,
 				6CC832D4205D50DA0031523A /* lwtcp.c */,
 				6CC8327D205D50DA0031523A /* lwtcp.h */,
 				6CC8332E205D50DA0031523A /* lwtcpclient.c */,
@@ -3187,6 +3188,8 @@
 				6C7C10F221112C0B00245ACB /* render_gazza.h */,
 				6CC832CF205D50DA0031523A /* render_leaderboard.c */,
 				6CC83324205D50DA0031523A /* render_leaderboard.h */,
+				6C99DBD721435083000C9798 /* render_mocap.c */,
+				6C99DBD321435083000C9798 /* render_mocap.h */,
 				3EF18865C9E87623A8107AC5 /* render_morph.c */,
 				6CD6276120EF4B8E002A2164 /* render_morph.h */,
 				6CC8331C205D50DA0031523A /* render_ps.c */,
@@ -3195,6 +3198,8 @@
 				6CD6276720EF4B8F002A2164 /* render_puckgame.h */,
 				6C59053D207C60C500A14685 /* render_remtex.c */,
 				6C59053B207C60C400A14685 /* render_remtex.h */,
+				6C99DBC621435081000C9798 /* render_sg.c */,
+				6C99DBCF21435083000C9798 /* render_sg.h */,
 				6CC832C7205D50DA0031523A /* render_skin.c */,
 				6CC83328205D50DA0031523A /* render_skin.h */,
 				6CC83289205D50DA0031523A /* render_solid.c */,
@@ -3680,6 +3685,7 @@
 				6C99DBD921435084000C9798 /* render_sg.c in Sources */,
 				6CA16D9E1EA210BB00DB7AF0 /* luac.c in Sources */,
 				6CC83371205D50DA0031523A /* battlelogic.c in Sources */,
+				6C7381E521467EBB00492783 /* lwcharptrstream.c in Sources */,
 				6C3F143A20F897670021A1FD /* render_chat.c in Sources */,
 				6C295ED1204310700052999C /* el_base.cpp in Sources */,
 				6CA4657A21186F3B0080A1C7 /* pkparse.c in Sources */,
