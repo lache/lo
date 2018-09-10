@@ -555,11 +555,10 @@ void render_solid_general_mvp(const LWCONTEXT* pLwc,
     glUniform3f(shader->overlay_color_location, over_r, over_g, over_b);
     glUniform1f(shader->overlay_color_ratio_location, oratio);
 
-    mat4x4 view_model;
     mat4x4 proj_view_model;
-    mat4x4_mul(view_model, view, model);
-    mat4x4_identity(proj_view_model);
-    mat4x4_mul(proj_view_model, proj, view_model);
+    mat4x4_dup(proj_view_model, proj);
+    mat4x4_mul(proj_view_model, proj_view_model, view);
+    mat4x4_mul(proj_view_model, proj_view_model, model);
 
     lazy_glBindBuffer(pLwc, lvt);
     if (shader_index == LWST_ETC1) {

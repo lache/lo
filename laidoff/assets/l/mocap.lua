@@ -59,11 +59,11 @@ sgobj4.lvt = lo.LVT_EARTH
 sgobj4.lae = lo.LAE_WORLD_MAP
 lo.lwsg_set_local_pos(sgobj4,-2,2,0)
 
-print(sg.root.child_count)
+--print(sg.root.child_count)
 
 lo.lwsg_cam_eye(sg, 10, -10, 10)
 
 lo.lwcontext_set_sg(c, sg)
 
-print('hello')
+--print('hello')
 

@@ -81,7 +81,8 @@ static void render_sgobject(const LWCONTEXT* pLwc,
     // local_model = (trans * rot) * scale
     mat4x4_mul(local_model, local_trans, local_rot);
     mat4x4_mul(local_model, local_model, local_scale);
-    // final model matrix
+    // final position     = [parent_model * local_model] * [vertex pos]
+    //                    = [parent_model * local_trans * local_rot * local_scale] * [vertex pos]
     mat4x4_mul(model, parent_model, local_model);
     
     lazy_tex_atlas_glBindTexture(pLwc, sgobj->lae);
