@@ -67,3 +67,4 @@ lo.lwcontext_set_sg(c, sg)
 
 --print('hello')
 
+print('ASF bone count: '..asf.bone_count)

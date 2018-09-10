@@ -211,7 +211,7 @@ static LWASF* load_asf(const char* filename) {
     while (fgets(line, sizeof(line), file)) {
         remove_rn(line);
         sscanf(line, "%s", keyword);
-        LOGI("Line: %s", line);
+        //LOGI("Line: %s", line);
         if (strcmp(keyword, ":bonedata") == 0)
             break;
     }
@@ -319,9 +319,9 @@ static LWASF* load_asf(const char* filename) {
                     asf->bones[i].dof++;
                     asf->bones[i].dofo[asf->bones[i].dof] = 0; // sentinel
                 }
-                LOGI("Bone %d DOF", i);
+                //LOGI("Bone %d DOF", i);
                 for (x = 0; x < 7 && asf->bones[i].dofo[x] != 0; x++) {
-                    LOGI("%d", asf->bones[i].dofo[x]);
+                    //LOGI("%d", asf->bones[i].dofo[x]);
                 }
             }
         }

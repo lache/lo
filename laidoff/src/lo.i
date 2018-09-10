@@ -359,8 +359,9 @@ void udp_send(LWUDP* udp, const char* data, int size);
 %typemap(out) LWASF * %{
     // should have metatable so have custom __gc function
     SWIG_NewPointerObj(L,$result,$descriptor,1); SWIG_arg++;
-    luaL_getmetatable(L, "LWASF");
-    lua_setmetatable(L, -2);
+    SWIG_Lua_AddMetatableWithCustomDtor(L,$descriptor,lwasfwrap_delete);
+    //luaL_getmetatable(L, "LWASF");
+    //lua_setmetatable(L, -2);
 %}
 LWASF* lwasf_new_from_file(const char* filename);
 
@@ -369,8 +370,9 @@ LWASF* lwasf_new_from_file(const char* filename);
 %typemap(out) LWAMC * %{
     // should have metatable so have custom __gc function
     SWIG_NewPointerObj(L,$result,$descriptor,1); SWIG_arg++;
-    luaL_getmetatable(L, "LWAMC");
-    lua_setmetatable(L, -2);
+    SWIG_Lua_AddMetatableWithCustomDtor(L,$descriptor,lwamcwrap_delete);
+    //luaL_getmetatable(L, "LWAMC");
+    //lua_setmetatable(L, -2);
 %}
 LWAMC* lwamc_new_from_file(const char* filename, LWASF* asf);
 
