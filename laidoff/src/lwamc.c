@@ -31,6 +31,11 @@ static LWAMC* load_amc(const char* filename, LWASF* asf) {
     int bone_idx;
     double v;
 
+    if (asf == 0) {
+        LOGE("lwamf: ASF null.");
+        return 0;
+    }
+
     bone = asf->root_bone;
     char* resolved_filename = resolve_path(filename);
     file = fopen(resolved_filename, "r");
