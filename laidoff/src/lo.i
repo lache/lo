@@ -124,6 +124,7 @@
 #include "lwasf.h"
 #include "lwamc.h"
 #include "lwsg.h"
+#include "lwasfbone.h"
 #ifdef WIN32
 #pragma warning(pop)
 #endif
@@ -490,6 +491,7 @@ LWSG* lwsg_new();
 %include "lwasf.h"
 %include "lwamc.h"
 %include "lwsg.h"
+%include "lwasfbone.h"
 // using the C-array
 %include <carrays.i>
 %array_functions(int,int)

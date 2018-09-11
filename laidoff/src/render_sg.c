@@ -2,6 +2,7 @@
 #include "lwcontext.h"
 #include "lwsg.h"
 #include "render_solid.h"
+#include "lwlog.h"
 
 const static float default_uv_offset[2] = { 0, 0 };
 const static float default_uv_scale[2] = { 1, 1 };
@@ -61,10 +62,12 @@ static void render_sgobject(const LWCONTEXT* pLwc,
                             mat4x4 model,
                             const mat4x4 view,
                             const mat4x4 proj) {
-    if (sgobj == 0 || sgobj->lvt == 0) {
+    if (sgobj == 0) {
+        LOGE("sgobj null; cannot be rendered");
         mat4x4_dup(model, parent_model);
         return;
     }
+
     mat4x4 local_trans, local_rot;
     mat4x4_identity(local_rot);
     mat4x4 identity;
@@ -84,6 +87,11 @@ static void render_sgobject(const LWCONTEXT* pLwc,
     // final position     = [parent_model * local_model] * [vertex pos]
     //                    = [parent_model * local_trans * local_rot * local_scale] * [vertex pos]
     mat4x4_mul(model, parent_model, local_model);
+
+    // 'Empty' object: nothing to render; only updated 'model' will be useful in this case
+    if (sgobj->lvt == 0) {
+        return;
+    }
     
     lazy_tex_atlas_glBindTexture(pLwc, sgobj->lae);
     render_solid_general_mvp(pLwc,

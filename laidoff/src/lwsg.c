@@ -6,6 +6,7 @@
 LWSG* lwsg_new() {
     LWSG* sg = (LWSG*)calloc(1, sizeof(LWSG));
     sg->root = (LWSGOBJECT*)calloc(1, sizeof(LWSGOBJECT));
+    sg->root->scale[0] = sg->root->scale[1] = sg->root->scale[2] = 1;
     sg->cam_eye[0] = 0;
     sg->cam_eye[1] = 0;
     sg->cam_eye[2] = 10;
@@ -29,6 +30,7 @@ void lwsg_delete(LWSG* sg) {
 
 LWSGOBJECT* lwsg_new_object(LWSG* sg, const char* objname, LWSGOBJECT* parent) {
     if (parent == 0) {
+        LOGEP("parent should be not null");
         return 0;
     }
     LWSGOBJECT* sgobj = (LWSGOBJECT*)calloc(1, sizeof(LWSGOBJECT));

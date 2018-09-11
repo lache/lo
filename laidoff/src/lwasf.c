@@ -54,6 +54,7 @@ static int set_children_and_sibling(LWASF* asf, int parent_idx, LWASFBONE* child
     }
 }
 
+// r is row-major matarix
 static void rotation_z(double r[][4], double a) {
     a = a * M_PI / 180.;
     r[0][0] = cos(a); r[0][1] = -sin(a); r[0][2] = 0; r[0][3] = 0;
@@ -62,6 +63,7 @@ static void rotation_z(double r[][4], double a) {
     r[3][0] = 0;      r[3][1] = 0;       r[3][2] = 0; r[3][3] = 1;
 }
 
+// r is row-major matarix
 static void rotation_y(double r[][4], double a) {
     a = a * M_PI / 180.;
     r[0][0] = cos(a);  r[0][1] = 0;       r[0][2] = sin(a); r[0][3] = 0;
@@ -70,6 +72,7 @@ static void rotation_y(double r[][4], double a) {
     r[3][0] = 0;       r[3][1] = 0;       r[3][2] = 0;      r[3][3] = 1;
 }
 
+// r is row-major matarix
 static void rotation_x(double r[][4], double a) {
     a = a * M_PI / 180.;
     r[0][0] = 1;       r[0][1] = 0;       r[0][2] = 0;       r[0][3] = 0;
@@ -185,6 +188,10 @@ static void compute_coordinate_transform_from_child_to_parent_all(LWASF* asf) {
         }
     }
 }
+// Use this parameter to adjust the size of the skeleton. The default value is 0.06.
+// This creates a human skeleton of 1.7 m in height (approximately)
+//#define MOCAP_SCALE 0.06
+#define MOCAP_SCALE 0.06
 
 static LWASF* load_asf(const char* filename) {
     LWASF* asf;
@@ -325,7 +332,7 @@ static LWASF* load_asf(const char* filename) {
         if (asf->bones[i].dofrx == 0 && asf->bones[i].dofry && asf->bones[i].dofrz) {
             asf->moving_bone_count--;
         }
-        asf->bones[i].length = length;
+        asf->bones[i].length = length * MOCAP_SCALE;
     }
     LOGI("%d bones loaded", asf->bone_count);
 
@@ -407,4 +414,8 @@ void lwasf_enable_all_rotational_dofs(LWASF* asf) {
             asf->bones[i].dofo[asf->bones[i].dof] = 0;
         }
     }
+}
+
+LWASFBONE* lwasf_bone(LWASF* asf, int index) {
+    return &asf->bones[index];
 }
