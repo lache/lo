@@ -9,6 +9,7 @@
 #include <string.h> // ios strlen()
 #include "lwcharptrstream.h"
 #include "file.h"
+#include "lwmacro.h"
 
 static void remove_rn(char* line) {
     if (line[strlen(line) - 1] == '\r')
@@ -98,22 +99,22 @@ static LWAMC* load_amc(const char* filename, LWASF* asf) {
                         LOGE("amc: bone index %d not found %d channel", bone_idx, k - 1);
                         break;
                     case 1:
-                        posture->bone_rotation[bone_idx][0] = v;
+                        posture->bone_rotation[bone_idx][0] = LWDEG2RAD(v);
                         break;
                     case 2:
-                        posture->bone_rotation[bone_idx][1] = v;
+                        posture->bone_rotation[bone_idx][1] = LWDEG2RAD(v);
                         break;
                     case 3:
-                        posture->bone_rotation[bone_idx][2] = v;
+                        posture->bone_rotation[bone_idx][2] = LWDEG2RAD(v);
                         break;
                     case 4:
-                        posture->bone_translation[bone_idx][0] = v;
+                        posture->bone_translation[bone_idx][0] = v * MOCAP_SCALE;
                         break;
                     case 5:
-                        posture->bone_translation[bone_idx][1] = v;
+                        posture->bone_translation[bone_idx][1] = v * MOCAP_SCALE;
                         break;
                     case 6:
-                        posture->bone_translation[bone_idx][2] = v;
+                        posture->bone_translation[bone_idx][2] = v * MOCAP_SCALE;
                         break;
                     case 7:
                         posture->bone_length[bone_idx] = v;
@@ -144,4 +145,29 @@ LWAMC* lwamc_new_from_file(const char* filename, LWASF* asf) {
 void lwamc_delete(LWAMC* amc) {
     free(amc->postures);
     free(amc);
+}
+
+void lwamc_apply_posture(const LWAMC* amc, LWASF* asf, int frame) {
+    if (amc == 0) {
+        LOGEP("amc null");
+        return;
+    }
+    if (asf == 0) {
+        LOGEP("asf null");
+        return;
+    }
+    if (frame >= amc->frame_count) {
+        LOGEP("Frame out of range");
+        return;
+    }
+    // amc->postures[frame].root_pos ???
+    const LWPOSTURE* posture = &amc->postures[frame];
+    for (int i = 0; i < asf->bone_count; i++) {
+        asf->bones[i].tx = posture->bone_translation[i][0];
+        asf->bones[i].ty = posture->bone_translation[i][1];
+        asf->bones[i].tz = posture->bone_translation[i][2];
+        asf->bones[i].rx = posture->bone_rotation[i][0];
+        asf->bones[i].ry = posture->bone_rotation[i][1];
+        asf->bones[i].rz = posture->bone_rotation[i][2];
+    }
 }

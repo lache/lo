@@ -188,10 +188,6 @@ static void compute_coordinate_transform_from_child_to_parent_all(LWASF* asf) {
         }
     }
 }
-// Use this parameter to adjust the size of the skeleton. The default value is 0.06.
-// This creates a human skeleton of 1.7 m in height (approximately)
-//#define MOCAP_SCALE 0.06
-#define MOCAP_SCALE 0.06
 
 static LWASF* load_asf(const char* filename) {
     LWASF* asf;

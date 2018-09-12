@@ -22,7 +22,7 @@ static void delete_recursive(LWSGOBJECT* sgobj) {
     }
     delete_recursive(sgobj->child);
     delete_recursive(sgobj->sibling);
-    LOGI("Releasing scene graph object '%s'...", sgobj->name);
+    //LOGI("Releasing scene graph object '%s'...", sgobj->name);
     free(sgobj);
 }
 

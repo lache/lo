@@ -116519,6 +116519,39 @@ fail:
 }
 
 
+static int _wrap_lwamc_apply_posture(lua_State* L) {
+  int SWIG_arg = 0;
+  LWAMC *arg1 = (LWAMC *) 0 ;
+  LWASF *arg2 = (LWASF *) 0 ;
+  int arg3 ;
+  
+  SWIG_check_num_args("lwamc_apply_posture",3,3)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwamc_apply_posture",1,"LWAMC const *");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("lwamc_apply_posture",2,"LWASF *");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("lwamc_apply_posture",3,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWAMC,0))){
+    SWIG_fail_ptr("lwamc_apply_posture",1,SWIGTYPE_p__LWAMC);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p__LWASF,0))){
+    SWIG_fail_ptr("lwamc_apply_posture",2,SWIGTYPE_p__LWASF);
+  }
+  
+  arg3 = (int)lua_tonumber(L, 3);
+  lwamc_apply_posture((struct _LWAMC const *)arg1,arg2,arg3);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_LWSGOBJECT_name_set(lua_State* L) {
   int SWIG_arg = 0;
   struct _LWSGOBJECT *arg1 = (struct _LWSGOBJECT *) 0 ;
@@ -120231,7 +120264,7 @@ static swig_lua_const_info swig_SwigModule_constants[]= {
     {SWIG_LUA_CONSTTAB_INT("LGS_TILEMAP", LGS_TILEMAP)},
     {SWIG_LUA_CONSTTAB_INT("LGS_MOCAP", LGS_MOCAP)},
     {SWIG_LUA_CONSTTAB_STRING("__LW_STRING_LINE__", "63")},
-    {SWIG_LUA_CONSTTAB_STRING("LWLOGPOS", "src/lwlog.h(64): ")},
+    {SWIG_LUA_CONSTTAB_STRING("LWLOGPOS", "src\\lwlog.h(64): ")},
     {SWIG_LUA_CONSTTAB_INT("LPT_GRID", LPT_GRID)},
     {SWIG_LUA_CONSTTAB_INT("LPT_SOLID_RED", LPT_SOLID_RED)},
     {SWIG_LUA_CONSTTAB_INT("LPT_SOLID_GREEN", LPT_SOLID_GREEN)},
@@ -121591,6 +121624,7 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "lwasf_name2idx", _wrap_lwasf_name2idx},
     { "lwasf_bone", _wrap_lwasf_bone},
     { "lwamc_delete", _wrap_lwamc_delete},
+    { "lwamc_apply_posture", _wrap_lwamc_apply_posture},
     { "lwsg_delete", _wrap_lwsg_delete},
     { "lwsg_new_object", _wrap_lwsg_new_object},
     { "lwsg_find", _wrap_lwsg_find},
