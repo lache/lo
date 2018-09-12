@@ -68,7 +68,7 @@ lo.lwsg_set_local_pos(sgobj4,-2,2,0)
 
 local bone_sgbone_map = {}
 
-local function rot_parent_current(bone)
+local function get_rot_parent_current(bone)
     local a = linmath.mat4x4_new_identity()
     for ri=1,4 do
         for ci=1,4 do
@@ -78,7 +78,7 @@ local function rot_parent_current(bone)
     return a
 end
 
-local function create_bone(bone, depth, bone_parent, cursor_parent)
+local function create_bone(bone, depth, bone_parent)
     -- bone local direction
     local bone_dir = { lo.lwasfbone_dir(bone, 0),
                        lo.lwasfbone_dir(bone, 1),
@@ -93,19 +93,37 @@ local function create_bone(bone, depth, bone_parent, cursor_parent)
                         bone_dir[1],
                         bone_dir[2],
                         bone_dir[3]))
-    local rot_parent = rot_parent_current(bone)
-    print('    '..indent..'rot_parent_current='..inspect(rot_parent))
+    --local rot_parent_current = get_rot_parent_current(bone)
+	local rot_parent_current = get_rot_parent_current(bone)
+    print('    '..indent..'rot_parent_current='..inspect(rot_parent_current))
     local sgbone_parent = sg.root
     if bone_parent ~= nil then sgbone_parent = bone_sgbone_map[bone_parent] end
     local sgbone = lo.lwsg_new_object(sg, 'bone '..bone.name, sgbone_parent)
-    if bone_parent ~= nil then
-        lo.lwsg_set_local_pos(sgbone, 0, 0, bone_parent.length)
-    end
-    lo.lwsg_set_local_euler(sgbone,0,0,0)
-    lo.lwsg_set_local_scale(sgbone,1,1,1)
+	local sgbonechild = lo.lwsg_new_object(sg, 'bonechild '..bone.name, sgbone)
+	-- translation from bone to its child (in local coordinate system of bone)
+    local trans = { bone.length*bone_dir[1],
+                    bone.length*bone_dir[2],
+                    bone.length*bone_dir[3] }
+    lo.lwsg_set_local_pos(sgbonechild,
+						  trans[1],
+						  trans[2],
+						  trans[3])
+	--[[lo.lwsg_set_local_pos(sgbonechild,
+						  0,
+						  0,
+						  bone.length)]]--
     
+    lo.lwsg_set_local_scale(sgbone,1,1,1)
+	
+	lo.lwsg_set_local_rot(sgbone,
+						  rot_parent_current[1][1], rot_parent_current[1][2], rot_parent_current[1][3], rot_parent_current[1][4],
+						  rot_parent_current[2][1], rot_parent_current[2][2], rot_parent_current[2][3], rot_parent_current[2][4],
+						  rot_parent_current[3][1], rot_parent_current[3][2], rot_parent_current[3][3], rot_parent_current[3][4],
+						  rot_parent_current[4][1], rot_parent_current[4][2], rot_parent_current[4][3], rot_parent_current[4][4])
+    
+	local sgbonemesh
     if bone.idx ~= 0 then
-        local sgbonemesh = lo.lwsg_new_object(sg, 'bonemesh '..bone.name, sgbone)
+        sgbonemesh = lo.lwsg_new_object(sg, 'bonemesh '..bone.name, sgbone)
         sgbonemesh.lvt = lo.LVT_ZBONE
         local bone_thickness = 0.05
         lo.lwsg_set_local_scale(sgbonemesh,bone_thickness,bone_thickness,bone.length)
@@ -116,46 +134,41 @@ local function create_bone(bone, depth, bone_parent, cursor_parent)
         lo.lwsg_set_local_scale(sgjointmesh,joint_scale,joint_scale,joint_scale)
     end
     
-    bone_sgbone_map[bone] = sgbone
-    
-    -- translation from bone to its child (in local coordinate system of bone)
-    local trans = { bone.length*bone_dir[1],
-                    bone.length*bone_dir[2],
-                    bone.length*bone_dir[3] }
-                    
+    bone_sgbone_map[bone] = sgbonechild
+
     if bone.idx ~= 0 then
-        local zvec = {0,0,-1}
+        local zvec = {0,0,1}
         local angle, axis = linmath.vec3_angle_axis(zvec, bone_dir)
-        local bone_local_rot = linmath.mat4x4_rotate_around(angle, axis[1], axis[2], axis[3])
-        print('    '..indent..'bone_local_rot='..inspect(bone_local_rot))
-        local bone_rot = linmath.mat4x4_multiply(bone_local_rot,rot_parent)
-        lo.lwsg_set_local_rot(sgbone,
-                              bone_rot[1][1], bone_rot[1][2], bone_rot[1][3], bone_rot[1][4],
-                              bone_rot[2][1], bone_rot[2][2], bone_rot[2][3], bone_rot[2][4],
-                              bone_rot[3][1], bone_rot[3][2], bone_rot[3][3], bone_rot[3][4],
-                              bone_rot[4][1], bone_rot[4][2], bone_rot[4][3], bone_rot[4][4])
+        local bone_rot = linmath.mat4x4_rotate_around(angle, axis[1], axis[2], axis[3])
+        print('    '..indent..'bone_rot='..inspect(bone_rot))
+		print('    '..indent..'angle='..angle)
+		print('    '..indent..'axis='..inspect(axis))
+		print('    '..indent..'trans='..inspect(trans))
+		--local r = linmath.mat4x4_multiply(rot_parent_current, bone_rot)
+		--local r = bone_rot
+		local r = linmath.mat4x4_transposed(bone_rot)
+        lo.lwsg_set_local_rot(sgbonemesh,
+                              r[1][1], r[1][2], r[1][3], r[1][4],
+                              r[2][1], r[2][2], r[2][3], r[2][4],
+                              r[3][1], r[3][2], r[3][3], r[3][4],
+                              r[4][1], r[4][2], r[4][3], r[4][4])
     end
-                    
-    print('cursor_parent:'..inspect(cursor_parent))
-    print('trans:'..inspect(trans))
-    return trans
 end
 
-local function create_bone_hierarchy(bone, depth, bone_parent, cursor_parent)
-    if depth > 3 then return end
+local function create_bone_hierarchy(bone, depth, bone_parent)
+    --if depth > 3 then return end
     if bone == nil then return end
-    local cursor = create_bone(bone, depth, bone_parent, cursor_parent)
-    
-    create_bone_hierarchy(bone.child, depth + 1, bone, cursor)
-    create_bone_hierarchy(bone.sibling, depth, bone_parent, cursor_parent)
+    create_bone(bone, depth, bone_parent)
+    create_bone_hierarchy(bone.child, depth + 1, bone)
+    create_bone_hierarchy(bone.sibling, depth, bone_parent)
 end
 
-local cursor = {0,0,0}
-create_bone_hierarchy(asf.root_bone, 0, nil, cursor)
+create_bone_hierarchy(asf.root_bone, 0, nil)
+
 
 --print(sg.root.child_count)
-lo.lwsg_cam_eye(sg, 0, 0, 10)
-sg.half_height = 0.5
+lo.lwsg_cam_eye(sg, 10, -10, 10)
+sg.half_height = 2
 lo.lwcontext_set_sg(c, sg)
 --print('hello')
 

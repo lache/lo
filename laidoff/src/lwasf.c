@@ -126,7 +126,7 @@ static void matrix_transpose(double a[4][4], double b[4][4]) {
     int i, j;
     for (i = 0; i < 4; i++) {
         for (j = 0; j < 4; j++) {
-            b[i][j] = a[i][j];
+            b[i][j] = a[j][i]; // switch i-j
         }
     }
 }

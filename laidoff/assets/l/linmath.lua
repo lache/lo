@@ -103,9 +103,11 @@ end
 
 -- get the angle and rotation axis between vector v to vector w
 local function vec3_angle_axis(v, w)
-    local angle = math.acos(vec3_dot_product(v, w))
-    local axis = vec3_normalized(vec3_cross(v, w))
-    return angle, axis
+	local vdotw = vec3_dot_product(v, w)
+	local axis = vec3_cross(v, w)
+	local axis_len = vec3_magnitude(axis)
+    local angle = math.atan(axis_len, vdotw)
+    return angle, {axis[1]/axis_len,axis[2]/axis_len,axis[3]/axis_len}
 end
 
 local function mat4x4_rotate_around(r, x, y, z)
