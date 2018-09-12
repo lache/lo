@@ -7,9 +7,11 @@ LWSG* lwsg_new() {
     LWSG* sg = (LWSG*)calloc(1, sizeof(LWSG));
     sg->root = (LWSGOBJECT*)calloc(1, sizeof(LWSGOBJECT));
     sg->root->scale[0] = sg->root->scale[1] = sg->root->scale[2] = 1;
+    sg->root->active = 1;
     sg->cam_eye[0] = 0;
     sg->cam_eye[1] = 0;
     sg->cam_eye[2] = 10;
+    sg->half_height = 5.0f;
     return sg;
 }
 
@@ -37,6 +39,7 @@ LWSGOBJECT* lwsg_new_object(LWSG* sg, const char* objname, LWSGOBJECT* parent) {
     strncpy(sgobj->name, objname, sizeof(sgobj->name));
     sgobj->parent = parent;
     sgobj->scale[0] = sgobj->scale[1] = sgobj->scale[2] = 1;
+    sgobj->active = 1;
     if (parent->child) {
         LWSGOBJECT* sibling = parent->child;
         while (sibling->sibling) {

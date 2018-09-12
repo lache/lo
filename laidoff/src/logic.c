@@ -782,10 +782,11 @@ void reset_runtime_context(LWCONTEXT* pLwc) {
     puck_game_remote_state_reset(pLwc->puck_game, &pLwc->puck_game_state);
     // Run script for testing script error logging function (no effects on system)
     script_run_file(pLwc, ASSETS_BASE_PATH "l" PATH_SEPARATOR "error_test.lua");
+    // *** running 'post_init.lua' and initiating rendering is started at 'error_test.lua' ***
     // Run post init script
-    script_run_file(pLwc, ASSETS_BASE_PATH "l" PATH_SEPARATOR "post_init.lua");
+    //script_run_file(pLwc, ASSETS_BASE_PATH "l" PATH_SEPARATOR "post_init.lua");
     // Start rendering
-    lwcontext_set_safe_to_start_render(pLwc, 1);
+    //lwcontext_set_safe_to_start_render(pLwc, 1);
 }
 
 static void update_battle_wall(LWCONTEXT* pLwc) {

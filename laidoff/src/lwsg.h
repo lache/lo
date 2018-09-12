@@ -15,12 +15,14 @@ typedef struct _LWSGOBJECT {
     int child_count;
     int lvt;
     int lae;
+    int active;
 } LWSGOBJECT;
 
 typedef struct _LWSG {
     LWSGOBJECT* root;
     vec3 cam_eye;
     vec3 cam_look_at;
+    float half_height;
 } LWSG;
 
 LWSG* lwsg_new();

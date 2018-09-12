@@ -11,12 +11,12 @@ static void update_view_proj(const vec3 cam_eye,
                              const vec3 cam_look_at,
                              const int viewport_width,
                              const int viewport_height,
+                             const float half_height,
                              mat4x4 view,
                              mat4x4 proj) {
     const float aspect_ratio = (float)viewport_width / viewport_height;
     // half_height := (how many cells in vertical axis) / 2
     // (relative to main viewport height)
-    float half_height = 5.0f * (float)viewport_height / viewport_height;
     float near_z = 0.1f;
     float far_z = 1000.0f;
     // eye(camera) position
@@ -120,8 +120,10 @@ static void render_sgobject_recursive(const LWCONTEXT* pLwc,
         return;
     }
     mat4x4 model;
-    render_sgobject(pLwc, sgobj, parent_model, model, view, proj);
-    render_sgobject_recursive(pLwc, sgobj->child, model, view, proj);
+    if (sgobj->active) {
+        render_sgobject(pLwc, sgobj, parent_model, model, view, proj);
+        render_sgobject_recursive(pLwc, sgobj->child, model, view, proj);
+    }
     render_sgobject_recursive(pLwc, sgobj->sibling, parent_model, view, proj);
 }
 
@@ -130,7 +132,7 @@ void lwc_render_sg(const LWCONTEXT* pLwc, const LWSG* sg) {
         return;
     }
     mat4x4 view, proj;
-    update_view_proj(sg->cam_eye, sg->cam_look_at, pLwc->viewport_width, pLwc->viewport_height, view, proj);
+    update_view_proj(sg->cam_eye, sg->cam_look_at, pLwc->viewport_width, pLwc->viewport_height, sg->half_height, view, proj);
 
     mat4x4 parent_model;
     mat4x4_identity(parent_model);

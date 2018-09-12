@@ -6,7 +6,7 @@ typedef struct _LWASFBONE {
     LWASFBONE* sibling;
     LWASFBONE* child;
     int idx;
-    // bone direction in local coordinate system
+    // bone direction in local coordinate system, unit vector 
     double dir[3];
     double length;
     // bone orientation in world coordinate system;

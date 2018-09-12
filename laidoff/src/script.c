@@ -862,8 +862,7 @@ void script_on_near_puck_player(void* _script, int dashing) {
     }
 }
 
-void script_on_player_attack(void* _script) {
-    LWSCRIPT* script = (LWSCRIPT*)_script;
+void script_on_player_attack(LWSCRIPT* script) {
     if (script) {
         for (int i = 0; i < LW_MAX_CORO; i++) {
             if (script->coro[i].valid) {
@@ -875,8 +874,7 @@ void script_on_player_attack(void* _script) {
     }
 }
 
-void script_on_target_attack(void* _script) {
-    LWSCRIPT* script = (LWSCRIPT*)_script;
+void script_on_target_attack(LWSCRIPT* script) {
     if (script) {
         for (int i = 0; i < LW_MAX_CORO; i++) {
             if (script->coro[i].valid) {
@@ -954,4 +952,14 @@ int script_http_header(void* L, char* header, size_t header_max_len) {
     }
     lua_pop(L, 1); // pop returned value
     return ret;
+}
+
+int script_running_coro_count(LWSCRIPT* script) {
+    int c = 0;
+    for (int i = 0; i < LW_MAX_CORO; i++) {
+        if (script->coro[i].valid) {
+            c++;
+        }
+    }
+    return c;
 }

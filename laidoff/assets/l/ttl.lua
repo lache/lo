@@ -292,7 +292,7 @@ function ttl_go_back(qs)
 end
 
 function reset_cell_menu()
-    print('reset_cell_menu')
+    --print('reset_cell_menu')
     lo.lwttl_clear_cell_menu(c.ttl)
     local sc = lo.lwttl_single_cell(c.ttl)
     local is_land = sc.attr & 1
@@ -380,7 +380,7 @@ function on_set_refresh_html_body()
 end
 
 function on_ttl_single_cell()
-    print('on_ttl_single_cell')
+    --print('on_ttl_single_cell')
     if cell_menu_mode == CELL_MENU_MODE_NORMAL then
         reset_cell_menu()
     elseif cell_menu_mode == CELL_MENU_MODE_SELECT_SEAPORT then
