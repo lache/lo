@@ -66,7 +66,7 @@ lo.lwsg_set_local_pos(sgobj4,-2,2,0)
 --print('ASF bone count: '..asf.bone_count)
 --lo.show_sys_msg(c.def_sys_msg, 'ASF bone count: '..asf.bone_count)
 
-local bone_sgbone_map = {}
+local bone_sgbonechildslot_map = {}
 
 local function get_rot_parent_current(bone)
     local a = linmath.mat4x4_new_identity()
@@ -97,29 +97,40 @@ local function create_bone(bone, depth, bone_parent)
 	local rot_parent_current = get_rot_parent_current(bone)
     print('    '..indent..'rot_parent_current='..inspect(rot_parent_current))
     local sgbone_parent = sg.root
-    if bone_parent ~= nil then sgbone_parent = bone_sgbone_map[bone_parent] end
+    if bone_parent ~= nil then sgbone_parent = bone_sgbonechildslot_map[bone_parent] end
     local sgbone = lo.lwsg_new_object(sg, 'bone '..bone.name, sgbone_parent)
-	local sgbonechild = lo.lwsg_new_object(sg, 'bonechild '..bone.name, sgbone)
+	local sgbonechildslot = lo.lwsg_new_object(sg, 'bonechildslot '..bone.name, sgbone)
 	-- translation from bone to its child (in local coordinate system of bone)
     local trans = { bone.length*bone_dir[1],
                     bone.length*bone_dir[2],
                     bone.length*bone_dir[3] }
-    lo.lwsg_set_local_pos(sgbonechild,
+    lo.lwsg_set_local_pos(sgbonechildslot,
 						  trans[1],
 						  trans[2],
 						  trans[3])
-	--[[lo.lwsg_set_local_pos(sgbonechild,
+	--[[lo.lwsg_set_local_pos(sgbonechildslot,
 						  0,
 						  0,
 						  bone.length)]]--
     
     lo.lwsg_set_local_scale(sgbone,1,1,1)
 	
+	
+	lo.lwsg_set_local_pos(sgbone,
+	                      bone.tz,
+						  bone.ty,
+						  bone.tz)
+						  
+	local bonerz = linmath.mat4x4_rotate_z(bone.rz)
+	local bonery = linmath.mat4x4_rotate_z(bone.ry)
+	local bonerx = linmath.mat4x4_rotate_z(bone.rx)
+	local parent_rot = linmath.mat4x4_multiply(linmath.mat4x4_multiply(linmath.mat4x4_multiply(rot_parent_current,bonerz),bonery),bonerz)
+	
 	lo.lwsg_set_local_rot(sgbone,
-						  rot_parent_current[1][1], rot_parent_current[1][2], rot_parent_current[1][3], rot_parent_current[1][4],
-						  rot_parent_current[2][1], rot_parent_current[2][2], rot_parent_current[2][3], rot_parent_current[2][4],
-						  rot_parent_current[3][1], rot_parent_current[3][2], rot_parent_current[3][3], rot_parent_current[3][4],
-						  rot_parent_current[4][1], rot_parent_current[4][2], rot_parent_current[4][3], rot_parent_current[4][4])
+						  parent_rot[1][1], parent_rot[1][2], parent_rot[1][3], parent_rot[1][4],
+						  parent_rot[2][1], parent_rot[2][2], parent_rot[2][3], parent_rot[2][4],
+						  parent_rot[3][1], parent_rot[3][2], parent_rot[3][3], parent_rot[3][4],
+						  parent_rot[4][1], parent_rot[4][2], parent_rot[4][3], parent_rot[4][4])
     
 	local sgbonemesh
     if bone.idx ~= 0 then
@@ -134,7 +145,7 @@ local function create_bone(bone, depth, bone_parent)
         lo.lwsg_set_local_scale(sgjointmesh,joint_scale,joint_scale,joint_scale)
     end
     
-    bone_sgbone_map[bone] = sgbonechild
+    bone_sgbonechildslot_map[bone] = sgbonechildslot
 
     if bone.idx ~= 0 then
         local zvec = {0,0,1}
