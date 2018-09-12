@@ -116637,25 +116637,31 @@ fail:
 static int _wrap_LWSGOBJECT_rot_set(lua_State* L) {
   int SWIG_arg = 0;
   struct _LWSGOBJECT *arg1 = (struct _LWSGOBJECT *) 0 ;
-  float *arg2 ;
+  vec4 *arg2 ;
   
   SWIG_check_num_args("_LWSGOBJECT::rot",2,2)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWSGOBJECT::rot",1,"struct _LWSGOBJECT *");
-  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("_LWSGOBJECT::rot",2,"vec3");
+  if(!SWIG_isptrtype(L,2)) SWIG_fail_arg("_LWSGOBJECT::rot",2,"mat4x4");
   
   if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWSGOBJECT,0))){
     SWIG_fail_ptr("LWSGOBJECT_rot_set",1,SWIGTYPE_p__LWSGOBJECT);
   }
   
   
-  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_float,0))){
-    SWIG_fail_ptr("LWSGOBJECT_rot_set",2,SWIGTYPE_p_float);
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&arg2,SWIGTYPE_p_a_4__float,0))){
+    SWIG_fail_ptr("LWSGOBJECT_rot_set",2,SWIGTYPE_p_a_4__float);
   }
   
   {
-    size_t ii;
-    float *b = (float *) arg1->rot;
-    for (ii = 0; ii < (size_t)3; ii++) b[ii] = *((float *) arg2 + ii);
+    float (*inp)[4] = (float (*)[4])(arg2);
+    float (*dest)[4] = (float (*)[4])(arg1->rot);
+    size_t ii = 0;
+    for (; ii < 4; ++ii) {
+      float *ip = inp[ii];
+      float *dp = dest[ii];
+      size_t jj = 0;
+      for (; jj < 4; ++jj) dp[jj] = ip[jj];
+    }
   }
   
   return SWIG_arg;
@@ -116671,7 +116677,7 @@ fail:
 static int _wrap_LWSGOBJECT_rot_get(lua_State* L) {
   int SWIG_arg = 0;
   struct _LWSGOBJECT *arg1 = (struct _LWSGOBJECT *) 0 ;
-  float *result = 0 ;
+  vec4 *result = 0 ;
   
   SWIG_check_num_args("_LWSGOBJECT::rot",1,1)
   if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("_LWSGOBJECT::rot",1,"struct _LWSGOBJECT *");
@@ -116680,8 +116686,8 @@ static int _wrap_LWSGOBJECT_rot_get(lua_State* L) {
     SWIG_fail_ptr("LWSGOBJECT_rot_get",1,SWIGTYPE_p__LWSGOBJECT);
   }
   
-  result = (float *) ((arg1)->rot);
-  SWIG_NewPointerObj(L,result,SWIGTYPE_p_float,0); SWIG_arg++; 
+  result = (vec4 *) ((arg1)->rot);
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_a_4__float,0); SWIG_arg++; 
   return SWIG_arg;
   
   if(0) SWIG_fail;
@@ -117605,6 +117611,77 @@ static int _wrap_lwsg_set_local_euler(lua_State* L) {
   arg3 = (float)lua_tonumber(L, 3);
   arg4 = (float)lua_tonumber(L, 4);
   lwsg_set_local_euler(arg1,arg2,arg3,arg4);
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_lwsg_set_local_rot(lua_State* L) {
+  int SWIG_arg = 0;
+  LWSGOBJECT *arg1 = (LWSGOBJECT *) 0 ;
+  float arg2 ;
+  float arg3 ;
+  float arg4 ;
+  float arg5 ;
+  float arg6 ;
+  float arg7 ;
+  float arg8 ;
+  float arg9 ;
+  float arg10 ;
+  float arg11 ;
+  float arg12 ;
+  float arg13 ;
+  float arg14 ;
+  float arg15 ;
+  float arg16 ;
+  float arg17 ;
+  
+  SWIG_check_num_args("lwsg_set_local_rot",17,17)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("lwsg_set_local_rot",1,"LWSGOBJECT *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("lwsg_set_local_rot",2,"float");
+  if(!lua_isnumber(L,3)) SWIG_fail_arg("lwsg_set_local_rot",3,"float");
+  if(!lua_isnumber(L,4)) SWIG_fail_arg("lwsg_set_local_rot",4,"float");
+  if(!lua_isnumber(L,5)) SWIG_fail_arg("lwsg_set_local_rot",5,"float");
+  if(!lua_isnumber(L,6)) SWIG_fail_arg("lwsg_set_local_rot",6,"float");
+  if(!lua_isnumber(L,7)) SWIG_fail_arg("lwsg_set_local_rot",7,"float");
+  if(!lua_isnumber(L,8)) SWIG_fail_arg("lwsg_set_local_rot",8,"float");
+  if(!lua_isnumber(L,9)) SWIG_fail_arg("lwsg_set_local_rot",9,"float");
+  if(!lua_isnumber(L,10)) SWIG_fail_arg("lwsg_set_local_rot",10,"float");
+  if(!lua_isnumber(L,11)) SWIG_fail_arg("lwsg_set_local_rot",11,"float");
+  if(!lua_isnumber(L,12)) SWIG_fail_arg("lwsg_set_local_rot",12,"float");
+  if(!lua_isnumber(L,13)) SWIG_fail_arg("lwsg_set_local_rot",13,"float");
+  if(!lua_isnumber(L,14)) SWIG_fail_arg("lwsg_set_local_rot",14,"float");
+  if(!lua_isnumber(L,15)) SWIG_fail_arg("lwsg_set_local_rot",15,"float");
+  if(!lua_isnumber(L,16)) SWIG_fail_arg("lwsg_set_local_rot",16,"float");
+  if(!lua_isnumber(L,17)) SWIG_fail_arg("lwsg_set_local_rot",17,"float");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p__LWSGOBJECT,0))){
+    SWIG_fail_ptr("lwsg_set_local_rot",1,SWIGTYPE_p__LWSGOBJECT);
+  }
+  
+  arg2 = (float)lua_tonumber(L, 2);
+  arg3 = (float)lua_tonumber(L, 3);
+  arg4 = (float)lua_tonumber(L, 4);
+  arg5 = (float)lua_tonumber(L, 5);
+  arg6 = (float)lua_tonumber(L, 6);
+  arg7 = (float)lua_tonumber(L, 7);
+  arg8 = (float)lua_tonumber(L, 8);
+  arg9 = (float)lua_tonumber(L, 9);
+  arg10 = (float)lua_tonumber(L, 10);
+  arg11 = (float)lua_tonumber(L, 11);
+  arg12 = (float)lua_tonumber(L, 12);
+  arg13 = (float)lua_tonumber(L, 13);
+  arg14 = (float)lua_tonumber(L, 14);
+  arg15 = (float)lua_tonumber(L, 15);
+  arg16 = (float)lua_tonumber(L, 16);
+  arg17 = (float)lua_tonumber(L, 17);
+  lwsg_set_local_rot(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15,arg16,arg17);
   
   return SWIG_arg;
   
@@ -120154,7 +120231,7 @@ static swig_lua_const_info swig_SwigModule_constants[]= {
     {SWIG_LUA_CONSTTAB_INT("LGS_TILEMAP", LGS_TILEMAP)},
     {SWIG_LUA_CONSTTAB_INT("LGS_MOCAP", LGS_MOCAP)},
     {SWIG_LUA_CONSTTAB_STRING("__LW_STRING_LINE__", "63")},
-    {SWIG_LUA_CONSTTAB_STRING("LWLOGPOS", "src\\lwlog.h(64): ")},
+    {SWIG_LUA_CONSTTAB_STRING("LWLOGPOS", "src/lwlog.h(64): ")},
     {SWIG_LUA_CONSTTAB_INT("LPT_GRID", LPT_GRID)},
     {SWIG_LUA_CONSTTAB_INT("LPT_SOLID_RED", LPT_SOLID_RED)},
     {SWIG_LUA_CONSTTAB_INT("LPT_SOLID_GREEN", LPT_SOLID_GREEN)},
@@ -120310,6 +120387,7 @@ static swig_lua_const_info swig_SwigModule_constants[]= {
     {SWIG_LUA_CONSTTAB_INT("LVT_TILE_SEL_1_1", LVT_TILE_SEL_1_1)},
     {SWIG_LUA_CONSTTAB_INT("LVT_SUZANNE", LVT_SUZANNE)},
     {SWIG_LUA_CONSTTAB_INT("LVT_YBONE", LVT_YBONE)},
+    {SWIG_LUA_CONSTTAB_INT("LVT_ZBONE", LVT_ZBONE)},
     {SWIG_LUA_CONSTTAB_INT("LVT_COUNT", LVT_COUNT)},
     {SWIG_LUA_CONSTTAB_INT("LVT_DONTCARE", LVT_DONTCARE)},
     {SWIG_LUA_CONSTTAB_INT("LSVT_TRIANGLE", LSVT_TRIANGLE)},
@@ -121518,6 +121596,7 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "lwsg_find", _wrap_lwsg_find},
     { "lwsg_set_local_pos", _wrap_lwsg_set_local_pos},
     { "lwsg_set_local_euler", _wrap_lwsg_set_local_euler},
+    { "lwsg_set_local_rot", _wrap_lwsg_set_local_rot},
     { "lwsg_set_local_scale", _wrap_lwsg_set_local_scale},
     { "lwsg_delete_object", _wrap_lwsg_delete_object},
     { "lwsg_refresh", _wrap_lwsg_refresh},

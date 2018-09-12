@@ -7,6 +7,7 @@ LWSG* lwsg_new() {
     LWSG* sg = (LWSG*)calloc(1, sizeof(LWSG));
     sg->root = (LWSGOBJECT*)calloc(1, sizeof(LWSGOBJECT));
     sg->root->scale[0] = sg->root->scale[1] = sg->root->scale[2] = 1;
+    lwsg_set_local_euler(sg->root, 0, 0, 0);
     sg->root->active = 1;
     sg->cam_eye[0] = 0;
     sg->cam_eye[1] = 0;
@@ -39,6 +40,7 @@ LWSGOBJECT* lwsg_new_object(LWSG* sg, const char* objname, LWSGOBJECT* parent) {
     strncpy(sgobj->name, objname, sizeof(sgobj->name));
     sgobj->parent = parent;
     sgobj->scale[0] = sgobj->scale[1] = sgobj->scale[2] = 1;
+    lwsg_set_local_euler(sgobj, 0, 0, 0);
     sgobj->active = 1;
     if (parent->child) {
         LWSGOBJECT* sibling = parent->child;
@@ -64,9 +66,21 @@ void lwsg_set_local_pos(LWSGOBJECT* obj, float x, float y, float z) {
 }
 
 void lwsg_set_local_euler(LWSGOBJECT* obj, float rx, float ry, float rz) {
-    obj->rot[0] = rx;
-    obj->rot[1] = ry;
-    obj->rot[2] = rz;
+    mat4x4_identity(obj->rot);
+    mat4x4_rotate_Z(obj->rot, obj->rot, rz);
+    mat4x4_rotate_Y(obj->rot, obj->rot, ry);
+    mat4x4_rotate_X(obj->rot, obj->rot, rx);
+}
+
+void lwsg_set_local_rot(LWSGOBJECT* obj,
+                        float rc00, float rc01, float rc02, float rc03,
+                        float rc10, float rc11, float rc12, float rc13,
+                        float rc20, float rc21, float rc22, float rc23,
+                        float rc30, float rc31, float rc32, float rc33) {
+    obj->rot[0][0] = rc00; obj->rot[0][1] = rc01; obj->rot[0][2] = rc02; obj->rot[0][3] = rc03;
+    obj->rot[1][0] = rc10; obj->rot[1][1] = rc11; obj->rot[1][2] = rc12; obj->rot[1][3] = rc13;
+    obj->rot[2][0] = rc20; obj->rot[2][1] = rc21; obj->rot[2][2] = rc22; obj->rot[2][3] = rc23;
+    obj->rot[3][0] = rc30; obj->rot[3][1] = rc31; obj->rot[3][2] = rc32; obj->rot[3][3] = rc33;
 }
 
 void lwsg_set_local_scale(LWSGOBJECT* obj, float sx, float sy, float sz) {

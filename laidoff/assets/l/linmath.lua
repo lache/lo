@@ -117,6 +117,13 @@ local function mat4x4_rotate_around(r, x, y, z)
             {0,             0,             0,             1}}
 end
 
+local function mat4x4_transposed(a)
+    return {{a[1][1],a[2][1],a[3][1],a[4][1]},
+            {a[1][2],a[2][2],a[3][2],a[4][2]},
+            {a[1][3],a[2][3],a[3][3],a[4][3]},
+            {a[1][4],a[2][4],a[3][4],a[4][4]}}
+end
+
 local M = {
     mat4x4_new_identity = mat4x4_new_identity,
     mat4x4_row_as_vec4 = mat4x4_row_as_vec4,
@@ -131,6 +138,7 @@ local M = {
     vec3_cross = vec3_cross,
     vec3_angle_axis = vec3_angle_axis,
     mat4x4_rotate_around = mat4x4_rotate_around,
+    mat4x4_transposed = mat4x4_transposed,
 }
 M.__index = M
 return M
