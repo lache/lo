@@ -11,6 +11,7 @@ namespace ss {
         city(boost::asio::io_service& io_service,
              std::shared_ptr<seaport> seaport);
         std::vector<city_object> query_near_to_packet(int xc, int yc, float ex_lng, float ex_lat) const;
+        std::vector<city_object::value> query_nearest(int xc, int yc) const;
         const char* get_city_name(int id) const;
         int get_city_id(const char* name) const;
         city_object::point get_city_point(int id) const;

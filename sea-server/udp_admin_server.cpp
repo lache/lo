@@ -10,6 +10,7 @@
 #include "shipyard.hpp"
 #include "adminmessage.h"
 #include "session.hpp"
+#include "city.hpp"
 using namespace ss;
 
 static std::string make_daytime_string() {
@@ -24,7 +25,8 @@ udp_admin_server::udp_admin_server(boost::asio::io_service& io_service,
                                    std::shared_ptr<seaport> seaport,
                                    std::shared_ptr<shipyard> shipyard,
                                    std::shared_ptr<udp_server> udp_server,
-                                   std::shared_ptr<session> session)
+                                   std::shared_ptr<session> session,
+                                   std::shared_ptr<city> city)
     : socket_(io_service, udp::endpoint(udp::v4(), 4000))
     , sea_(sea)
     , sea_static_(sea_static)
@@ -32,6 +34,7 @@ udp_admin_server::udp_admin_server(boost::asio::io_service& io_service,
     , shipyard_(shipyard)
     , udp_server_(udp_server)
     , session_(session)
+    , city_(city)
     , resolver_(io_service)
     , web_server_query_(udp::v4(), "localhost", "3003")
     , web_server_endpoint_(*resolver_.resolve(web_server_query_))
@@ -331,6 +334,80 @@ int udp_admin_server::process_command(const unsigned char* data, bool send_reply
             reply.reply_id = cmd->reply_id;
             socket_.async_send_to(boost::asio::buffer(&reply,
                                                       sizeof(register_shared_secret_session_key_command_reply)),
+                                  remote_endpoint_,
+                                  boost::bind(&udp_admin_server::handle_send, this,
+                                              boost::asio::placeholders::error,
+                                              boost::asio::placeholders::bytes_transferred));
+        }
+        break;
+    }
+    case 13: // Spawn City
+    {
+        LOGI("Spawn City type: %1%", static_cast<int>(cp->type));
+        auto spawn = reinterpret_cast<const spawn_city_command*>(data);
+        xy32 spawn_pos = { spawn->xc, spawn->yc };
+        spawn_city_command_reply reply;
+        memset(&reply, 0, sizeof(spawn_city_command_reply));
+        reply._.type = 8;
+        reply.reply_id = spawn->reply_id;
+        bool check_type = false;
+        if (sea_static_->is_land(spawn_pos)) {
+            check_type = true;
+        }
+        if (check_type == false) {
+            LOGEP("[1] spawn city check_type failure: city can be spawned only at land cell");
+        }
+        bool check_distance = false;
+        if (check_type) {
+            const auto& nid = city_->query_nearest(spawn_pos.x, spawn_pos.y);
+            if (nid.size() > 0) {
+                const auto nearest_x = nid[0].first.get<0>();
+                const auto nearest_y = nid[0].first.get<1>();
+                if (nearest_x == spawn_pos.x && nearest_y == spawn_pos.y) {
+                    // existing city should be returned as success
+                    check_distance = true;
+                } else {
+                    check_distance = abs(nearest_x - spawn_pos.x) >= 3 || abs(nearest_y - spawn_pos.y) >= 3;
+                }
+            } else {
+                check_distance = true;
+            }
+        }
+        if (check_distance == false) {
+            LOGEP("[2] spawn city check_distance failure - minimum distance between existing citys not satisfied.");
+        }
+        if (check_type && check_distance) {
+            bool existing = false;
+            int id = city_->spawn(spawn->name, spawn->xc, spawn->yc);
+            if (existing == false) {
+                udp_server_->gold_used(spawn->xc, spawn->yc, 50000);
+            }
+            reply.db_id = id;
+            if (id > 0) {
+                if (existing) {
+                    LOGI("city SP %1% {%2%,%3%} already exists. owner_id=%4%",
+                         id,
+                         spawn_pos.x,
+                         spawn_pos.y,
+                         spawn->owner_id);
+                } else {
+                    LOGI("New city SP %1% {%2%,%3%} spawned. owner_id=%4%",
+                         id,
+                         spawn_pos.x,
+                         spawn_pos.y,
+                         spawn->owner_id);
+                    ret = 0;
+                }
+                reply.existing = existing;
+            } else {
+                LOGEP("New city cannot be spawned at (x=%1%, y=%2%)",
+                      spawn_pos.x,
+                      spawn_pos.y);
+            }
+        }
+        if (send_reply) {
+            socket_.async_send_to(boost::asio::buffer(&reply,
+                                                      sizeof(spawn_city_command_reply)),
                                   remote_endpoint_,
                                   boost::bind(&udp_admin_server::handle_send, this,
                                               boost::asio::placeholders::error,

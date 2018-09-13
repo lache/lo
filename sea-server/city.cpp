@@ -299,3 +299,11 @@ void city::generate_cargo() {
 std::vector<cargo_notification>&& city::flush_cargo_notifications() {
     return std::move(cargo_notifications);
 }
+
+std::vector<city_object::value> city::query_nearest(int xc, int yc) const {
+    std::vector<city_object::value> result_s;
+    for (auto it = rtree_ptr->qbegin(bgi::nearest(city_object::point{ xc,yc }, 1)); it != rtree_ptr->qend(); it++) {
+        result_s.push_back(*it);
+    }
+    return result_s;
+}

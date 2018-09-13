@@ -117,7 +117,8 @@ int main(int argc, char* argv[]) {
                                                              seaport_instance,
                                                              shipyard_instance,
                                                              udp_server_instance,
-                                                             session_instance));
+                                                             session_instance,
+                                                             city_instance));
         sea_instance->set_udp_admin_server(udp_admin_server_instance);
         udp_admin_server_instance->send_recover_all_ships();
         LOGI("Starting to server IO service thread....");

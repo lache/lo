@@ -21,6 +21,18 @@ function despawn_seaport(id)
     return ss.post_admin_message(msg)
 end
 
+function city(id, xc, yc)
+    local msg = ss.spawn_city_command()
+    local msg_header = ss.command()
+    msg_header.type = string.char(13)
+    msg._ = msg_header
+    msg.expected_db_id = id
+    msg.xc = xc
+    msg.yc = yc
+    msg.name = '스크립트 씨티'
+    return ss.post_admin_message(msg)
+end
+
 function endpoints()
     return ss.endpoints()
 end

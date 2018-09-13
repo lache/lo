@@ -125,3 +125,25 @@ struct register_shared_secret_session_key_command_reply {
     command _;
     int reply_id;
 };
+
+struct spawn_city_command {
+    command _;
+    int expected_db_id; // DB key
+    char name[64];
+    int xc;
+    int yc;
+    int owner_id;
+    int reply_id;
+};
+
+struct spawn_city_command_reply {
+    command _;
+    int db_id; // DB key
+    int reply_id;
+    int existing;
+};
+
+struct delete_city_command {
+    command _;
+    int city_id;
+};
