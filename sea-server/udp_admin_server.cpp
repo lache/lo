@@ -373,9 +373,10 @@ int udp_admin_server::process_command(const unsigned char* data, bool send_reply
         if (check_type && check_distance) {
             bool existing = false;
             int id = city_->spawn(spawn->name, spawn->xc, spawn->yc);
-            if (existing == false) {
+            if (existing == false && id > 0) {
                 udp_server_->gold_used(spawn->xc, spawn->yc, 50000);
             }
+            ret = id;
             reply.db_id = id;
             if (id > 0) {
                 if (existing) {
@@ -390,7 +391,6 @@ int udp_admin_server::process_command(const unsigned char* data, bool send_reply
                          spawn_pos.x,
                          spawn_pos.y,
                          spawn->owner_id);
-                    ret = 0;
                 }
                 reply.existing = existing;
             } else {
@@ -407,6 +407,13 @@ int udp_admin_server::process_command(const unsigned char* data, bool send_reply
                                               boost::asio::placeholders::error,
                                               boost::asio::placeholders::bytes_transferred));
         }
+        break;
+    }
+    case 14: // Set City Population
+    {
+        LOGI("Set City Population type: %1%", static_cast<int>(cp->type));
+        auto spawn = reinterpret_cast<const set_city_population_command*>(data);
+        ret = city_->set_population(spawn->id, spawn->population);
         break;
     }
     default:

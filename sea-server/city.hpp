@@ -2,6 +2,7 @@
 
 #include "city_object.hpp"
 #include "cargo.h"
+#include "item.hpp"
 
 typedef struct _xy32 xy32;
 namespace ss {
@@ -28,7 +29,10 @@ namespace ss {
         void update_single_chunk_key_ts(const LWTTLCHUNKKEY& chunk_key, long long monotonic_uptime);
         void update();
         std::vector<cargo_notification>&& flush_cargo_notifications();
+        int set_population(int id, int population);
     private:
+        float xc_to_lng(int xc) const;
+        float yc_to_lat(int yc) const;
         std::vector<city_object::value> query_tree_ex(int xc, int yc, int half_lng_ex, int half_lat_ex) const;
         void update_chunk_key_ts(int xc0, int yc0);
         void generate_cargo();
@@ -43,6 +47,8 @@ namespace ss {
         std::unordered_map<int, std::string> id_country; // city ID -> city country
         std::unordered_map<int, city_object::point> id_point; // city ID -> city position
         std::unordered_map<std::string, int> name_id; // city name -> city ID (XXX NOT UNIQUE XXX)
+        std::unordered_map<int, item> id_wanted_item; // city ID -> wanted item
+        std::unordered_map<int, item> id_produced_item; // city ID -> produced item
         std::unordered_map<int, long long> chunk_key_ts; // chunk key -> timestamp
         boost::asio::deadline_timer timer_;
         std::shared_ptr<seaport> seaport_;

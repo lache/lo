@@ -147,3 +147,9 @@ struct delete_city_command {
     command _;
     int city_id;
 };
+
+struct set_city_population_command {
+    command _;
+    int id; // DB key
+    int population;
+};

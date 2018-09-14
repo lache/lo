@@ -5,6 +5,7 @@
 #include "cargo.h"
 
 #define CITY_RTREE_FILENAME "rtree/city.dat"
+#define CITY_ASSETS_FILENAME "assets/ttldata/cities.dat"
 #define CITY_RTREE_MMAP_MAX_SIZE (4 * 1024 * 1024)
 
 using namespace ss;
@@ -31,7 +32,7 @@ city::city(boost::asio::io_service& io_service,
     , seaport_(seaport)
     , city_id_seq_(0) {
     time0_ = get_monotonic_uptime();
-    boost::interprocess::file_mapping city_file("assets/ttldata/cities.dat", boost::interprocess::read_only);
+    boost::interprocess::file_mapping city_file(CITY_ASSETS_FILENAME, boost::interprocess::read_only);
     boost::interprocess::mapped_region region(city_file, boost::interprocess::read_only);
     LWTTLDATA_CITY* sp = reinterpret_cast<LWTTLDATA_CITY*>(region.get_address());
     int count = static_cast<int>(region.get_size() / sizeof(LWTTLDATA_CITY));
@@ -40,16 +41,16 @@ city::city(boost::asio::io_service& io_service,
         LOGI("Dumping %1% cities...", count);
         for (int i = 0; i < count; i++) {
             city_object::point point(lng_to_xc(sp[i].lng), lat_to_yc(sp[i].lat));
-            rtree_ptr->insert(std::make_pair(point, i));
+            rtree_ptr->insert(std::make_pair(point, i + 1)); // id is 1-based
         }
     }
     for (int i = 0; i < count; i++) {
-        id_name[i] = sp[i].name;
-        id_population[i] = sp[i].population;
-        id_country[i] = sp[i].country;
-        name_id[sp[i].name] = i;
-        //id_point[i] = city_object::point(lng_to_xc(sp[i].lng), lat_to_yc(sp[i].lat));
+        id_name[i + 1] = sp[i].name;
+        name_id[sp[i].name] = i + 1;
+        id_population[i + 1] = sp[i].population;
+        id_country[i + 1] = sp[i].country;
     }
+    city_id_seq_ = count;
 
     const auto monotonic_uptime = get_monotonic_uptime();
 
@@ -91,6 +92,14 @@ int city::lng_to_xc(float lng) const {
 int city::lat_to_yc(float lat) const {
     //return static_cast<int>(roundf(res_height / 2 - lat / 90.0f * res_height / 2)) & (res_height - 1);
     return static_cast<int>(roundf(res_height / 2 - lat / 90.0f * res_height / 2));
+}
+
+float city::xc_to_lng(int xc) const {
+    return -180.0f + xc / res_width * 360.0f;
+}
+
+float city::yc_to_lat(int yc) const {
+    return 90.0f - yc / res_height * 180.0f;
 }
 
 //std::vector<city_object> city::query_near_lng_lat_to_packet(float lng, float lat, int half_lng_ex, int half_lat_ex) const {
@@ -200,19 +209,42 @@ void city::update_single_chunk_key_ts(const LWTTLCHUNKKEY& chunk_key, long long 
 int city::spawn(const char* name, int xc0, int yc0) {
     city_object::point new_city_point{ xc0, yc0 };
     if (rtree_ptr->qbegin(bgi::intersects(new_city_point)) != rtree_ptr->qend()) {
-        // already exists
+        // city already exists on this coordinates
         return -1;
     }
-
+    if (name == nullptr || name[0] == 0) {
+        // city name should not be null or zero-length
+        return -2;
+    }
+    if (name_id.find(name) != name_id.end()) {
+        // duplicated city name
+        return -3;
+    }
+    if (strlen(name) > sizeof(((LWTTLDATA_CITY*)0)->name) - 1) {
+        // city name too long
+        return -4;
+    }
     const auto id = ++city_id_seq_;
+    const auto population = 65536;
     rtree_ptr->insert(std::make_pair(new_city_point, id));
     id_point[id] = new_city_point;
-    id_population[id] = 1;
+    id_population[id] = population;
     if (name[0] != 0) {
         set_name(id, name);
     } else {
         LOGEP("city spawned, but name empty. (city id = %1%)", id);
     }
+
+    // append to cities.dat
+    std::ofstream outfile(CITY_ASSETS_FILENAME, std::ios::app);
+    LWTTLDATA_CITY sp;
+    memset(&sp, 0, sizeof(LWTTLDATA_CITY));
+    sp.lng = xc_to_lng(xc0);
+    sp.lat = yc_to_lat(yc0);
+    sp.population = population;
+    strncpy(sp.name, name, sizeof(sp.name) - 1);
+    outfile.write(reinterpret_cast<char*>(&sp), sizeof(sp));
+    outfile.close();
 
     update_chunk_key_ts(xc0, yc0);
     return id;
@@ -304,4 +336,24 @@ std::vector<city_object::value> city::query_nearest(int xc, int yc) const {
         result_s.push_back(*it);
     }
     return result_s;
+}
+
+int city::set_population(int id, int population) {
+    if (population < 0) {
+        // negative population
+        return -1;
+    }
+    if (population > 2 * 1000 * 1000 * 1000) {
+        // too many population
+        return -2;
+    }
+    auto population_iter = id_population.find(id);
+    if (population_iter != id_population.end()) {
+        // no persistent layer...
+        population_iter->second = population;
+        return 0;
+    } else {
+        // city with 'id' not exists
+        return -3;
+    }
 }

@@ -2669,20 +2669,21 @@ SWIG_Lua_dostring(lua_State *L, const char *str) {
 #define SWIGTYPE_p_query_nearest_shipyard_for_ship_command_reply swig_types[9]
 #define SWIGTYPE_p_register_shared_secret_session_key_command swig_types[10]
 #define SWIGTYPE_p_register_shared_secret_session_key_command_reply swig_types[11]
-#define SWIGTYPE_p_spawn_city_command swig_types[12]
-#define SWIGTYPE_p_spawn_city_command_reply swig_types[13]
-#define SWIGTYPE_p_spawn_command swig_types[14]
-#define SWIGTYPE_p_spawn_port_command swig_types[15]
-#define SWIGTYPE_p_spawn_port_command_reply swig_types[16]
-#define SWIGTYPE_p_spawn_ship_command swig_types[17]
-#define SWIGTYPE_p_spawn_ship_command_reply swig_types[18]
-#define SWIGTYPE_p_spawn_shipyard_command swig_types[19]
-#define SWIGTYPE_p_spawn_shipyard_command_reply swig_types[20]
-#define SWIGTYPE_p_teleport_to_command swig_types[21]
-#define SWIGTYPE_p_travel_to_command swig_types[22]
-#define SWIGTYPE_p_unsigned_char swig_types[23]
-static swig_type_info *swig_types[25];
-static swig_module_info swig_module = {swig_types, 24, 0, 0, 0, 0};
+#define SWIGTYPE_p_set_city_population_command swig_types[12]
+#define SWIGTYPE_p_spawn_city_command swig_types[13]
+#define SWIGTYPE_p_spawn_city_command_reply swig_types[14]
+#define SWIGTYPE_p_spawn_command swig_types[15]
+#define SWIGTYPE_p_spawn_port_command swig_types[16]
+#define SWIGTYPE_p_spawn_port_command_reply swig_types[17]
+#define SWIGTYPE_p_spawn_ship_command swig_types[18]
+#define SWIGTYPE_p_spawn_ship_command_reply swig_types[19]
+#define SWIGTYPE_p_spawn_shipyard_command swig_types[20]
+#define SWIGTYPE_p_spawn_shipyard_command_reply swig_types[21]
+#define SWIGTYPE_p_teleport_to_command swig_types[22]
+#define SWIGTYPE_p_travel_to_command swig_types[23]
+#define SWIGTYPE_p_unsigned_char swig_types[24]
+static swig_type_info *swig_types[26];
+static swig_module_info swig_module = {swig_types, 25, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -8895,6 +8896,234 @@ static swig_lua_class *swig_delete_city_command_bases[] = {0};
 static const char *swig_delete_city_command_base_names[] = {0};
 static swig_lua_class _wrap_class_delete_city_command = { "delete_city_command", "delete_city_command", &SWIGTYPE_p_delete_city_command,_proxy__wrap_new_delete_city_command, swig_delete_delete_city_command, swig_delete_city_command_methods, swig_delete_city_command_attributes, &swig_delete_city_command_Sf_SwigStatic, swig_delete_city_command_meta, swig_delete_city_command_bases, swig_delete_city_command_base_names };
 
+static int _wrap_set_city_population_command___set(lua_State* L) {
+  int SWIG_arg = 0;
+  struct set_city_population_command *arg1 = (struct set_city_population_command *) 0 ;
+  command arg2 ;
+  command *argp2 ;
+  
+  SWIG_check_num_args("set_city_population_command::_",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("set_city_population_command::_",1,"struct set_city_population_command *");
+  if(!lua_isuserdata(L,2)) SWIG_fail_arg("set_city_population_command::_",2,"command");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_set_city_population_command,0))){
+    SWIG_fail_ptr("set_city_population_command___set",1,SWIGTYPE_p_set_city_population_command);
+  }
+  
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,2,(void**)&argp2,SWIGTYPE_p_command,0))){
+    SWIG_fail_ptr("set_city_population_command___set",2,SWIGTYPE_p_command);
+  }
+  arg2 = *argp2;
+  
+  if (arg1) (arg1)->_ = arg2;
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_set_city_population_command___get(lua_State* L) {
+  int SWIG_arg = 0;
+  struct set_city_population_command *arg1 = (struct set_city_population_command *) 0 ;
+  command result;
+  
+  SWIG_check_num_args("set_city_population_command::_",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("set_city_population_command::_",1,"struct set_city_population_command *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_set_city_population_command,0))){
+    SWIG_fail_ptr("set_city_population_command___get",1,SWIGTYPE_p_set_city_population_command);
+  }
+  
+  result =  ((arg1)->_);
+  {
+    command * resultptr;
+    resultptr = (command *) malloc(sizeof(command));
+    memmove(resultptr, &result, sizeof(command));
+    SWIG_NewPointerObj(L,(void *) resultptr,SWIGTYPE_p_command,1); SWIG_arg++;
+  }
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_set_city_population_command_id_set(lua_State* L) {
+  int SWIG_arg = 0;
+  struct set_city_population_command *arg1 = (struct set_city_population_command *) 0 ;
+  int arg2 ;
+  
+  SWIG_check_num_args("set_city_population_command::id",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("set_city_population_command::id",1,"struct set_city_population_command *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("set_city_population_command::id",2,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_set_city_population_command,0))){
+    SWIG_fail_ptr("set_city_population_command_id_set",1,SWIGTYPE_p_set_city_population_command);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  if (arg1) (arg1)->id = arg2;
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_set_city_population_command_id_get(lua_State* L) {
+  int SWIG_arg = 0;
+  struct set_city_population_command *arg1 = (struct set_city_population_command *) 0 ;
+  int result;
+  
+  SWIG_check_num_args("set_city_population_command::id",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("set_city_population_command::id",1,"struct set_city_population_command *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_set_city_population_command,0))){
+    SWIG_fail_ptr("set_city_population_command_id_get",1,SWIGTYPE_p_set_city_population_command);
+  }
+  
+  result = (int) ((arg1)->id);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_set_city_population_command_population_set(lua_State* L) {
+  int SWIG_arg = 0;
+  struct set_city_population_command *arg1 = (struct set_city_population_command *) 0 ;
+  int arg2 ;
+  
+  SWIG_check_num_args("set_city_population_command::population",2,2)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("set_city_population_command::population",1,"struct set_city_population_command *");
+  if(!lua_isnumber(L,2)) SWIG_fail_arg("set_city_population_command::population",2,"int");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_set_city_population_command,0))){
+    SWIG_fail_ptr("set_city_population_command_population_set",1,SWIGTYPE_p_set_city_population_command);
+  }
+  
+  arg2 = (int)lua_tonumber(L, 2);
+  if (arg1) (arg1)->population = arg2;
+  
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_set_city_population_command_population_get(lua_State* L) {
+  int SWIG_arg = 0;
+  struct set_city_population_command *arg1 = (struct set_city_population_command *) 0 ;
+  int result;
+  
+  SWIG_check_num_args("set_city_population_command::population",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("set_city_population_command::population",1,"struct set_city_population_command *");
+  
+  if (!SWIG_IsOK(SWIG_ConvertPtr(L,1,(void**)&arg1,SWIGTYPE_p_set_city_population_command,0))){
+    SWIG_fail_ptr("set_city_population_command_population_get",1,SWIGTYPE_p_set_city_population_command);
+  }
+  
+  result = (int) ((arg1)->population);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static int _wrap_new_set_city_population_command(lua_State* L) {
+  int SWIG_arg = 0;
+  struct set_city_population_command *result = 0 ;
+  
+  SWIG_check_num_args("set_city_population_command::set_city_population_command",0,0)
+  result = (struct set_city_population_command *)calloc(1, sizeof(struct set_city_population_command));
+  SWIG_NewPointerObj(L,result,SWIGTYPE_p_set_city_population_command,1); SWIG_arg++; 
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
+static void swig_delete_set_city_population_command(void *obj) {
+struct set_city_population_command *arg1 = (struct set_city_population_command *) obj;
+free((char *) arg1);
+}
+static int _proxy__wrap_new_set_city_population_command(lua_State *L) {
+    assert(lua_istable(L,1));
+    lua_pushcfunction(L,_wrap_new_set_city_population_command);
+    assert(!lua_isnil(L,-1));
+    lua_replace(L,1); /* replace our table with real constructor */
+    lua_call(L,lua_gettop(L)-1,1);
+    return 1;
+}
+static swig_lua_attribute swig_set_city_population_command_attributes[] = {
+    { "_", _wrap_set_city_population_command___get, _wrap_set_city_population_command___set },
+    { "id", _wrap_set_city_population_command_id_get, _wrap_set_city_population_command_id_set },
+    { "population", _wrap_set_city_population_command_population_get, _wrap_set_city_population_command_population_set },
+    {0,0,0}
+};
+static swig_lua_method swig_set_city_population_command_methods[]= {
+    {0,0}
+};
+static swig_lua_method swig_set_city_population_command_meta[] = {
+    {0,0}
+};
+
+static swig_lua_attribute swig_set_city_population_command_Sf_SwigStatic_attributes[] = {
+    {0,0,0}
+};
+static swig_lua_const_info swig_set_city_population_command_Sf_SwigStatic_constants[]= {
+    {0,0,0,0,0,0}
+};
+static swig_lua_method swig_set_city_population_command_Sf_SwigStatic_methods[]= {
+    {0,0}
+};
+static swig_lua_class* swig_set_city_population_command_Sf_SwigStatic_classes[]= {
+    0
+};
+
+static swig_lua_namespace swig_set_city_population_command_Sf_SwigStatic = {
+    "set_city_population_command",
+    swig_set_city_population_command_Sf_SwigStatic_methods,
+    swig_set_city_population_command_Sf_SwigStatic_attributes,
+    swig_set_city_population_command_Sf_SwigStatic_constants,
+    swig_set_city_population_command_Sf_SwigStatic_classes,
+    0
+};
+static swig_lua_class *swig_set_city_population_command_bases[] = {0};
+static const char *swig_set_city_population_command_base_names[] = {0};
+static swig_lua_class _wrap_class_set_city_population_command = { "set_city_population_command", "set_city_population_command", &SWIGTYPE_p_set_city_population_command,_proxy__wrap_new_set_city_population_command, swig_delete_set_city_population_command, swig_set_city_population_command_methods, swig_set_city_population_command_attributes, &swig_set_city_population_command_Sf_SwigStatic, swig_set_city_population_command_meta, swig_set_city_population_command_bases, swig_set_city_population_command_base_names };
+
 static int _wrap_post_admin_message(lua_State* L) {
   int SWIG_arg = 0;
   unsigned char *arg1 = (unsigned char *) 0 ;
@@ -8980,6 +9209,7 @@ static swig_lua_class* swig_SwigModule_classes[]= {
 &_wrap_class_spawn_city_command,
 &_wrap_class_spawn_city_command_reply,
 &_wrap_class_delete_city_command,
+&_wrap_class_set_city_population_command,
     0
 };
 static swig_lua_namespace* swig_SwigModule_namespaces[] = {
@@ -9012,6 +9242,7 @@ static swig_type_info _swigt__p_query_nearest_shipyard_for_ship_command = {"_p_q
 static swig_type_info _swigt__p_query_nearest_shipyard_for_ship_command_reply = {"_p_query_nearest_shipyard_for_ship_command_reply", "struct query_nearest_shipyard_for_ship_command_reply *|query_nearest_shipyard_for_ship_command_reply *", 0, 0, (void*)&_wrap_class_query_nearest_shipyard_for_ship_command_reply, 0};
 static swig_type_info _swigt__p_register_shared_secret_session_key_command = {"_p_register_shared_secret_session_key_command", "struct register_shared_secret_session_key_command *|register_shared_secret_session_key_command *", 0, 0, (void*)&_wrap_class_register_shared_secret_session_key_command, 0};
 static swig_type_info _swigt__p_register_shared_secret_session_key_command_reply = {"_p_register_shared_secret_session_key_command_reply", "struct register_shared_secret_session_key_command_reply *|register_shared_secret_session_key_command_reply *", 0, 0, (void*)&_wrap_class_register_shared_secret_session_key_command_reply, 0};
+static swig_type_info _swigt__p_set_city_population_command = {"_p_set_city_population_command", "struct set_city_population_command *|set_city_population_command *", 0, 0, (void*)&_wrap_class_set_city_population_command, 0};
 static swig_type_info _swigt__p_spawn_city_command = {"_p_spawn_city_command", "struct spawn_city_command *|spawn_city_command *", 0, 0, (void*)&_wrap_class_spawn_city_command, 0};
 static swig_type_info _swigt__p_spawn_city_command_reply = {"_p_spawn_city_command_reply", "struct spawn_city_command_reply *|spawn_city_command_reply *", 0, 0, (void*)&_wrap_class_spawn_city_command_reply, 0};
 static swig_type_info _swigt__p_spawn_command = {"_p_spawn_command", "struct spawn_command *|spawn_command *", 0, 0, (void*)&_wrap_class_spawn_command, 0};
@@ -9038,6 +9269,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_query_nearest_shipyard_for_ship_command_reply,
   &_swigt__p_register_shared_secret_session_key_command,
   &_swigt__p_register_shared_secret_session_key_command_reply,
+  &_swigt__p_set_city_population_command,
   &_swigt__p_spawn_city_command,
   &_swigt__p_spawn_city_command_reply,
   &_swigt__p_spawn_command,
@@ -9064,6 +9296,7 @@ static swig_cast_info _swigc__p_query_nearest_shipyard_for_ship_command[] = {  {
 static swig_cast_info _swigc__p_query_nearest_shipyard_for_ship_command_reply[] = {  {&_swigt__p_query_nearest_shipyard_for_ship_command_reply, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_register_shared_secret_session_key_command[] = {  {&_swigt__p_register_shared_secret_session_key_command, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_register_shared_secret_session_key_command_reply[] = {  {&_swigt__p_register_shared_secret_session_key_command_reply, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_set_city_population_command[] = {  {&_swigt__p_set_city_population_command, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_spawn_city_command[] = {  {&_swigt__p_spawn_city_command, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_spawn_city_command_reply[] = {  {&_swigt__p_spawn_city_command_reply, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_spawn_command[] = {  {&_swigt__p_spawn_command, 0, 0, 0},{0, 0, 0, 0}};
@@ -9090,6 +9323,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_query_nearest_shipyard_for_ship_command_reply,
   _swigc__p_register_shared_secret_session_key_command,
   _swigc__p_register_shared_secret_session_key_command_reply,
+  _swigc__p_set_city_population_command,
   _swigc__p_spawn_city_command,
   _swigc__p_spawn_city_command_reply,
   _swigc__p_spawn_command,

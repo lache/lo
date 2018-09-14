@@ -21,15 +21,25 @@ function despawn_seaport(id)
     return ss.post_admin_message(msg)
 end
 
-function city(id, xc, yc)
+function city(name, xc, yc)
     local msg = ss.spawn_city_command()
     local msg_header = ss.command()
     msg_header.type = string.char(13)
     msg._ = msg_header
-    msg.expected_db_id = id
+    --msg.expected_db_id = id
     msg.xc = xc
     msg.yc = yc
-    msg.name = '스크립트 씨티'
+    msg.name = name
+    return ss.post_admin_message(msg)
+end
+
+function set_city_population(id, population)
+    local msg = ss.set_city_population_command()
+    local msg_header = ss.command()
+    msg_header.type = string.char(14)
+    msg._ = msg_header
+    msg.id = id
+    msg.population = population
     return ss.post_admin_message(msg)
 end
 
