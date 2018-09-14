@@ -3,7 +3,7 @@
 #include "seaport_object.hpp"
 
 typedef struct _xy32 xy32;
-typedef struct lua_State;
+struct lua_State;
 namespace ss {
     class seaport {
     public:
@@ -43,7 +43,6 @@ namespace ss {
         std::shared_ptr<seaport_object::rtree_mem> rtree_ptr;
         const int res_width;
         const int res_height;
-        const float km_per_cell;
         std::unordered_map<int, long long> chunk_key_ts; // chunk key -> timestamp
         std::unordered_map<int, std::string> id_name; // seaport ID -> seaport name
         std::unordered_map<int, seaport_object::point> id_point; // seaport ID -> seaport position
@@ -54,7 +53,7 @@ namespace ss {
         std::unordered_map<int, int> id_type; // seaport ID -> port type
         boost::asio::deadline_timer timer_;
         long long time0_;
-        int seaport_id_seq_;
+        //int seaport_id_seq_;
         lua_State* L;
     };
 }

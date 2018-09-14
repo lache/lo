@@ -40,7 +40,7 @@ static int msb_index(unsigned int v) {
 }
 #endif
 
-static LWTTLCHUNKKEY make_chunk_key(const int xc0_aligned, const int yc0_aligned, const int view_scale) {
+static inline LWTTLCHUNKKEY make_chunk_key(const int xc0_aligned, const int yc0_aligned, const int view_scale) {
     LWTTLCHUNKKEY chunk_key;
     chunk_key.bf.xcc0 = xc0_aligned >> msb_index(LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS * view_scale);
     chunk_key.bf.ycc0 = yc0_aligned >> msb_index(LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS * view_scale);
@@ -48,7 +48,7 @@ static LWTTLCHUNKKEY make_chunk_key(const int xc0_aligned, const int yc0_aligned
     return chunk_key;
 }
 
-static int aligned_chunk_index(const int cell_index, const int view_scale, const int ex) {
+static inline int aligned_chunk_index(const int cell_index, const int view_scale, const int ex) {
     const int half_cell_pixel_extent = (ex >> 1) * view_scale;
     return (cell_index + half_cell_pixel_extent) & ~(2 * half_cell_pixel_extent - 1) & ~(view_scale - 1);
 }

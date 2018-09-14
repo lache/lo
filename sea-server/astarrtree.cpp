@@ -2,7 +2,11 @@
 #include "astarrtree.hpp"
 #include "AStar.h"
 #include "CohenSutherland.h"
-
+#ifdef __APPLE__
+#define MAYBE_UNUSED [[maybe_unused]]
+#else
+#define MAYBE_UNUSED
+#endif
 using namespace astarrtree;
 
 struct PathfindContext {
@@ -246,7 +250,6 @@ void convexHull(ixy32 points[], size_t n, float& shortest_len) {
         const auto dlen = sqrtf(dx * dx + dy * dy);
         total_circum += dlen;
         if (std::isnan(total_circum)) {
-            int x = 1000;
         }
         if (from_to_segment) {
             segment_circum += dlen;
@@ -264,173 +267,195 @@ void convexHull(ixy32 points[], size_t n, float& shortest_len) {
 }
 
 typedef std::pair<point, int> point_value_t;
-const float pi = boost::math::constants::pi<float>();
+//const float pi = boost::math::constants::pi<float>();
 
 bool check_not_duplicate(const xy32& from, const xy32& to, const ixy32& p) {
     return (from.x != p.x || from.y != p.y) && (to.x != p.x || to.y != p.y);
 }
 
-float RTreePathNodeHeuristic(void *fromNode, void *toNode, void *context) {
+// [1] Cell Midpoint Distance Method
+// TOO SLOW; illogical on very big cells
+MAYBE_UNUSED static float RTreePathNodeHeuristic_CellMidpointDistance(void *fromNode, void *toNode, void *context) {
     const auto from = reinterpret_cast<const xy32xy32xy32*>(fromNode);
     const auto to = reinterpret_cast<const xy32xy32xy32*>(toNode);
-
-    //const int d1 = from->box.xy1.x <= to->point.x ? (1 + to->point.x - from->box.xy1.x) : from->box.xy0.x > to->point.x ? (from->box.xy0.x - to->point.x) : 0;
-    //const int d2 = from->box.xy1.y <= to->point.y ? (1 + to->point.y - from->box.xy1.y) : from->box.xy0.y > to->point.y ? (from->box.xy0.y - to->point.y) : 0;
-    //return sqrtf((float)d1 * d1 + d2 * d2);
-
-    return static_cast<float>(xy32_distance(from->point, to->point));
-
-
-    // [1] Cell Midpoint Distance Method
-    // TOO SLOW; illogical on very big cells
     const auto fromMedX = (from->box.xy1.y - from->box.xy0.x) / 2.0f;
     const auto fromMedY = (from->box.xy1.y - from->box.xy0.y) / 2.0f;
     const auto toMedX = (to->box.xy1.x - to->box.xy0.x) / 2.0f;
     const auto toMedY = (to->box.xy1.y - to->box.xy0.y) / 2.0f;
-    /*
-    return fabsf(fromMedX - toMedX) + fabsf(fromMedY - toMedY);*/
+    return fabsf(fromMedX - toMedX) + fabsf(fromMedY - toMedY);
+}
 
-    // [2] Global Direction Following Method
-    // Less cost if moving to the same direction... (kind of greedy)
+// [2] Global Direction Following Method
+// Less cost if moving to the same direction... (kind of greedy)
+MAYBE_UNUSED static float RTreePathNodeHeuristic_GlobalDirectionFollowing(void *fromNode, void *toNode, void *context) {
+    const auto from = reinterpret_cast<const xy32xy32xy32*>(fromNode);
+    const auto to = reinterpret_cast<const xy32xy32xy32*>(toNode);
+    const auto fromMedX = (from->box.xy1.y - from->box.xy0.x) / 2.0f;
+    const auto fromMedY = (from->box.xy1.y - from->box.xy0.y) / 2.0f;
+    const auto toMedX = (to->box.xy1.x - to->box.xy0.x) / 2.0f;
+    const auto toMedY = (to->box.xy1.y - to->box.xy0.y) / 2.0f;
     const auto pathfind_context = reinterpret_cast<PathfindContext*>(context);
     const auto global_from_rect = &pathfind_context->from_rect;
     const auto global_to_rect = &pathfind_context->to_rect;
-
     const auto dir_rect = atan2f(static_cast<float>(global_to_rect->xy0.y - global_from_rect->xy0.y),
                                  static_cast<float>(global_to_rect->xy0.x - global_from_rect->xy0.x));
-    /*const float dir = atan2f(static_cast<float>(to->xy0.y - from->xy0.y),
-                             static_cast<float>(to->xy0.x - from->xy0.x));*/
     const auto dir = atan2f(static_cast<float>(toMedY - fromMedY),
                             static_cast<float>(toMedX - fromMedX));
-    //return fabsf(dir_rect - dir);
+    return fabsf(dir_rect - dir);
+}
 
-    // [3] Simple Manhattan Distance Method
-    // INCORRECT on long cells
-    //return static_cast<float>(abs(from->xy0.x - to->xy0.x) + abs(from->xy0.y - to->xy0.y));
+// [3] Simple Manhattan Distance Method
+// INCORRECT on long cells
+MAYBE_UNUSED static float RTreePathNodeHeuristic_SimpleManhattanDistance(void *fromNode, void *toNode, void *context) {
+    const auto from = reinterpret_cast<const xy32xy32xy32*>(fromNode);
+    const auto to = reinterpret_cast<const xy32xy32xy32*>(toNode);
+    return static_cast<float>(abs(from->point.x - to->point.x) + abs(from->point.y - to->point.y));
+}
 
-    // [4] Rect Distance Method
-    //return static_cast<float>(RectDistance(from, to) + RectDistance(to, to_rect));
+// [4] Rect Distance Method
+MAYBE_UNUSED static float RTreePathNodeHeuristic_RectDistance(void *fromNode, void *toNode, void *context) {
+    const auto from = reinterpret_cast<const xy32xy32xy32*>(fromNode);
+    const auto to = reinterpret_cast<const xy32xy32xy32*>(toNode);
+    const auto pathfind_context = reinterpret_cast<PathfindContext*>(context);
+    const auto global_to_rect = &pathfind_context->to_rect;
+    return static_cast<float>(RectDistance(&from->box, &to->box) + RectDistance(&to->box, global_to_rect));
+}
 
-    // [5] Rect Distance Method (Revised)
-    const auto from_cost = RectDistance(&from->box, global_to_rect);
+// [5] Rect Distance Method (Revised)
+MAYBE_UNUSED static float RTreePathNodeHeuristic_RectDistanceRevised(void *fromNode, void *toNode, void *context) {
+    const auto from = reinterpret_cast<const xy32xy32xy32*>(fromNode);
+    const auto to = reinterpret_cast<const xy32xy32xy32*>(toNode);
+    const auto pathfind_context = reinterpret_cast<PathfindContext*>(context);
+    const auto global_to_rect = &pathfind_context->to_rect;
     const auto to_cost = RectDistance(&to->box, global_to_rect);
     const auto from_to_cost = RectDistance(&from->box, &to->box);
-    //return static_cast<float>(from_to_cost != 0 ? FLT_MAX : to_cost);
+    return static_cast<float>(from_to_cost != 0 ? FLT_MAX : to_cost);
+}
 
-    // [6] Enter Point Distance Method
+// [6] Enter Point Distance
+MAYBE_UNUSED static float RTreePathNodeHeuristic_EnterPointDistance(void *fromNode, void *toNode, void *context) {
+    const auto from = reinterpret_cast<const xy32xy32xy32*>(fromNode);
+    const auto to = reinterpret_cast<const xy32xy32xy32*>(toNode);
+    const auto pathfind_context = reinterpret_cast<PathfindContext*>(context);
+    const auto from_to_cost = RectDistance(&from->box, &to->box);
     const auto enter_point_dx = from->point.x - to->point.x;
     const auto enter_point_dy = from->point.y - to->point.y;
     const auto enter_point_dist = sqrtf(static_cast<float>(enter_point_dx * enter_point_dx + enter_point_dy * enter_point_dy));
     float path_cost = 0;
-
-    //if (from_to_cost == 0) {
-    //    path_cost = enter_point_dist;
-    //} else {
-    //    // not neighbor
-    //    // finding shortest path cost (distance) between 'from->point' and 'to->point'
-    //    // with a rectangular obstacle exists on the straight path.
-    //    int obstacle_min_corner_x = INT_MAX;
-    //    int obstacle_min_corner_y = INT_MAX;
-    //    int obstacle_max_corner_x = INT_MIN;
-    //    int obstacle_max_corner_y = INT_MIN;
-
-    //    bool seg_valid = false;
-    //    bgm::segment<point> segment_between_points{ { from->point.x, from->point.y },{ to->point.x, to->point.y } };
-    //    point from_point(from->point.x, from->point.y);
-    //    point to_point(to->point.x, to->point.y);
-    //    //bool seg_contained = false;
-
-    //    std::vector<ixy32> A{
-    //        { 0, from->point.x, from->point.y },
-    //        { 2, to->point.x, to->point.y },
-    //    };
-    //    assert(from->point.x != to->point.x || from->point.y != to->point.y);
-
-    //    for (auto seg_it = pathfind_context->rtree_land->qbegin(bgi::intersects(segment_between_points)); seg_it != pathfind_context->rtree_land->qend(); seg_it++) {
-    //        if (boost::geometry::within(from_point, seg_it->first) || boost::geometry::within(to_point, seg_it->first)) {
-    //            continue;
-    //        }
-    //        if (obstacle_min_corner_x > seg_it->first.min_corner().get<0>()) {
-    //            obstacle_min_corner_x = seg_it->first.min_corner().get<0>();
-    //        }
-    //        if (obstacle_min_corner_y > seg_it->first.min_corner().get<1>()) {
-    //            obstacle_min_corner_y = seg_it->first.min_corner().get<1>();
-    //        }
-    //        if (obstacle_max_corner_x < seg_it->first.max_corner().get<0>()) {
-    //            obstacle_max_corner_x = seg_it->first.max_corner().get<0>();
-    //        }
-    //        if (obstacle_max_corner_y < seg_it->first.max_corner().get<1>()) {
-    //            obstacle_max_corner_y = seg_it->first.max_corner().get<1>();
-    //        }
-    //        box obstacle{ { obstacle_min_corner_x, obstacle_min_corner_y },{ obstacle_max_corner_x ,obstacle_max_corner_y } };
-    //        if (boost::geometry::within(from_point, obstacle)) {
-    //            LOGEx("%1%: from point included in obstacle! from point: %2% %3% / obs: %4% %5% %6% %7%",
-    //                  __func__,
-    //                  from_point.get<0>(),
-    //                  from_point.get<1>(),
-    //                  obstacle.min_corner().get<0>(),
-    //                  obstacle.min_corner().get<1>(),
-    //                  obstacle.max_corner().get<0>(),
-    //                  obstacle.max_corner().get<1>());
-    //            //abort();
-    //            //seg_contained = true;
-    //        }
-    //        if (boost::geometry::within(to_point, obstacle)) {
-    //            LOGEx("%1%: to point included in obstacle! from point: %2% %3% / obs: %4% %5% %6% %7%",
-    //                  __func__,
-    //                  to_point.get<0>(),
-    //                  to_point.get<1>(),
-    //                  obstacle.min_corner().get<0>(),
-    //                  obstacle.min_corner().get<1>(),
-    //                  obstacle.max_corner().get<0>(),
-    //                  obstacle.max_corner().get<1>());
-    //            //abort();
-    //            //seg_contained = true;
-    //        }
-    //        ixy32 p0{ 1, seg_it->first.min_corner().get<0>(), seg_it->first.min_corner().get<1>() };
-    //        ixy32 p1{ 1, seg_it->first.min_corner().get<0>(), seg_it->first.max_corner().get<1>() };
-    //        ixy32 p2{ 1, seg_it->first.max_corner().get<0>(), seg_it->first.min_corner().get<1>() };
-    //        ixy32 p3{ 1, seg_it->first.max_corner().get<0>(), seg_it->first.max_corner().get<1>() };
-
-    //        if ((from->point.x == to->point.x) && (from->point.x == seg_it->first.min_corner().get<0>() || from->point.x == seg_it->first.max_corner().get<0>())) {
-    //            // COLINEAR ON Y-AXIS
-    //        } else if ((from->point.y == to->point.y) && (from->point.y == seg_it->first.min_corner().get<1>() || from->point.y == seg_it->first.max_corner().get<1>())) {
-    //            // COLINEAR ON X-AXIS
-    //        } else {
-    //            if (check_not_duplicate(from->point, to->point, p0)) {
-    //                A.push_back(p0);
-    //            }
-    //            if (check_not_duplicate(from->point, to->point, p1)) {
-    //                A.push_back(p1);
-    //            }
-    //            if (check_not_duplicate(from->point, to->point, p2)) {
-    //                A.push_back(p2);
-    //            }
-    //            if (check_not_duplicate(from->point, to->point, p3)) {
-    //                A.push_back(p3);
-    //            }
-    //            seg_valid = true;
-    //            LOGI("Convex Hull node size %1%...", A.size());
-    //        }
-    //    }
-
-    //    if (seg_valid) {
-    //        convexHull(&A[0], A.size(), path_cost);
-    //    } else {
-    //        // yey! no obstacle!
-    //        path_cost = enter_point_dist;
-    //    }
-    //}
-
+    if (from_to_cost == 0) {
+        path_cost = enter_point_dist;
+    } else {
+        // not neighbor
+        // finding shortest path cost (distance) between 'from->point' and 'to->point'
+        // with a rectangular obstacle exists on the straight path.
+        int obstacle_min_corner_x = INT_MAX;
+        int obstacle_min_corner_y = INT_MAX;
+        int obstacle_max_corner_x = INT_MIN;
+        int obstacle_max_corner_y = INT_MIN;
+    
+        bool seg_valid = false;
+        bgm::segment<point> segment_between_points{ { from->point.x, from->point.y },{ to->point.x, to->point.y } };
+        point from_point(from->point.x, from->point.y);
+        point to_point(to->point.x, to->point.y);
+        //bool seg_contained = false;
+    
+        std::vector<ixy32> A{
+            { 0, from->point.x, from->point.y },
+            { 2, to->point.x, to->point.y },
+        };
+        assert(from->point.x != to->point.x || from->point.y != to->point.y);
+    
+        
+        for (auto seg_it = pathfind_context->rtree_ptr->qbegin(bgi::intersects(segment_between_points)); seg_it != pathfind_context->rtree_ptr->qend(); seg_it++) {
+            if (boost::geometry::within(from_point, seg_it->first) || boost::geometry::within(to_point, seg_it->first)) {
+                continue;
+            }
+            if (obstacle_min_corner_x > seg_it->first.min_corner().get<0>()) {
+                obstacle_min_corner_x = seg_it->first.min_corner().get<0>();
+            }
+            if (obstacle_min_corner_y > seg_it->first.min_corner().get<1>()) {
+                obstacle_min_corner_y = seg_it->first.min_corner().get<1>();
+            }
+            if (obstacle_max_corner_x < seg_it->first.max_corner().get<0>()) {
+                obstacle_max_corner_x = seg_it->first.max_corner().get<0>();
+            }
+            if (obstacle_max_corner_y < seg_it->first.max_corner().get<1>()) {
+                obstacle_max_corner_y = seg_it->first.max_corner().get<1>();
+            }
+            box obstacle{ { obstacle_min_corner_x, obstacle_min_corner_y },{ obstacle_max_corner_x ,obstacle_max_corner_y } };
+            if (boost::geometry::within(from_point, obstacle)) {
+                LOGE("%1%: from point included in obstacle! from point: %2% %3% / obs: %4% %5% %6% %7%",
+                      __func__,
+                      from_point.get<0>(),
+                      from_point.get<1>(),
+                      obstacle.min_corner().get<0>(),
+                      obstacle.min_corner().get<1>(),
+                      obstacle.max_corner().get<0>(),
+                      obstacle.max_corner().get<1>());
+                //abort();
+                //seg_contained = true;
+            }
+            if (boost::geometry::within(to_point, obstacle)) {
+                LOGE("%1%: to point included in obstacle! from point: %2% %3% / obs: %4% %5% %6% %7%",
+                      __func__,
+                      to_point.get<0>(),
+                      to_point.get<1>(),
+                      obstacle.min_corner().get<0>(),
+                      obstacle.min_corner().get<1>(),
+                      obstacle.max_corner().get<0>(),
+                      obstacle.max_corner().get<1>());
+                //abort();
+                //seg_contained = true;
+            }
+            ixy32 p0{ 1, seg_it->first.min_corner().get<0>(), seg_it->first.min_corner().get<1>() };
+            ixy32 p1{ 1, seg_it->first.min_corner().get<0>(), seg_it->first.max_corner().get<1>() };
+            ixy32 p2{ 1, seg_it->first.max_corner().get<0>(), seg_it->first.min_corner().get<1>() };
+            ixy32 p3{ 1, seg_it->first.max_corner().get<0>(), seg_it->first.max_corner().get<1>() };
+    
+            if ((from->point.x == to->point.x) && (from->point.x == seg_it->first.min_corner().get<0>() || from->point.x == seg_it->first.max_corner().get<0>())) {
+                // COLINEAR ON Y-AXIS
+            } else if ((from->point.y == to->point.y) && (from->point.y == seg_it->first.min_corner().get<1>() || from->point.y == seg_it->first.max_corner().get<1>())) {
+                // COLINEAR ON X-AXIS
+            } else {
+                if (check_not_duplicate(from->point, to->point, p0)) {
+                    A.push_back(p0);
+                }
+                if (check_not_duplicate(from->point, to->point, p1)) {
+                    A.push_back(p1);
+                }
+                if (check_not_duplicate(from->point, to->point, p2)) {
+                    A.push_back(p2);
+                }
+                if (check_not_duplicate(from->point, to->point, p3)) {
+                    A.push_back(p3);
+                }
+                seg_valid = true;
+                LOGI("Convex Hull node size %1%...", A.size());
+            }
+        }
+    
+        if (seg_valid) {
+            convexHull(&A[0], A.size(), path_cost);
+        } else {
+            // yey! no obstacle!
+            path_cost = enter_point_dist;
+        }
+    }
+    
     // 'from_to_cast' is a pentalty cost.
     // It is non-zero only if 'fromNode' and 'toNode' are not neighbors.
     return enter_point_dist + from_to_cost;
-    //return path_cost;
+}
 
+// [7] No Cost
+MAYBE_UNUSED static float RTreePathNodeHeuristic_NoCost(void *fromNode, void *toNode, void *context) {
+    return 0;
+}
 
-
-    // [7] No cost
-    //return 0;
+static float RTreePathNodeHeuristic(void *fromNode, void *toNode, void *context) {
+    const auto from = reinterpret_cast<const xy32xy32xy32*>(fromNode);
+    const auto to = reinterpret_cast<const xy32xy32xy32*>(toNode);
+    return static_cast<float>(xy32_distance(from->point, to->point));
 }
 
 int RTreePathNodeComparator(void *node1, void *node2, void *context) {
@@ -797,7 +822,7 @@ void RTreePixelPathNodeNeighborsSuboptimal(ASNeighborList neighbors, void *node,
     pixel_waypoint_search* pws = reinterpret_cast<pixel_waypoint_search*>(context);
     ASPath cell_path = pws->cell_path;
     size_t cell_path_count = ASPathGetCount(cell_path);
-    printf("Finding pixel neighbors on cell index %lld...\n", n->i);
+    LOGI("Finding pixel neighbors on cell index %1%...", n->i);
     if (n->p.x == pws->to.x && n->p.y == pws->to.y) {
         // 'n' equals to 'to': reached endpoint (to-pixel)
         // no neighbors on endpoint
@@ -827,7 +852,7 @@ void RTreePixelPathNodeNeighborsSuboptimal(ASNeighborList neighbors, void *node,
         LOGE("Corrupted ee");
         abort();
     }
-    const bool add_nearest_only = !(n->i == 0 && n->ee == XEE_ENTER);
+    //const bool add_nearest_only = !(n->i == 0 && n->ee == XEE_ENTER);
     AddNeighborByRectRelation(n1c,
                               n2c,
                               neighbors,
@@ -885,8 +910,8 @@ static int RTreePathNodeEarlyExit(size_t visitedCount, void *visitingNode, void 
             timer.expires_from_now(boost::posix_time::milliseconds(10));
             timer.async_wait(pathfind_context->coro->yield);*/
         }
-        const auto visiting = reinterpret_cast<const xy32xy32xy32*>(visitingNode);
-        const auto goal = reinterpret_cast<const xy32xy32xy32*>(goalNode);
+        //const auto visiting = reinterpret_cast<const xy32xy32xy32*>(visitingNode);
+        //const auto goal = reinterpret_cast<const xy32xy32xy32*>(goalNode);
         //printf("%d\n", (int)visitedCount);
         /*LOGI("%|| visits so far... visiting:%||,%||[%||,%||-%||,%||] / goal:%||,%||[%||,%||-%||,%||]",
         visitedCount,
@@ -918,8 +943,8 @@ static int RTreePixelPathNodeEarlyExit(size_t visitedCount, void *visitingNode, 
             timer.expires_from_now(boost::posix_time::milliseconds(10));
             timer.async_wait(pws->coro->yield);*/
         }
-        const auto visiting = reinterpret_cast<const xy32xy32xy32*>(visitingNode);
-        const auto goal = reinterpret_cast<const xy32xy32xy32*>(goalNode);
+        //const auto visiting = reinterpret_cast<const xy32xy32xy32*>(visitingNode);
+        //const auto goal = reinterpret_cast<const xy32xy32xy32*>(goalNode);
         //printf("pixel-level visit count = %lld\n", visitedCount);
         //printf("%d\n", (int)visitedCount);
         /*LOGI("%|| visits so far... visiting:%||,%||[%||,%||-%||,%||] / goal:%||,%||[%||,%||-%||,%||]",

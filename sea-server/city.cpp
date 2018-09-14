@@ -29,7 +29,6 @@ city::city(boost::asio::io_service& io_service,
     , rtree_ptr(file.find_or_construct<city_object::rtree>("rtree")(city_object::params(), city_object::indexable(), city_object::equal_to(), alloc))
     , res_width(WORLD_MAP_PIXEL_RESOLUTION_WIDTH)
     , res_height(WORLD_MAP_PIXEL_RESOLUTION_HEIGHT)
-    , km_per_cell(WORLD_CIRCUMFERENCE_IN_KM / res_width)
     , timer_(io_service, update_interval)
     , seaport_(seaport)
     , city_id_seq_(0)
@@ -59,7 +58,7 @@ void city::init() {
     }
     city_id_seq_ = count;
     
-    const auto monotonic_uptime = get_monotonic_uptime();
+    //const auto monotonic_uptime = get_monotonic_uptime();
     
     std::set<std::pair<int, int> > point_set;
     std::vector<city_object::value> duplicates;

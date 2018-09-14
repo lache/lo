@@ -22,9 +22,7 @@ seaport::seaport(boost::asio::io_service& io_service)
     : rtree_ptr(new seaport_object::rtree_mem())
     , res_width(WORLD_MAP_PIXEL_RESOLUTION_WIDTH)
     , res_height(WORLD_MAP_PIXEL_RESOLUTION_HEIGHT)
-    , km_per_cell(WORLD_CIRCUMFERENCE_IN_KM / res_width)
     , timer_(io_service, update_interval)
-    , seaport_id_seq_(0)
     , L(luaL_newstate()) {
     init();
 }
@@ -47,7 +45,7 @@ void seaport::init() {
         //id_point[i] = seaport_object::point(lng_to_xc(sp[i].lng), lat_to_yc(sp[i].lat));
     }
     
-    const auto monotonic_uptime = get_monotonic_uptime();
+    //const auto monotonic_uptime = get_monotonic_uptime();
     
     std::set<std::pair<int, int> > point_set;
     std::vector<seaport_object::value> duplicates;
@@ -364,7 +362,7 @@ int seaport::get_type(int id) const {
 }
 
 void seaport::update() {
-    float delta_time = update_interval.total_milliseconds() / 1000.0f;
+    //float delta_time = update_interval.total_milliseconds() / 1000.0f;
 
     timer_.expires_at(timer_.expires_at() + update_interval);
     timer_.async_wait(boost::bind(&seaport::update, this));

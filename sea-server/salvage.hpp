@@ -29,7 +29,6 @@ namespace ss {
         salvage_object::rtree rtree;
         const int res_width;
         const int res_height;
-        const float km_per_cell;
         std::unordered_map<int, long long> chunk_key_ts; // chunk key -> timestamp
         std::unordered_map<int, std::string> id_name; // salvage ID -> salvage name
         std::unordered_map<int, salvage_object::point> id_point; // salvage ID -> salvage position

@@ -10,8 +10,7 @@ using namespace ss;
 sea::sea(boost::asio::io_service& io_service)
     : io_service(io_service)
     , res_width(WORLD_MAP_PIXEL_RESOLUTION_WIDTH)
-    , res_height(WORLD_MAP_PIXEL_RESOLUTION_HEIGHT)
-    , km_per_cell(WORLD_CIRCUMFERENCE_IN_KM / res_width) {
+    , res_height(WORLD_MAP_PIXEL_RESOLUTION_HEIGHT) {
 }
 
 float sea::lng_to_xc(float lng) const {

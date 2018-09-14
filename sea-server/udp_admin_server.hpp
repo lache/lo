@@ -52,6 +52,6 @@ namespace ss {
         udp::resolver::query web_server_query_;
         udp::endpoint web_server_endpoint_;
         udp::socket web_server_socket_;
-        boost::asio::io_service& io_service_;
+        //boost::asio::io_service& io_service_;
     };
 }

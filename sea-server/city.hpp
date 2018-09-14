@@ -43,7 +43,7 @@ namespace ss {
         city_object::rtree* rtree_ptr;
         const int res_width;
         const int res_height;
-        const float km_per_cell;
+        //const float km_per_cell;
         std::unordered_map<int, std::string> id_name; // city ID -> city name
         std::unordered_map<int, int> id_population; // city ID -> city population
         std::unordered_map<int, std::string> id_country; // city ID -> city country

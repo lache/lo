@@ -94,7 +94,7 @@ void udp_server::salvage_update() {
     salvage_timer_.expires_at(salvage_timer_.expires_at() + salvage_update_interval);
     salvage_timer_.async_wait(boost::bind(&udp_server::salvage_update, this));
 
-    float delta_time = salvage_update_interval.total_milliseconds() / 1000.0f;
+    //float delta_time = salvage_update_interval.total_milliseconds() / 1000.0f;
 
     for (const auto& e : client_endpoint_aoi_values_) {
         const auto& aoi_box = e.second.first;
@@ -108,7 +108,7 @@ void udp_server::contract_update() {
     contract_timer_.expires_at(contract_timer_.expires_at() + contract_update_interval);
     contract_timer_.async_wait(boost::bind(&udp_server::contract_update, this));
 
-    float delta_time = contract_update_interval.total_milliseconds() / 1000.0f;
+    //float delta_time = contract_update_interval.total_milliseconds() / 1000.0f;
 
     for (const auto& e : client_endpoint_aoi_values_) {
         const auto& aoi_box = e.second.first;
@@ -438,8 +438,8 @@ void udp_server::send_seaport(float lng, float lat, float ex_lng, float ex_lat, 
 }
 
 void udp_server::send_seaport_cell_aligned(int xc0_aligned, int yc0_aligned, float ex_lng, float ex_lat, int view_scale) {
-    const auto half_lng_cell_pixel_extent = boost::math::iround(ex_lng / 2.0f * view_scale);
-    const auto half_lat_cell_pixel_extent = boost::math::iround(ex_lat / 2.0f * view_scale);
+    //const auto half_lng_cell_pixel_extent = boost::math::iround(ex_lng / 2.0f * view_scale);
+    //const auto half_lat_cell_pixel_extent = boost::math::iround(ex_lat / 2.0f * view_scale);
     auto sop_list = seaport_->query_near_to_packet(xc0_aligned,
                                                    yc0_aligned,
                                                    ex_lng * view_scale,
@@ -481,8 +481,8 @@ void udp_server::send_seaport_cell_aligned(int xc0_aligned, int yc0_aligned, flo
 }
 
 void udp_server::send_city_cell_aligned(int xc0_aligned, int yc0_aligned, float ex_lng, float ex_lat, int view_scale) {
-    const auto half_lng_cell_pixel_extent = boost::math::iround(ex_lng / 2.0f * view_scale);
-    const auto half_lat_cell_pixel_extent = boost::math::iround(ex_lat / 2.0f * view_scale);
+    //const auto half_lng_cell_pixel_extent = boost::math::iround(ex_lng / 2.0f * view_scale);
+    //const auto half_lat_cell_pixel_extent = boost::math::iround(ex_lat / 2.0f * view_scale);
     auto sop_list = city_->query_near_to_packet(xc0_aligned,
                                                 yc0_aligned,
                                                 ex_lng * view_scale,
@@ -521,8 +521,8 @@ void udp_server::send_city_cell_aligned(int xc0_aligned, int yc0_aligned, float 
 }
 
 void udp_server::send_salvage_cell_aligned(int xc0_aligned, int yc0_aligned, float ex_lng, float ex_lat, int view_scale) {
-    const auto half_lng_cell_pixel_extent = boost::math::iround(ex_lng / 2.0f * view_scale);
-    const auto half_lat_cell_pixel_extent = boost::math::iround(ex_lat / 2.0f * view_scale);
+    //const auto half_lng_cell_pixel_extent = boost::math::iround(ex_lng / 2.0f * view_scale);
+    //const auto half_lat_cell_pixel_extent = boost::math::iround(ex_lat / 2.0f * view_scale);
     auto sop_list = salvage_->query_near_to_packet(xc0_aligned,
                                                    yc0_aligned,
                                                    ex_lng * view_scale,
@@ -563,8 +563,8 @@ void udp_server::send_salvage_cell_aligned(int xc0_aligned, int yc0_aligned, flo
 }
 
 void udp_server::send_contract_cell_aligned(int xc0_aligned, int yc0_aligned, float ex_lng, float ex_lat, int view_scale) {
-    const auto half_lng_cell_pixel_extent = boost::math::iround(ex_lng / 2.0f * view_scale);
-    const auto half_lat_cell_pixel_extent = boost::math::iround(ex_lat / 2.0f * view_scale);
+    //const auto half_lng_cell_pixel_extent = boost::math::iround(ex_lng / 2.0f * view_scale);
+    //const auto half_lat_cell_pixel_extent = boost::math::iround(ex_lat / 2.0f * view_scale);
     auto sop_list = contract_->query_near_to_packet(xc0_aligned,
                                                    yc0_aligned,
                                                    ex_lng * view_scale,
@@ -605,8 +605,8 @@ void udp_server::send_contract_cell_aligned(int xc0_aligned, int yc0_aligned, fl
 }
 
 void udp_server::send_shipyard_cell_aligned(int xc0_aligned, int yc0_aligned, float ex_lng, float ex_lat, int view_scale) {
-    const auto half_lng_cell_pixel_extent = boost::math::iround(ex_lng / 2.0f * view_scale);
-    const auto half_lat_cell_pixel_extent = boost::math::iround(ex_lat / 2.0f * view_scale);
+    //const auto half_lng_cell_pixel_extent = boost::math::iround(ex_lng / 2.0f * view_scale);
+    //const auto half_lat_cell_pixel_extent = boost::math::iround(ex_lat / 2.0f * view_scale);
     auto sop_list = shipyard_->query_near_to_packet(xc0_aligned,
                                                    yc0_aligned,
                                                    ex_lng * view_scale,

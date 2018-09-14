@@ -45,8 +45,8 @@ namespace ss {
         bgi::rtree< value, bgi::quadratic<16> > rtree;
         const int res_width;
         const int res_height;
-        const float km_per_cell;
-        int tick_seq;
+        //const float km_per_cell;
+        //int tick_seq;
         std::shared_ptr<udp_admin_server> uas;
         std::vector<cargo_notification> cargo_notifications;
     };

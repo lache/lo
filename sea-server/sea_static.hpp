@@ -51,7 +51,7 @@ namespace ss {
 
         const int res_width;
         const int res_height;
-        const float km_per_cell;
+        //const float km_per_cell;
         //typedef std::unordered_set<int, std::hash<int>, std::equal_to<int>, sea_static_object::allocator> sea_water_set_t;
         //sea_water_set_t* sea_water_set;
         std::vector<int> sea_water_vector;
