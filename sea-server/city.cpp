@@ -198,15 +198,16 @@ void city::update_single_chunk_key_ts(const LWTTLCHUNKKEY& chunk_key, long long 
 }
 
 int city::spawn(const char* name, int xc0, int yc0) {
-    city_object::point new_port_point{ xc0, yc0 };
-    if (rtree_ptr->qbegin(bgi::intersects(new_port_point)) != rtree_ptr->qend()) {
+    city_object::point new_city_point{ xc0, yc0 };
+    if (rtree_ptr->qbegin(bgi::intersects(new_city_point)) != rtree_ptr->qend()) {
         // already exists
         return -1;
     }
 
     const auto id = ++city_id_seq_;
-    rtree_ptr->insert(std::make_pair(new_port_point, id));
-    id_point[id] = new_port_point;
+    rtree_ptr->insert(std::make_pair(new_city_point, id));
+    id_point[id] = new_city_point;
+    id_population[id] = 1;
     if (name[0] != 0) {
         set_name(id, name);
     } else {
@@ -268,11 +269,8 @@ const char* city::query_single_cell(int xc0, int yc0, int& id, int& population) 
 }
 
 void city::update() {
-    float delta_time = update_interval.total_milliseconds() / 1000.0f;
-
     timer_.expires_at(timer_.expires_at() + update_interval);
     timer_.async_wait(boost::bind(&city::update, this));
-
     generate_cargo();
 }
 

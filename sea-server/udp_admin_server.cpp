@@ -13,12 +13,6 @@
 #include "city.hpp"
 using namespace ss;
 
-static std::string make_daytime_string() {
-    using namespace std; // For time_t, time and ctime;
-    time_t now = time(0);
-    return ctime(&now);
-}
-
 udp_admin_server::udp_admin_server(boost::asio::io_service& io_service,
                                    std::shared_ptr<sea> sea,
                                    std::shared_ptr<sea_static> sea_static,
@@ -33,8 +27,8 @@ udp_admin_server::udp_admin_server(boost::asio::io_service& io_service,
     , seaport_(seaport)
     , shipyard_(shipyard)
     , udp_server_(udp_server)
-    , session_(session)
     , city_(city)
+    , session_(session)
     , resolver_(io_service)
     , web_server_query_(udp::v4(), "localhost", "3003")
     , web_server_endpoint_(*resolver_.resolve(web_server_query_))
