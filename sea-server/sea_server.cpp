@@ -22,6 +22,38 @@ std::shared_ptr<udp_admin_server> udp_admin_server_instance;
 extern "C" int lua_main(int argc, char **argv, void custom_init_func(lua_State* L));
 extern "C" int handle_script(lua_State *L, char **argv);
 
+static int traceback(lua_State *L) {
+    lua_getglobal(L, "debug");
+    lua_getfield(L, -1, "traceback");
+    lua_pushvalue(L, 1);
+    lua_pushinteger(L, 2);
+    lua_call(L, 2, 1);
+    return 1;
+}
+
+void init_lua(lua_State* L, const char* lua_filename) {
+    luaL_openlibs(L);
+    char prefixed_filename[256];
+    prefixed_filename[0] = '\0';
+    strncat(prefixed_filename, "@", sizeof(prefixed_filename) - 1);
+    strncat(prefixed_filename, lua_filename, sizeof(prefixed_filename) - 1);
+    std::ifstream script_file(lua_filename);
+    std::stringstream script_stream;
+    script_stream << script_file.rdbuf();
+    lua_pushcfunction(L, traceback);
+    int lua_load_result = (luaL_loadbuffer(L,
+                                           script_stream.str().c_str(),
+                                           strlen(script_stream.str().c_str()), prefixed_filename)
+                           || lua_pcall(L, 0, LUA_MULTRET, lua_gettop(L) - 1));
+    if (lua_load_result) {
+        LOGE("LUA ERROR: %1%", lua_tostring(L, -1));
+    } else {
+        LOGI("Lua result: %1%", lua_tointeger(L, -1));
+    }
+    // pop return value
+    lua_pop(L, 1);
+}
+
 void custom_lua_init(lua_State* L) {
     SWIG_init(L);
 }

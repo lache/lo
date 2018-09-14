@@ -5,6 +5,7 @@
 #include "item.hpp"
 
 typedef struct _xy32 xy32;
+struct lua_State;
 namespace ss {
     class seaport;
     class city {
@@ -31,6 +32,7 @@ namespace ss {
         std::vector<cargo_notification>&& flush_cargo_notifications();
         int set_population(int id, int population);
     private:
+        void init();
         float xc_to_lng(int xc) const;
         float yc_to_lat(int yc) const;
         std::vector<city_object::value> query_tree_ex(int xc, int yc, int half_lng_ex, int half_lat_ex) const;
@@ -55,5 +57,6 @@ namespace ss {
         long long time0_;
         int city_id_seq_;
         std::vector<cargo_notification> cargo_notifications;
+        lua_State* L;
     };
 }

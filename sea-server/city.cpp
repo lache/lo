@@ -8,6 +8,8 @@
 #define CITY_ASSETS_FILENAME "assets/ttldata/cities.dat"
 #define CITY_RTREE_MMAP_MAX_SIZE (4 * 1024 * 1024)
 
+void init_lua(lua_State* L, const char* lua_filename);
+
 using namespace ss;
 
 const auto update_interval = boost::posix_time::milliseconds(5000);
@@ -30,7 +32,12 @@ city::city(boost::asio::io_service& io_service,
     , km_per_cell(WORLD_CIRCUMFERENCE_IN_KM / res_width)
     , timer_(io_service, update_interval)
     , seaport_(seaport)
-    , city_id_seq_(0) {
+    , city_id_seq_(0)
+    , L(luaL_newstate()) {
+    init();
+}
+
+void city::init() {
     time0_ = get_monotonic_uptime();
     boost::interprocess::file_mapping city_file(CITY_ASSETS_FILENAME, boost::interprocess::read_only);
     boost::interprocess::mapped_region region(city_file, boost::interprocess::read_only);
@@ -51,9 +58,9 @@ city::city(boost::asio::io_service& io_service,
         id_country[i + 1] = sp[i].country;
     }
     city_id_seq_ = count;
-
+    
     const auto monotonic_uptime = get_monotonic_uptime();
-
+    
     std::set<std::pair<int, int> > point_set;
     std::vector<city_object::value> duplicates;
     const auto bounds = rtree_ptr->bounds();
@@ -63,9 +70,9 @@ city::city(boost::asio::io_service& io_service,
         const auto point = std::make_pair(xc0, yc0);
         if (point_set.find(point) == point_set.end()) {
             id_point[it->second] = it->first;
-
+            
             update_chunk_key_ts(xc0, yc0);
-
+            
             point_set.insert(point);
         } else {
             duplicates.push_back(*it);
@@ -80,7 +87,8 @@ city::city(boost::asio::io_service& io_service,
              rtree_ptr->size());
         abort();
     }
-
+    
+    init_lua(L, "assets/l/city.lua");
     timer_.async_wait(boost::bind(&city::update, this));
 }
 
@@ -294,6 +302,12 @@ const char* city::query_single_cell(int xc0, int yc0, int& id, int& population) 
         id = city_it->second;
         const auto population_it = id_population.find(id);
         population = population_it != id_population.cend() ? population_it->second : 0;
+        // call lua hook
+        lua_getglobal(L, "city_debug_query");
+        lua_pushnumber(L, id);
+        if (lua_pcall(L, 1/*arguments*/, 0/*result*/, 0)) {
+            LOGEP("error: %1%", lua_tostring(L, -1));
+        }
         return get_city_name(city_it->second);
     }
     id = -1;
@@ -304,6 +318,17 @@ void city::update() {
     timer_.expires_at(timer_.expires_at() + update_interval);
     timer_.async_wait(boost::bind(&city::update, this));
     generate_cargo();
+    // call lua hook for each city
+    // iterate all cities
+    const auto bounds = rtree_ptr->bounds();
+    for (auto it = rtree_ptr->qbegin(bgi::intersects(bounds)); it != rtree_ptr->qend(); it++) {
+        const auto city_id = it->second;
+        lua_getglobal(L, "city_update");
+        lua_pushnumber(L, city_id);
+        if (lua_pcall(L, 1/*arguments*/, 0/*result*/, 0)) {
+            LOGEP("error: %1%", lua_tostring(L, -1));
+        }
+    }
 }
 
 void city::generate_cargo() {

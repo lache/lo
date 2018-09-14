@@ -2529,6 +2529,7 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
 
     //render_coords_dms(pLwc, &view_center);
     {
+        // change blend mode to correctly render FBO texture
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         render_solid_box_ui_lvt_flip_y_uv(pLwc,
                                           -pLwc->viewport_rt_x,
@@ -2540,6 +2541,8 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
                                           1);
     }
     {
+        // revert to default blend mode
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         // overwrite ui projection matrix
         logic_update_default_ui_proj_for_htmlui(pLwc->shared_fbo.width, pLwc->shared_fbo.height, ((LWCONTEXT*)pLwc)->proj);
 

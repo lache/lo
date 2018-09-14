@@ -9,6 +9,8 @@ using namespace ss;
 
 const auto update_interval = boost::posix_time::milliseconds(1000);
 
+void init_lua(lua_State* L, const char* lua_filename);
+
 typedef struct _LWTTLDATA_SEAPORT {
     char name[80]; // maximum length from crawling data: 65
     char locode[8]; // fixed length of 5
@@ -17,16 +19,17 @@ typedef struct _LWTTLDATA_SEAPORT {
 } LWTTLDATA_SEAPORT;
 
 seaport::seaport(boost::asio::io_service& io_service)
-    : /*file(bi::open_or_create, SEAPORT_RTREE_FILENAME, SEAPORT_RTREE_MMAP_MAX_SIZE)
-    , alloc(file.get_segment_manager())
-    , rtree_ptr(file.find_or_construct<seaport_object::rtree>("rtree")(seaport_object::params(), seaport_object::indexable(), seaport_object::equal_to(), alloc))
-    , */
-    rtree_ptr(new seaport_object::rtree_mem())
-              , res_width(WORLD_MAP_PIXEL_RESOLUTION_WIDTH)
-              , res_height(WORLD_MAP_PIXEL_RESOLUTION_HEIGHT)
-              , km_per_cell(WORLD_CIRCUMFERENCE_IN_KM / res_width)
-              , timer_(io_service, update_interval)
-              , seaport_id_seq_(0) {
+    : rtree_ptr(new seaport_object::rtree_mem())
+    , res_width(WORLD_MAP_PIXEL_RESOLUTION_WIDTH)
+    , res_height(WORLD_MAP_PIXEL_RESOLUTION_HEIGHT)
+    , km_per_cell(WORLD_CIRCUMFERENCE_IN_KM / res_width)
+    , timer_(io_service, update_interval)
+    , seaport_id_seq_(0)
+    , L(luaL_newstate()) {
+    init();
+}
+
+void seaport::init() {
     time0_ = get_monotonic_uptime();
     boost::interprocess::file_mapping seaport_file("assets/ttldata/seaports.dat", boost::interprocess::read_only);
     boost::interprocess::mapped_region region(seaport_file, boost::interprocess::read_only);
@@ -35,17 +38,17 @@ seaport::seaport(boost::asio::io_service& io_service)
     // dump seaports.dat into r-tree data if r-tree is empty.
     if (rtree_ptr->size() == 0) {
         /*for (int i = 0; i < count; i++) {
-        seaport_object::point point(lng_to_xc(sp[i].lng), lat_to_yc(sp[i].lat));
-        rtree_ptr->insert(std::make_pair(point, i));
-        }*/
+         seaport_object::point point(lng_to_xc(sp[i].lng), lat_to_yc(sp[i].lat));
+         rtree_ptr->insert(std::make_pair(point, i));
+         }*/
     }
     for (int i = 0; i < count; i++) {
         id_name[i] = sp[i].name;
         //id_point[i] = seaport_object::point(lng_to_xc(sp[i].lng), lat_to_yc(sp[i].lat));
     }
-
+    
     const auto monotonic_uptime = get_monotonic_uptime();
-
+    
     std::set<std::pair<int, int> > point_set;
     std::vector<seaport_object::value> duplicates;
     const auto bounds = rtree_ptr->bounds();
@@ -55,9 +58,9 @@ seaport::seaport(boost::asio::io_service& io_service)
         const auto point = std::make_pair(xc0, yc0);
         if (point_set.find(point) == point_set.end()) {
             id_point[it->second] = it->first;
-
+            
             update_chunk_key_ts(xc0, yc0);
-
+            
             point_set.insert(point);
         } else {
             duplicates.push_back(*it);
@@ -72,7 +75,8 @@ seaport::seaport(boost::asio::io_service& io_service)
              rtree_ptr->size());
         abort();
     }
-
+    
+    init_lua(L, "assets/l/seaport.lua");
     timer_.async_wait(boost::bind(&seaport::update, this));
 }
 

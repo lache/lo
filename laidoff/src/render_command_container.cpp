@@ -33,7 +33,7 @@ litehtml::uint_ptr litehtml::render_command_container::create_font(const litehtm
 #else
 	litehtml::uint_ptr font_handle = reinterpret_cast<litehtml::uint_ptr>(font_handle_seq);
 #endif
-    size = 1;
+    //size = 1;
     LOGIx("create_font: faceName=%s, size=%d, weight=%d --> font handle %d", faceName, size, weight, font_handle);
     
     font_sizes[font_handle] = size;
@@ -44,7 +44,8 @@ litehtml::uint_ptr litehtml::render_command_container::create_font(const litehtm
         //fm->height = static_cast<int>(roundf(size * 0.8f * client_width / 1280.0f));
         //fm->descent = static_cast<int>(roundf(size * 0.1f * client_width / 1280.0f));
     }
-    fm->height = 32;//static_cast<int>(font_sizes[font_handle] / 5.5f);// static_cast<int>(roundf(size * 0.8f * client_height / 720.0f));
+    //fm->height = 32;
+    fm->height = static_cast<int>(font_sizes[font_handle] / 5.5f);// static_cast<int>(roundf(size * 0.8f * client_height / 720.0f));
     fm->descent = static_cast<int>(fm->height / 4.5f);
     //fm->ascent = fm->height / 4;
     return font_handle;
@@ -69,7 +70,7 @@ void litehtml::render_command_container::fill_text_block(LWTEXTBLOCK* text_block
     text_block->begin_index = 0;
     text_block->end_index = text_block->text_bytelen;
     text_block->multiline = 1;
-    text_block->pixel_perfect = 1;
+    text_block->pixel_perfect = 0; // 1 if FIXED SIZE, 0 if variable size
     text_block->text_block_x = conv_coord_x(x);
     text_block->text_block_y = conv_coord_y(y);
     text_block->align = LTBA_LEFT_BOTTOM;

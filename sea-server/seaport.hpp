@@ -3,6 +3,7 @@
 #include "seaport_object.hpp"
 
 typedef struct _xy32 xy32;
+typedef struct lua_State;
 namespace ss {
     class seaport {
     public:
@@ -32,6 +33,7 @@ namespace ss {
         void update();
         size_t get_count() const { return rtree_ptr->size(); }
     private:
+        void init();
         std::vector<seaport_object::value> query_tree_ex(int xc, int yc, int half_lng_ex, int half_lat_ex) const;
         void update_chunk_key_ts(int xc0, int yc0);
         void convert_cargo();
@@ -53,5 +55,6 @@ namespace ss {
         boost::asio::deadline_timer timer_;
         long long time0_;
         int seaport_id_seq_;
+        lua_State* L;
     };
 }

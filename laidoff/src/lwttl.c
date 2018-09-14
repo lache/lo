@@ -2042,7 +2042,7 @@ void lwttl_change_selected_cell_to(LWTTL* ttl,
                     } else if (slen < 0) {
                         LOGEP("script formatting invalid! slen == %d!", slen);
                     } else if (slen >= ARRAY_SIZE(s)) {
-                        LOGEP("script formatting too long! slen == %d, ssize == %d!", slen, ARRAY_SIZE(s));
+                        LOGEP("script formatting too long! slen == %d, ssize == %lu!", slen, ARRAY_SIZE(s));
                     } else {
                         script_evaluate_async(pLwc, s, slen);
                     }
