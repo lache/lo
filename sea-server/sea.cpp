@@ -7,10 +7,22 @@
 #include "adminmessage.h"
 using namespace ss;
 
+void init_lua(lua_State* L, const char* lua_filename);
+
 sea::sea(boost::asio::io_service& io_service)
     : io_service(io_service)
     , res_width(WORLD_MAP_PIXEL_RESOLUTION_WIDTH)
-    , res_height(WORLD_MAP_PIXEL_RESOLUTION_HEIGHT) {
+    , res_height(WORLD_MAP_PIXEL_RESOLUTION_HEIGHT)
+    , L(luaL_newstate()) {
+    init();
+}
+
+sea::~sea() {
+    lua_close(L); L = nullptr;
+}
+
+void sea::init() {
+    init_lua(L, "assets/l/sea.lua");
 }
 
 float sea::lng_to_xc(float lng) const {
@@ -140,6 +152,13 @@ std::vector<int> sea::query_tree(float xc, float yc, float ex_lng, float ex_lat)
 void sea::update(float delta_time) {
     for (auto& obj : sea_objects) {
         obj.second->update(delta_time);
+
+        const auto sea_object_id = obj.first;
+        lua_getglobal(L, "sea_object_update");
+        lua_pushnumber(L, sea_object_id);
+        if (lua_pcall(L, 1/*arguments*/, 0/*result*/, 0)) {
+            LOGEP("error: %1%", lua_tostring(L, -1));
+        }
     }
 }
 

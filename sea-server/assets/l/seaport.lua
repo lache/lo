@@ -12,14 +12,14 @@ end
 
 function seaport_update(seaport_id)
     local seaport = seaports[seaport_id]
-    if seaports[seaport_id] == nil then
+    if seaport == nil then
         seaport = new_seaport_instance(seaport_id)
         seaports[seaport_id] = seaport
     end
 end
 
 function seaport_debug_query(seaport_id)
-    print(inspect(seaports[seaport_id]))
+    print(seaport_id,inspect(seaports[seaport_id]))
 end
 
 return 2018

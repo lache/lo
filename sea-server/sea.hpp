@@ -3,7 +3,7 @@
 #include "cargo.h"
 
 struct spawn_ship_command;
-
+struct lua_State;
 namespace ss {
     namespace bg = boost::geometry;
     namespace bgi = boost::geometry::index;
@@ -18,6 +18,7 @@ namespace ss {
 
     public:
         sea(boost::asio::io_service& io_service);
+        ~sea();
         int spawn(int db_id, float x, float y, float w, float h, int expect_land, int template_id);
         int spawn(const spawn_ship_command& spawn_ship_cmd);
         void despawn(int type);
@@ -39,6 +40,7 @@ namespace ss {
         std::vector<cargo_notification>&& flush_cargo_notifications();
         size_t get_count() const { return rtree.size(); }
     private:
+        void init();
         std::vector<int> query_tree(float xc, float yc, float ex_lng, float ex_lat) const;
         boost::asio::io_service& io_service;
         std::unordered_map<int, std::shared_ptr<sea_object> > sea_objects;
@@ -49,5 +51,6 @@ namespace ss {
         //int tick_seq;
         std::shared_ptr<udp_admin_server> uas;
         std::vector<cargo_notification> cargo_notifications;
+        lua_State* L;
     };
 }

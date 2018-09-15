@@ -37,6 +37,10 @@ city::city(boost::asio::io_service& io_service,
     init();
 }
 
+city::~city() {
+    lua_close(L); L = nullptr;
+}
+
 void city::init() {
     time0_ = get_monotonic_uptime();
     // copy to rtree folder if r-tree is empty.

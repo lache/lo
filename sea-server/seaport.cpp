@@ -27,6 +27,10 @@ seaport::seaport(boost::asio::io_service& io_service)
     init();
 }
 
+seaport::~seaport() {
+    lua_close(L); L = nullptr;
+}
+
 void seaport::init() {
     time0_ = get_monotonic_uptime();
     boost::interprocess::file_mapping seaport_file("assets/ttldata/seaports.dat", boost::interprocess::read_only);
@@ -287,6 +291,12 @@ const char* seaport::query_single_cell(int xc0, int yc0, int& id, int& cargo, in
         } else {
             cargo_unloaded = 0;
         }
+        // call lua hook
+        lua_getglobal(L, "seaport_debug_query");
+        lua_pushnumber(L, id);
+        if (lua_pcall(L, 1/*arguments*/, 0/*result*/, 0)) {
+            LOGEP("error: %1%", lua_tostring(L, -1));
+        }
         return get_seaport_name(seaport_it->second);
     }
     id = -1;
@@ -368,6 +378,18 @@ void seaport::update() {
     timer_.async_wait(boost::bind(&seaport::update, this));
 
     convert_cargo();
+
+    // call lua hook for each seaport
+    // iterate all seaports
+    const auto bounds = rtree_ptr->bounds();
+    for (auto it = rtree_ptr->qbegin(bgi::intersects(bounds)); it != rtree_ptr->qend(); it++) {
+        const auto seaport_id = it->second;
+        lua_getglobal(L, "seaport_update");
+        lua_pushnumber(L, seaport_id);
+        if (lua_pcall(L, 1/*arguments*/, 0/*result*/, 0)) {
+            LOGEP("error: %1%", lua_tostring(L, -1));
+        }
+    }
 }
 
 void seaport::convert_cargo() {

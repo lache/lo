@@ -28,7 +28,7 @@ end
 
 function city_update(city_id)
     local city = cities[city_id]
-    if cities[city_id] == nil then
+    if city == nil then
         city = new_city_instance(city_id)
         cities[city_id] = city
     end

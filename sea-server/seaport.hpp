@@ -12,6 +12,7 @@ namespace ss {
             LAND,
         };
         seaport(boost::asio::io_service& io_service);
+        ~seaport();
         std::vector<seaport_object> query_near_to_packet(int xc, int yc, float ex_lng, float ex_lat) const;
         std::vector<seaport_object::value> query_nearest(int xc, int yc) const;
         const char* get_seaport_name(int id) const;
