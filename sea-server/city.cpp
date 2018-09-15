@@ -6,6 +6,7 @@
 
 #define CITY_RTREE_FILENAME "rtree/city.dat"
 #define CITY_ASSETS_FILENAME "assets/ttldata/cities.dat"
+#define CITY_RTREE_ASSETS_FILENAME "rtree/cities.dat"
 #define CITY_RTREE_MMAP_MAX_SIZE (4 * 1024 * 1024)
 
 void init_lua(lua_State* L, const char* lua_filename);
@@ -38,7 +39,13 @@ city::city(boost::asio::io_service& io_service,
 
 void city::init() {
     time0_ = get_monotonic_uptime();
-    boost::interprocess::file_mapping city_file(CITY_ASSETS_FILENAME, boost::interprocess::read_only);
+    // copy to rtree folder if r-tree is empty.
+    if (rtree_ptr->size() == 0) {
+        LOGI("Copying %1% to %2%...", CITY_ASSETS_FILENAME, CITY_RTREE_ASSETS_FILENAME);
+        boost::filesystem::copy_file(CITY_ASSETS_FILENAME, CITY_RTREE_ASSETS_FILENAME, boost::filesystem::copy_option::overwrite_if_exists);
+    }
+    // open copied file
+    boost::interprocess::file_mapping city_file(CITY_RTREE_ASSETS_FILENAME, boost::interprocess::read_only);
     boost::interprocess::mapped_region region(city_file, boost::interprocess::read_only);
     LWTTLDATA_CITY* sp = reinterpret_cast<LWTTLDATA_CITY*>(region.get_address());
     int count = static_cast<int>(region.get_size() / sizeof(LWTTLDATA_CITY));
@@ -243,7 +250,7 @@ int city::spawn(const char* name, int xc0, int yc0) {
     }
 
     // append to cities.dat
-    std::ofstream outfile(CITY_ASSETS_FILENAME, std::ios::app);
+    std::ofstream outfile(CITY_RTREE_ASSETS_FILENAME, std::ios::app);
     LWTTLDATA_CITY sp;
     memset(&sp, 0, sizeof(LWTTLDATA_CITY));
     sp.lng = xc_to_lng(xc0);
