@@ -152,7 +152,7 @@ std::vector<int> sea::query_tree(float xc, float yc, float ex_lng, float ex_lat)
 void sea::update(float delta_time) {
     for (auto& obj : sea_objects) {
         obj.second->update(delta_time);
-
+        // lua hook
         const auto sea_object_id = obj.first;
         lua_getglobal(L, "sea_object_update");
         lua_pushnumber(L, sea_object_id);

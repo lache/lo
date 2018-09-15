@@ -18,6 +18,8 @@ using namespace ss;
 boost::asio::io_service io_service;
 std::shared_ptr<udp_server> udp_server_instance;
 std::shared_ptr<udp_admin_server> udp_admin_server_instance;
+std::shared_ptr<sea_static> sea_static_instance;
+std::shared_ptr<sea> sea_instance;
 
 extern "C" int lua_main(int argc, char **argv, void custom_init_func(lua_State* L));
 extern "C" int handle_script(lua_State *L, char **argv);
@@ -54,8 +56,47 @@ void init_lua(lua_State* L, const char* lua_filename) {
     lua_pop(L, 1);
 }
 
+static int l_sea_static_calculate_waypoints(lua_State* L) {
+    if (lua_gettop(L) >= 5) {
+        int from_x = static_cast<int>(lua_tonumber(L, 1));
+        int from_y = static_cast<int>(lua_tonumber(L, 2));
+        int to_x = static_cast<int>(lua_tonumber(L, 3));
+        int to_y = static_cast<int>(lua_tonumber(L, 4));
+        int expect_land = static_cast<int>(lua_tonumber(L, 5));
+        auto wp = sea_static_instance->calculate_waypoints(from_x, from_y, to_x, to_y, expect_land, std::shared_ptr<astarrtree::coro_context>());
+        lua_newtable(L);
+        for (size_t i = 0; i < wp.size(); i++) {
+            lua_newtable(L);
+            lua_pushnumber(L, wp[i].x);
+            lua_rawseti(L, -2, 1);
+            lua_pushnumber(L, wp[i].y);
+            lua_rawseti(L, -2, 2);
+
+            lua_rawseti(L, -2, i + 1);
+        }
+        return 1;
+    }
+    return 0;
+}
+
+static int l_sea_spawn(lua_State* L) {
+    if (lua_gettop(L) >= 3) {
+        int sea_object_id = static_cast<int>(lua_tonumber(L, 1));
+        float x = static_cast<float>(lua_tonumber(L, 2));
+        float y = static_cast<float>(lua_tonumber(L, 3));
+        int ret = sea_instance->spawn(sea_object_id, x, y, 1, 1, 0, 1);
+        lua_pushnumber(L, ret);
+        return 1;
+    }
+    return 0;
+}
+
 void custom_lua_init(lua_State* L) {
     SWIG_init(L);
+    lua_pushcclosure(L, l_sea_static_calculate_waypoints, 1);
+    lua_setglobal(L, "sea_static_calculate_waypoints");
+    lua_pushcclosure(L, l_sea_spawn, 1);
+    lua_setglobal(L, "sea_spawn");
 }
 
 int post_admin_message(const unsigned char* b) {
@@ -114,8 +155,8 @@ int main(int argc, char* argv[]) {
 
 
 
-        std::shared_ptr<sea> sea_instance(new sea(io_service));
-        std::shared_ptr<sea_static> sea_static_instance(new sea_static());
+        sea_instance.reset(new sea(io_service));
+        sea_static_instance.reset(new sea_static());
         std::shared_ptr<seaport> seaport_instance(new seaport(io_service));
         std::shared_ptr<region> region_instance(new region());
         std::shared_ptr<city> city_instance(new city(io_service,

@@ -395,20 +395,29 @@ void udp_server::send_track_object_coords(int track_object_id, int track_object_
 void udp_server::send_waypoints(int ship_id) {
     auto r = find_route_map_by_ship_id(ship_id);
     if (!r) {
-        LOGE("Ship id %1%'s route cannot be found.", ship_id);
-        return;
+        //LOGE("Ship id %1%'s route cannot be found.", ship_id);
+        //return;
     }
     std::shared_ptr<LWPTTLWAYPOINTS> reply(new LWPTTLWAYPOINTS);
     memset(reply.get(), 0, sizeof(LWPTTLWAYPOINTS));
     reply->type = LPGP_LWPTTLWAYPOINTS;
     reply->ship_id = ship_id;
-    reply->flags.land = r->get_land() ? 1 : 0;
-    auto waypoints = r->clone_waypoints();
-    auto copy_len = std::min(waypoints.size(), boost::size(reply->waypoints));
-    reply->count = boost::numeric_cast<int>(copy_len);
-    for (size_t i = 0; i < copy_len; i++) {
-        reply->waypoints[i].x = waypoints[i].x;
-        reply->waypoints[i].y = waypoints[i].y;
+    if (r) {
+        reply->flags.land = r->get_land() ? 1 : 0;
+        auto waypoints = r->clone_waypoints();
+        auto copy_len = std::min(waypoints.size(), boost::size(reply->waypoints));
+        reply->count = boost::numeric_cast<int>(copy_len);
+        for (size_t i = 0; i < copy_len; i++) {
+            reply->waypoints[i].x = waypoints[i].x;
+            reply->waypoints[i].y = waypoints[i].y;
+        }
+    } else {
+        reply->count = 1;
+        auto ship = sea_->get_by_db_id(ship_id);
+        float x, y;
+        ship->get_xy(x, y);
+        reply->waypoints[0].x = static_cast<int>(x);
+        reply->waypoints[0].y = static_cast<int>(y);
     }
     // send
     char compressed[1500 * 4];
@@ -1031,7 +1040,7 @@ std::shared_ptr<const route> udp_server::find_route_map_by_ship_id(int ship_id) 
         if (it != route_map_.cend()) {
             return it->second;
         } else {
-            LOGEP("Sea object %1% has no route info.", ship_id);
+            //LOGEP("Sea object %1% has no route info.", ship_id);
         }
     }
     return std::shared_ptr<const route>();

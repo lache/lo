@@ -186,6 +186,10 @@ void sea_static::mark_sea_water(sea_static_object::rtree* rtree) {
     }
 }
 
+std::vector<xy32> sea_static::calculate_waypoints(int from_x, int from_y, int to_x, int to_y, int expect_land, std::shared_ptr<astarrtree::coro_context> coro) const {
+    return calculate_waypoints(xy32{ from_x,from_y }, xy32{ to_x,to_y }, expect_land, coro);
+}
+
 std::vector<xy32> sea_static::calculate_waypoints(const xy32 & from, const xy32 & to, int expect_land, std::shared_ptr<astarrtree::coro_context> coro) const {
     auto from_box = astarrtree::box_t_from_xy(from);
     std::vector<astarrtree::value> from_result_s;

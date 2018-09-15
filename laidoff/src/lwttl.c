@@ -223,6 +223,7 @@ typedef struct _LWTTL {
     int ports;
     int ships;
     LWTTLFIELDVIEWPORT viewports[4];
+    // cell box: show cell boundaries - only used in debugging
     int cell_box_count;
     LWTTLCELLBOX cell_box[512];
     int cell_menu_count;

@@ -1125,8 +1125,11 @@ static void pos_from_waypoints(const LWPTTLWAYPOINTS* wp,
     *py = 0;
     *dx = 0;
     *dy = 0;
-    if (wp->count < 2) {
-        LOGEP("wp count less than 2");
+    if (wp->count < 1) {
+        LOGEP("wp count less than 1");
+    } else if (wp->count == 1) {
+        *px = wp->waypoints[0].x;
+        *py = wp->waypoints[0].y;
     } else {
         double* accum_distance = alloca(sizeof(double) * wp->count);
         size_t accum_distance_cursor = 0;
