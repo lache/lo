@@ -277,6 +277,7 @@ typedef struct _LWPTTLROUTEBITFIELD {
     int unloading : 1;
     int sailing : 1;
     int breakdown : 1;
+    int no_route : 1;
 } LWPTTLROUTEBITFIELD;
 
 typedef struct _LWPTTLROUTEOBJECT {

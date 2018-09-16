@@ -1227,27 +1227,31 @@ static void render_sea_objects_nameplate(const LWCONTEXT* pLwc, const LWTTLFIELD
         test_text_block.size = DEFAULT_TEXT_BLOCK_SIZE_F;
         char obj_nameplate[256];
         obj_nameplate[0] = 0;
-        const char* route_state = lwttl_route_state(&ttl_dynamic_state->obj[i]);
+        const char* route_state = lwttl_route_state(obj);
         if (view_scale == 1) {
-            if (ttl_dynamic_state->obj[i].route_flags.breakdown) {
+            if (obj->route_flags.breakdown) {
                 sprintf(obj_nameplate, "%s%s", LW_UTF8_TTL_CHAR_ICON_BREAKDOWN, route_state);
-            } else if (ttl_dynamic_state->obj[i].route_flags.sailing) {
-                sprintf(obj_nameplate, "%s%.1f", LW_UTF8_TTL_CHAR_ICON_SHIP, ttl_dynamic_state->obj[i].route_param);
+            } else if (obj->route_flags.sailing) {
+                if (obj->route_flags.no_route) {
+                    sprintf(obj_nameplate, "%sNO ROUTE", LW_UTF8_TTL_CHAR_ICON_SHIP);
+                } else {
+                    sprintf(obj_nameplate, "%s%.1f", LW_UTF8_TTL_CHAR_ICON_SHIP, obj->route_param);
+                }
             } else {
                 sprintf(obj_nameplate, "%s", route_state);
             }
         } else if (view_scale <= 4) {
-            if (ttl_dynamic_state->obj[i].route_flags.breakdown) {
+            if (obj->route_flags.breakdown) {
                 sprintf(obj_nameplate, "%s%s", LW_UTF8_TTL_CHAR_ICON_BREAKDOWN, route_state);
-            } else if (ttl_dynamic_state->obj[i].route_flags.sailing) {
-                sprintf(obj_nameplate, "%s%.0f", LW_UTF8_TTL_CHAR_ICON_SHIP, ttl_dynamic_state->obj[i].route_param);
+            } else if (obj->route_flags.sailing) {
+                sprintf(obj_nameplate, "%s%.0f", LW_UTF8_TTL_CHAR_ICON_SHIP, obj->route_param);
             } else {
                 sprintf(obj_nameplate, "%s", route_state);
             }
         } else if (view_scale <= 32) {
-            if (ttl_dynamic_state->obj[i].route_flags.breakdown) {
+            if (obj->route_flags.breakdown) {
                 sprintf(obj_nameplate, "%s", LW_UTF8_TTL_CHAR_ICON_BREAKDOWN);
-            } else if (ttl_dynamic_state->obj[i].route_flags.sailing) {
+            } else if (obj->route_flags.sailing) {
                 sprintf(obj_nameplate, "%s", LW_UTF8_TTL_CHAR_ICON_SHIP);
             } else {
                 sprintf(obj_nameplate, "%s", route_state);

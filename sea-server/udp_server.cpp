@@ -152,12 +152,14 @@ void udp_server::send_route_state(float lng, float lat, float ex_lng, float ex_l
             o.route_param = it->second->get_param();
             o.route_speed = it->second->get_velocity();
             o.route_flags.reversed = it->second->get_reversed() ? 1 : 0;
+            o.route_flags.no_route = 0;
             o.x = 0;
             o.y = 0;
         } else {
             o.route_param = 0;
             o.route_speed = 0;
             o.route_flags.reversed = 0;
+            o.route_flags.no_route = 1;
             v.get_xy(o.x, o.y);
         }
         reply_obj_index++;
