@@ -1114,19 +1114,20 @@ int std_lower_bound_double(const double* a,
     return first;
 }
 
-static void pos_from_waypoints(const LWPTTLWAYPOINTS* wp,
-                               const double param,
-                               const int reversed,
-                               double* px,
-                               double* py,
-                               double* dx,
-                               double* dy) {
+static int pos_from_waypoints(const LWPTTLWAYPOINTS* wp,
+                              const double param,
+                              const int reversed,
+                              double* px,
+                              double* py,
+                              double* dx,
+                              double* dy) {
     *px = 0;
     *py = 0;
     *dx = 0;
     *dy = 0;
     if (wp->count < 1) {
-        LOGEP("wp count less than 1");
+        //LOGEP("wp count less than 1");
+        return -1;
     } else if (wp->count == 1) {
         *px = wp->waypoints[0].x;
         *py = wp->waypoints[0].y;
@@ -1143,7 +1144,9 @@ static void pos_from_waypoints(const LWPTTLWAYPOINTS* wp,
             accum_distance[accum_distance_cursor++] = dist;
         }
         if (accum_distance_cursor == 0) {
-            return;
+            // ???
+            LOGEP("accum_distance_cursor corrupt");
+            return -2;
         }
         if (reversed) {
             //param = accum_distance[accum_distance_cursor - 1] - param;
@@ -1173,6 +1176,7 @@ static void pos_from_waypoints(const LWPTTLWAYPOINTS* wp,
             *py = wp1->y + *dy * r;
         }
     }
+    return 0;
 }
 
 static void render_sea_objects_nameplate(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp) {
@@ -1184,19 +1188,29 @@ static void render_sea_objects_nameplate(const LWCONTEXT* pLwc, const LWTTLFIELD
     const LWPTTLROUTESTATE* ttl_dynamic_state = lwttl_full_state(pLwc->ttl);
     const int view_scale = lwttl_viewport_view_scale(vp);
     for (int i = 0; i < ttl_dynamic_state->count; i++) {
+        const LWPTTLROUTEOBJECT* obj = &ttl_dynamic_state->obj[i];
         const LWPTTLWAYPOINTS* wp = lwttl_get_waypoints_by_ship_id(pLwc->ttl,
-                                                                   ttl_dynamic_state->obj[i].db_id);
+                                                                   obj->db_id);
         if (wp == 0) {
             continue;
         }
         double px, py, dx, dy;
-        pos_from_waypoints(wp,
-            (double)ttl_dynamic_state->obj[i].route_param,
-                           ttl_dynamic_state->obj[i].route_flags.reversed,
-                           &px,
-                           &py,
-                           &dx,
-                           &dy);
+        const double route_param = (double)obj->route_param;
+        if (pos_from_waypoints(wp,
+                               route_param,
+                               obj->route_flags.reversed,
+                               &px,
+                               &py,
+                               &dx,
+                               &dy) == 0) {
+            // waypoints exist
+        } else {
+            // no waypoints exist
+            px = obj->x;
+            py = obj->y;
+            dx = 0;
+            dy = 0;
+        }
         const float rx = (float)cell_fx_to_render_coords_vp(px + 0.5, vp);
         const float ry = (float)cell_fy_to_render_coords_vp(py + 0.5, vp);
         vec4 obj_pos_vec4 = {
@@ -1293,13 +1307,21 @@ static void render_sea_objects(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* 
             continue;
         }
         double px, py, dx, dy;
-        pos_from_waypoints(wp,
-                           obj->route_param,
-                           obj->route_flags.reversed,
-                           &px,
-                           &py,
-                           &dx,
-                           &dy);
+        if (pos_from_waypoints(wp,
+                               obj->route_param,
+                               obj->route_flags.reversed,
+                               &px,
+                               &py,
+                               &dx,
+                               &dy) == 0) {
+            // waypoints exist
+        } else {
+            // no waypoints exist
+            px = obj->x;
+            py = obj->y;
+            dx = 0;
+            dy = 0;
+        }
         const float rx = (float)cell_fx_to_render_coords_vp(px + 0.5, vp);
         const float ry = (float)cell_fy_to_render_coords_vp(py + 0.5, vp);
         const float rot_z = (float)(atan2(-dy, dx) + (obj->route_flags.reversed ? (-1) : (+1)) * (-(M_PI / 2)));

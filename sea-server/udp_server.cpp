@@ -152,10 +152,13 @@ void udp_server::send_route_state(float lng, float lat, float ex_lng, float ex_l
             o.route_param = it->second->get_param();
             o.route_speed = it->second->get_velocity();
             o.route_flags.reversed = it->second->get_reversed() ? 1 : 0;
+            o.x = 0;
+            o.y = 0;
         } else {
             o.route_param = 0;
             o.route_speed = 0;
             o.route_flags.reversed = 0;
+            v.get_xy(o.x, o.y);
         }
         reply_obj_index++;
         if (reply_obj_index >= boost::size(reply->obj)) {
@@ -412,12 +415,12 @@ void udp_server::send_waypoints(int ship_id) {
             reply->waypoints[i].y = waypoints[i].y;
         }
     } else {
-        reply->count = 1;
-        auto ship = sea_->get_by_db_id(ship_id);
+        reply->count = 0; // 1
+        /*auto ship = sea_->get_by_db_id(ship_id);
         float x, y;
         ship->get_xy(x, y);
         reply->waypoints[0].x = static_cast<int>(x);
-        reply->waypoints[0].y = static_cast<int>(y);
+        reply->waypoints[0].y = static_cast<int>(y);*/
     }
     // send
     char compressed[1500 * 4];

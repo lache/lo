@@ -285,6 +285,8 @@ typedef struct _LWPTTLROUTEOBJECT {
     float route_param;
     float route_speed;
     LWPTTLROUTEBITFIELD route_flags;
+    float x; // only used if this object is not routed
+    float y; // only used if this object is not routed
 } LWPTTLROUTEOBJECT;
 
 // UDP

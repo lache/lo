@@ -109,15 +109,17 @@ std::shared_ptr<sea_object> sea::get_by_db_id(int db_id) {
     return std::shared_ptr<sea_object>();
 }
 
-void sea::teleport_to(int id, float x, float y, float vx, float vy) {
+int sea::teleport_to(int id, float x, float y, float vx, float vy) {
     auto it = sea_objects.find(id);
     if (it != sea_objects.end()) {
         rtree.remove(it->second->get_rtree_value());
         it->second->set_xy(x, y);
         it->second->set_velocity(vx, vy);
         rtree.insert(it->second->get_rtree_value());
+        return 0;
     } else {
         LOGEP("Sea object not found corresponding to id %1%", id);
+        return -1;
     }
 }
 

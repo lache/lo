@@ -91,12 +91,26 @@ static int l_sea_spawn(lua_State* L) {
     return 0;
 }
 
+static int l_sea_teleport_to(lua_State* L) {
+    if (lua_gettop(L) >= 3) {
+        int sea_object_id = static_cast<int>(lua_tonumber(L, 1));
+        float x = static_cast<float>(lua_tonumber(L, 2));
+        float y = static_cast<float>(lua_tonumber(L, 3));
+        int ret = sea_instance->teleport_to(sea_object_id, x, y);
+        lua_pushnumber(L, ret);
+        return 1;
+    }
+    return 0;
+}
+
 void custom_lua_init(lua_State* L) {
     SWIG_init(L);
-    lua_pushcclosure(L, l_sea_static_calculate_waypoints, 1);
+    lua_pushcclosure(L, l_sea_static_calculate_waypoints, 0);
     lua_setglobal(L, "sea_static_calculate_waypoints");
-    lua_pushcclosure(L, l_sea_spawn, 1);
+    lua_pushcclosure(L, l_sea_spawn, 0);
     lua_setglobal(L, "sea_spawn");
+    lua_pushcclosure(L, l_sea_teleport_to, 0);
+    lua_setglobal(L, "sea_teleport_to");
 }
 
 int post_admin_message(const unsigned char* b) {
