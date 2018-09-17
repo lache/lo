@@ -11,7 +11,7 @@ namespace ss {
             SEA,
             LAND,
         };
-        seaport(boost::asio::io_service& io_service);
+        seaport(boost::asio::io_service& io_service, std::shared_ptr<lua_State> lua_state_instance);
         ~seaport();
         std::vector<seaport_object> query_near_to_packet(int xc, int yc, float ex_lng, float ex_lat) const;
         std::vector<seaport_object::value> query_nearest(int xc, int yc) const;
@@ -55,6 +55,6 @@ namespace ss {
         boost::asio::deadline_timer timer_;
         long long time0_;
         //int seaport_id_seq_;
-        lua_State* L;
+        std::shared_ptr<lua_State> lua_state_instance;
     };
 }

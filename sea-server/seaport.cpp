@@ -18,17 +18,16 @@ typedef struct _LWTTLDATA_SEAPORT {
     float lng;
 } LWTTLDATA_SEAPORT;
 
-seaport::seaport(boost::asio::io_service& io_service)
+seaport::seaport(boost::asio::io_service& io_service, std::shared_ptr<lua_State> lua_state_instance)
     : rtree_ptr(new seaport_object::rtree_mem())
     , res_width(WORLD_MAP_PIXEL_RESOLUTION_WIDTH)
     , res_height(WORLD_MAP_PIXEL_RESOLUTION_HEIGHT)
     , timer_(io_service, update_interval)
-    , L(luaL_newstate()) {
+    , lua_state_instance(lua_state_instance) {
     init();
 }
 
 seaport::~seaport() {
-    lua_close(L); L = nullptr;
 }
 
 void seaport::init() {
@@ -78,7 +77,7 @@ void seaport::init() {
         abort();
     }
     
-    init_lua(L, "assets/l/seaport.lua");
+    init_lua(lua_state_instance.get(), "assets/l/seaport.lua");
     timer_.async_wait(boost::bind(&seaport::update, this));
 }
 
@@ -292,10 +291,10 @@ const char* seaport::query_single_cell(int xc0, int yc0, int& id, int& cargo, in
             cargo_unloaded = 0;
         }
         // call lua hook
-        lua_getglobal(L, "seaport_debug_query");
-        lua_pushnumber(L, id);
-        if (lua_pcall(L, 1/*arguments*/, 0/*result*/, 0)) {
-            LOGEP("error: %1%", lua_tostring(L, -1));
+        lua_getglobal(lua_state_instance.get(), "seaport_debug_query");
+        lua_pushnumber(lua_state_instance.get(), id);
+        if (lua_pcall(lua_state_instance.get(), 1/*arguments*/, 0/*result*/, 0)) {
+            LOGEP("error: %1%", lua_tostring(lua_state_instance.get(), -1));
         }
         return get_seaport_name(seaport_it->second);
     }
@@ -384,10 +383,10 @@ void seaport::update() {
     const auto bounds = rtree_ptr->bounds();
     for (auto it = rtree_ptr->qbegin(bgi::intersects(bounds)); it != rtree_ptr->qend(); it++) {
         const auto seaport_id = it->second;
-        lua_getglobal(L, "seaport_update");
-        lua_pushnumber(L, seaport_id);
-        if (lua_pcall(L, 1/*arguments*/, 0/*result*/, 0)) {
-            LOGEP("error: %1%", lua_tostring(L, -1));
+        lua_getglobal(lua_state_instance.get(), "seaport_update");
+        lua_pushnumber(lua_state_instance.get(), seaport_id);
+        if (lua_pcall(lua_state_instance.get(), 1/*arguments*/, 0/*result*/, 0)) {
+            LOGEP("error: %1%", lua_tostring(lua_state_instance.get(), -1));
         }
     }
 }

@@ -34,7 +34,6 @@ static int traceback(lua_State *L) {
 }
 
 void init_lua(lua_State* L, const char* lua_filename) {
-    luaL_openlibs(L);
     char prefixed_filename[256];
     prefixed_filename[0] = '\0';
     strncat(prefixed_filename, "@", sizeof(prefixed_filename) - 1);
@@ -178,14 +177,17 @@ int main(int argc, char* argv[]) {
 
         LOGI("Current path: %s", boost::filesystem::current_path());
 
+        //std::shared_ptr<lua_State> lua_state_instance(luaL_newstate(), [](lua_State* L) {lua_close(L); });
+        std::shared_ptr<lua_State> lua_state_instance(luaL_newstate(), lua_close);
+        luaL_openlibs(lua_state_instance.get());
 
-
-        sea_instance.reset(new sea(io_service));
+        sea_instance.reset(new sea(io_service, lua_state_instance));
         sea_static_instance.reset(new sea_static());
-        std::shared_ptr<seaport> seaport_instance(new seaport(io_service));
+        std::shared_ptr<seaport> seaport_instance(new seaport(io_service, lua_state_instance));
         std::shared_ptr<region> region_instance(new region());
         std::shared_ptr<city> city_instance(new city(io_service,
-                                                     seaport_instance));
+                                                     seaport_instance,
+                                                     lua_state_instance));
         std::shared_ptr<salvage> salvage_instance(new salvage(io_service,
                                                               sea_static_instance));
         std::shared_ptr<shipyard> shipyard_instance(new shipyard(io_service,

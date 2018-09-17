@@ -17,7 +17,7 @@ namespace ss {
         typedef std::pair<box, int> value;
 
     public:
-        sea(boost::asio::io_service& io_service);
+        sea(boost::asio::io_service& io_service, std::shared_ptr<lua_State> lua_state_instance);
         ~sea();
         int spawn(int db_id, float x, float y, float w, float h, int expect_land, int template_id);
         int spawn(const spawn_ship_command& spawn_ship_cmd);
@@ -51,6 +51,6 @@ namespace ss {
         //int tick_seq;
         std::shared_ptr<udp_admin_server> uas;
         std::vector<cargo_notification> cargo_notifications;
-        lua_State* L;
+        std::shared_ptr<lua_State> lua_state_instance;
     };
 }

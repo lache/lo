@@ -11,7 +11,8 @@ namespace ss {
     class city {
     public:
         city(boost::asio::io_service& io_service,
-             std::shared_ptr<seaport> seaport);
+             std::shared_ptr<seaport> seaport,
+             std::shared_ptr<lua_State> lua_state_instance);
         ~city();
         std::vector<city_object> query_near_to_packet(int xc, int yc, float ex_lng, float ex_lat) const;
         std::vector<city_object::value> query_nearest(int xc, int yc) const;
@@ -58,6 +59,6 @@ namespace ss {
         long long time0_;
         int city_id_seq_;
         std::vector<cargo_notification> cargo_notifications;
-        lua_State* L;
+        std::shared_ptr<lua_State> lua_state_instance;
     };
 }

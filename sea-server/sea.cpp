@@ -9,20 +9,19 @@ using namespace ss;
 
 void init_lua(lua_State* L, const char* lua_filename);
 
-sea::sea(boost::asio::io_service& io_service)
+sea::sea(boost::asio::io_service& io_service, std::shared_ptr<lua_State> lua_state_instance)
     : io_service(io_service)
     , res_width(WORLD_MAP_PIXEL_RESOLUTION_WIDTH)
     , res_height(WORLD_MAP_PIXEL_RESOLUTION_HEIGHT)
-    , L(luaL_newstate()) {
+    , lua_state_instance(lua_state_instance) {
     init();
 }
 
 sea::~sea() {
-    lua_close(L); L = nullptr;
 }
 
 void sea::init() {
-    init_lua(L, "assets/l/sea.lua");
+    init_lua(lua_state_instance.get(), "assets/l/sea.lua");
 }
 
 float sea::lng_to_xc(float lng) const {
@@ -156,10 +155,10 @@ void sea::update(float delta_time) {
         obj.second->update(delta_time);
         // lua hook
         const auto sea_object_id = obj.first;
-        lua_getglobal(L, "sea_object_update");
-        lua_pushnumber(L, sea_object_id);
-        if (lua_pcall(L, 1/*arguments*/, 0/*result*/, 0)) {
-            LOGEP("error: %1%", lua_tostring(L, -1));
+        lua_getglobal(lua_state_instance.get(), "sea_object_update");
+        lua_pushnumber(lua_state_instance.get(), sea_object_id);
+        if (lua_pcall(lua_state_instance.get(), 1/*arguments*/, 0/*result*/, 0)) {
+            LOGEP("error: %1%", lua_tostring(lua_state_instance.get(), -1));
         }
     }
 }

@@ -24,7 +24,8 @@ typedef struct _LWTTLDATA_CITY {
 } LWTTLDATA_CITY;
 
 city::city(boost::asio::io_service& io_service,
-           std::shared_ptr<seaport> seaport)
+           std::shared_ptr<seaport> seaport,
+           std::shared_ptr<lua_State> lua_state_instance)
     : file(bi::open_or_create, CITY_RTREE_FILENAME, CITY_RTREE_MMAP_MAX_SIZE)
     , alloc(file.get_segment_manager())
     , rtree_ptr(file.find_or_construct<city_object::rtree>("rtree")(city_object::params(), city_object::indexable(), city_object::equal_to(), alloc))
@@ -33,12 +34,11 @@ city::city(boost::asio::io_service& io_service,
     , timer_(io_service, update_interval)
     , seaport_(seaport)
     , city_id_seq_(0)
-    , L(luaL_newstate()) {
+    , lua_state_instance(lua_state_instance) {
     init();
 }
 
 city::~city() {
-    lua_close(L); L = nullptr;
 }
 
 void city::init() {
@@ -98,7 +98,7 @@ void city::init() {
         abort();
     }
     
-    init_lua(L, "assets/l/city.lua");
+    init_lua(lua_state_instance.get(), "assets/l/city.lua");
     timer_.async_wait(boost::bind(&city::update, this));
 }
 
@@ -313,10 +313,10 @@ const char* city::query_single_cell(int xc0, int yc0, int& id, int& population) 
         const auto population_it = id_population.find(id);
         population = population_it != id_population.cend() ? population_it->second : 0;
         // call lua hook
-        lua_getglobal(L, "city_debug_query");
-        lua_pushnumber(L, id);
-        if (lua_pcall(L, 1/*arguments*/, 0/*result*/, 0)) {
-            LOGEP("error: %1%", lua_tostring(L, -1));
+        lua_getglobal(lua_state_instance.get(), "city_debug_query");
+        lua_pushnumber(lua_state_instance.get(), id);
+        if (lua_pcall(lua_state_instance.get(), 1/*arguments*/, 0/*result*/, 0)) {
+            LOGEP("error: %1%", lua_tostring(lua_state_instance.get(), -1));
         }
         return get_city_name(city_it->second);
     }
@@ -333,10 +333,10 @@ void city::update() {
     const auto bounds = rtree_ptr->bounds();
     for (auto it = rtree_ptr->qbegin(bgi::intersects(bounds)); it != rtree_ptr->qend(); it++) {
         const auto city_id = it->second;
-        lua_getglobal(L, "city_update");
-        lua_pushnumber(L, city_id);
-        if (lua_pcall(L, 1/*arguments*/, 0/*result*/, 0)) {
-            LOGEP("error: %1%", lua_tostring(L, -1));
+        lua_getglobal(lua_state_instance.get(), "city_update");
+        lua_pushnumber(lua_state_instance.get(), city_id);
+        if (lua_pcall(lua_state_instance.get(), 1/*arguments*/, 0/*result*/, 0)) {
+            LOGEP("error: %1%", lua_tostring(lua_state_instance.get(), -1));
         }
     }
 }
