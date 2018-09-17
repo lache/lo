@@ -9,7 +9,7 @@
 #define CITY_RTREE_ASSETS_FILENAME "rtree/cities.dat"
 #define CITY_RTREE_MMAP_MAX_SIZE (4 * 1024 * 1024)
 
-void init_lua(lua_State* L, const char* lua_filename);
+void eval_lua_script_file(lua_State* L, const char* lua_filename);
 
 using namespace ss;
 
@@ -98,7 +98,7 @@ void city::init() {
         abort();
     }
     
-    init_lua(lua_state_instance.get(), "assets/l/city.lua");
+    eval_lua_script_file(lua_state_instance.get(), "assets/l/city.lua");
     timer_.async_wait(boost::bind(&city::update, this));
 }
 

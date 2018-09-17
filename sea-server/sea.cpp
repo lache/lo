@@ -7,7 +7,7 @@
 #include "adminmessage.h"
 using namespace ss;
 
-void init_lua(lua_State* L, const char* lua_filename);
+void eval_lua_script_file(lua_State* L, const char* lua_filename);
 
 sea::sea(boost::asio::io_service& io_service, std::shared_ptr<lua_State> lua_state_instance)
     : io_service(io_service)
@@ -21,7 +21,7 @@ sea::~sea() {
 }
 
 void sea::init() {
-    init_lua(lua_state_instance.get(), "assets/l/sea.lua");
+    eval_lua_script_file(lua_state_instance.get(), "assets/l/sea.lua");
 }
 
 float sea::lng_to_xc(float lng) const {

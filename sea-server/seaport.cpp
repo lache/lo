@@ -9,7 +9,7 @@ using namespace ss;
 
 const auto update_interval = boost::posix_time::milliseconds(1000);
 
-void init_lua(lua_State* L, const char* lua_filename);
+void eval_lua_script_file(lua_State* L, const char* lua_filename);
 
 typedef struct _LWTTLDATA_SEAPORT {
     char name[80]; // maximum length from crawling data: 65
@@ -77,7 +77,7 @@ void seaport::init() {
         abort();
     }
     
-    init_lua(lua_state_instance.get(), "assets/l/seaport.lua");
+    eval_lua_script_file(lua_state_instance.get(), "assets/l/seaport.lua");
     timer_.async_wait(boost::bind(&seaport::update, this));
 }
 

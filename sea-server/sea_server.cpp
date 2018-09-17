@@ -33,7 +33,7 @@ static int traceback(lua_State *L) {
     return 1;
 }
 
-void init_lua(lua_State* L, const char* lua_filename) {
+void eval_lua_script_file(lua_State* L, const char* lua_filename) {
     char prefixed_filename[256];
     prefixed_filename[0] = '\0';
     strncat(prefixed_filename, "@", sizeof(prefixed_filename) - 1);
@@ -180,7 +180,10 @@ int main(int argc, char* argv[]) {
         //std::shared_ptr<lua_State> lua_state_instance(luaL_newstate(), [](lua_State* L) {lua_close(L); });
         std::shared_ptr<lua_State> lua_state_instance(luaL_newstate(), lua_close);
         luaL_openlibs(lua_state_instance.get());
-
+        eval_lua_script_file(lua_state_instance.get(), "assets/l/contract.lua");
+        eval_lua_script_file(lua_state_instance.get(), "assets/l/loadunload.lua");
+        eval_lua_script_file(lua_state_instance.get(), "assets/l/collection.lua");
+        
         sea_instance.reset(new sea(io_service, lua_state_instance));
         sea_static_instance.reset(new sea_static());
         std::shared_ptr<seaport> seaport_instance(new seaport(io_service, lua_state_instance));
@@ -221,6 +224,9 @@ int main(int argc, char* argv[]) {
                                                              city_instance));
         sea_instance->set_udp_admin_server(udp_admin_server_instance);
         udp_admin_server_instance->send_recover_all_ships();
+
+        eval_lua_script_file(lua_state_instance.get(), "assets/l/run_tests.lua");
+
         LOGI("Starting to server IO service thread....");
         boost::thread thread(boost::bind(&boost::asio::io_service::run, &io_service));
 

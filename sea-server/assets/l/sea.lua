@@ -1,5 +1,5 @@
 local inspect = require('assets/l/inspect')
-local info = debug.getinfo(1,'S');
+local info = debug.getinfo(1,'S')
 print('loading '..info.source)
 
 sea_objects = {}
@@ -7,7 +7,10 @@ sea_objects = {}
 function new_sea_object_instance(sea_object_id)
     print('Creating a new lua sea_object instance id '..sea_object_id)
     local sea_object = {
-        id = sea_object_id
+        sea_object_id = sea_object_id,
+        item = 0,
+        amount = 0,
+        max_amount = 0,
     }
     return sea_object
 end

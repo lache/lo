@@ -1,11 +1,14 @@
 local inspect = require('assets/l/inspect')
-local info = debug.getinfo(1,'S');
+local info = debug.getinfo(1,'S')
 print('loading '..info.source)
 
 seaports = {}
 
-function new_seaport_instance(city_id)
+function new_seaport_instance(seaport_id)
     local seaport = {
+        seaport_id = seaport_id,
+        items = {},
+        docked_sea_objects = {},
     }
     return seaport
 end
