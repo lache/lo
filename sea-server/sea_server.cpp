@@ -63,7 +63,12 @@ static int l_sea_static_calculate_waypoints(lua_State* L) {
         int to_x = static_cast<int>(lua_tonumber(L, 3));
         int to_y = static_cast<int>(lua_tonumber(L, 4));
         int expect_land = static_cast<int>(lua_tonumber(L, 5));
-        auto wp = sea_static_instance->calculate_waypoints(from_x, from_y, to_x, to_y, expect_land, std::shared_ptr<astarrtree::coro_context>());
+        std::promise<std::vector<xy32>> prom;
+        io_service.post([from_x, from_y, to_x, to_y, expect_land, &prom] {
+            auto wp = sea_static_instance->calculate_waypoints(from_x, from_y, to_x, to_y, expect_land, std::shared_ptr<astarrtree::coro_context>());
+            prom.set_value(wp);
+        });
+        auto wp = prom.get_future().get();
         lua_newtable(L);
         for (size_t i = 0; i < wp.size(); i++) {
             lua_newtable(L);
@@ -84,8 +89,11 @@ static int l_sea_spawn(lua_State* L) {
         int sea_object_id = static_cast<int>(lua_tonumber(L, 1));
         float x = static_cast<float>(lua_tonumber(L, 2));
         float y = static_cast<float>(lua_tonumber(L, 3));
-        int ret = sea_instance->spawn(sea_object_id, x, y, 1, 1, 0, 1);
-        lua_pushnumber(L, ret);
+        std::promise<int> prom;
+        io_service.post([sea_object_id, x, y, &prom] {
+            prom.set_value(sea_instance->spawn(sea_object_id, x, y, 1, 1, 0, 1));
+        });
+        lua_pushnumber(L, prom.get_future().get());
         return 1;
     }
     return 0;
@@ -96,8 +104,11 @@ static int l_sea_teleport_to(lua_State* L) {
         int sea_object_id = static_cast<int>(lua_tonumber(L, 1));
         float x = static_cast<float>(lua_tonumber(L, 2));
         float y = static_cast<float>(lua_tonumber(L, 3));
-        int ret = sea_instance->teleport_to(sea_object_id, x, y);
-        lua_pushnumber(L, ret);
+        std::promise<int> prom;
+        io_service.post([sea_object_id, x, y, &prom] {
+            prom.set_value(sea_instance->teleport_to(sea_object_id, x, y));
+        });
+        lua_pushnumber(L, prom.get_future().get());
         return 1;
     }
     return 0;
