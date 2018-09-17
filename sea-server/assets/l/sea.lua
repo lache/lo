@@ -8,9 +8,7 @@ function new_sea_object_instance(sea_object_id)
     print('Creating a new lua sea_object instance id '..sea_object_id)
     local sea_object = {
         sea_object_id = sea_object_id,
-        item = 0,
-        amount = 0,
-        max_amount = 0,
+        items = {},
     }
     return sea_object
 end

@@ -17,6 +17,26 @@ seaports[dest_seaport_id] = new_seaport_instance(dest_seaport_id)
 cities[dest_city_id] = new_city_instance(dest_city_id)
 cities[dest_city_id].wanted_items[item_id] = {item_id=item_id,amount=amount}
 
-print(inspect(contract_new(item_id, amount, dep_city_id, dep_seaport_id, dest_seaport_id, dest_city_id)))
+local contract = contract_new(item_id, amount, dep_city_id, dep_seaport_id, dest_seaport_id, dest_city_id)
+print(inspect(contract))
+
+print('--- before ---')
+print(inspect(seaports[dep_seaport_id]))
+
+contract_tick(contract.contract_id)
+
+print('--- after 1 ---')
+print(inspect(seaports[dep_seaport_id]))
+
+local sea_object_id = 99999
+local sea_object = new_sea_object_instance(sea_object_id)
+sea_objects[sea_object_id] = sea_object
+
+seaports[dep_seaport_id].docked_sea_objects[sea_object_id] = sea_object
+
+contract_tick(contract.contract_id)
+
+print('--- after 2 ---')
+print(inspect(seaports[dep_seaport_id]))
 
 return 9999
