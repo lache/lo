@@ -4,6 +4,14 @@ print('loading '..info.source)
 
 contracts = {}
 
+Contract = {}
+function Contract.new(o)
+    o = o or {}
+    setmetatable(o, self)
+    self.__index = self
+    return o
+end
+
 function contract_new(item_id, amount, dep_city_id, dep_seaport_id, dest_seaport_id, dest_city_id)
     -- variable preconditions check
     if item_id <= 0 then error('item id not positive') end
@@ -48,8 +56,11 @@ end
 function contract_tick(contract_id)
     local contract = contracts[contract_id]
     if contract == nil then error('contract nil') end
-    pcall(collection_collect, contract.dep_city.city_id, contract.dep_seaport.seaport_id, contract.item_id, contract.amount)
+    -- collect item from city to seaport
+    local ret, err = xpcall(collection_collect, debug.traceback, contract.dep_city.city_id, contract.dep_seaport.seaport_id, contract.item_id, contract.amount)
+    if err ~= nil then print(err) end
     for docked_sea_object_id, docked_ship_object in pairs(contract.dep_seaport.docked_sea_objects) do
+        -- load item from seaport to sea object
         local ret, err = pcall(loadunload_load, contract.dep_seaport.seaport_id, docked_sea_object_id, contract.item_id, contract.amount)
         if err ~= nil then print(err) end
     end
