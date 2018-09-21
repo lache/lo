@@ -5,7 +5,7 @@ print('loading '..info.source)
 sea_objects = {}
 
 function new_sea_object_instance(sea_object_id)
-    print('Creating a new lua sea_object instance id '..sea_object_id)
+    --print('Creating a new lua sea_object instance id '..sea_object_id)
     local sea_object = {
         sea_object_id = sea_object_id,
         items = {},

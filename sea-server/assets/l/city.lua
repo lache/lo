@@ -1,6 +1,6 @@
 local inspect = require('assets/l/inspect')
-
-print('loading city.lua...')
+local info = debug.getinfo(1,'S')
+print('loading '..info.source)
 
 cities = {}
 

@@ -1,6 +1,7 @@
 local inspect = require('assets/l/inspect')
 local info = debug.getinfo(1,'S')
 print('loading '..info.source)
+require('assets/l/collection')
 
 contracts = {}
 
@@ -58,10 +59,10 @@ function contract_tick(contract_id)
     if contract == nil then error('contract nil') end
     -- collect item from city to seaport
     local ret, err = xpcall(collection_collect, debug.traceback, contract.dep_city.city_id, contract.dep_seaport.seaport_id, contract.item_id, contract.amount)
-    if err ~= nil then print(err) end
+    --if err ~= nil then print(err) end
     for docked_sea_object_id, docked_ship_object in pairs(contract.dep_seaport.docked_sea_objects) do
         -- load item from seaport to sea object
         local ret, err = pcall(loadunload_load, contract.dep_seaport.seaport_id, docked_sea_object_id, contract.item_id, contract.amount)
-        if err ~= nil then print(err) end
+        --if err ~= nil then print(err) end
     end
 end
