@@ -246,7 +246,7 @@ function Inspector:putTable(t)
     if self.tableAppearances[t] > 1 then self:puts('<', self:getId(t), '>') end
 
     local nonSequentialKeys, sequenceLength = getNonSequentialKeys(t)
-    local mt                = getmetatable(t)
+    local mt                = self.includemt and getmetatable(t)
     local toStringResult    = getToStringResultSafely(t, mt)
 
     self:puts('{')
@@ -308,12 +308,13 @@ end
 -------------------------------------------------------------------
 
 function inspect.inspect(root, options)
-  options       = options or {}
+  options         = options           or {}
 
-  local depth   = options.depth   or math.huge
-  local newline = options.newline or '\n'
-  local indent  = options.indent  or '  '
-  local process = options.process
+  local depth     = options.depth     or math.huge
+  local newline   = options.newline   or '\n'
+  local indent    = options.indent    or '  '
+  local process   = options.process
+  local includemt = options.includemt or false
 
   if process then
     root = processRecursive(process, root, {}, {})
@@ -327,6 +328,7 @@ function inspect.inspect(root, options)
     maxIds           = {},
     newline          = newline,
     indent           = indent,
+    includemt        = includemt,
     tableAppearances = countTableAppearances(root)
   }, Inspector_mt)
 

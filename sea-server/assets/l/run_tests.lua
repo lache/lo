@@ -10,6 +10,7 @@ require('assets/l/city')
 require('assets/l/seaport')
 require('assets/l/contract')
 require('assets/l/sea')
+local Shipyard = require('assets/l/shipyard')
 
 local dep_city_id = 1999
 local dest_city_id = 2999
@@ -21,7 +22,8 @@ local dest_seaport_id = 29
 local bank_entity = Entity:new():add_fund(100000000):add_credit_rating(10000)
 local dep_city_entity = Entity:new():add_fund(500000):add_credit_rating(100)
 local dest_city_entity = Entity:new():add_fund(800000):add_credit_rating(120)
-local user_entity = Entity:new()
+local user_entity = Entity:new():add_fund(250)
+local shipyard_entity = Entity:new():add_fund(1):add_shipyard_ability()
 
 --print(Entity.inspect_all())
 
@@ -30,8 +32,11 @@ local funding = Funding.Try_Grant(bank_entity:id(), user_entity:id(), 1000, 10, 
 
 --print(Funding.Inspect_All())
 
-for i=1,10 do funding:repay(100) end
+Shipyard.Purchase_Ship(shipyard_entity:id(), user_entity:id(), 1)
+
+--for i=1,10 do funding:repay(100) end
 print(inspect(funding))
+print(inspect(shipyard_entity))
 
 cities[dep_city_id] = new_city_instance(dep_city_id)
 Item.register_produced_at_city(dep_city_id, item_id, amount)

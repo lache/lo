@@ -5,6 +5,7 @@ local entities = {}
 local FUND_LIMIT = 10000000000
 local CREDIT_RATING_LIMIT = 10000000000
 Entity = {}
+local Ship = require('assets/l/ship')
 
 function Entity:new(o)
     o = o or {}
@@ -13,8 +14,19 @@ function Entity:new(o)
     o.entity_id = #entities+1
     o.credit_rating = 1000
     o.fund = 0
+    o.ships = {}
+    o.abilities = {}
     table.insert(entities, o)
     return o
+end
+
+function Entity:add_shipyard_ability()
+    self.abilities.shipyard = true
+    return self
+end
+
+function Entity:has_shipyard_ability()
+    return self.abilities.shipyard or false
 end
 
 function Entity:add_fund(amount)
@@ -70,4 +82,12 @@ end
 
 function Entity.inspect_all()
     return inspect(entities)
+end
+
+function Entity:acquire_ship(ship_id)
+    local ship = Ship.Get(ship_id)
+    if ship.owner_entity then error('cannout acquire already owned ship by another entity') end
+    if self.ships[ship_id] then error('already owned ship') end
+    ship.owner_entity = self
+    self.ships[ship_id] = ship
 end
