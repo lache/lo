@@ -1,11 +1,11 @@
 local info = debug.getinfo(1,'S')
 print('loading '..info.source)
 local inspect = require('assets/l/inspect')
-require('assets/l/entity')
-require('assets/l/world')
+local Entity = require('assets/l/entity')
+local World = require('assets/l/world')
 
 local fundings = {}
-Funding = {}
+local Funding = {}
 
 function Funding:new(o)
     o = o or {}
@@ -49,3 +49,5 @@ end
 function Funding.Inspect_All()
     return inspect(fundings)
 end
+
+return Funding

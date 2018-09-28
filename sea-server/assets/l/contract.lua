@@ -2,10 +2,12 @@ local inspect = require('assets/l/inspect')
 local info = debug.getinfo(1,'S')
 print('loading '..info.source)
 require('assets/l/collection')
+local City = require('assets/l/city')
 
 contracts = {}
 
-Contract = {}
+local Contract = {}
+
 function Contract.new(o)
     o = o or {}
     setmetatable(o, self)
@@ -17,13 +19,13 @@ function contract_new(item_id, amount, dep_city_id, dep_seaport_id, dest_seaport
     -- variable preconditions check
     if item_id <= 0 then error('item id not positive') end
     if amount <= 0 then error('amount not positive') end
-    local dep_city = cities[dep_city_id]
+    local dep_city = City.Get(dep_city_id)
     if dep_city == nil then error('departure city nil') end
     local dep_seaport = seaports[dep_seaport_id]
     if dep_seaport == nil then error('departure seaport nil') end
     local dest_seaport = seaports[dest_seaport_id]
     if dest_seaport == nil then error('destination seaport nil') end
-    local dest_city = cities[dest_city_id]
+    local dest_city = City.Get(dest_city_id)
     if dest_city == nil then error('destination city nil') end
     -- departure city contract rule check
     local dep_city_item = dep_city.produced_items[item_id]
@@ -66,3 +68,5 @@ function contract_tick(contract_id)
         --if err ~= nil then print(err) end
     end
 end
+
+return Contract

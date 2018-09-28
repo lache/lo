@@ -1,3 +1,5 @@
+local City = require('assets/l/city')
+
 local Generator = {}
 
 generators = {}
@@ -22,7 +24,8 @@ function Generator:tick()
 end
 
 function Generator.register_generator_at_city(city_id, generator_id)
-    cities[city_id].generators[generator_id] = generators[generator_id]
+    local city = City.Get(city_id)
+    city.generators[generator_id] = generators[generator_id]
 end
 
 function Generator.tick_all()
