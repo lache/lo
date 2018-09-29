@@ -1,6 +1,6 @@
 html {
     body {
-        h1 "Welcome to DSL",
+        h1 "Welcome to DSL 한글이 된다~~~",
         a {
             href = "http://naver.com",
             "Go Naver"
