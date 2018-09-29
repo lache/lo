@@ -1,0 +1,21 @@
+html {
+    body {
+        h1 "Welcome to DSL",
+        a {
+            href = "http://naver.com",
+            "Go Naver"
+        },
+        p "This is paragraph.",
+        p {
+            style = 'teststyle',
+            'Can you see me?',
+            'Can you see this line?',
+            b 'yeah',
+            'YEAH!!',
+        },
+        div {
+            id = 'footer',
+            'This is footer...',
+        }
+    }
+}

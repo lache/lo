@@ -143,4 +143,6 @@ item2.id = 200
 --print('item2 id (after):'..item2.id)
 --print(inspect(item2))
 
+require('assets/l/test_dsl')
+
 return 9999
