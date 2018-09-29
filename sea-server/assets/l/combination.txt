@@ -1,0 +1,55 @@
+1000 "worker"
+1100 steel
+1200 grain
+1300 water
+1400 copper
+1500 oil
+1600 coal
+1700 natural gas
+1800 phosphorus
+1900 mineral
+2000 iron
+2100 soil
+2200 wood
+2300 gold
+2400 money
+2500 sec
+
+11000 ship engine lv.1
+{
+     100 x [1100 steel]
+    5000 x [1300 water]
+    1000 x [2200 wood]
+     500 x [2400 money]
+    1000 x [1000 worker]
+      30 x [2500 sec]
+}
+
+12000 ship hull lv.1
+{
+     100 x [1100 steel]
+    5000 x [1300 water]
+    1000 x [2200 wood]
+     500 x [2400 money]
+    1000 x [1000 worker]
+      20 x [2500 sec]
+}
+
+13000 ship deck lv.1
+{
+     100 x [1100 steel]
+    5000 x [1300 water]
+    1000 x [2200 wood]
+     500 x [2400 money]
+    1000 x [1000 worker]
+      15 x [2500 sec]
+}
+
+10000 ship lv.1
+{
+    1    x [11000 ship engine lv.1]
+    1    x [12000 ship hull lv.1]
+    1    x [13000 ship deck lv.1]
+    2500 x [1000 worker]
+    60   x [2500 sec]
+}
