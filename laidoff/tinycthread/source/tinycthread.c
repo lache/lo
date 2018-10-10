@@ -52,6 +52,11 @@ freely, subject to the following restrictions:
 extern "C" {
 #endif
 
+#ifdef __ANDROID_NDK__
+static int timespec_get(struct timespec* ts, int base) {
+    return (base == TIME_UTC && clock_gettime(CLOCK_REALTIME, ts) != -1) ? base : 0;
+}
+#endif
 
 int mtx_init(mtx_t *mtx, int type)
 {
