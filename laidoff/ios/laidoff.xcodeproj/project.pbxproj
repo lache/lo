@@ -63,7 +63,6 @@
 		5663735F1EBA52D4001DA3F4 /* transmission.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 566372DD1EBA52D3001DA3F4 /* transmission.cpp */; };
 		566373601EBA52D4001DA3F4 /* universal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 566372DF1EBA52D3001DA3F4 /* universal.cpp */; };
 		566373611EBA52D4001DA3F4 /* lcp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 566372E11EBA52D3001DA3F4 /* lcp.cpp */; };
-		566373621EBA52D4001DA3F4 /* Makefile.am in Resources */ = {isa = PBXBuildFile; fileRef = 566372E31EBA52D3001DA3F4 /* Makefile.am */; };
 		566373631EBA52D4001DA3F4 /* mass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 566372E41EBA52D3001DA3F4 /* mass.cpp */; };
 		566373641EBA52D4001DA3F4 /* mat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 566372E51EBA52D3001DA3F4 /* mat.cpp */; };
 		566373651EBA52D4001DA3F4 /* matrix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 566372E71EBA52D3001DA3F4 /* matrix.cpp */; };
@@ -89,7 +88,6 @@
 		566373791EBA52D4001DA3F4 /* threading_pool_win.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5663730B1EBA52D3001DA3F4 /* threading_pool_win.cpp */; };
 		5663737A1EBA52D4001DA3F4 /* timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5663730D1EBA52D3001DA3F4 /* timer.cpp */; };
 		5663737B1EBA52D4001DA3F4 /* util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5663730F1EBA52D3001DA3F4 /* util.cpp */; };
-		5663737C1EBA52D4001DA3F4 /* Makefile.am in Resources */ = {isa = PBXBuildFile; fileRef = 5663731E1EBA52D3001DA3F4 /* Makefile.am */; };
 		5663737D1EBA52D4001DA3F4 /* atomic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 566373281EBA52D3001DA3F4 /* atomic.cpp */; };
 		5663737E1EBA52D4001DA3F4 /* customization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 566373291EBA52D3001DA3F4 /* customization.cpp */; };
 		5663737F1EBA52D4001DA3F4 /* malloc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5663732A1EBA52D3001DA3F4 /* malloc.cpp */; };
@@ -134,9 +132,6 @@
 		56F188BE1EC74DB60019312F /* ipc_listener.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 56F188021EC74DB60019312F /* ipc_listener.cpp */; };
 		56F188BF1EC74DB60019312F /* kqueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 56F188041EC74DB60019312F /* kqueue.cpp */; };
 		56F188C01EC74DB60019312F /* lb.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 56F188061EC74DB60019312F /* lb.cpp */; };
-		56F188C11EC74DB60019312F /* libzmq.pc.cmake.in in Resources */ = {isa = PBXBuildFile; fileRef = 56F188081EC74DB60019312F /* libzmq.pc.cmake.in */; };
-		56F188C21EC74DB60019312F /* libzmq.pc.in in Resources */ = {isa = PBXBuildFile; fileRef = 56F188091EC74DB60019312F /* libzmq.pc.in */; };
-		56F188C31EC74DB60019312F /* libzmq.vers in Resources */ = {isa = PBXBuildFile; fileRef = 56F1880A1EC74DB60019312F /* libzmq.vers */; };
 		56F188C41EC74DB60019312F /* mailbox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 56F1880D1EC74DB60019312F /* mailbox.cpp */; };
 		56F188C51EC74DB60019312F /* mailbox_safe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 56F1880F1EC74DB60019312F /* mailbox_safe.cpp */; };
 		56F188C61EC74DB60019312F /* mechanism.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 56F188111EC74DB60019312F /* mechanism.cpp */; };
@@ -155,7 +150,6 @@
 		56F188D31EC74DB60019312F /* pipe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 56F1882C1EC74DB60019312F /* pipe.cpp */; };
 		56F188D41EC74DB60019312F /* plain_client.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 56F1882E1EC74DB60019312F /* plain_client.cpp */; };
 		56F188D51EC74DB60019312F /* plain_server.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 56F188301EC74DB60019312F /* plain_server.cpp */; };
-		56F188D61EC74DB60019312F /* platform.hpp.in in Resources */ = {isa = PBXBuildFile; fileRef = 56F188321EC74DB60019312F /* platform.hpp.in */; };
 		56F188D71EC74DB60019312F /* poll.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 56F188331EC74DB60019312F /* poll.cpp */; };
 		56F188D81EC74DB60019312F /* poller_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 56F188361EC74DB60019312F /* poller_base.cpp */; };
 		56F188D91EC74DB60019312F /* pollset.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 56F188381EC74DB60019312F /* pollset.cpp */; };
@@ -201,7 +195,6 @@
 		56F189011EC74DB60019312F /* v1_encoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 56F188891EC74DB60019312F /* v1_encoder.cpp */; };
 		56F189021EC74DB60019312F /* v2_decoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 56F1888B1EC74DB60019312F /* v2_decoder.cpp */; };
 		56F189031EC74DB60019312F /* v2_encoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 56F1888D1EC74DB60019312F /* v2_encoder.cpp */; };
-		56F189041EC74DB60019312F /* version.rc.in in Resources */ = {isa = PBXBuildFile; fileRef = 56F188901EC74DB60019312F /* version.rc.in */; };
 		56F189051EC74DB60019312F /* vmci.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 56F188911EC74DB60019312F /* vmci.cpp */; };
 		56F189061EC74DB60019312F /* vmci_address.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 56F188931EC74DB60019312F /* vmci_address.cpp */; };
 		56F189071EC74DB60019312F /* vmci_connecter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 56F188951EC74DB60019312F /* vmci_connecter.cpp */; };
@@ -210,23 +203,8 @@
 		56F1890A1EC74DB60019312F /* xsub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 56F1889D1EC74DB60019312F /* xsub.cpp */; };
 		56F1890B1EC74DB60019312F /* zmq.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 56F188A31EC74DB60019312F /* zmq.cpp */; };
 		56F1890C1EC74DB60019312F /* zmq_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 56F188A51EC74DB60019312F /* zmq_utils.cpp */; };
-		56F189391EC7518A0019312F /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 56F189131EC7518A0019312F /* .gitignore */; };
-		56F189801EC751950019312F /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 56F1893B1EC751950019312F /* .gitignore */; };
-		56F189811EC751950019312F /* .valgrind.supp in Resources */ = {isa = PBXBuildFile; fileRef = 56F1893C1EC751950019312F /* .valgrind.supp */; };
-		56F189821EC751950019312F /* CMakeLists-local.txt in Resources */ = {isa = PBXBuildFile; fileRef = 56F1893D1EC751950019312F /* CMakeLists-local.txt */; };
 		56F189831EC751950019312F /* czmq_private_selftest.c in Sources */ = {isa = PBXBuildFile; fileRef = 56F1893F1EC751950019312F /* czmq_private_selftest.c */; };
-		56F189851EC751950019312F /* sha1.inc_c in Resources */ = {isa = PBXBuildFile; fileRef = 56F189441EC751950019312F /* sha1.inc_c */; };
-		56F189861EC751950019312F /* readme.txt in Resources */ = {isa = PBXBuildFile; fileRef = 56F189461EC751950019312F /* readme.txt */; };
-		56F189871EC751950019312F /* slre.inc_c in Resources */ = {isa = PBXBuildFile; fileRef = 56F189481EC751950019312F /* slre.inc_c */; };
-		56F189881EC751950019312F /* libczmq.pc.in in Resources */ = {isa = PBXBuildFile; fileRef = 56F189491EC751950019312F /* libczmq.pc.in */; };
-		56F189891EC751950019312F /* Makemodule-local.am in Resources */ = {isa = PBXBuildFile; fileRef = 56F1894A1EC751950019312F /* Makemodule-local.am */; };
-		56F1898A1EC751950019312F /* Makemodule.am in Resources */ = {isa = PBXBuildFile; fileRef = 56F1894B1EC751950019312F /* Makemodule.am */; };
 		56F1898B1EC751950019312F /* python_cffi.inc in Sources */ = {isa = PBXBuildFile; fileRef = 56F1894C1EC751950019312F /* python_cffi.inc */; };
-		56F1898C1EC751950019312F /* .gitkeep in Resources */ = {isa = PBXBuildFile; fileRef = 56F1894E1EC751950019312F /* .gitkeep */; };
-		56F1898D1EC751950019312F /* selftest.cfg in Resources */ = {isa = PBXBuildFile; fileRef = 56F1894F1EC751950019312F /* selftest.cfg */; };
-		56F1898E1EC751950019312F /* sockopts.gsl in Resources */ = {isa = PBXBuildFile; fileRef = 56F189501EC751950019312F /* sockopts.gsl */; };
-		56F1898F1EC751950019312F /* sockopts.xml in Resources */ = {isa = PBXBuildFile; fileRef = 56F189511EC751950019312F /* sockopts.xml */; };
-		56F189911EC751950019312F /* valgrind.supp in Resources */ = {isa = PBXBuildFile; fileRef = 56F189531EC751950019312F /* valgrind.supp */; };
 		56F189921EC751950019312F /* zactor.c in Sources */ = {isa = PBXBuildFile; fileRef = 56F189541EC751950019312F /* zactor.c */; };
 		56F189931EC751950019312F /* zarmour.c in Sources */ = {isa = PBXBuildFile; fileRef = 56F189551EC751950019312F /* zarmour.c */; };
 		56F189941EC751950019312F /* zauth.c in Sources */ = {isa = PBXBuildFile; fileRef = 56F189561EC751950019312F /* zauth.c */; };
@@ -242,11 +220,8 @@
 		56F1899E1EC751950019312F /* zfile.c in Sources */ = {isa = PBXBuildFile; fileRef = 56F189601EC751950019312F /* zfile.c */; };
 		56F1899F1EC751950019312F /* zframe.c in Sources */ = {isa = PBXBuildFile; fileRef = 56F189611EC751950019312F /* zframe.c */; };
 		56F189A01EC751950019312F /* zgossip.c in Sources */ = {isa = PBXBuildFile; fileRef = 56F189621EC751950019312F /* zgossip.c */; };
-		56F189A11EC751950019312F /* zgossip.xml in Resources */ = {isa = PBXBuildFile; fileRef = 56F189631EC751950019312F /* zgossip.xml */; };
 		56F189A21EC751950019312F /* zgossip_engine.inc in Sources */ = {isa = PBXBuildFile; fileRef = 56F189641EC751950019312F /* zgossip_engine.inc */; };
-		56F189A31EC751950019312F /* zgossip_msg.bnf in Resources */ = {isa = PBXBuildFile; fileRef = 56F189651EC751950019312F /* zgossip_msg.bnf */; };
 		56F189A41EC751950019312F /* zgossip_msg.c in Sources */ = {isa = PBXBuildFile; fileRef = 56F189661EC751950019312F /* zgossip_msg.c */; };
-		56F189A51EC751950019312F /* zgossip_msg.xml in Resources */ = {isa = PBXBuildFile; fileRef = 56F189681EC751950019312F /* zgossip_msg.xml */; };
 		56F189A61EC751950019312F /* zhash.c in Sources */ = {isa = PBXBuildFile; fileRef = 56F189691EC751950019312F /* zhash.c */; };
 		56F189A71EC751950019312F /* zhash_primes.inc in Sources */ = {isa = PBXBuildFile; fileRef = 56F1896A1EC751950019312F /* zhash_primes.inc */; };
 		56F189A81EC751950019312F /* zhashx.c in Sources */ = {isa = PBXBuildFile; fileRef = 56F1896B1EC751950019312F /* zhashx.c */; };
@@ -261,7 +236,6 @@
 		56F189B21EC751950019312F /* zproxy.c in Sources */ = {isa = PBXBuildFile; fileRef = 56F189751EC751950019312F /* zproxy.c */; };
 		56F189B31EC751950019312F /* zrex.c in Sources */ = {isa = PBXBuildFile; fileRef = 56F189761EC751950019312F /* zrex.c */; };
 		56F189B41EC751950019312F /* zsock.c in Sources */ = {isa = PBXBuildFile; fileRef = 56F189771EC751950019312F /* zsock.c */; };
-		56F189B51EC751950019312F /* zsock_option.gsl in Resources */ = {isa = PBXBuildFile; fileRef = 56F189781EC751950019312F /* zsock_option.gsl */; };
 		56F189B61EC751950019312F /* zsock_option.inc in Sources */ = {isa = PBXBuildFile; fileRef = 56F189791EC751950019312F /* zsock_option.inc */; };
 		56F189B81EC751950019312F /* zstr.c in Sources */ = {isa = PBXBuildFile; fileRef = 56F1897B1EC751950019312F /* zstr.c */; };
 		56F189B91EC751950019312F /* zsys.c in Sources */ = {isa = PBXBuildFile; fileRef = 56F1897C1EC751950019312F /* zsys.c */; };
@@ -269,19 +243,12 @@
 		56F189BB1EC751950019312F /* ztrie.c in Sources */ = {isa = PBXBuildFile; fileRef = 56F1897E1EC751950019312F /* ztrie.c */; };
 		56F189BC1EC751950019312F /* zuuid.c in Sources */ = {isa = PBXBuildFile; fileRef = 56F1897F1EC751950019312F /* zuuid.c */; };
 		6C20CE8E1FE6C2E500A85583 /* UIDeviceHardware.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C20CE8C1FE6C2E500A85583 /* UIDeviceHardware.m */; };
-		6C295E9F204310700052999C /* CMakeLists.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6C295E18204310700052999C /* CMakeLists.txt */; };
-		6C295EA0204310700052999C /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 6C295E19204310700052999C /* LICENSE */; };
-		6C295EA1204310700052999C /* master.css in Resources */ = {isa = PBXBuildFile; fileRef = 6C295E1B204310700052999C /* master.css */; };
-		6C295EA2204310700052999C /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 6C295E1D204310700052999C /* README.md */; };
-		6C295EA3204310700052999C /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 6C295E1E204310700052999C /* .gitignore */; };
 		6C295EA4204310700052999C /* string_buffer.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C295E23204310700052999C /* string_buffer.c */; };
-		6C295EA6204310700052999C /* char_ref.rl in Resources */ = {isa = PBXBuildFile; fileRef = 6C295E27204310700052999C /* char_ref.rl */; };
 		6C295EA7204310700052999C /* vector.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C295E2A204310700052999C /* vector.c */; };
 		6C295EA8204310700052999C /* attribute.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C295E2B204310700052999C /* attribute.c */; };
 		6C295EA9204310700052999C /* char_ref.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C295E2C204310700052999C /* char_ref.c */; };
 		6C295EAA204310700052999C /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C295E2E204310700052999C /* utf8.c */; };
 		6C295EAB204310700052999C /* error.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C295E35204310700052999C /* error.c */; };
-		6C295EAC204310700052999C /* tag.in in Resources */ = {isa = PBXBuildFile; fileRef = 6C295E36204310700052999C /* tag.in */; };
 		6C295EAD204310700052999C /* tag.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C295E38204310700052999C /* tag.c */; };
 		6C295EAE204310700052999C /* parser.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C295E3C204310700052999C /* parser.c */; };
 		6C295EAF204310700052999C /* tokenizer.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C295E40204310700052999C /* tokenizer.c */; };
@@ -301,17 +268,14 @@
 		6C295EC1204310700052999C /* el_body.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6C295E67204310700052999C /* el_body.cpp */; };
 		6C295EC2204310700052999C /* context.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6C295E68204310700052999C /* context.cpp */; };
 		6C295EC3204310700052999C /* el_tr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6C295E73204310700052999C /* el_tr.cpp */; };
-		6C295EC4204310700052999C /* litehtml.vcxproj in Resources */ = {isa = PBXBuildFile; fileRef = 6C295E74204310700052999C /* litehtml.vcxproj */; };
 		6C295EC5204310700052999C /* el_td.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6C295E75204310700052999C /* el_td.cpp */; };
 		6C295EC6204310700052999C /* css_selector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6C295E76204310700052999C /* css_selector.cpp */; };
 		6C295EC7204310700052999C /* html.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6C295E77204310700052999C /* html.cpp */; };
-		6C295EC8204310700052999C /* litehtml.vcxproj.filters in Resources */ = {isa = PBXBuildFile; fileRef = 6C295E78204310700052999C /* litehtml.vcxproj.filters */; };
 		6C295EC9204310700052999C /* el_font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6C295E79204310700052999C /* el_font.cpp */; };
 		6C295ECA204310700052999C /* utf8_strings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6C295E7A204310700052999C /* utf8_strings.cpp */; };
 		6C295ECB204310700052999C /* background.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6C295E7E204310700052999C /* background.cpp */; };
 		6C295ECC204310700052999C /* iterators.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6C295E80204310700052999C /* iterators.cpp */; };
 		6C295ECD204310700052999C /* el_comment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6C295E81204310700052999C /* el_comment.cpp */; };
-		6C295ECE204310700052999C /* litehtml.vcproj in Resources */ = {isa = PBXBuildFile; fileRef = 6C295E85204310700052999C /* litehtml.vcproj */; };
 		6C295ECF204310700052999C /* html_tag.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6C295E86204310700052999C /* html_tag.cpp */; };
 		6C295ED0204310700052999C /* el_anchor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6C295E88204310700052999C /* el_anchor.cpp */; };
 		6C295ED1204310700052999C /* el_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6C295E8A204310700052999C /* el_base.cpp */; };
@@ -327,7 +291,6 @@
 		6C295EDB204310700052999C /* el_break.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6C295E9E204310700052999C /* el_break.cpp */; };
 		6C3F143920F897670021A1FD /* lwchat.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C3F143520F897660021A1FD /* lwchat.c */; };
 		6C3F143A20F897670021A1FD /* render_chat.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C3F143720F897670021A1FD /* render_chat.c */; };
-		6C40DD9220F527F40055A782 /* ChatStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6C40DD9120F527F40055A782 /* ChatStoryboard.storyboard */; };
 		6C59053E207C60C500A14685 /* remtex.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C59053C207C60C400A14685 /* remtex.c */; };
 		6C59053F207C60C500A14685 /* render_remtex.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C59053D207C60C500A14685 /* render_remtex.c */; };
 		6C7381E521467EBB00492783 /* lwcharptrstream.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C7381E321467EBB00492783 /* lwcharptrstream.c */; };
@@ -346,8 +309,6 @@
 		6C99DBE121435084000C9798 /* render_mocap.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C99DBD721435083000C9798 /* render_mocap.c */; };
 		6CA16CD81EA20B5600DB7AF0 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CA16CD71EA20B5600DB7AF0 /* main.m */; };
 		6CA16CDB1EA20B5600DB7AF0 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CA16CDA1EA20B5600DB7AF0 /* AppDelegate.m */; };
-		6CA16CDD1EA20B5600DB7AF0 /* Shader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 6CA16CDC1EA20B5600DB7AF0 /* Shader.fsh */; };
-		6CA16CDF1EA20B5600DB7AF0 /* Shader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 6CA16CDE1EA20B5600DB7AF0 /* Shader.vsh */; };
 		6CA16CE21EA20B5600DB7AF0 /* GameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CA16CE11EA20B5600DB7AF0 /* GameViewController.m */; };
 		6CA16CE51EA20B5600DB7AF0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6CA16CE31EA20B5600DB7AF0 /* Main.storyboard */; };
 		6CA16CE71EA20B5600DB7AF0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6CA16CE61EA20B5600DB7AF0 /* Assets.xcassets */; };
@@ -486,7 +447,6 @@
 		6CC83346205D50DA0031523A /* puckgame.c in Sources */ = {isa = PBXBuildFile; fileRef = 6CC8328E205D50DA0031523A /* puckgame.c */; };
 		6CC83347205D50DA0031523A /* logic.c in Sources */ = {isa = PBXBuildFile; fileRef = 6CC83290205D50DA0031523A /* logic.c */; };
 		6CC83348205D50DA0031523A /* ps.c in Sources */ = {isa = PBXBuildFile; fileRef = 6CC83293205D50DA0031523A /* ps.c */; };
-		6CC83349205D50DA0031523A /* lo_wrap.inl in Resources */ = {isa = PBXBuildFile; fileRef = 6CC83295205D50DA0031523A /* lo_wrap.inl */; };
 		6CC8334A205D50DA0031523A /* lwcontext.c in Sources */ = {isa = PBXBuildFile; fileRef = 6CC83296205D50DA0031523A /* lwcontext.c */; };
 		6CC8334B205D50DA0031523A /* render_splash.c in Sources */ = {isa = PBXBuildFile; fileRef = 6CC8329A205D50DA0031523A /* render_splash.c */; };
 		6CC8334C205D50DA0031523A /* lwtimepoint.c in Sources */ = {isa = PBXBuildFile; fileRef = 6CC832A0205D50DA0031523A /* lwtimepoint.c */; };
@@ -3348,49 +3308,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				567F39BE1EA29BC90081EB67 /* assets in Resources */,
-				56F1898A1EC751950019312F /* Makemodule.am in Resources */,
-				56F1898F1EC751950019312F /* sockopts.xml in Resources */,
-				56F1898D1EC751950019312F /* selftest.cfg in Resources */,
-				6CC83349205D50DA0031523A /* lo_wrap.inl in Resources */,
-				56F189891EC751950019312F /* Makemodule-local.am in Resources */,
-				6C295E9F204310700052999C /* CMakeLists.txt in Resources */,
-				6C295EA2204310700052999C /* README.md in Resources */,
-				56F189A11EC751950019312F /* zgossip.xml in Resources */,
-				56F189B51EC751950019312F /* zsock_option.gsl in Resources */,
-				6C295EA0204310700052999C /* LICENSE in Resources */,
-				566373621EBA52D4001DA3F4 /* Makefile.am in Resources */,
-				56F189861EC751950019312F /* readme.txt in Resources */,
-				6C295EC8204310700052999C /* litehtml.vcxproj.filters in Resources */,
 				6CA16CE51EA20B5600DB7AF0 /* Main.storyboard in Resources */,
-				56F189851EC751950019312F /* sha1.inc_c in Resources */,
-				6CA16CDF1EA20B5600DB7AF0 /* Shader.vsh in Resources */,
-				6C295EC4204310700052999C /* litehtml.vcxproj in Resources */,
 				6CA16CE71EA20B5600DB7AF0 /* Assets.xcassets in Resources */,
-				6C295EA1204310700052999C /* master.css in Resources */,
-				6C295EA3204310700052999C /* .gitignore in Resources */,
-				56F189821EC751950019312F /* CMakeLists-local.txt in Resources */,
-				56F189881EC751950019312F /* libczmq.pc.in in Resources */,
-				56F188C21EC74DB60019312F /* libzmq.pc.in in Resources */,
-				6C295ECE204310700052999C /* litehtml.vcproj in Resources */,
-				6C40DD9220F527F40055A782 /* ChatStoryboard.storyboard in Resources */,
-				5663737C1EBA52D4001DA3F4 /* Makefile.am in Resources */,
-				56F189041EC74DB60019312F /* version.rc.in in Resources */,
-				56F189391EC7518A0019312F /* .gitignore in Resources */,
-				56F1898C1EC751950019312F /* .gitkeep in Resources */,
-				6C295EA6204310700052999C /* char_ref.rl in Resources */,
-				6C295EAC204310700052999C /* tag.in in Resources */,
-				56F189811EC751950019312F /* .valgrind.supp in Resources */,
-				56F189A31EC751950019312F /* zgossip_msg.bnf in Resources */,
-				56F1898E1EC751950019312F /* sockopts.gsl in Resources */,
-				56F189A51EC751950019312F /* zgossip_msg.xml in Resources */,
-				56F188D61EC74DB60019312F /* platform.hpp.in in Resources */,
-				56F189871EC751950019312F /* slre.inc_c in Resources */,
-				56F189801EC751950019312F /* .gitignore in Resources */,
-				56F188C11EC74DB60019312F /* libzmq.pc.cmake.in in Resources */,
 				6CA16CEA1EA20B5600DB7AF0 /* LaunchScreen.storyboard in Resources */,
-				6CA16CDD1EA20B5600DB7AF0 /* Shader.fsh in Resources */,
-				56F189911EC751950019312F /* valgrind.supp in Resources */,
-				56F188C31EC74DB60019312F /* libzmq.vers in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
