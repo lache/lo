@@ -551,7 +551,7 @@ int tcp_admin_server_entry(void* context) {
                 size_t file_size;
                 char* replay_data = server_create_binary_from_file(puck_game->game_map == LPGM_OCTAGON ? "2018_06_18_19_02_24-00003.dat" : "2018_06_18_19_01_35-00001.dat", &file_size);
                 LWPUCKGAMERECORD* record = malloc(sizeof(LWPUCKGAMERECORD));
-                int decompressed_bytes = LZ4_decompress_safe(replay_data, (char*)record, file_size, sizeof(LWPUCKGAMERECORD));
+                int decompressed_bytes = LZ4_decompress_safe(replay_data, (char*)record, (int)file_size, sizeof(LWPUCKGAMERECORD));
                 if (decompressed_bytes > 0) {
                     puck_game->record = record;
                 } else {

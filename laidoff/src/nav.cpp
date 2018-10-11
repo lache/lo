@@ -87,7 +87,7 @@ void* load_nav(const char* filename) {
     char* d = create_binary_from_file(filename, &size);
 
     dtStatus status;
-    status = nav->nav_mesh->init(reinterpret_cast<unsigned char*>(d), size, DT_TILE_FREE_DATA);
+    status = nav->nav_mesh->init(reinterpret_cast<unsigned char*>(d), static_cast<int>(size), DT_TILE_FREE_DATA);
     if (dtStatusFailed(status)) {
         LOGE("nav->nav_mesh->init() error");
     }

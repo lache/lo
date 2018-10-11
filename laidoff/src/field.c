@@ -341,7 +341,7 @@ LWFIELD* load_field(const char* filename) {
     char* d = create_binary_from_file(filename, &size);
     field->field_raw_data = d;
     field->field_cube_object = (LWFIELDCUBEOBJECT*)d;
-    field->field_cube_object_count = size / sizeof(LWFIELDCUBEOBJECT);
+    field->field_cube_object_count = (int)(size / sizeof(LWFIELDCUBEOBJECT));
     // Create sphere geom pool for bullets, projectiles, ...
     // which are initially disabled and enabled before they are used.
     for (int i = 0; i < MAX_FIELD_SPHERE; i++) {
@@ -378,7 +378,7 @@ static void field_world_ray_near(void* data, dGeomID o1, dGeomID o2) {
     for (int i = 0; i < n; i++) {
         // Get ray index from custom data
         // Note that the return value of dGeomGetData is coerced to integer since LW_RAY_ID is a sparse enum
-        const LW_RAY_ID lri = (int)dGeomGetData(o2);
+        const LW_RAY_ID lri = (size_t)dGeomGetData(o2);
         // Negate normal direction of contact result data
         dNegateVector3(contact[i].geom.normal);
         // Copy to ours
@@ -466,7 +466,7 @@ static void field_world_bullet_near(void* data, dGeomID o1, dGeomID o2) {
              contact[0].geom.pos[1],
              contact[0].geom.pos[2]);
         dGeomDisable(o2);
-        int idx = (int)dGeomGetData(o2);
+        size_t idx = (size_t)dGeomGetData(o2);
         mq_send_despawn_bullet(field->mq, field->sphere_bullet_id[idx]);
         vec3 pos = {
             (float)contact[0].geom.pos[0],
@@ -490,8 +490,8 @@ static void field_world_script_bullet_near(void* data, dGeomID o1, dGeomID o2) {
          contact[0].geom.pos[0],
          contact[0].geom.pos[1],
          contact[0].geom.pos[2]);*/
-        int obj_key1 = (int)dGeomGetData(o1);
-        int obj_key2 = (int)dGeomGetData(o2);
+        int obj_key1 = (int)(size_t)dGeomGetData(o1);
+        int obj_key2 = (int)(size_t)dGeomGetData(o2);
         script_emit_near(pLwc->L, obj_key1, obj_key2);
     }
 }
@@ -509,8 +509,8 @@ static void field_tower_script_bullet_near(void* data, dGeomID o1, dGeomID o2) {
          contact[0].geom.pos[0],
          contact[0].geom.pos[1],
          contact[0].geom.pos[2]);*/
-        int obj_key1 = (int)dGeomGetData(o1);
-        int obj_key2 = (int)dGeomGetData(o2);
+        int obj_key1 = (int)(size_t)dGeomGetData(o1);
+        int obj_key2 = (int)(size_t)dGeomGetData(o2);
         script_emit_near(pLwc->L, obj_key1, obj_key2);
     }
 }
@@ -540,7 +540,7 @@ static void field_test_player_bullet_near(void* data, dGeomID o1, dGeomID o2) {
             if (field->network) {
                 field_send_hit(field, possyncmsg);
             }
-            int idx = (int)dGeomGetData(o2);
+            size_t idx = (size_t)dGeomGetData(o2);
             mq_send_despawn_bullet(field->mq, field->sphere_bullet_id[idx]);
         } else {
             field->test_player_flash = 1.0f;

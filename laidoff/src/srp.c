@@ -303,8 +303,8 @@ static int hash_length(SRP_HashAlgorithm alg) {
 
 static BIGNUM * H_nn(SRP_HashAlgorithm alg, const BIGNUM * n1, const BIGNUM * n2) {
     unsigned char   buff[SHA512_DIGEST_LENGTH];
-    int             len_n1 = mbedtls_mpi_size(n1);
-    int             len_n2 = mbedtls_mpi_size(n2);
+    int             len_n1 = (int)mbedtls_mpi_size(n1);
+    int             len_n2 = (int)mbedtls_mpi_size(n2);
     int             nbytes = len_n1 + len_n2;
     unsigned char * bin = (unsigned char *)malloc(nbytes);
     if (!bin)
@@ -323,7 +323,7 @@ static BIGNUM * H_nn(SRP_HashAlgorithm alg, const BIGNUM * n1, const BIGNUM * n2
 
 static BIGNUM * H_ns(SRP_HashAlgorithm alg, const BIGNUM * n, const unsigned char * bytes, int len_bytes) {
     unsigned char   buff[SHA512_DIGEST_LENGTH];
-    int             len_n = mbedtls_mpi_size(n);
+    int             len_n = (int)mbedtls_mpi_size(n);
     int             nbytes = len_n + len_bytes;
     unsigned char * bin = (unsigned char *)malloc(nbytes);
     if (!bin)
@@ -357,7 +357,7 @@ static BIGNUM * calculate_x(SRP_HashAlgorithm alg, const BIGNUM * salt, const ch
 }
 
 static void update_hash_n(SRP_HashAlgorithm alg, HashCTX *ctx, const BIGNUM * n) {
-    unsigned long len = mbedtls_mpi_size(n);
+    unsigned long len = (unsigned long)mbedtls_mpi_size(n);
     unsigned char * n_bytes = (unsigned char *)malloc(len);
     if (!n_bytes)
         return;
@@ -367,7 +367,7 @@ static void update_hash_n(SRP_HashAlgorithm alg, HashCTX *ctx, const BIGNUM * n)
 }
 
 static void hash_num(SRP_HashAlgorithm alg, const BIGNUM * n, unsigned char * dest) {
-    int             nbytes = mbedtls_mpi_size(n);
+    int             nbytes = (int)mbedtls_mpi_size(n);
     unsigned char * bin = (unsigned char *)malloc(nbytes);
     if (!bin)
         return;
@@ -511,8 +511,8 @@ void srp_create_salted_verification_key(SRP_HashAlgorithm alg,
 
     mbedtls_mpi_exp_mod(v, ng->g, x, ng->N, RR);
 
-    *len_s = mbedtls_mpi_size(s);
-    *len_v = mbedtls_mpi_size(v);
+    *len_s = (int)mbedtls_mpi_size(s);
+    *len_v = (int)mbedtls_mpi_size(v);
 
     *bytes_s = (const unsigned char *)malloc(*len_s);
     *bytes_v = (const unsigned char *)malloc(*len_v);
@@ -578,7 +578,7 @@ struct SRPVerifier *  srp_verifier_new(SRP_HashAlgorithm alg, SRP_NGType ng_type
     BIGNUM             *tmp2;
     tmp2 = (mbedtls_mpi *)malloc(sizeof(mbedtls_mpi));
     mbedtls_mpi_init(tmp2);
-    int                 ulen = strlen(username) + 1;
+    int                 ulen = (int)(strlen(username) + 1);
     NGConstant         *ng = new_ng(ng_type, n_hex, g_hex);
     struct SRPVerifier *ver = 0;
 
@@ -637,7 +637,7 @@ struct SRPVerifier *  srp_verifier_new(SRP_HashAlgorithm alg, SRP_NGType ng_type
         calculate_M(alg, ng, ver->M, username, s, A, B, ver->session_key);
         calculate_H_AMK(alg, ver->H_AMK, A, ver->M, ver->session_key);
 
-        *len_B = mbedtls_mpi_size(B);
+        *len_B = (int)mbedtls_mpi_size(B);
         *bytes_B = malloc(*len_B);
 
         if (!*bytes_B) {
@@ -729,7 +729,7 @@ struct SRPUser * srp_user_new(SRP_HashAlgorithm alg, SRP_NGType ng_type, const c
     const unsigned char * bytes_password, int len_password,
                               const char * n_hex, const char * g_hex) {
     struct SRPUser  *usr = (struct SRPUser *) malloc(sizeof(struct SRPUser));
-    int              ulen = strlen(username) + 1;
+    int              ulen = (int)(strlen(username) + 1);
 
     if (!usr)
         goto err_exit;
@@ -839,7 +839,7 @@ void  srp_user_start_authentication(struct SRPUser * usr, const char ** username
     mbedtls_mpi_fill_random(usr->a, 256, &mbedtls_ctr_drbg_random, &ctr_drbg_ctx);
     mbedtls_mpi_exp_mod(usr->A, usr->ng->g, usr->a, usr->ng->N, RR);
 
-    *len_A = mbedtls_mpi_size(usr->A);
+    *len_A = (int)mbedtls_mpi_size(usr->A);
     *bytes_A = malloc(*len_A);
 
     if (!*bytes_A) {
@@ -992,7 +992,7 @@ void srp_unhexify(const char * str, const unsigned char ** b, int * len_b)
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // HIJKLMNO
     };
     
-    int slen = strlen(str);
+    int slen = (int)strlen(str);
     int blen = slen / 2;
     unsigned char* bb = (unsigned char*)malloc(blen);
     for (pos = 0; ((pos < (blen*2)) && (pos < slen)); pos += 2)

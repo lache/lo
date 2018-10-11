@@ -305,9 +305,9 @@ s_self_prepare_udp (self_t *self)
         }
 
         //  If bind fails, we close the socket for opening again later (next poll interval)
-        if (bind (self->udpsock_send, bind_to->ai_addr, bind_to->ai_addrlen) ||
+        if (bind (self->udpsock_send, bind_to->ai_addr, (int)bind_to->ai_addrlen) ||
                 bind (self->udpsock, (struct sockaddr *)&bind_address,
-                zsys_ipv6 () ? sizeof (in6addr_t) : sizeof (inaddr_t))) {
+                (int)(zsys_ipv6 () ? sizeof (in6addr_t) : sizeof (inaddr_t)))) {
             zsys_debug ("zbeacon: Unable to bind to broadcast address, reason=%s", strerror (errno));
             zsys_udp_close (self->udpsock);
             self->udpsock = INVALID_SOCKET;
@@ -319,7 +319,7 @@ s_self_prepare_udp (self_t *self)
             if (self->verbose)
                 zsys_info ("zbeacon: configured, hostname=%s", self->hostname);
         }
-        else if (getnameinfo (bind_to->ai_addr, bind_to->ai_addrlen,
+        else if (getnameinfo (bind_to->ai_addr, (socklen_t)bind_to->ai_addrlen,
                         self->hostname, NI_MAXHOST, NULL, 0, NI_NUMERICHOST) == 0) {
             if (self->verbose)
                 zsys_info ("zbeacon: configured, hostname=%s", self->hostname);

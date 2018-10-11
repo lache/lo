@@ -1151,7 +1151,7 @@ static int pos_from_waypoints(const LWPTTLWAYPOINTS* wp,
         if (reversed) {
             //param = accum_distance[accum_distance_cursor - 1] - param;
         }
-        int it_idx = std_lower_bound_double(accum_distance, 0, accum_distance_cursor, param);
+        int it_idx = std_lower_bound_double(accum_distance, 0, (int)accum_distance_cursor, param);
         if (it_idx == 0) {
             *px = wp->waypoints[0].x;
             *py = wp->waypoints[0].y;

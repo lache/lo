@@ -48,7 +48,11 @@ _Thread_local int gLocalVar;
 
 // timespec_get not found on Android SDK 28 WINDOWS only...
 static int custom_timespec_get(struct timespec* ts, int base) {
-    return (base == TIME_UTC && clock_gettime(CLOCK_REALTIME, ts) != -1) ? base : 0;
+#ifdef WIN32
+	return timespec_get(ts, base);
+#else
+	return (base == TIME_UTC && clock_gettime(CLOCK_REALTIME, ts) != -1) ? base : 0;
+#endif
 }
 
 static void test_sleep(void);
@@ -642,7 +646,7 @@ static void test_run(const Test* test, unsigned int seed)
   int i;
   fputs("  ", stdout);
   fputs(test->name, stdout);
-  for (i = strlen(test->name); i < 48; i++)
+  for (i = (int)strlen(test->name); i < 48; i++)
   {
     fputc(' ', stdout);
   }

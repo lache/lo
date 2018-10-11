@@ -111,7 +111,7 @@ int test_srp_main() {
     const unsigned char* password_cuchar = (const unsigned char *)password;
     srp_create_salted_verification_key(alg, ng_type, username,
                                        password_cuchar,
-                                       strlen(password),
+                                       (int)strlen(password),
                                        &bytes_s, &len_s,
                                        &bytes_v, &len_v,
                                        n_hex, g_hex);
@@ -127,7 +127,7 @@ int test_srp_main() {
         // OUTPUT: usr, A
         usr = srp_user_new(alg, ng_type, username,
                            password_cuchar,
-                           strlen(password), n_hex, g_hex);
+                           (int)strlen(password), n_hex, g_hex);
         srp_user_start_authentication(usr, &auth_username, &bytes_A, &len_A);
 
         // *** User -> Host: (username, A) ***

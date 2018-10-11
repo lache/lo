@@ -819,7 +819,7 @@ static int add_to_object_cache_land(LWTTLOBJECTCACHE* c,
                                land_count,
                                land_array,
                                sizeof(LWPTTLSTATICOBJECT2),
-                               land_array_size,
+                               (int)land_array_size,
                                s2->ts,
                                s2->xc0,
                                s2->yc0,
@@ -837,7 +837,7 @@ static int add_to_object_cache_seaport(LWTTLOBJECTCACHE* c,
                                seaport_count,
                                seaport_array,
                                sizeof(LWPTTLSEAPORTOBJECT),
-                               seaport_array_size,
+                               (int)seaport_array_size,
                                s2->ts,
                                s2->xc0,
                                s2->yc0,
@@ -855,7 +855,7 @@ static int add_to_object_cache_city(LWTTLOBJECTCACHE* c,
                                city_count,
                                city_array,
                                sizeof(LWPTTLCITYOBJECT),
-                               city_array_size,
+                               (int)city_array_size,
                                s2->ts,
                                s2->xc0,
                                s2->yc0,
@@ -873,7 +873,7 @@ static int add_to_object_cache_salvage(LWTTLOBJECTCACHE* c,
                                salvage_count,
                                salvage_array,
                                sizeof(LWPTTLSALVAGEOBJECT),
-                               salvage_array_size,
+                               (int)salvage_array_size,
                                s2->ts,
                                s2->xc0,
                                s2->yc0,
@@ -891,7 +891,7 @@ static int add_to_object_cache_contract(LWTTLOBJECTCACHE* c,
                                contract_count,
                                contract_array,
                                sizeof(LWPTTLCONTRACTOBJECT),
-                               contract_array_size,
+                               (int)contract_array_size,
                                s2->ts,
                                s2->xc0,
                                s2->yc0,
@@ -909,7 +909,7 @@ static int add_to_object_cache_shipyard(LWTTLOBJECTCACHE* c,
                                shipyard_count,
                                shipyard_array,
                                sizeof(LWPTTLSHIPYARDOBJECT),
-                               shipyard_array_size,
+                               (int)shipyard_array_size,
                                s2->ts,
                                s2->xc0,
                                s2->yc0,
@@ -1195,7 +1195,7 @@ static LWTTLWORLDTEXT* empty_world_text(LWTTL* ttl) {
 }
 
 static const LWTTLWORLDTEXT* valid_world_text_start(const LWTTL* ttl, const LWTTLWORLDTEXT* start_it) {
-    const int i0 = ((const char*)start_it - (const char*)ttl->world_text) / sizeof(LWTTLWORLDTEXT);
+    const int i0 = (int)((const char*)start_it - (const char*)ttl->world_text) / sizeof(LWTTLWORLDTEXT);
     for (int i = i0; i < ARRAY_SIZE(ttl->world_text); i++) {
         if (ttl->world_text[i].valid) {
             return &ttl->world_text[i];
@@ -2043,7 +2043,7 @@ void lwttl_change_selected_cell_to(LWTTL* ttl,
                     } else if (slen < 0) {
                         LOGEP("script formatting invalid! slen == %d!", slen);
                     } else if (slen >= ARRAY_SIZE(s)) {
-                        LOGEP("script formatting too long! slen == %d, ssize == %lu!", slen, ARRAY_SIZE(s));
+                        LOGEP("script formatting too long! slen == %d, ssize == %zu!", slen, ARRAY_SIZE(s));
                     } else {
                         script_evaluate_async(pLwc, s, slen);
                     }
@@ -2442,7 +2442,7 @@ void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc) {
     FD_ZERO(&udp->readfds);
     FD_SET(udp->s, &udp->readfds);
     int rv = 0;
-    while ((rv = select(udp->s + 1, &udp->readfds, NULL, NULL, &udp->tv)) == 1) {
+    while ((rv = select((int)(udp->s + 1), &udp->readfds, NULL, NULL, &udp->tv)) == 1) {
         if ((udp->recv_len = recvfrom(udp->s, udp->buf, LW_UDP_BUFLEN, 0, (struct sockaddr*)&udp->si_other, (socklen_t*)&udp->slen)) == SOCKET_ERROR) {
 #if LW_PLATFORM_WIN32
             int wsa_error_code = WSAGetLastError();

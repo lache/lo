@@ -9,7 +9,7 @@ void lwcharptrstream_init(LWCHARPTRSTREAM* cps, char* data) {
         return;
     }
     cps->data = data;
-    cps->length = strlen(data);
+    cps->length = (int)strlen(data);
     cps->current = 0;
 }
 
@@ -33,7 +33,7 @@ int lwcharptrstream_fgets(LWCHARPTRSTREAM* cps, char* buffer, int max_count) {
         cps->current = cps->length;
         return 0;
     } else {
-        int copy_length = LWMIN(p - (cps->data + cps->current), max_count - 1);
+        int copy_length = (int)(LWMIN(p - (cps->data + cps->current), max_count - 1));
         strncpy(buffer, cps->data + cps->current, copy_length);
         buffer[copy_length] = 0;
         cps->current += copy_length;
