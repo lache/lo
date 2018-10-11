@@ -42,8 +42,8 @@ function City:id() return self.city_id end
 function city_update(city_id)
     local city = cities[city_id]
     if city == nil then
-        city = new_city_instance(city_id)
-        cities[city_id] = city
+        city = City.New()
+        cities[city:id()] = city
     end
     city_update_produce(city_id)
 end
@@ -62,6 +62,10 @@ end
 
 function city_debug_query(city_id)
     print(inspect(cities[city_id]))
+end
+
+function city_new()
+    City.New()
 end
 
 function City:add_relation_points(entity_id, relation_point)

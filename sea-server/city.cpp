@@ -42,6 +42,8 @@ city::~city() {
 }
 
 void city::init() {
+	eval_lua_script_file(lua_state_instance.get(), "assets/l/city.lua");
+
     time0_ = get_monotonic_uptime();
     // copy to rtree folder if r-tree is empty.
     if (rtree_ptr->size() == 0) {
@@ -66,6 +68,11 @@ void city::init() {
         name_id[sp[i].name] = i + 1;
         id_population[i + 1] = sp[i].population;
         id_country[i + 1] = sp[i].country;
+		// create city instance on lua
+		lua_getglobal(lua_state_instance.get(), "city_new");
+		if (lua_pcall(lua_state_instance.get(), 0/*arguments*/, 0/*result*/, 0)) {
+			LOGEP("error: %1%", lua_tostring(lua_state_instance.get(), -1));
+		}
     }
     city_id_seq_ = count;
     
@@ -98,7 +105,6 @@ void city::init() {
         abort();
     }
     
-    eval_lua_script_file(lua_state_instance.get(), "assets/l/city.lua");
     timer_.async_wait(boost::bind(&city::update, this));
 }
 
