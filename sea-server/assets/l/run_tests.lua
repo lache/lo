@@ -17,8 +17,6 @@ local Route = require('assets/l/route')
 
 local item_id = 123
 local amount = 5
-local dep_seaport_id = 19
-local dest_seaport_id = 29
 
 local bank_entity = Entity:new():add_fund(100000000):add_credit_rating(10000):add_bank_ability()
 local dep_city_entity = Entity:new():add_fund(500000):add_credit_rating(100):add_city_ability()
@@ -69,7 +67,8 @@ Item.Register_Wanted_At_City(dep_city_id, 999, 100)
 local generator = Generator:new(item_id, amount, 1)
 Generator.register_generator_at_city(dep_city_id, generator.generator_id)
 --print('departure city info:'..inspect(cities[dep_city_id]))
-seaports[dep_seaport_id] = new_seaport_instance(dep_seaport_id)
+local dep_seaport = Seaport.New()
+local dep_seaport_id = dep_seaport:id()
 
 --print('generators (before):'..inspect(generators))
 Generator.tick_all()
@@ -106,7 +105,9 @@ Item.Register_Produced_At_City(dep_city_id, item_id, amount)
 
 print(inspect(ship))
 
-seaports[dest_seaport_id] = new_seaport_instance(dest_seaport_id)
+local dest_seaport = Seaport.New()
+dest_seaport_id = dest_seaport:id()
+
 Item.Register_Wanted_At_City(dest_city_id, item_id, amount)
 --print('destination city info:'..inspect(cities[dest_city_id]))
 

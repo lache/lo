@@ -189,21 +189,24 @@ local function create_combination_data(fn)
             end
         end
     }))
-    fn()
-    return combination_def
+    return fn()
 end
 
 local test_source = read_all_file('assets/l/test_source.txt')
 local test_source_func, test_source_errmsg = load('return '..test_source)
 assert(type(test_source_func) == 'function')
 assert(test_source_errmsg == nil)
-print(render_html(function() return hello { my { friend { 1+2 } }} end))
+--print(render_html(function() return hello { my { friend { 1+2 } }} end))
 print(render_html(test_source_func))
 
+function load_combination()
+    local combination_source = read_all_file('assets/l/combination_source.txt')
+    local combination_source_func, combination_source_errmsg = load('return '..combination_source)
+    assert(type(combination_source_func) == 'function')
+    assert(combination_source_errmsg == nil)
+    --print(inspect(create_combination_data(function() return combination { def { 100, 'Test Resource ID One Hundred' } } end)))
 
-local combination_source = read_all_file('assets/l/combination_source.txt')
-local combination_source_func, combination_source_errmsg = load('return '..combination_source)
-assert(type(combination_source_func) == 'function')
-assert(combination_source_errmsg == nil)
-print(inspect(create_combination_data(function() return combination { def { 100, 'Test Resource ID One Hundred' } } end)))
-print(inspect(create_combination_data(combination_source_func)))
+    local combination = create_combination_data(combination_source_func)
+    print(inspect(combination))
+    return combination
+end

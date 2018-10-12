@@ -17,12 +17,15 @@ namespace ss {
         typedef std::pair<box, int> value;
 
     public:
-        sea(boost::asio::io_service& io_service, std::shared_ptr<lua_State> lua_state_instance);
+        sea(boost::asio::io_service& io_service,
+            std::shared_ptr<seaport> seaport,
+            std::shared_ptr<lua_State> lua_state_instance);
         ~sea();
         int spawn(int db_id, float x, float y, float w, float h, int expect_land, int template_id);
         int spawn(const spawn_ship_command& spawn_ship_cmd);
         void despawn(int type);
         int teleport_to(int id, float x, float y, float vx = 0, float vy = 0);
+		int dock(int id);
         void query_near_lng_lat_to_packet(float lng, float lat, float ex_lng, float ex_lat, std::vector<sea_object>& sop_list) const;
         void query_near_to_packet(float xc, float yc, float ex_lng, float ex_lat, std::vector<sea_object>& sop_list) const;
         void update(float delta_time);
@@ -52,5 +55,7 @@ namespace ss {
         std::shared_ptr<udp_admin_server> uas;
         std::vector<cargo_notification> cargo_notifications;
         std::shared_ptr<lua_State> lua_state_instance;
+        std::shared_ptr<seaport> seaport_;
+        lua_State* L() const { return lua_state_instance.get(); }
     };
 }

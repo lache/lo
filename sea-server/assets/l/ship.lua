@@ -3,20 +3,32 @@ local City = require('assets/l/city')
 local Item = require('assets/l/item')
 local Relation = require('assets/l/relation')
 
-local Ship = {} -- {__gc = function(u) print(string.format('ship id %d gced', u.ship_id)) end}
+local ship_id_nonce = 0
 local ships = {}
 
-function Ship:new(o)
-    o = o or {}
-    setmetatable(o, self)
-    self.__index = self
-    o.ship_id = #ships + 1
-    o.route_pos = 0
-    o.route_dir = 1 -- +1 or -1
-    o.loaded_items = {}
-    o.owner_entity = nil
-    ships[o.ship_id] = o
-    return o
+local Ship = {} Ship.__index = Ship -- {__gc = function(u) print(string.format('ship id %d gced', u.ship_id)) end}
+
+function Ship.New(specified_id)
+    -- prevent duplicated ID
+    if specified_id ~= nil and ships[specified_id] ~= nil then
+        error('Duplicated ship ID. Cannot create a new ship instance')
+    end
+    -- jump ship_id_nonce if it is less than specified_id
+    if specified_id ~= nil and ship_id_nonce < specified_id then
+        ship_id_nonce = specified_id - 1
+    end
+    ship_id_nonce = ship_id_nonce + 1
+    local ship_id = ship_id_nonce
+    local ship = {
+        ship_id = ship_id,
+        route_pos = 0,
+        route_dir = 1, -- +1 or -1
+        loaded_items = {},
+        owner_entity = nil,
+    }
+    setmetatable(ship, Ship)
+    ships[ship_id] = ship
+    return ship
 end
 
 function Ship:id()
@@ -67,6 +79,10 @@ end
 function Ship:on_enter_waypoint()
     local waypoint = self.route.waypoints[self.route_pos]
     waypoint:on_enter_ship(self:id())
+end
+
+function ship_new(specified_id)
+    Ship.New(specified_id)
 end
 
 return Ship

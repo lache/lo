@@ -33,14 +33,13 @@ namespace ss {
         int get_type(int id) const;
         void update();
         size_t get_count() const { return rtree_ptr->size(); }
+        int dock_ship_no_check(int seaport_id, int ship_id);
     private:
         void init();
         std::vector<seaport_object::value> query_tree_ex(int xc, int yc, int half_lng_ex, int half_lat_ex) const;
         void update_chunk_key_ts(int xc0, int yc0);
         void convert_cargo();
-        /*bi::managed_mapped_file file;
-        seaport_object::allocator alloc;
-        seaport_object::rtree* rtree_ptr;*/
+		void create_lua_seaport_object(int seaport_id);
         std::shared_ptr<seaport_object::rtree_mem> rtree_ptr;
         const int res_width;
         const int res_height;
@@ -56,5 +55,6 @@ namespace ss {
         long long time0_;
         //int seaport_id_seq_;
         std::shared_ptr<lua_State> lua_state_instance;
+        lua_State* L() const { return lua_state_instance.get(); }
     };
 }

@@ -9,19 +9,20 @@ using namespace ss;
 
 void eval_lua_script_file(lua_State* L, const char* lua_filename);
 
-sea::sea(boost::asio::io_service& io_service, std::shared_ptr<lua_State> lua_state_instance)
+sea::sea(boost::asio::io_service& io_service, std::shared_ptr<seaport> seaport, std::shared_ptr<lua_State> lua_state_instance)
     : io_service(io_service)
     , res_width(WORLD_MAP_PIXEL_RESOLUTION_WIDTH)
     , res_height(WORLD_MAP_PIXEL_RESOLUTION_HEIGHT)
-    , lua_state_instance(lua_state_instance) {
+    , lua_state_instance(lua_state_instance)
+    , seaport_(seaport) {
     init();
 }
 
-sea::~sea() {
-}
+sea::~sea() {}
 
 void sea::init() {
-    eval_lua_script_file(lua_state_instance.get(), "assets/l/sea.lua");
+    eval_lua_script_file(L(), "assets/l/sea.lua");
+    eval_lua_script_file(L(), "assets/l/ship.lua");
 }
 
 float sea::lng_to_xc(float lng) const {
@@ -51,6 +52,13 @@ int sea::spawn(int expected_db_id, float x, float y, float w, float h, int expec
     sea_objects.emplace(std::make_pair(expected_db_id,
                                        sobj));
     rtree.insert(rtree_value);
+
+    lua_getglobal(L(), "ship_new");
+    lua_pushnumber(L(), expected_db_id);
+    if (lua_pcall(L(), 1/*arguments*/, 0/*result*/, 0)) {
+        LOGEP("error: %1%", lua_tostring(L(), -1));
+    }
+
     return expected_db_id;
 }
 
@@ -122,6 +130,30 @@ int sea::teleport_to(int id, float x, float y, float vx, float vy) {
     }
 }
 
+int sea::dock(int ship_id) {
+    auto it = sea_objects.find(ship_id);
+    if (it != sea_objects.end()) {
+        float ship_x, ship_y;
+        it->second->get_xy(ship_x, ship_y);
+        int ship_xc = static_cast<int>(ship_x);
+        int ship_yc = static_cast<int>(ship_y);
+        std::vector<seaport_object::value> seaports = seaport_->query_nearest(ship_xc, ship_yc);
+        if (seaports.size() > 0) {
+            int seaport_xc = seaports[0].first.get<0>();
+            int seaport_yc = seaports[0].first.get<1>();
+            if (ship_xc == seaport_xc && ship_yc == seaport_yc) {
+                LOGI("Dock to seaport ID %1%...", seaports[0].second);
+                return seaport_->dock_ship_no_check(seaports[0].second, ship_id);
+            }
+        }
+        LOGE("Dock failed. No seaport found where ship placed.");
+        return -2;
+    } else {
+        LOGEP("Sea object not found corresponding to id %1%", ship_id);
+        return -1;
+    }
+}
+
 void sea::query_near_lng_lat_to_packet(float lng, float lat, float ex_lng, float ex_lat, std::vector<sea_object>& sop_list) const {
     query_near_to_packet(lng_to_xc(lng), lat_to_yc(lat), ex_lng, ex_lat, sop_list);
 }
@@ -155,10 +187,10 @@ void sea::update(float delta_time) {
         obj.second->update(delta_time);
         // lua hook
         const auto sea_object_id = obj.first;
-        lua_getglobal(lua_state_instance.get(), "sea_object_update");
-        lua_pushnumber(lua_state_instance.get(), sea_object_id);
-        if (lua_pcall(lua_state_instance.get(), 1/*arguments*/, 0/*result*/, 0)) {
-            LOGEP("error: %1%", lua_tostring(lua_state_instance.get(), -1));
+        lua_getglobal(L(), "sea_object_update");
+        lua_pushnumber(L(), sea_object_id);
+        if (lua_pcall(L(), 1/*arguments*/, 0/*result*/, 0)) {
+            LOGEP("error: %1%", lua_tostring(L(), -1));
         }
     }
 }
@@ -247,7 +279,7 @@ bool sea::update_route(float delta_time,
                     static_cast<int>(x),
                     static_cast<int>(y),
                     actual_unloaded,
-                    LTCNT_UNLOADED});
+                    LTCNT_UNLOADED });
                 const auto sp_point = sp->get_seaport_point(r->get_docked_seaport_id());
                 us->gold_earned(sp_point.get<0>(), sp_point.get<1>(), 1);
                 obj->set_state(SOS_LOADING);

@@ -24,7 +24,7 @@ std::shared_ptr<sea> sea_instance;
 extern "C" int lua_main(int argc, char **argv, void custom_init_func(lua_State* L));
 extern "C" int handle_script(lua_State *L, char **argv);
 
-static int traceback(lua_State *L) {
+int lua_attach_traceback(lua_State *L) {
     lua_getglobal(L, "debug");
     lua_getfield(L, -1, "traceback");
     lua_pushvalue(L, 1);
@@ -41,7 +41,7 @@ void eval_lua_script_file(lua_State* L, const char* lua_filename) {
     std::ifstream script_file(lua_filename);
     std::stringstream script_stream;
     script_stream << script_file.rdbuf();
-    lua_pushcfunction(L, traceback);
+    lua_pushcfunction(L, lua_attach_traceback);
     int lua_load_result = (luaL_loadbuffer(L,
                                            script_stream.str().c_str(),
                                            strlen(script_stream.str().c_str()), prefixed_filename)
@@ -113,6 +113,19 @@ static int l_sea_teleport_to(lua_State* L) {
     return 0;
 }
 
+static int l_sea_dock(lua_State* L) {
+	if (lua_gettop(L) >= 1) {
+		int sea_object_id = static_cast<int>(lua_tonumber(L, 1));
+		std::promise<int> prom;
+		io_service.post([sea_object_id, &prom] {
+			prom.set_value(sea_instance->dock(sea_object_id));
+		});
+		lua_pushnumber(L, prom.get_future().get());
+		return 1;
+	}
+	return 0;
+}
+
 void custom_lua_init(lua_State* L) {
     SWIG_init(L);
     lua_pushcclosure(L, l_sea_static_calculate_waypoints, 0);
@@ -121,6 +134,8 @@ void custom_lua_init(lua_State* L) {
     lua_setglobal(L, "sea_spawn");
     lua_pushcclosure(L, l_sea_teleport_to, 0);
     lua_setglobal(L, "sea_teleport_to");
+	lua_pushcclosure(L, l_sea_dock, 0);
+	lua_setglobal(L, "sea_dock");
 }
 
 int post_admin_message(const unsigned char* b) {
@@ -184,9 +199,9 @@ int main(int argc, char* argv[]) {
         eval_lua_script_file(lua_state_instance.get(), "assets/l/loadunload.lua");
         eval_lua_script_file(lua_state_instance.get(), "assets/l/collection.lua");
         
-        sea_instance.reset(new sea(io_service, lua_state_instance));
         sea_static_instance.reset(new sea_static());
         std::shared_ptr<seaport> seaport_instance(new seaport(io_service, lua_state_instance));
+        sea_instance.reset(new sea(io_service, seaport_instance, lua_state_instance));
         std::shared_ptr<region> region_instance(new region());
         std::shared_ptr<city> city_instance(new city(io_service,
                                                      seaport_instance,

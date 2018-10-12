@@ -42,10 +42,10 @@ function City:id() return self.city_id end
 function city_update(city_id)
     local city = cities[city_id]
     if city == nil then
-        city = City.New()
-        cities[city:id()] = city
+        error('No city with ID '..city_id)
+    else
+        city_update_produce(city_id)
     end
-    city_update_produce(city_id)
 end
 
 function city_update_produce(city_id)
@@ -61,11 +61,8 @@ function city_update_produce(city_id)
 end
 
 function city_debug_query(city_id)
+    print('-------------------------')
     print(inspect(cities[city_id]))
-end
-
-function city_new()
-    City.New()
 end
 
 function City:add_relation_points(entity_id, relation_point)
@@ -88,6 +85,10 @@ function City:on_enter_ship(ship_id)
     if relation_points > 0 then
         self:add_relation_points(ship.owner_entity:id(), relation_points)
     end
+end
+
+function city_new()
+    City.New()
 end
 
 return City

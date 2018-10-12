@@ -9,7 +9,7 @@ using namespace ss;
 
 const auto update_interval = boost::posix_time::milliseconds(1000);
 
-void eval_lua_script_file(lua_State* L, const char* lua_filename);
+void eval_lua_script_file(lua_State*, const char* lua_filename);
 
 typedef struct _LWTTLDATA_SEAPORT {
     char name[80]; // maximum length from crawling data: 65
@@ -31,72 +31,20 @@ seaport::~seaport() {
 }
 
 void seaport::init() {
+	eval_lua_script_file(L(), "assets/l/seaport.lua");
+
     time0_ = get_monotonic_uptime();
-    boost::interprocess::file_mapping seaport_file("assets/ttldata/seaports.dat", boost::interprocess::read_only);
-    boost::interprocess::mapped_region region(seaport_file, boost::interprocess::read_only);
-    LWTTLDATA_SEAPORT* sp = reinterpret_cast<LWTTLDATA_SEAPORT*>(region.get_address());
-    int count = static_cast<int>(region.get_size() / sizeof(LWTTLDATA_SEAPORT));
-    // dump seaports.dat into r-tree data if r-tree is empty.
-    if (rtree_ptr->size() == 0) {
-        /*for (int i = 0; i < count; i++) {
-         seaport_object::point point(lng_to_xc(sp[i].lng), lat_to_yc(sp[i].lat));
-         rtree_ptr->insert(std::make_pair(point, i));
-         }*/
-    }
-    for (int i = 0; i < count; i++) {
-        id_name[i] = sp[i].name;
-        //id_point[i] = seaport_object::point(lng_to_xc(sp[i].lng), lat_to_yc(sp[i].lat));
-    }
     
-    //const auto monotonic_uptime = get_monotonic_uptime();
-    
-    std::set<std::pair<int, int> > point_set;
-    std::vector<seaport_object::value> duplicates;
-    const auto bounds = rtree_ptr->bounds();
-    for (auto it = rtree_ptr->qbegin(bgi::intersects(bounds)); it != rtree_ptr->qend(); it++) {
-        const auto xc0 = it->first.get<0>();
-        const auto yc0 = it->first.get<1>();
-        const auto point = std::make_pair(xc0, yc0);
-        if (point_set.find(point) == point_set.end()) {
-            id_point[it->second] = it->first;
-            
-            update_chunk_key_ts(xc0, yc0);
-            
-            point_set.insert(point);
-        } else {
-            duplicates.push_back(*it);
-        }
-    }
-    for (const auto it : duplicates) {
-        rtree_ptr->remove(it);
-    }
-    if (point_set.size() != rtree_ptr->size()) {
-        LOGE("Seaport rtree integrity check failure. Point set size %1% != R tree size %2%",
-             point_set.size(),
-             rtree_ptr->size());
-        abort();
-    }
-    
-    eval_lua_script_file(lua_state_instance.get(), "assets/l/seaport.lua");
     timer_.async_wait(boost::bind(&seaport::update, this));
 }
 
 int seaport::lng_to_xc(float lng) const {
-    //return static_cast<int>(roundf(res_width / 2 + lng / 180.0f * res_width / 2)) & (res_width - 1);
     return static_cast<int>(roundf(res_width / 2 + lng / 180.0f * res_width / 2));
 }
 
 int seaport::lat_to_yc(float lat) const {
-    //return static_cast<int>(roundf(res_height / 2 - lat / 90.0f * res_height / 2)) & (res_height - 1);
     return static_cast<int>(roundf(res_height / 2 - lat / 90.0f * res_height / 2));
 }
-
-//std::vector<seaport_object> seaport::query_near_lng_lat_to_packet(float lng, float lat, int half_lng_ex, int half_lat_ex) const {
-//    return query_near_to_packet(lng_to_xc(lng),
-//                                lat_to_yc(lat),
-//                                half_lng_ex,
-//                                half_lat_ex);
-//}
 
 std::vector<seaport_object> seaport::query_near_to_packet(int xc, int yc, float ex_lng, float ex_lat) const {
     const auto half_lng_ex = boost::math::iround(ex_lng / 2);
@@ -211,6 +159,7 @@ int seaport::spawn(int expected_db_id, const char* name, int xc0, int yc0, int o
 
     rtree_ptr->insert(std::make_pair(new_port_point, expected_db_id));
     id_point[expected_db_id] = new_port_point;
+	create_lua_seaport_object(expected_db_id);
     if (name[0] != 0) {
         set_name(expected_db_id, name, owner_id, st);
     } else {
@@ -291,10 +240,10 @@ const char* seaport::query_single_cell(int xc0, int yc0, int& id, int& cargo, in
             cargo_unloaded = 0;
         }
         // call lua hook
-        lua_getglobal(lua_state_instance.get(), "seaport_debug_query");
-        lua_pushnumber(lua_state_instance.get(), id);
-        if (lua_pcall(lua_state_instance.get(), 1/*arguments*/, 0/*result*/, 0)) {
-            LOGEP("error: %1%", lua_tostring(lua_state_instance.get(), -1));
+        lua_getglobal(L(), "seaport_debug_query");
+        lua_pushnumber(L(), id);
+        if (lua_pcall(L(), 1/*arguments*/, 0/*result*/, 0)) {
+            LOGEP("error: %1%", lua_tostring(L(), -1));
         }
         return get_seaport_name(seaport_it->second);
     }
@@ -383,10 +332,10 @@ void seaport::update() {
     const auto bounds = rtree_ptr->bounds();
     for (auto it = rtree_ptr->qbegin(bgi::intersects(bounds)); it != rtree_ptr->qend(); it++) {
         const auto seaport_id = it->second;
-        lua_getglobal(lua_state_instance.get(), "seaport_update");
-        lua_pushnumber(lua_state_instance.get(), seaport_id);
-        if (lua_pcall(lua_state_instance.get(), 1/*arguments*/, 0/*result*/, 0)) {
-            LOGEP("error: %1%", lua_tostring(lua_state_instance.get(), -1));
+        lua_getglobal(L(), "seaport_update");
+        lua_pushnumber(L(), seaport_id);
+        if (lua_pcall(L(), 1/*arguments*/, 0/*result*/, 0)) {
+            LOGEP("error: %1%", lua_tostring(L(), -1));
         }
     }
 }
@@ -409,4 +358,25 @@ std::vector<seaport_object::value> seaport::query_nearest(int xc, int yc) const 
         result_s.push_back(*it);
     }
     return result_s;
+}
+
+void seaport::create_lua_seaport_object(int seaport_id) {
+	// create city instance on lua
+	lua_getglobal(L(), "seaport_new");
+	lua_pushnumber(L(), seaport_id);
+	if (lua_pcall(L(), 1/*arguments*/, 0/*result*/, 0)) {
+		LOGEP("error: %1%", lua_tostring(L(), -1));
+	}
+}
+
+int seaport::dock_ship_no_check(int seaport_id, int ship_id) {
+    lua_getglobal(L(), "dock_ship");
+    lua_pushnumber(L(), seaport_id);
+    lua_pushnumber(L(), ship_id);
+    if (lua_pcall(L(), 2/*arguments*/, 1/*result*/, 0)) {
+        LOGEP("error: %1%", lua_tostring(L(), -1));
+        return -3;
+    } else {
+        return static_cast<int>(lua_tointeger(L(), -1));
+    }
 }
