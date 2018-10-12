@@ -380,3 +380,16 @@ int seaport::dock_ship_no_check(int seaport_id, int ship_id) {
         return static_cast<int>(lua_tointeger(L(), -1));
     }
 }
+
+int seaport::add_resource(int seaport_id, int resource_id, int amount) {
+    lua_getglobal(L(), "seaport_add_resource");
+    lua_pushnumber(L(), seaport_id);
+    lua_pushnumber(L(), resource_id);
+    lua_pushnumber(L(), amount);
+    if (lua_pcall(L(), 3/*arguments*/, 1/*result*/, 0)) {
+        LOGEP("error: %1%", lua_tostring(L(), -1));
+        return -3;
+    } else {
+        return static_cast<int>(lua_tointeger(L(), -1));
+    }
+}

@@ -20,7 +20,7 @@ function Seaport.New(specified_id)
     local seaport_id = seaport_id_nonce
     local seaport = {
         seaport_id = seaport_id,
-        items = {},
+        resources = {},
         docked_sea_objects = {},
     }
     setmetatable(seaport, Seaport)
@@ -44,6 +44,12 @@ end
 
 function seaport_new(specified_id)
     Seaport.New(specified_id)
+end
+
+function seaport_add_resource(seaport_id, resource_id, amount)
+    local seaport = Seaport.Get(seaport_id)
+    seaport.resources[resource_id] = (seaport.resources[resource_id] or 0) + amount
+    return 0
 end
 
 return Seaport

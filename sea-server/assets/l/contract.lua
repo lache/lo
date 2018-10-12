@@ -3,6 +3,7 @@ local info = debug.getinfo(1,'S')
 print('loading '..info.source)
 require('assets/l/collection')
 local City = require('assets/l/city')
+local Seaport = require('assets/l/seaport')
 
 contracts = {}
 
@@ -21,9 +22,9 @@ function contract_new(item_id, amount, dep_city_id, dep_seaport_id, dest_seaport
     if amount <= 0 then error('amount not positive') end
     local dep_city = City.Get(dep_city_id)
     if dep_city == nil then error('departure city nil') end
-    local dep_seaport = seaports[dep_seaport_id]
+    local dep_seaport = Seaport.Get(dep_seaport_id)
     if dep_seaport == nil then error('departure seaport nil') end
-    local dest_seaport = seaports[dest_seaport_id]
+    local dest_seaport = Seaport.Get(dest_seaport_id)
     if dest_seaport == nil then error('destination seaport nil') end
     local dest_city = City.Get(dest_city_id)
     if dest_city == nil then error('destination city nil') end

@@ -123,8 +123,7 @@ contract_tick(contract.contract_id)
 --print(inspect(seaports[dep_seaport_id]))
 
 local sea_object_id = 99999
-local sea_object = new_sea_object_instance(sea_object_id)
-sea_objects[sea_object_id] = sea_object
+local sea_object = Ship.New(sea_object_id)
 dock_ship_object_at_seaport(sea_object_id, dep_seaport_id)
 
 contract_tick(contract.contract_id)

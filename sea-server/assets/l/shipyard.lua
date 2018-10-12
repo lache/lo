@@ -26,7 +26,7 @@ function Shipyard.Purchase_Ship(shipyard_entity_id, buyer_entity_id, ship_templa
     --print(inspect(ship))
     local ship_price = 210
     buyer_entity:transfer_fund(shipyard_entity_id, ship_price)
-    local ship = Ship:new()
+    local ship = Ship.New()
     Ownership.First_Acquire_Ship(buyer_entity:id(), ship:id())
     shipyard_entity:add_credit_rating(ship_price // 2)
     return ship

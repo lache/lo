@@ -20,6 +20,7 @@ std::shared_ptr<udp_server> udp_server_instance;
 std::shared_ptr<udp_admin_server> udp_admin_server_instance;
 std::shared_ptr<sea_static> sea_static_instance;
 std::shared_ptr<sea> sea_instance;
+std::shared_ptr<seaport> seaport_instance;
 
 extern "C" int lua_main(int argc, char **argv, void custom_init_func(lua_State* L));
 extern "C" int handle_script(lua_State *L, char **argv);
@@ -139,6 +140,22 @@ static int l_sea_undock(lua_State* L) {
     return 0;
 }
 
+static int l_seaport_new_resource(lua_State* L) {
+    if (lua_gettop(L) >= 3) {
+        int seaport_id = static_cast<int>(lua_tonumber(L, 1));
+        int resource_id = static_cast<int>(lua_tonumber(L, 2));
+        int amount = static_cast<int>(lua_tonumber(L, 3));
+        std::promise<int> prom;
+        io_service.post([seaport_id, resource_id, amount, &prom] {
+            prom.set_value(seaport_instance->add_resource(seaport_id, resource_id, amount));
+        });
+        lua_pushnumber(L, prom.get_future().get());
+        return 1;
+    }
+    return 0;
+}
+
+
 void custom_lua_init(lua_State* L) {
     SWIG_init(L);
     lua_pushcclosure(L, l_sea_static_calculate_waypoints, 0);
@@ -151,6 +168,8 @@ void custom_lua_init(lua_State* L) {
 	lua_setglobal(L, "sea_dock");
     lua_pushcclosure(L, l_sea_undock, 0);
     lua_setglobal(L, "sea_undock");
+    lua_pushcclosure(L, l_seaport_new_resource, 0);
+    lua_setglobal(L, "seaport_add_resource");
 }
 
 int post_admin_message(const unsigned char* b) {
@@ -215,7 +234,7 @@ int main(int argc, char* argv[]) {
         eval_lua_script_file(lua_state_instance.get(), "assets/l/collection.lua");
         
         sea_static_instance.reset(new sea_static());
-        std::shared_ptr<seaport> seaport_instance(new seaport(io_service, lua_state_instance));
+        seaport_instance.reset(new seaport(io_service, lua_state_instance));
         sea_instance.reset(new sea(io_service, seaport_instance, lua_state_instance));
         std::shared_ptr<region> region_instance(new region());
         std::shared_ptr<city> city_instance(new city(io_service,
