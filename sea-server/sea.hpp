@@ -42,6 +42,7 @@ namespace ss {
         float lat_to_yc(float lat) const;
         std::vector<cargo_notification>&& flush_cargo_notifications();
         size_t get_count() const { return rtree.size(); }
+        int undock(int ship_id);
     private:
         void init();
         std::vector<int> query_tree(float xc, float yc, float ex_lng, float ex_lat) const;
@@ -57,5 +58,6 @@ namespace ss {
         std::shared_ptr<lua_State> lua_state_instance;
         std::shared_ptr<seaport> seaport_;
         lua_State* L() const { return lua_state_instance.get(); }
+        int undock_ship_no_check(int ship_id);
     };
 }

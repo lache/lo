@@ -126,6 +126,19 @@ static int l_sea_dock(lua_State* L) {
 	return 0;
 }
 
+static int l_sea_undock(lua_State* L) {
+    if (lua_gettop(L) >= 1) {
+        int sea_object_id = static_cast<int>(lua_tonumber(L, 1));
+        std::promise<int> prom;
+        io_service.post([sea_object_id, &prom] {
+            prom.set_value(sea_instance->undock(sea_object_id));
+        });
+        lua_pushnumber(L, prom.get_future().get());
+        return 1;
+    }
+    return 0;
+}
+
 void custom_lua_init(lua_State* L) {
     SWIG_init(L);
     lua_pushcclosure(L, l_sea_static_calculate_waypoints, 0);
@@ -136,6 +149,8 @@ void custom_lua_init(lua_State* L) {
     lua_setglobal(L, "sea_teleport_to");
 	lua_pushcclosure(L, l_sea_dock, 0);
 	lua_setglobal(L, "sea_dock");
+    lua_pushcclosure(L, l_sea_undock, 0);
+    lua_setglobal(L, "sea_undock");
 }
 
 int post_admin_message(const unsigned char* b) {

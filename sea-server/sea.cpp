@@ -154,6 +154,10 @@ int sea::dock(int ship_id) {
     }
 }
 
+int sea::undock(int ship_id) {
+    return undock_ship_no_check(ship_id);
+}
+
 void sea::query_near_lng_lat_to_packet(float lng, float lat, float ex_lng, float ex_lat, std::vector<sea_object>& sop_list) const {
     query_near_to_packet(lng_to_xc(lng), lat_to_yc(lat), ex_lng, ex_lat, sop_list);
 }
@@ -339,4 +343,15 @@ bool sea::update_route(float delta_time,
 
 std::vector<cargo_notification>&& sea::flush_cargo_notifications() {
     return std::move(cargo_notifications);
+}
+
+int sea::undock_ship_no_check(int ship_id) {
+    lua_getglobal(L(), "undock_ship");
+    lua_pushnumber(L(), ship_id);
+    if (lua_pcall(L(), 1/*arguments*/, 1/*result*/, 0)) {
+        LOGEP("error: %1%", lua_tostring(L(), -1));
+        return -3;
+    } else {
+        return static_cast<int>(lua_tointeger(L(), -1));
+    }
 }
