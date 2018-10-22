@@ -982,7 +982,7 @@ void lwttl_send_ttlpingsinglecell_on_selected(const LWTTL* ttl) {
     if (lwttl_selected_int(ttl, &xc0, &yc0)) {
         send_ttlpingsinglecell(ttl, ttl->sea_udp, xc0, yc0);
     } else {
-        LOGI("%s: No selected cell.", __func__);
+        LOGIx("%s: No selected cell.", __func__);
     }
 }
 

@@ -95,6 +95,8 @@ static int l_sea_spawn(lua_State* L) {
         });
         lua_pushnumber(L, prom.get_future().get());
         return 1;
+    } else {
+        LOGI("USAGE: sea_spawn(sea_object_id, x, y)");
     }
     return 0;
 }

@@ -937,6 +937,7 @@ void udp_server::handle_receive(const boost::system::error_code& error, std::siz
                 const int account_id_block_len = round_up(bytes_account_id_len + 1, 4); // plus 1 for a null-terminated character
                 const char* key = session_->get_key(bytes_account_id);
                 if (key) {
+                    LOGI("From Account ID: %1%", bytes_account_id);
                     unsigned char* bytes_key;
                     int len_key;
                     srp_unhexify(key, &bytes_key, &len_key);
@@ -989,11 +990,13 @@ void udp_server::handle_receive(const boost::system::error_code& error, std::siz
                         if (token_count < 1 || json_token[0].type != JSMN_OBJECT) {
                             LOGE("JSON data broken...");
                         } else {
+                            // At last, valid JSON message from valid endpoint with valid credential
                             for (int i = 1; i < token_count; i++) {
                                 if (jsoneq(json_str,
                                            &json_token[i], "c") == 0) {
                                     // LOGI(boost::format) does not support %.*s?
-                                    printf("JSON c: %.*s\n",
+                                    printf("VALID JSON MESSAGE FROM %s - c: %.*s\n",
+                                           bytes_account_id,
                                            json_token[i + 1].end - json_token[i + 1].start,
                                            json_str + json_token[i + 1].start);
                                 }
@@ -1001,6 +1004,8 @@ void udp_server::handle_receive(const boost::system::error_code& error, std::siz
                         }
                     }
                     free(bytes_key);
+                } else {
+                    LOGEP("Key not found");
                 }
             }
         } else {

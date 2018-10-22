@@ -842,7 +842,7 @@ function test_aes()
     --local hexstr_key = lo.srp_hexify(bytes_key)
     --print('Session key (truncated):', hexstr_key)
     
-    local json_plaintext = json.stringify({c=secure_message_counter,hello=10,world=20,dict={1,2,3},str='hello my friend',kor=[==[한국루아의 표준 함수 나 제공된 문자열 기능은 utf-8을 인식하지 못한다.]==]})
+    local json_plaintext = json.stringify({c=secure_message_counter,hello=10,world=20,dict={1,2,3},str='hello my friend',kor='한국루아의 표준 함수 나 제공된 문자열 기능은 utf-8을 인식하지 못한다.'})
     secure_message_counter = secure_message_counter + 1
     --print('json_plaintext', json_plaintext)
     local bytes_plaintext = { string.byte(json_plaintext, 1, -1) }

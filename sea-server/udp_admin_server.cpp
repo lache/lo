@@ -319,6 +319,7 @@ int udp_admin_server::process_command(const unsigned char* data, bool send_reply
     {
         LOGI("Registering Shared Secret Session Key type: %1%", static_cast<int>(cp->type));
         auto cmd = reinterpret_cast<const register_shared_secret_session_key_command*>(data);
+        LOGI("  Account ID: %1%", cmd->account_id);
         session_->register_key(cmd->account_id, cmd->key_str, cmd->key_str_len);
         if (send_reply) {
             register_shared_secret_session_key_command_reply reply;

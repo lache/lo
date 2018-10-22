@@ -50,3 +50,8 @@ end
 function test_calculate_waypoints()
     return sea_static_calculate_waypoints(148351,26352,148356,26349,0)
 end
+
+function bm1()
+    -- return coordinates for north of Busan
+    return table.unpack({148354,26347})
+end
