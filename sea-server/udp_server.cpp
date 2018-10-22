@@ -991,15 +991,47 @@ void udp_server::handle_receive(const boost::system::error_code& error, std::siz
                             LOGE("JSON data broken...");
                         } else {
                             // At last, valid JSON message from valid endpoint with valid credential
+                            LOGI("VALID JSON MESSAGE FROM %1%", bytes_account_id);
+                            char m[32], a1[32], a2[32], a3[32];
                             for (int i = 1; i < token_count; i++) {
                                 if (jsoneq(json_str,
                                            &json_token[i], "c") == 0) {
                                     // LOGI(boost::format) does not support %.*s?
-                                    printf("VALID JSON MESSAGE FROM %s - c: %.*s\n",
-                                           bytes_account_id,
+                                    printf("MESSAGE c: %.*s\n",
                                            json_token[i + 1].end - json_token[i + 1].start,
                                            json_str + json_token[i + 1].start);
                                 }
+                                if (jsoneq(json_str,
+                                           &json_token[i], "m") == 0) {
+                                    int token_null_pos = std::min(json_token[i + 1].end - json_token[i + 1].start, static_cast<int>(sizeof(m)) - 1);
+                                    strncpy(m, json_str + json_token[i + 1].start, token_null_pos);
+                                    m[token_null_pos] = 0;
+                                    LOGI("MESSAGE m: %1%", m);
+                                }
+                                if (jsoneq(json_str,
+                                           &json_token[i], "a1") == 0) {
+                                    int token_null_pos = std::min(json_token[i + 1].end - json_token[i + 1].start, static_cast<int>(sizeof(a1)) - 1);
+                                    strncpy(a1, json_str + json_token[i + 1].start, token_null_pos);
+                                    a1[token_null_pos] = 0;
+                                    LOGI("MESSAGE a1: %1%", a1);
+                                }
+                                if (jsoneq(json_str,
+                                           &json_token[i], "a2") == 0) {
+                                    int token_null_pos = std::min(json_token[i + 1].end - json_token[i + 1].start, static_cast<int>(sizeof(a2)) - 1);
+                                    strncpy(a2, json_str + json_token[i + 1].start, token_null_pos);
+                                    a2[token_null_pos] = 0;
+                                    LOGI("MESSAGE a2: %1%", a2);
+                                }
+                                if (jsoneq(json_str,
+                                           &json_token[i], "a3") == 0) {
+                                    int token_null_pos = std::min(json_token[i + 1].end - json_token[i + 1].start, static_cast<int>(sizeof(a3)) - 1);
+                                    strncpy(a3, json_str + json_token[i + 1].start, token_null_pos);
+                                    a3[token_null_pos] = 0;
+                                    LOGI("MESSAGE a3: %1%", a3);
+                                }
+                            }
+                            if (strcmp(m, "sea_spawn_without_id") == 0) {
+                                sea_->spawn(std::stof(a1), std::stof(a2), 1, 1, 0, 1);
                             }
                         }
                     }

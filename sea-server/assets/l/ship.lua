@@ -82,7 +82,13 @@ function Ship:on_enter_waypoint()
 end
 
 function ship_new(specified_id)
-    Ship.New(specified_id)
+    print('ship_new() called')
+    return Ship.New(specified_id)
+end
+
+function ship_id(ship)
+    print('ship_id() called')
+    return ship:id()
 end
 
 return Ship

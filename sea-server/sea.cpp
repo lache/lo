@@ -62,6 +62,45 @@ int sea::spawn(int expected_db_id, float x, float y, float w, float h, int expec
     return expected_db_id;
 }
 
+int sea::spawn(float x, float y, float w, float h, int expect_land, int template_id) {
+    // create lua object first and then r-tree object
+    lua_getglobal(L(), "ship_new");
+    if (lua_pcall(L(), 0/*arguments*/, 1/*result*/, 0)) {
+        LOGEP("error: %1%", lua_tostring(L(), -1));
+    } else {
+        lua_getglobal(L(), "Ship");
+        lua_getfield(L(), -1, "id");
+        lua_pushvalue(L(), -3);
+
+        //lua_getglobal(L(), "ship_id");
+        //lua_pushvalue(L(), -2);
+        if (lua_pcall(L(), 1/*arguments*/, 1/*result*/, 0)) {
+            LOGEP("error: %1%", lua_tostring(L(), -1));
+        } else {
+            int expected_db_id = static_cast<int>(lua_tointeger(L(), -1));
+            LOGI("Ship New ID: %1%", expected_db_id);
+            lua_pop(L(), 1);
+
+            box b(point(x, y), point(x + w, y + h));
+            auto rtree_value = std::make_pair(b, expected_db_id);
+            auto sobj = std::shared_ptr<sea_object>(new sea_object(expected_db_id,
+                                                                   x,
+                                                                   y,
+                                                                   w,
+                                                                   h,
+                                                                   rtree_value,
+                                                                   expect_land,
+                                                                   template_id));
+            sea_objects.emplace(std::make_pair(expected_db_id,
+                                               sobj));
+            rtree.insert(rtree_value);
+
+            return expected_db_id;
+        }
+    }
+    return 0;
+}
+
 int sea::spawn(const spawn_ship_command& spawn_ship_cmd) {
     return spawn(spawn_ship_cmd.expected_db_id,
                  spawn_ship_cmd.x,

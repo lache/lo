@@ -12,7 +12,7 @@ local Contract = require('assets/l/contract')
 local Sea = require('assets/l/sea')
 local Shipyard = require('assets/l/shipyard')
 local Ownership = require('assets/l/ownership')
-local Ship = require('assets/l/ship')
+Ship = require('assets/l/ship')
 local Route = require('assets/l/route')
 
 local item_id = 123

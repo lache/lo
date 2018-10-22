@@ -23,6 +23,7 @@ namespace ss {
         ~sea();
         int spawn(int db_id, float x, float y, float w, float h, int expect_land, int template_id);
         int spawn(const spawn_ship_command& spawn_ship_cmd);
+        int spawn(float x, float y, float w, float h, int expect_land, int template_id);
         void despawn(int type);
         int teleport_to(int id, float x, float y, float vx = 0, float vy = 0);
 		int dock(int id);

@@ -869,6 +869,38 @@ function test_aes()
     lo.udp_send(lo.lwttl_sea_udp(c.ttl), msg)
 end
 
+function test_sea_spawn_encrypted()
+    if auth_context.usr == nil or lo.srp_user_is_authenticated(auth_context.usr) ~= 1 then
+        lo.show_sys_msg(c.def_sys_msg, 'Invalid auth.')
+        error('Invalid auth.')
+    end
+    local bytes_key = lo.srp_user_get_session_key(auth_context.usr)
+    bytes_key = {table.unpack(bytes_key, 1, 256/8)} -- truncate bytes_key to 256-bit (32-byte)
+
+    local xc0 = lo.lwttl_selected_int_x(c.ttl)
+    local yc0 = lo.lwttl_selected_int_y(c.ttl)
+    local ship_id = 99
+    local m = 'sea_spawn_without_id'
+    local json_plaintext = json.stringify({c=secure_message_counter,m=m,a1=xc0,a2=yc0})
+    secure_message_counter = secure_message_counter + 1
+    local bytes_plaintext = { string.byte(json_plaintext, 1, -1) }
+    add_padding_bytes_inplace(bytes_plaintext)
+    
+    local bytes_iv, bytes_ciphertext, bytes_dec_plaintext = test_encrypt_decrypt(bytes_key, bytes_plaintext)
+    
+    remove_padding_bytes_inplace(bytes_dec_plaintext)
+    local json_dec_plaintext = utf8_from(bytes_dec_plaintext)
+    --[[lo.show_sys_msg(c.def_sys_msg,
+                    'plaintext:' .. json_plaintext .. '\n'
+                    ..'plaintext:' .. json_dec_plaintext)
+                    ]]
+    local bytes_account_id = { string.byte(auth_context.username, 1, -1) }
+    table.insert(bytes_account_id, 0) -- null terminate
+    add_padding_bytes_inplace_custom(bytes_account_id, 4, 0)
+    local msg = table.copy({lo.LPGP_LWPTTLJSON, 0, 0, 0}, bytes_account_id, bytes_iv, bytes_ciphertext)
+    lo.udp_send(lo.lwttl_sea_udp(c.ttl), msg)
+end
+
 function on_chat(line)
     print('on_chat:'..line)
     lo.lwttl_udp_send_ttlchat(c.ttl, lo.lwttl_sea_udp(c.ttl), line)
