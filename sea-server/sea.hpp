@@ -44,6 +44,7 @@ namespace ss {
         std::vector<cargo_notification>&& flush_cargo_notifications();
         size_t get_count() const { return rtree.size(); }
         int undock(int ship_id);
+        std::string query_lua_data(int id);
     private:
         void init();
         std::vector<int> query_tree(float xc, float yc, float ex_lng, float ex_lat) const;

@@ -1140,13 +1140,16 @@ void udp_server::send_single_cell(int xc0, int yc0) {
     // city details
     int city_id = -1;
     int city_population = 0;
-    auto city_name = city_->query_single_cell(xc0, yc0, city_id, city_population);
+    std::string city_lua_data;
+    auto city_name = city_->query_single_cell(xc0, yc0, city_id, city_population, city_lua_data);
     reply->city_id = city_id;
     if (city_id >= 0 && city_name) {
         strncpy(reply->city_name, city_name, boost::size(reply->city_name));
         reply->city_name[boost::size(reply->city_name) - 1] = 0;
         reply->population = city_population;
     }
+    strncpy(reply->debug_info, city_lua_data.c_str(), sizeof(reply->debug_info) - 1);
+    reply->debug_info[sizeof(reply->debug_info) - 1] = 0;
     // take salvage
     int salvage_id = -1;
     int salvage_gold_amount = 0;
@@ -1173,6 +1176,13 @@ void udp_server::send_single_cell(int xc0, int yc0) {
     int contract_gold_amount = 0;
     contract_->query_single_cell(xc0, yc0, contract_id, contract_gold_amount);
     reply->contract_id = contract_id;
+    // ship details
+    std::vector<sea_object> sop_list;
+    sea_->query_near_to_packet(static_cast<float>(xc0), static_cast<float>(yc0), 1, 1, sop_list);
+    for (const auto& s : sop_list) {
+        std::string lua_data = sea_->query_lua_data(s.get_db_id());
+        
+    }
     // SEND!
     char compressed[1500];
     int compressed_size = LZ4_compress_default((char*)reply.get(), compressed, sizeof(LWPTTLSINGLECELL), static_cast<int>(boost::size(compressed)));

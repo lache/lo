@@ -394,3 +394,7 @@ int sea::undock_ship_no_check(int ship_id) {
         return static_cast<int>(lua_tointeger(L(), -1));
     }
 }
+
+std::string sea::query_lua_data(int id) {
+    return "";
+}

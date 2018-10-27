@@ -28,7 +28,7 @@ namespace ss {
         void set_name(int id, const char* name);
         long long query_ts(const int xc0, const int yc0, const int view_scale) const;
         long long query_ts(const LWTTLCHUNKKEY& chunk_key) const;
-        const char* query_single_cell(int xc0, int yc0, int& id, int& population) const;
+        const char* query_single_cell(int xc0, int yc0, int& id, int& population, std::string& lua_data) const;
         void update_single_chunk_key_ts(const LWTTLCHUNKKEY& chunk_key, long long monotonic_uptime);
         void update();
         std::vector<cargo_notification>&& flush_cargo_notifications();
@@ -40,6 +40,7 @@ namespace ss {
         std::vector<city_object::value> query_tree_ex(int xc, int yc, int half_lng_ex, int half_lat_ex) const;
         void update_chunk_key_ts(int xc0, int yc0);
         void generate_cargo();
+        lua_State* L() const { return lua_state_instance.get(); }
         bi::managed_mapped_file file;
         city_object::allocator alloc;
         city_object::rtree* rtree_ptr;

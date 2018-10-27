@@ -62,7 +62,9 @@ end
 
 function city_debug_query(city_id)
     print('-------------------------')
-    print(inspect(cities[city_id]))
+    local data_str = inspect(cities[city_id])
+    print(data_str)
+    return data_str
 end
 
 function City:add_relation_points(entity_id, relation_point)

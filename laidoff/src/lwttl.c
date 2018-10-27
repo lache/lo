@@ -2666,17 +2666,18 @@ void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc) {
                 if (decompressed_bytes != sizeof(LWPTTLSINGLECELL)) {
                     LOGE("LWPTTLSINGLECELL: Size error %d (%zu expected)",
                          decompressed_bytes,
-                         sizeof(LWPTTLWAYPOINTS));
+                         sizeof(LWPTTLSINGLECELL));
                 }
                 LWPTTLSINGLECELL* p = (LWPTTLSINGLECELL*)decompressed;
-                LOGIx("LWPTTLSINGLECELL: %d,%d L[%d], W[%d], SW[%d], PID[%d], PNAME[%s]",
-                      p->xc0,
-                      p->yc0,
-                      (p->attr >> 0) & 1,
-                      (p->attr >> 1) & 1,
-                      (p->attr >> 2) & 1,
-                      p->port_id,
-                      p->port_name);
+                LOGI("LWPTTLSINGLECELL: %d,%d L[%d], W[%d], SW[%d], PID[%d], PNAME[%s], DEBUG[%s]",
+                     p->xc0,
+                     p->yc0,
+                     (p->attr >> 0) & 1,
+                     (p->attr >> 1) & 1,
+                     (p->attr >> 2) & 1,
+                     p->port_id,
+                     p->port_name,
+                     p->debug_info);
                 memcpy(&ttl->ttl_single_cell, p, sizeof(LWPTTLSINGLECELL));
                 assert((p->land_box_valid && p->water_box_valid) == 0);
                 if (ttl->cell_box_count < ARRAY_SIZE(ttl->cell_box)) {
