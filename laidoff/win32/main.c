@@ -43,6 +43,10 @@ void mouse_pos_callback(GLFWwindow* window, double x, double y);
 void char_callback(GLFWwindow* window, unsigned int c);
 void destroy_ext_sound_lib();
 
+#if LW_PLATFORM_OSX
+void glfwMacOsMojaveWorkaround(GLFWwindow* handle);
+#endif
+
 static void error_callback(int error, const char* description) {
     fprintf(stderr, "Error: %s\n", description);
 }
@@ -275,6 +279,7 @@ int main(int argc, char* argv[]) {
 #if LW_PLATFORM_WIN32 || LW_PLATFORM_OSX
     lwimgui_init(window);
 #endif
+
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
         lwc_prerender_mutable_context(pLwc);
@@ -283,7 +288,9 @@ int main(int argc, char* argv[]) {
         lwimgui_render(window);
 #endif
         glfwSwapBuffers(window);
-
+#if LW_PLATFORM_OSX
+        glfwMacOsMojaveWorkaround(window);
+#endif
     }
     // If glfw loop is terminated without a proper exit procedure ('rmsg_quitapp()')
     // (i.e., by clicking 'X' button on the window)
