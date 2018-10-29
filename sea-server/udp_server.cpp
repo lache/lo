@@ -1123,12 +1123,16 @@ void udp_server::send_single_cell(int xc0, int yc0) {
     int seaport_cargo = 0;
     int seaport_cargo_loaded = 0;
     int seaport_cargo_unloaded = 0;
+    std::string seaport_lua_data;
     auto seaport_name = seaport_->query_single_cell(xc0,
                                                     yc0,
                                                     seaport_id,
                                                     seaport_cargo,
                                                     seaport_cargo_loaded,
-                                                    seaport_cargo_unloaded);
+                                                    seaport_cargo_unloaded,
+                                                    seaport_lua_data);
+    strncpy(reply->seaport_lua_data, seaport_lua_data.c_str(), sizeof(reply->seaport_lua_data));
+    reply->seaport_lua_data[sizeof(reply->seaport_lua_data) - 1] = 0;
     reply->port_id = seaport_id;
     reply->cargo = seaport_cargo;
     reply->cargo_loaded = seaport_cargo_loaded;
@@ -1148,8 +1152,8 @@ void udp_server::send_single_cell(int xc0, int yc0) {
         reply->city_name[boost::size(reply->city_name) - 1] = 0;
         reply->population = city_population;
     }
-    strncpy(reply->debug_info, city_lua_data.c_str(), sizeof(reply->debug_info) - 1);
-    reply->debug_info[sizeof(reply->debug_info) - 1] = 0;
+    strncpy(reply->city_lua_data, city_lua_data.c_str(), sizeof(reply->city_lua_data));
+    reply->city_lua_data[sizeof(reply->city_lua_data) - 1] = 0;
     // take salvage
     int salvage_id = -1;
     int salvage_gold_amount = 0;
@@ -1180,8 +1184,9 @@ void udp_server::send_single_cell(int xc0, int yc0) {
     std::vector<sea_object> sop_list;
     sea_->query_near_to_packet(static_cast<float>(xc0), static_cast<float>(yc0), 1, 1, sop_list);
     for (const auto& s : sop_list) {
-        std::string lua_data = sea_->query_lua_data(s.get_db_id());
-        
+        std::string ship_lua_data = sea_->query_lua_data(s.get_db_id());
+        strncpy(reply->ship_lua_data, ship_lua_data.c_str(), sizeof(reply->ship_lua_data));
+        reply->ship_lua_data[sizeof(reply->ship_lua_data) - 1] = 0;
     }
     // SEND!
     char compressed[1500];

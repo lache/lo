@@ -39,7 +39,10 @@ function seaport_update(seaport_id)
 end
 
 function seaport_debug_query(seaport_id)
-    print(seaport_id,inspect(seaports[seaport_id]))
+    print('-------------------------')
+    local data_str = inspect(seaports[seaport_id])
+    print(seaport_id,data_str)
+    return data_str
 end
 
 function seaport_new(specified_id)

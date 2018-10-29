@@ -327,7 +327,6 @@ const char* city::query_single_cell(int xc0, int yc0, int& id, int& population, 
             lua_data = lua_tostring(L(), -1);
             lua_pop(L(), 1);
         }
-
         return get_city_name(city_it->second);
     }
     id = -1;

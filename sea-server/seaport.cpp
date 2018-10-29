@@ -217,7 +217,7 @@ long long seaport::query_ts(const LWTTLCHUNKKEY& chunk_key) const {
     return time0_;
 }
 
-const char* seaport::query_single_cell(int xc0, int yc0, int& id, int& cargo, int& cargo_loaded, int& cargo_unloaded) const {
+const char* seaport::query_single_cell(int xc0, int yc0, int& id, int& cargo, int& cargo_loaded, int& cargo_unloaded, std::string& lua_data) const {
     const auto seaport_it = rtree_ptr->qbegin(bgi::intersects(seaport_object::point{ xc0, yc0 }));
     if (seaport_it != rtree_ptr->qend()) {
         id = seaport_it->second;
@@ -242,8 +242,11 @@ const char* seaport::query_single_cell(int xc0, int yc0, int& id, int& cargo, in
         // call lua hook
         lua_getglobal(L(), "seaport_debug_query");
         lua_pushnumber(L(), id);
-        if (lua_pcall(L(), 1/*arguments*/, 0/*result*/, 0)) {
+        if (lua_pcall(L(), 1/*arguments*/, 1/*result*/, 0)) {
             LOGEP("error: %1%", lua_tostring(L(), -1));
+        } else {
+            lua_data = lua_tostring(L(), -1);
+            lua_pop(L(), 1);
         }
         return get_seaport_name(seaport_it->second);
     }

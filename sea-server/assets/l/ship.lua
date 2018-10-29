@@ -91,4 +91,11 @@ function ship_id(ship)
     return ship:id()
 end
 
+function ship_debug_query(ship_id)
+    print('-------------------------')
+    local data_str = inspect(ships[ship_id])
+    print(data_str)
+    return data_str
+end
+
 return Ship

@@ -504,7 +504,9 @@ typedef struct _LWPTTLSINGLECELL {
     int water_box_valid;
     int water_box[4];
     int contract_id;
-    char debug_info[1024];
+    char city_lua_data[1024];
+    char ship_lua_data[1024];
+    char seaport_lua_data[1024];
 } LWPTTLSINGLECELL;
 
 // UDP

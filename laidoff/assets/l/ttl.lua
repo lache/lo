@@ -379,7 +379,7 @@ function on_set_refresh_html_body()
     lo.lwttl_send_ttlpingsinglecell_on_selected(c.ttl)
 end
 
-function on_ttl_single_cell()
+function on_ttl_single_cell(city_lua_data, ship_lua_data, seaport_lua_data)
     --print('on_ttl_single_cell')
     if cell_menu_mode == CELL_MENU_MODE_NORMAL then
         reset_cell_menu()
@@ -389,6 +389,18 @@ function on_ttl_single_cell()
             cell_menu_mode = CELL_MENU_MODE_SELECT_NORMAL
             reexecute_anchor_click_append_qs(select_var_name, math.floor(sc.port_id))
         end
+    end
+    if #city_lua_data > 0 then
+        local city_lua_table = load('return '..city_lua_data)()
+        print('city id',city_lua_table.city_id)
+    end
+    if #ship_lua_data > 0 then
+        local ship_lua_table = load('return '..ship_lua_data)()
+        print('ship id',ship_lua_table.ship_id)
+    end
+    if #seaport_lua_data > 0 then
+        local seaport_lua_table = load('return '..seaport_lua_data)()
+        print('seaport id',seaport_lua_table.seaport_id)
     end
 end
 

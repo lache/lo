@@ -396,5 +396,15 @@ int sea::undock_ship_no_check(int ship_id) {
 }
 
 std::string sea::query_lua_data(int id) {
-    return "";
+    std::string lua_data;
+    // call lua hook
+    lua_getglobal(L(), "ship_debug_query");
+    lua_pushnumber(L(), id);
+    if (lua_pcall(L(), 1/*arguments*/, 1/*result*/, 0)) {
+        LOGEP("error: %1%", lua_tostring(L(), -1));
+    } else {
+        lua_data = lua_tostring(L(), -1);
+        lua_pop(L(), 1);
+    }
+    return lua_data;
 }

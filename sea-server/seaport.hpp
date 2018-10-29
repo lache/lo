@@ -25,7 +25,7 @@ namespace ss {
         void set_name(int id, const char* name, int owner_id, int port_type);
         long long query_ts(const int xc0, const int yc0, const int view_scale) const;
         long long query_ts(const LWTTLCHUNKKEY& chunk_key) const;
-        const char* query_single_cell(int xc0, int yc0, int& id, int& cargo, int& cargo_loaded, int& cargo_unloaded) const;
+        const char* query_single_cell(int xc0, int yc0, int& id, int& cargo, int& cargo_loaded, int& cargo_unloaded, std::string& lua_data) const;
         void update_single_chunk_key_ts(const LWTTLCHUNKKEY& chunk_key, long long monotonic_uptime);
         int add_cargo(int id, int amount, bool source);
         int remove_cargo(int id, int amount, bool sink);

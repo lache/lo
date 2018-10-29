@@ -2669,7 +2669,7 @@ void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc) {
                          sizeof(LWPTTLSINGLECELL));
                 }
                 LWPTTLSINGLECELL* p = (LWPTTLSINGLECELL*)decompressed;
-                LOGI("LWPTTLSINGLECELL: %d,%d L[%d], W[%d], SW[%d], PID[%d], PNAME[%s], DEBUG[%s]",
+                LOGI("LWPTTLSINGLECELL: %d,%d L[%d], W[%d], SW[%d], PID[%d], PNAME[%s], CITY_LUA[%s], SHIP_LUA[%s], SEAPORT_LUA[%s]",
                      p->xc0,
                      p->yc0,
                      (p->attr >> 0) & 1,
@@ -2677,7 +2677,9 @@ void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc) {
                      (p->attr >> 2) & 1,
                      p->port_id,
                      p->port_name,
-                     p->debug_info);
+                     p->city_lua_data,
+                     p->ship_lua_data,
+                     p->seaport_lua_data);
                 memcpy(&ttl->ttl_single_cell, p, sizeof(LWPTTLSINGLECELL));
                 assert((p->land_box_valid && p->water_box_valid) == 0);
                 if (ttl->cell_box_count < ARRAY_SIZE(ttl->cell_box)) {
@@ -2694,7 +2696,9 @@ void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc) {
                         ttl->cell_box[ttl->cell_box_count].yc1 = p->water_box[3];
                         ttl->cell_box_count++;
                     }
-                    script_evaluate_async(pLwc, "on_ttl_single_cell()", strlen("on_ttl_single_cell()"));
+                    char single_cell_call[256 + 1024 + 1024 + 1024];
+                    sprintf(single_cell_call, "on_ttl_single_cell([==[%s]==],[==[%s]==],[==[%s]==])", p->city_lua_data, p->ship_lua_data, p->seaport_lua_data);
+                    script_evaluate_async(pLwc, single_cell_call, strlen(single_cell_call));
                 } else {
                     LOGE("Cell box count exceeded!");
                 }
