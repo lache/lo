@@ -396,3 +396,31 @@ int seaport::add_resource(int seaport_id, int resource_id, int amount) {
         return static_cast<int>(lua_tointeger(L(), -1));
     }
 }
+
+int seaport::buy_ownership(int xc0, int yc0, const char* requester) {
+    if (requester == 0 || requester[0] == 0) {
+        // empty requester
+        return -1;
+    }
+    int seaport_id = 0;
+    int cargo = 0;
+    int cargo_loaded = 0;
+    int cargo_unloaded = 0;
+    std::string lua_data;
+    const char* name = query_single_cell(xc0, yc0, seaport_id, cargo, cargo_loaded, cargo_unloaded, lua_data);
+    if (name && seaport_id > 0) {
+        lua_getglobal(L(), "seaport_buy_ownership");
+        lua_pushnumber(L(), seaport_id);
+        lua_pushstring(L(), requester);
+        if (lua_pcall(L(), 2/*arguments*/, 1/*result*/, 0)) {
+            LOGEP("error: %1%", lua_tostring(L(), -1));
+            return -3;
+        } else {
+            return static_cast<int>(lua_tointeger(L(), -1));
+        }
+    } else {
+        // invalid seaport selected
+        return -2;
+    }
+    return 0;
+}

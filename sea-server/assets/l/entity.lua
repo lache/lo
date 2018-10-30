@@ -1,7 +1,8 @@
 local info = debug.getinfo(1,'S')
 print('loading '..info.source)
 local inspect = require('assets/l/inspect')
-local entities = {}
+local entities = {} -- entities keyed by entity ID
+local entities_by_name = {} -- entities keyed by entity name
 local FUND_LIMIT = 10000000000
 local CREDIT_RATING_LIMIT = 10000000000
 local Entity = {}
@@ -73,8 +74,32 @@ function Entity:id()
     return self.entity_id
 end
 
+function Entity:set_name(name)
+    -- empty name case
+    if #name == 0 then error('setting empty name not allowed') end
+    -- the same name case
+    if self.name == name then return end
+    -- duplicated name case
+    if entities_by_name[name] ~= nil then error('duplicated name not allowed') end
+    -- ok case
+    -- [1] delete previous entry
+    if self.name ~= nil then entities_by_name[self.name] = nil end
+    -- [2] change name
+    self.name = name
+    -- [3] set a new entiry
+    entities_by_name[name] = self
+end
+
 function Entity.Get(entity_id)
-    return entities[entity_id] or error('entity cannot be found')
+    return entities[entity_id] or error('entity cannot be found by id '..entity_id)
+end
+
+function Entity.Get_By_Name(entity_name)
+    return Entity.Get_By_Name_No_Error(entity_name) or error('entity cannot be found by name '..entity_name)
+end
+
+function Entity.Get_By_Name_No_Error(entity_name)
+    return entities_by_name[entity_name]
 end
 
 function Entity.inspect_all()

@@ -2,6 +2,7 @@ local inspect = require('assets/l/inspect')
 local info = debug.getinfo(1,'S')
 print('loading '..info.source)
 local Entity = require('assets/l/entity')
+local Cargo = require('assets/l/cargo')
 local city_id_nonce = 0
 local cities = {}
 
@@ -11,7 +12,8 @@ local City = {} City.__index = City
 local test_converter = { source = {{item_id = 10000, amount = 1}, {item_id = 20000, amount = 2}},
                          target = {{item_id = 30000, amount = 1}} }
 local test_item_generator = { item_id = 40000, update_interval = 1, limit = 10 }
-local test_item_generator2 = { item_id = 50000, update_interval = 1, limit = 10 }
+local test_item_generator2 = { item_id = 50000, update_interval = 1, limit = 10000 }
+local test_item_generator3 = { item_id = 60000, update_interval = 1, limit = 10000 }
 
 function City.New()
     city_id_nonce = city_id_nonce + 1
@@ -30,6 +32,7 @@ function City.New()
         table.insert(city.generators, test_item_generator)
     elseif city_id == 4411 then -- test city
         table.insert(city.generators, test_item_generator2)
+        table.insert(city.generators, test_item_generator3)
     end
     setmetatable(city, City)
     cities[city_id] = city
@@ -91,6 +94,17 @@ end
 
 function city_new()
     City.New()
+end
+
+function City:pack_cargo(item_id, amount, requester)
+    if amount <= 0 then error('error amount') end
+    if #requester == 0 then error('empty requester') end
+    local requester_entity = Entity.Get_By_Name(requester)
+    local item = self.produced_items[item_id]
+    if item == nil then error('not exist item') end
+    if item.amount < amount then error('not enough amount') end
+    item.amount = item.amount - amount
+    return Cargo.New(requester_entity, item_id, amount, self)
 end
 
 return City

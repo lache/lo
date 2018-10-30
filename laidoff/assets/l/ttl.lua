@@ -392,15 +392,24 @@ function on_ttl_single_cell(city_lua_data, ship_lua_data, seaport_lua_data)
     end
     if #city_lua_data > 0 then
         local city_lua_table = load('return '..city_lua_data)()
-        print('city id',city_lua_table.city_id)
+        if city_lua_table ~= nil then
+            print('city id',city_lua_table.city_id)
+            for k, v in pairs(city_lua_table.produced_items) do
+                print('item id',k,'amount',v.amount)
+            end
+        end
     end
     if #ship_lua_data > 0 then
         local ship_lua_table = load('return '..ship_lua_data)()
-        print('ship id',ship_lua_table.ship_id)
+        if ship_lua_table ~= nil then
+            print('ship id',ship_lua_table.ship_id)
+        end
     end
     if #seaport_lua_data > 0 then
         local seaport_lua_table = load('return '..seaport_lua_data)()
-        print('seaport id',seaport_lua_table.seaport_id)
+        if seaport_lua_table ~= nil then
+            print('seaport id',seaport_lua_table.seaport_id)
+        end
     end
 end
 
@@ -891,8 +900,38 @@ function test_sea_spawn_encrypted()
 
     local xc0 = lo.lwttl_selected_int_x(c.ttl)
     local yc0 = lo.lwttl_selected_int_y(c.ttl)
-    local ship_id = 99
     local m = 'sea_spawn_without_id'
+    local json_plaintext = json.stringify({c=secure_message_counter,m=m,a1=xc0,a2=yc0})
+    secure_message_counter = secure_message_counter + 1
+    local bytes_plaintext = { string.byte(json_plaintext, 1, -1) }
+    add_padding_bytes_inplace(bytes_plaintext)
+    
+    local bytes_iv, bytes_ciphertext, bytes_dec_plaintext = test_encrypt_decrypt(bytes_key, bytes_plaintext)
+    
+    remove_padding_bytes_inplace(bytes_dec_plaintext)
+    local json_dec_plaintext = utf8_from(bytes_dec_plaintext)
+    --[[lo.show_sys_msg(c.def_sys_msg,
+                    'plaintext:' .. json_plaintext .. '\n'
+                    ..'plaintext:' .. json_dec_plaintext)
+                    ]]
+    local bytes_account_id = { string.byte(auth_context.username, 1, -1) }
+    table.insert(bytes_account_id, 0) -- null terminate
+    add_padding_bytes_inplace_custom(bytes_account_id, 4, 0)
+    local msg = table.copy({lo.LPGP_LWPTTLJSON, 0, 0, 0}, bytes_account_id, bytes_iv, bytes_ciphertext)
+    lo.udp_send(lo.lwttl_sea_udp(c.ttl), msg)
+end
+
+function test_buy_seaport_ownership()
+    if auth_context.usr == nil or lo.srp_user_is_authenticated(auth_context.usr) ~= 1 then
+        lo.show_sys_msg(c.def_sys_msg, 'Invalid auth.')
+        error('Invalid auth.')
+    end
+    local bytes_key = lo.srp_user_get_session_key(auth_context.usr)
+    bytes_key = {table.unpack(bytes_key, 1, 256/8)} -- truncate bytes_key to 256-bit (32-byte)
+
+    local xc0 = lo.lwttl_selected_int_x(c.ttl)
+    local yc0 = lo.lwttl_selected_int_y(c.ttl)
+    local m = 'buy_seaport_ownership'
     local json_plaintext = json.stringify({c=secure_message_counter,m=m,a1=xc0,a2=yc0})
     secure_message_counter = secure_message_counter + 1
     local bytes_plaintext = { string.byte(json_plaintext, 1, -1) }

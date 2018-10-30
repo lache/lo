@@ -1,6 +1,7 @@
 local inspect = require('assets/l/inspect')
 local info = debug.getinfo(1,'S')
 print('loading '..info.source)
+local Entity = require('assets/l/entity')
 
 local seaport_id_nonce = 0
 local seaports = {}
@@ -53,6 +54,16 @@ function seaport_add_resource(seaport_id, resource_id, amount)
     local seaport = Seaport.Get(seaport_id)
     seaport.resources[resource_id] = (seaport.resources[resource_id] or 0) + amount
     return 0
+end
+
+function seaport_buy_ownership(seaport_id, requester)
+    local seaport = Seaport.Get(seaport_id)
+    local requester_entity = Entity.Get_By_Name_No_Error(requester)
+    if requester_entity == nil then
+        requester_entity = Entity:new()
+        requester_entity:set_name(requester)
+    end
+    seaport.owner = requester_entity
 end
 
 return Seaport

@@ -1032,6 +1032,8 @@ void udp_server::handle_receive(const boost::system::error_code& error, std::siz
                             }
                             if (strcmp(m, "sea_spawn_without_id") == 0) {
                                 sea_->spawn(std::stof(a1), std::stof(a2), 1, 1, 0, 1);
+                            } else if (strcmp(m, "buy_seaport_ownership") == 0) {
+                                seaport_->buy_ownership(std::stoi(a1), std::stoi(a2), bytes_account_id);
                             }
                         }
                     }
