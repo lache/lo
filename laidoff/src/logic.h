@@ -61,6 +61,7 @@ void lw_next_page(LWCONTEXT* pLwc);
 void lw_last_page(LWCONTEXT* pLwc);
 void lw_new_tcp_ttl(LWCONTEXT* pLwc);
 void lw_new_tcp_ttl_custom(LWCONTEXT* pLwc, const char* host, const char* port_str, int port);
+void lw_htmlui_redraw_ui_fbo_async(LWCONTEXT* pLwc);
 #ifdef __cplusplus
 };
 #endif

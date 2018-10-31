@@ -27,19 +27,19 @@
         }
 
         .ship-button {
-            width: 25%;
-            height: 21pt;
-            display: block;
+            /*width: 25%;*/
+            /*height: 21pt;*/
+            /*display: inline-block;*/
             color: white;
             text-align: center;
             background: cornflowerblue;
             border: 1px solid #e1deff;
             border-right-color: #2e46a8;
             border-bottom-color: #2e46a8;
-            padding: 1pt;
-            margin: 0;
-            box-sizing: border-box;
-            vertical-align: middle;
+            /*padding: 1pt;
+            margin: 0;*/
+            /*box-sizing: border-box;*/
+            /*vertical-align: middle;*/
         }
 
         .ship-button-hr {
@@ -67,14 +67,16 @@
 <a style="position:absolute;right:0px;bottom:0px;display:inline-block;background-color:rgba(255, 0, 0, 0.5);padding:5pt"
    href="script:go_online()">온라인으로</a>
 <div class="ship-button-header">
-    국적 선택ddd
+    국적 선택
 </div>
 
-<div lw:loop="country"><a class="ship-button" href="script:hoho()">
-    <img src="{{img_src}}"/>
+<div lw:loop="country" style="font-size: 1.25em;">
+    <a href="script:hoho()">
+        <img src="{{img_src}}"/>
+        {{name}}
+    </a>
     <br/>
-    {{name}}
-</a></div>
+</div>
 
 <div style="text-align: center;" class="bottom">
     <a style="display:inline-block;background-color:rgba(255, 0, 0, 0.5);padding:5pt"
@@ -85,6 +87,8 @@
        href="script:next_page()">다음</a>
     <a style="display:inline-block;background-color:rgba(255, 0, 0, 0.5);padding:5pt"
        href="script:last_page()">마지막</a>
+    <a style="display:inline-block;background-color:rgba(255, 0, 0, 0.5);padding:5pt"
+       href="script:fill_test()">테스트</a>
 </div>
 
 <script type="text/x-lua">
@@ -93,6 +97,13 @@ function first_page() lo.lw_first_page(c) end
 function prev_page() lo.lw_prev_page(c) end
 function next_page() lo.lw_next_page(c) end
 function last_page() lo.lw_last_page(c) end
+function fill_test()
+    print('fill_test')
+    lo.htmlui_clear_loop(c.htmlui, 'country')
+    lo.htmlui_set_loop_key_value(c.htmlui, "country", "name", '대한민국');
+    lo.htmlui_set_loop_key_value(c.htmlui, "country", "img_src", 'atlas/flags-mini/kr.png');
+    lo.lw_htmlui_redraw_ui_fbo_async(c)
+end
 return 1234
 </script>
 </body>

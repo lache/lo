@@ -1486,7 +1486,7 @@ void toggle_font_texture_test_mode(LWCONTEXT* pLwc) {
     pLwc->font_texture_texture_mode = !pLwc->font_texture_texture_mode;
 }
 
-static void lw_htmlui_redraw_ui_fbo_async(LWCONTEXT* pLwc) {
+void lw_htmlui_redraw_ui_fbo_async(LWCONTEXT* pLwc) {
     rmsg_redraw_ui_fbo(pLwc);
 }
 
