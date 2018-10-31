@@ -105650,6 +105650,26 @@ fail:
 }
 
 
+static int _wrap_htmlui_is_online(lua_State* L) {
+  int SWIG_arg = 0;
+  void *arg1 = (void *) 0 ;
+  int result;
+  
+  SWIG_check_num_args("htmlui_is_online",1,1)
+  if(!SWIG_isptrtype(L,1)) SWIG_fail_arg("htmlui_is_online",1,"void *");
+  arg1=(void *)SWIG_MustGetPtr(L,1,0,0,1,"htmlui_is_online");
+  result = (int)htmlui_is_online(arg1);
+  lua_pushnumber(L, (lua_Number) result); SWIG_arg++;
+  return SWIG_arg;
+  
+  if(0) SWIG_fail;
+  
+fail:
+  lua_error(L);
+  return SWIG_arg;
+}
+
+
 static int _wrap_htmlui_update_country_data(lua_State* L) {
   int SWIG_arg = 0;
   LWCONTEXT *arg1 = (LWCONTEXT *) 0 ;
@@ -121736,6 +121756,7 @@ static swig_lua_method swig_SwigModule_methods[]= {
     { "htmlui_clear_all_loops", _wrap_htmlui_clear_all_loops},
     { "htmlui_set_loop_key_value", _wrap_htmlui_set_loop_key_value},
     { "htmlui_set_online", _wrap_htmlui_set_online},
+    { "htmlui_is_online", _wrap_htmlui_is_online},
     { "htmlui_update_country_data", _wrap_htmlui_update_country_data},
     { "htmlui_load_redraw_fbo", _wrap_htmlui_load_redraw_fbo},
     { "htmlui_on_remtex_gpu_loaded", _wrap_htmlui_on_remtex_gpu_loaded},

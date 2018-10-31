@@ -226,6 +226,9 @@ public:
         text_cont.set_online(b);
         render_command_cont.set_online(b);
     }
+    bool is_online() const {
+        return text_cont.is_online();
+    }
     void on_remtex_gpu_loaded(unsigned long name_hash) {
         if (text_cont.need_update_on_remtex_change(name_hash)
             || render_command_cont.need_update_on_remtex_change(name_hash)) {
@@ -457,6 +460,11 @@ void htmlui_set_loop_key_value(void* c, const char* loop_name, const char* key, 
 void htmlui_set_online(void* c, int b) {
     LWHTMLUI* htmlui = (LWHTMLUI*)c;
     htmlui->set_online(b ? true : false);
+}
+
+int htmlui_is_online(void* c) {
+    LWHTMLUI* htmlui = (LWHTMLUI*)c;
+    return htmlui->is_online() ? 1 : 0;
 }
 
 void htmlui_update_country_data(const LWCONTEXT* pLwc, void* c) {

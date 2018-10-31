@@ -1,0 +1,12 @@
+<html>
+<body>
+<table class="listtable" align="center">
+<tr style="background:cornflowerblue;text-align:center"><td colspan="3">도시 ID: <span lw:loop="city_id">{{city_id}}</span></td></tr>
+<tr style="background:gray;text-align:center"><td colspan="3">생산 재고</td></tr>
+<tr><td>물품명</td><td>수량</td><td>구입</td></tr>
+<tbody lw:loop="list">
+    <tr><td>{{col1}}</td><td>{{col2}}</td><td><a style="display:block;background:turquoise;" href="{{href}}">{{button_text}}</a></td></tr>
+</tbody>
+</table>
+</body>
+</html>

@@ -393,9 +393,18 @@ function on_ttl_single_cell(city_lua_data, ship_lua_data, seaport_lua_data)
     if #city_lua_data > 0 then
         local city_lua_table = load('return '..city_lua_data)()
         if city_lua_table ~= nil then
-            print('city id',city_lua_table.city_id)
+            --print('city id',city_lua_table.city_id)
+            lo.htmlui_clear_all_loops(c.htmlui)
+            lo.htmlui_set_loop_key_value(c.htmlui, "city_id", "city_id", city_lua_table.city_id)
             for k, v in pairs(city_lua_table.produced_items) do
-                print('item id',k,'amount',v.amount)
+                --print('item id',k,'amount',v.amount)
+                lo.htmlui_set_loop_key_value(c.htmlui, "list", "col1", k)
+                lo.htmlui_set_loop_key_value(c.htmlui, "list", "col2", tostring(v.amount))
+                lo.htmlui_set_loop_key_value(c.htmlui, "list", "href", string.format([==[script:buy_item_from_city(%d, %d)]==], k, v.amount))
+                lo.htmlui_set_loop_key_value(c.htmlui, "list", "button_text", string.format('%d골드', 1000))
+            end
+            if lo.htmlui_is_online(c.htmlui) == 0 then
+                lo.htmlui_execute_anchor_click(c.htmlui,'city.html')
             end
         end
     end
@@ -409,6 +418,21 @@ function on_ttl_single_cell(city_lua_data, ship_lua_data, seaport_lua_data)
         local seaport_lua_table = load('return '..seaport_lua_data)()
         if seaport_lua_table ~= nil then
             print('seaport id',seaport_lua_table.seaport_id)
+            lo.htmlui_clear_all_loops(c.htmlui)
+            lo.htmlui_set_loop_key_value(c.htmlui, "seaport_id", "seaport_id", math.floor(seaport_lua_table.seaport_id))
+            local owner_name = '없음'
+            if seaport_lua_table.owner ~= nil then owner_name = seaport_lua_table.owner.name end
+            lo.htmlui_set_loop_key_value(c.htmlui, "owner", "owner", owner_name)
+            for k, v in pairs(seaport_lua_table.resources) do
+                --print('item id',k,'amount',v.amount)
+                lo.htmlui_set_loop_key_value(c.htmlui, "list", "col1", k)
+                lo.htmlui_set_loop_key_value(c.htmlui, "list", "col2", tostring(v.amount))
+                lo.htmlui_set_loop_key_value(c.htmlui, "list", "href", string.format([==[script:buy_item_from_city(%d, %d)]==], k, v.amount))
+                lo.htmlui_set_loop_key_value(c.htmlui, "list", "button_text", string.format('%d골드', 1000))
+            end
+            if lo.htmlui_is_online(c.htmlui) == 0 then
+                lo.htmlui_execute_anchor_click(c.htmlui,'seaport.html')
+            end
         end
     end
 end

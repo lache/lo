@@ -69,6 +69,10 @@
         table, th, td {
             border: 1px solid black;
         }
+        
+        .listtable{
+            font-size:1.5em;
+        }
     </style>
 </head>
 <body style="margin:0px;padding:0px;font-size:1em">
@@ -105,7 +109,7 @@
 테이블 행 반복 시에는 &lt;tbody&gt; 태그를 사용하면 된다.
 이 반복 그룹 이름은 list로 정했다.
 
-<table align="center">
+<table class="listtable" align="center">
 <tr><td>Col 1</td><td>Col 2</td><td>ACTION!</td></tr>
 <tbody lw:loop="list">
     <tr><td>{{col1}}</td><td>{{col2}}</td><td><a style="display:block;background: cornflowerblue;" href="{{href}}">{{button_text}}</a></td></tr>
