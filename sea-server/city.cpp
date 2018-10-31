@@ -401,3 +401,25 @@ int city::set_population(int id, int population) {
         return -3;
     }
 }
+
+int city::buy_cargo(int xc0, int yc0, int city_id, int item_id, int amount, const char* requester) {
+    lua_getglobal(L(), "City");
+    lua_getfield(L(), -1, "Get");
+    lua_pushinteger(L(), city_id);
+    if (lua_pcall(L(), 1/*arguments*/, 1/*result*/, 0)) {
+        LOGEP("error: %1%", lua_tostring(L(), -1));
+    } else {
+        lua_getglobal(L(), "City");
+        lua_getfield(L(), -1, "pack_cargo");
+        lua_pushvalue(L(), -3);
+        lua_pushinteger(L(), item_id);
+        lua_pushinteger(L(), amount);
+        lua_pushstring(L(), requester);
+        if (lua_pcall(L(), 4/*arguments*/, 1/*result*/, 0)) {
+            LOGEP("error: %1%", lua_tostring(L(), -1));
+        } else {
+            lua_pop(L(), 1);
+        }
+    }
+    return 0;
+}

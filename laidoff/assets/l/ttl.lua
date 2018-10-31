@@ -400,7 +400,7 @@ function on_ttl_single_cell(city_lua_data, ship_lua_data, seaport_lua_data)
                 --print('item id',k,'amount',v.amount)
                 lo.htmlui_set_loop_key_value(c.htmlui, "list", "col1", k)
                 lo.htmlui_set_loop_key_value(c.htmlui, "list", "col2", tostring(v.amount))
-                lo.htmlui_set_loop_key_value(c.htmlui, "list", "href", string.format([==[script:buy_item_from_city(%d, %d)]==], k, v.amount))
+                lo.htmlui_set_loop_key_value(c.htmlui, "list", "href", string.format([==[script:buy_cargo_from_city(%d,%d,%d)]==], city_lua_table.city_id, k, v.amount))
                 lo.htmlui_set_loop_key_value(c.htmlui, "list", "button_text", string.format('%d골드', 1000))
             end
             if lo.htmlui_is_online(c.htmlui) == 0 then
@@ -756,6 +756,9 @@ function on_json_body(json_body)
         auth_context.username = lo.srp_user_get_username(auth_context.usr)
         lo.show_sys_msg(c.def_sys_msg, '계정 \''..auth_context.username..'\' 인증 성공 :)')
         
+        local bytes_key = lo.srp_user_get_session_key(auth_context.usr)
+        lo.write_user_data_file_binary(c, 'account-last-key', bytes_key)
+        
     else
         error('Unknown JSON body')
     end
@@ -970,6 +973,48 @@ function test_buy_seaport_ownership()
                     ..'plaintext:' .. json_dec_plaintext)
                     ]]
     local bytes_account_id = { string.byte(auth_context.username, 1, -1) }
+    table.insert(bytes_account_id, 0) -- null terminate
+    add_padding_bytes_inplace_custom(bytes_account_id, 4, 0)
+    local msg = table.copy({lo.LPGP_LWPTTLJSON, 0, 0, 0}, bytes_account_id, bytes_iv, bytes_ciphertext)
+    lo.udp_send(lo.lwttl_sea_udp(c.ttl), msg)
+end
+
+function buy_cargo_from_city(city_id, item_id, amount)
+    local username
+    local bytes_key
+    if auth_context.usr == nil or lo.srp_user_is_authenticated(auth_context.usr) ~= 1 then
+        -- no auth available; check disk for cached shared key
+        local errcode_username, cached_username = lo.read_user_data_file_string(c, 'account-id')
+        local errcode_last_key, bytes_cached_key, len_cached_key = lo.read_user_data_file_binary(c, 'account-last-key')
+        if errcode_username == 0 and errcode_last_key == 0 then
+            username = cached_username
+            bytes_key = bytes_cached_key
+        else
+            error('cannot load cached last shared key')
+        end
+    else
+        username = auth_context.username
+        bytes_key = lo.srp_user_get_session_key(auth_context.usr)
+    end
+    bytes_key = {table.unpack(bytes_key, 1, 256/8)} -- truncate bytes_key to 256-bit (32-byte)
+
+    local xc0 = lo.lwttl_selected_int_x(c.ttl)
+    local yc0 = lo.lwttl_selected_int_y(c.ttl)
+    local m = 'buy_cargo_from_city'
+    local json_plaintext = json.stringify({c=secure_message_counter,m=m,a1=xc0,a2=yc0,a3=city_id,a4=item_id,a5=amount})
+    secure_message_counter = secure_message_counter + 1
+    local bytes_plaintext = { string.byte(json_plaintext, 1, -1) }
+    add_padding_bytes_inplace(bytes_plaintext)
+    
+    local bytes_iv, bytes_ciphertext, bytes_dec_plaintext = test_encrypt_decrypt(bytes_key, bytes_plaintext)
+    
+    remove_padding_bytes_inplace(bytes_dec_plaintext)
+    local json_dec_plaintext = utf8_from(bytes_dec_plaintext)
+    --[[lo.show_sys_msg(c.def_sys_msg,
+                    'plaintext:' .. json_plaintext .. '\n'
+                    ..'plaintext:' .. json_dec_plaintext)
+                    ]]
+    local bytes_account_id = { string.byte(username, 1, -1) }
     table.insert(bytes_account_id, 0) -- null terminate
     add_padding_bytes_inplace_custom(bytes_account_id, 4, 0)
     local msg = table.copy({lo.LPGP_LWPTTLJSON, 0, 0, 0}, bytes_account_id, bytes_iv, bytes_ciphertext)

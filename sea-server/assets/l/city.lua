@@ -39,7 +39,15 @@ function City.New()
     return city
 end
 
-function City.Get(city_id) return cities[city_id] or error('city nil') end
+function print_city_error(city_id)
+    print(cities[4411])
+    print(cities[city_id])
+    error('city nil ID '..city_id)
+end
+
+function City.Get(city_id)
+    return cities[city_id] or print_city_error(city_id)
+end
 function City:id() return self.city_id end
 
 function city_update(city_id)

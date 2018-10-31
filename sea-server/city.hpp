@@ -33,6 +33,7 @@ namespace ss {
         void update();
         std::vector<cargo_notification>&& flush_cargo_notifications();
         int set_population(int id, int population);
+        int buy_cargo(int xc0, int yc0, int city_id, int item_id, int amount, const char* requester);
     private:
         void init();
         float xc_to_lng(int xc) const;
