@@ -20,7 +20,7 @@ int litehtml::context::begin_loop(const tchar_t* loop_name) {
             m_loop_var_map_it = it;
             m_loop_var_map_index = 0;
             m_loop_began = true;
-            return it2->second.size();
+            return static_cast<int>(it2->second.size());
         }
     }
     return 0;

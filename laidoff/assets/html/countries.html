@@ -61,6 +61,14 @@
         .price {
             font-size: 1.2em;
         }
+        
+        table {
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
     </style>
 </head>
 <body style="margin:0px;padding:0px;font-size:1em">
@@ -70,6 +78,8 @@
     국적 선택
 </div>
 
+이 반복 그룹 이름은 country로 정했다.
+
 <div lw:loop="country" style="font-size: 1.25em;">
     <a href="script:hoho()">
         <img src="{{img_src}}"/>
@@ -77,6 +87,32 @@
     </a>
     <br/>
 </div>
+
+<hr/>
+
+이 반복 그룹 이름은 country2로 정했다.
+
+<div lw:loop="country2" style="font-size: 1.25em;">
+    <a href="script:hoho()">
+        <img src="{{img_src}}"/>
+        {{name}}
+    </a>
+    <br/>
+</div>
+
+<hr/>
+
+테이블 행 반복 시에는 &lt;tbody&gt; 태그를 사용하면 된다.
+이 반복 그룹 이름은 list로 정했다.
+
+<table align="center">
+<tr><td>Col 1</td><td>Col 2</td><td>ACTION!</td></tr>
+<tbody lw:loop="list">
+    <tr><td>{{col1}}</td><td>{{col2}}</td><td><a style="display:block;background: cornflowerblue;" href="{{href}}">{{button_text}}</a></td></tr>
+</tbody>
+</table>
+
+
 
 <div style="text-align: center;" class="bottom">
     <a style="display:inline-block;background-color:rgba(255, 0, 0, 0.5);padding:5pt"
@@ -99,11 +135,27 @@ function next_page() lo.lw_next_page(c) end
 function last_page() lo.lw_last_page(c) end
 function fill_test()
     print('fill_test')
-    lo.htmlui_clear_loop(c.htmlui, 'country')
-    lo.htmlui_set_loop_key_value(c.htmlui, "country", "name", '대한민국');
-    lo.htmlui_set_loop_key_value(c.htmlui, "country", "img_src", 'atlas/flags-mini/kr.png');
+    
+    lo.htmlui_clear_all_loops(c.htmlui)
+    
+    lo.htmlui_set_loop_key_value(c.htmlui, "country", "name", '대한민국')
+    lo.htmlui_set_loop_key_value(c.htmlui, "country", "img_src", 'atlas/flags-mini/kr.png')
+    lo.htmlui_set_loop_key_value(c.htmlui, "country", "name", '미국')
+    lo.htmlui_set_loop_key_value(c.htmlui, "country", "img_src", 'atlas/flags-mini/us.png')
+    
+    lo.htmlui_set_loop_key_value(c.htmlui, "country2", "name", '미국')
+    lo.htmlui_set_loop_key_value(c.htmlui, "country2", "img_src", 'atlas/flags-mini/us.png')
+    
+    for i=1,5 do
+        lo.htmlui_set_loop_key_value(c.htmlui, "list", "col1", '헬로'..i)
+        lo.htmlui_set_loop_key_value(c.htmlui, "list", "col2", '월드'..i)
+        lo.htmlui_set_loop_key_value(c.htmlui, "list", "href", string.format([==[script:print('World '..%d)]==], i))
+        lo.htmlui_set_loop_key_value(c.htmlui, "list", "button_text", string.format('%d골드', i*1000))
+    end
+    
     lo.lw_htmlui_redraw_ui_fbo_async(c)
 end
+
 return 1234
 </script>
 </body>

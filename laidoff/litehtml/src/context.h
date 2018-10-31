@@ -25,6 +25,7 @@ namespace litehtml
         void set_loop_var_map_entry(const std::string& loop_name, const loop_var_value& var_value) { m_loop_var_map[loop_name] = var_value; }
         void set_loop_key_value(const std::string& loop_name, const std::string& key, const std::string& value) { m_loop_var_map[loop_name][key].push_back(value); }
         void clear_loop(const std::string& loop_name) { m_loop_var_map[loop_name].clear(); }
+        void clear_all_loops() { m_loop_var_map.clear(); }
     private:
         litehtml::css	m_master_css;
         loop_var_map m_loop_var_map;

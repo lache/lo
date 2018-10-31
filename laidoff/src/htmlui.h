@@ -16,6 +16,7 @@ void htmlui_load_next_html_path(void* c);
 void htmlui_set_refresh_html_body(void* c, int v);
 void htmlui_load_next_html_body(void* c);
 void htmlui_clear_loop(void* c, const char* loop_name);
+void htmlui_clear_all_loops(void* c);
 void htmlui_set_loop_key_value(void* c, const char* loop_name, const char* key, const char* value);
 void htmlui_set_online(void* c, int b);
 void htmlui_update_country_data(const LWCONTEXT* pLwc, void* c);

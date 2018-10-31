@@ -69,6 +69,11 @@ public:
         browser_context.clear_loop(loop_name);
         unlock();
     }
+    void clear_all_loops() {
+        lock();
+        browser_context.clear_all_loops();
+        unlock();
+    }
     bool load_page(const char* html_path) {
         std::shared_ptr<char> html_str(create_string_from_file(html_path), free);
         if (html_str) {
@@ -433,6 +438,11 @@ void htmlui_load_next_html_body(void* c) {
 void htmlui_clear_loop(void* c, const char* loop_name) {
     LWHTMLUI* htmlui = (LWHTMLUI*)c;
     htmlui->clear_loop(loop_name);
+}
+
+void htmlui_clear_all_loops(void* c) {
+    LWHTMLUI* htmlui = (LWHTMLUI*)c;
+    htmlui->clear_all_loops();
 }
 
 void htmlui_set_loop_key_value(void* c, const char* loop_name, const char* key, const char* value) {
