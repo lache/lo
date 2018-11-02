@@ -40,13 +40,21 @@ function City.New()
 end
 
 function print_city_error(city_id)
+    print('****')
     print(cities[4411])
     print(cities[city_id])
     error('city nil ID '..city_id)
 end
 
+function city_get(city_id)
+    local city = cities[city_id]
+    print('^_____^****')
+    print(city)
+    return city or print_city_error(city_id)
+end
+
 function City.Get(city_id)
-    return cities[city_id] or print_city_error(city_id)
+    return city_get(city_id)
 end
 function City:id() return self.city_id end
 
