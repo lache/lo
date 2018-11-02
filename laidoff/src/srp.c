@@ -1006,6 +1006,9 @@ void srp_unhexify(const char * str, const unsigned char ** b, int * len_b)
 }
 
 int srp_alloc_random_bytes(unsigned char ** b, int len_b) {
+
+    init_random();
+
     *b = (unsigned char*)malloc((size_t)len_b);
     if (*b == 0) {
         return -1;
