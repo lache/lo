@@ -949,11 +949,22 @@ function test_sea_spawn_encrypted()
 end
 
 function test_buy_seaport_ownership()
+    local username
+    local bytes_key
     if auth_context.usr == nil or lo.srp_user_is_authenticated(auth_context.usr) ~= 1 then
-        lo.show_sys_msg(c.def_sys_msg, 'Invalid auth.')
-        error('Invalid auth.')
+        -- no auth available; check disk for cached shared key
+        local errcode_username, cached_username = lo.read_user_data_file_string(c, 'account-id')
+        local errcode_last_key, bytes_cached_key, len_cached_key = lo.read_user_data_file_binary(c, 'account-last-key')
+        if errcode_username == 0 and errcode_last_key == 0 then
+            username = cached_username
+            bytes_key = bytes_cached_key
+        else
+            error('cannot load cached last shared key')
+        end
+    else
+        username = auth_context.username
+        bytes_key = lo.srp_user_get_session_key(auth_context.usr)
     end
-    local bytes_key = lo.srp_user_get_session_key(auth_context.usr)
     bytes_key = {table.unpack(bytes_key, 1, 256/8)} -- truncate bytes_key to 256-bit (32-byte)
 
     local xc0 = lo.lwttl_selected_int_x(c.ttl)
@@ -972,7 +983,7 @@ function test_buy_seaport_ownership()
                     'plaintext:' .. json_plaintext .. '\n'
                     ..'plaintext:' .. json_dec_plaintext)
                     ]]
-    local bytes_account_id = { string.byte(auth_context.username, 1, -1) }
+    local bytes_account_id = { string.byte(username, 1, -1) }
     table.insert(bytes_account_id, 0) -- null terminate
     add_padding_bytes_inplace_custom(bytes_account_id, 4, 0)
     local msg = table.copy({lo.LPGP_LWPTTLJSON, 0, 0, 0}, bytes_account_id, bytes_iv, bytes_ciphertext)

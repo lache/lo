@@ -17,3 +17,5 @@ function Cargo.New(owner, item_id, amount, origin)
     cargos[cargo_id] = cargo
     return cargo
 end
+
+return Cargo
