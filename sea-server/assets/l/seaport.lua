@@ -64,6 +64,7 @@ function seaport_buy_ownership(seaport_id, requester)
         requester_entity:set_name(requester)
     end
     seaport.owner = requester_entity
+    return 0
 end
 
 return Seaport

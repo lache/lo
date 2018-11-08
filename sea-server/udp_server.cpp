@@ -31,7 +31,8 @@ udp_server::udp_server(boost::asio::io_service& io_service,
                        std::shared_ptr<salvage> salvage,
                        std::shared_ptr<shipyard> shipyard,
                        std::shared_ptr<session> session,
-                       std::shared_ptr<contract> contract)
+                       std::shared_ptr<contract> contract,
+                       std::shared_ptr<lua_State> lua_state_instance)
     : socket_(io_service, udp::endpoint(udp::v4(), 3100))
     , timer_(io_service, update_interval)
     , salvage_timer_(io_service, salvage_update_interval)
@@ -47,7 +48,8 @@ udp_server::udp_server(boost::asio::io_service& io_service,
     , contract_(contract)
     , tick_seq_(0)
     , client_endpoint_aoi_int_key_(0)
-    , gold_(0) {
+    , gold_(0)
+    , lua_state_instance_(lua_state_instance) {
     start_receive();
     timer_.async_wait(boost::bind(&udp_server::update, this));
     salvage_timer_.async_wait(boost::bind(&udp_server::salvage_update, this));
@@ -580,9 +582,9 @@ void udp_server::send_contract_cell_aligned(int xc0_aligned, int yc0_aligned, fl
     //const auto half_lng_cell_pixel_extent = boost::math::iround(ex_lng / 2.0f * view_scale);
     //const auto half_lat_cell_pixel_extent = boost::math::iround(ex_lat / 2.0f * view_scale);
     auto sop_list = contract_->query_near_to_packet(xc0_aligned,
-                                                   yc0_aligned,
-                                                   ex_lng * view_scale,
-                                                   ex_lat * view_scale);
+                                                    yc0_aligned,
+                                                    ex_lng * view_scale,
+                                                    ex_lat * view_scale);
     std::shared_ptr<LWPTTLCONTRACTSTATE> reply(new LWPTTLCONTRACTSTATE);
     memset(reply.get(), 0, sizeof(LWPTTLCONTRACTSTATE));
     reply->type = LPGP_LWPTTLCONTRACTSTATE;
@@ -622,9 +624,9 @@ void udp_server::send_shipyard_cell_aligned(int xc0_aligned, int yc0_aligned, fl
     //const auto half_lng_cell_pixel_extent = boost::math::iround(ex_lng / 2.0f * view_scale);
     //const auto half_lat_cell_pixel_extent = boost::math::iround(ex_lat / 2.0f * view_scale);
     auto sop_list = shipyard_->query_near_to_packet(xc0_aligned,
-                                                   yc0_aligned,
-                                                   ex_lng * view_scale,
-                                                   ex_lat * view_scale);
+                                                    yc0_aligned,
+                                                    ex_lng * view_scale,
+                                                    ex_lat * view_scale);
     std::shared_ptr<LWPTTLSHIPYARDSTATE> reply(new LWPTTLSHIPYARDSTATE);
     memset(reply.get(), 0, sizeof(LWPTTLSHIPYARDSTATE));
     reply->type = LPGP_LWPTTLSHIPYARDSTATE;
@@ -728,334 +730,377 @@ static int round_up(int num_to_round, int multiple) {
     return num_to_round + multiple - remainder;
 }
 
+void udp_server::handle_ping() {
+    LOGIx("PING received.");
+    auto p = reinterpret_cast<LWPTTLPING*>(recv_buffer_.data());
+    // routed ships
+    send_route_state(p->lng, p->lat, p->ex_lng, p->ex_lat, p->view_scale);
+    // area titles
+    send_seaarea(p->lng, p->lat);
+    // tracking info
+    if (p->track_object_id || p->track_object_ship_id) {
+        send_track_object_coords(p->track_object_id, p->track_object_ship_id);
+    }
+    // stat
+    send_stat();
+    // register(or refresh) endpoint and AOI
+    auto xc = static_cast<int>(sea_->lng_to_xc(p->lng));
+    auto yc = static_cast<int>(sea_->lat_to_yc(p->lat));
+    auto ex_lng_scaled = static_cast<int>(p->ex_lng * p->view_scale);
+    auto ex_lat_scaled = static_cast<int>(p->ex_lat * p->view_scale);
+    endpoint_aoi_object::box aoi_box{
+        {
+            xc - ex_lng_scaled / 2,
+            yc - ex_lat_scaled / 2
+        }, {
+            xc + ex_lng_scaled / 2 - 1,
+            yc + ex_lat_scaled / 2 - 1
+        }
+    };
+    register_client_endpoint(remote_endpoint_, aoi_box);
+}
+
+void udp_server::handle_request_waypoints() {
+    LOGIx("REQUESTWAYPOINTS received.");
+    auto p = reinterpret_cast<LWPTTLREQUESTWAYPOINTS*>(recv_buffer_.data());
+    send_waypoints(p->ship_id);
+    LOGIx("REQUESTWAYPOINTS replied with WAYPOINTS.");
+}
+
+void udp_server::handle_ping_flush() {
+    LOGI("PINGFLUSH received.");
+}
+
+void udp_server::handle_ping_chunk() {
+    LOGIx("PINGCHUNK received.");
+    auto p = reinterpret_cast<LWPTTLPINGCHUNK*>(recv_buffer_.data());
+    LWTTLCHUNKKEY chunk_key;
+    chunk_key.v = p->chunk_key;
+    const int clamped_view_scale = boost::algorithm::clamp(1 << chunk_key.bf.view_scale_msb, 1 << 0, 1 << 6);
+    const int xc0_aligned = chunk_key.bf.xcc0 << msb_index(LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS * clamped_view_scale);
+    const int yc0_aligned = chunk_key.bf.ycc0 << msb_index(LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS * clamped_view_scale);
+    const float ex_lng = LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS;
+    const float ex_lat = LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS;
+    if (p->static_object == LTSOT_LAND_CELL) {
+        auto ts = sea_static_->query_ts(chunk_key);
+        if (ts == 0) {
+            // In this case, client requested 'first' query on 'empty' chunk
+            // since server startup. We should update this chunk timestamp properly
+            // to invalidate client cache data if needed.
+            const auto monotonic_uptime = get_monotonic_uptime();
+            sea_static_->update_single_chunk_key_ts(chunk_key, monotonic_uptime);
+            ts = monotonic_uptime;
+        }
+        if (ts > p->ts) {
+            send_land_cell_aligned(xc0_aligned, yc0_aligned, ex_lng, ex_lat, clamped_view_scale);
+            LOGIx("Land cells chunk key (%1%,%2%,%3%) Sent! (latest ts %4%)",
+                  static_cast<int>(chunk_key.bf.xcc0),
+                  static_cast<int>(chunk_key.bf.ycc0),
+                  static_cast<int>(chunk_key.bf.view_scale_msb),
+                  ts);
+        } else {
+            LOGIx("Land cells chunk key (%1%,%2%,%3%) Not Sent! (latest ts %4%)",
+                  static_cast<int>(chunk_key.bf.xcc0),
+                  static_cast<int>(chunk_key.bf.ycc0),
+                  static_cast<int>(chunk_key.bf.view_scale_msb),
+                  ts);
+        }
+    } else if (p->static_object == LTSOT_SEAPORT) {
+        auto ts = seaport_->query_ts(chunk_key);
+        if (ts == 0) {
+            // In this case, client requested 'first' query on 'empty' chunk
+            // since server startup. We should update this chunk timestamp properly
+            // to invalidate client cache data if needed.
+            const auto monotonic_uptime = get_monotonic_uptime();
+            seaport_->update_single_chunk_key_ts(chunk_key, monotonic_uptime);
+            ts = monotonic_uptime;
+        }
+        if (ts > p->ts) {
+            send_seaport_cell_aligned(xc0_aligned, yc0_aligned, ex_lng, ex_lat, clamped_view_scale);
+            LOGIx("Seaports chunk key (%1%,%2%,%3%) Sent! (latest ts %4%)",
+                  static_cast<int>(chunk_key.bf.xcc0),
+                  static_cast<int>(chunk_key.bf.ycc0),
+                  static_cast<int>(chunk_key.bf.view_scale_msb),
+                  ts);
+        } else {
+            LOGIx("Seaports chunk key (%1%,%2%,%3%) Not Sent! (latest ts %4%)",
+                  static_cast<int>(chunk_key.bf.xcc0),
+                  static_cast<int>(chunk_key.bf.ycc0),
+                  static_cast<int>(chunk_key.bf.view_scale_msb),
+                  ts);
+        }
+    } else if (p->static_object == LTSOT_CITY) {
+        const auto ts = city_->query_ts(chunk_key);
+        if (ts > p->ts) {
+            send_city_cell_aligned(xc0_aligned, yc0_aligned, ex_lng, ex_lat, clamped_view_scale);
+            LOGIx("Cities chunk key (%1%,%2%,%3%) Sent! (latest ts %4%)",
+                  static_cast<int>(chunk_key.bf.xcc0),
+                  static_cast<int>(chunk_key.bf.ycc0),
+                  static_cast<int>(chunk_key.bf.view_scale_msb),
+                  ts);
+        } else {
+            LOGIx("Cities chunk key (%1%,%2%,%3%) Not Sent! (latest ts %4%)",
+                  static_cast<int>(chunk_key.bf.xcc0),
+                  static_cast<int>(chunk_key.bf.ycc0),
+                  static_cast<int>(chunk_key.bf.view_scale_msb),
+                  ts);
+        }
+    } else if (p->static_object == LTSOT_SALVAGE) {
+        const auto ts = salvage_->query_ts(chunk_key);
+        if (ts > p->ts) {
+            send_salvage_cell_aligned(xc0_aligned, yc0_aligned, ex_lng, ex_lat, clamped_view_scale);
+            LOGIx("Salvages chunk key (%1%,%2%,%3%) Sent! (server ts %4%, client ts %5%)",
+                  static_cast<int>(chunk_key.bf.xcc0),
+                  static_cast<int>(chunk_key.bf.ycc0),
+                  static_cast<int>(chunk_key.bf.view_scale_msb),
+                  ts,
+                  p->ts);
+        } else {
+            LOGIx("Salvages chunk key (%1%,%2%,%3%) Not Sent! (server ts %4%, client ts %5%)",
+                  static_cast<int>(chunk_key.bf.xcc0),
+                  static_cast<int>(chunk_key.bf.ycc0),
+                  static_cast<int>(chunk_key.bf.view_scale_msb),
+                  ts,
+                  p->ts);
+        }
+    } else if (p->static_object == LTSOT_CONTRACT) {
+        const auto ts = contract_->query_ts(chunk_key);
+        if (ts > p->ts) {
+            send_contract_cell_aligned(xc0_aligned, yc0_aligned, ex_lng, ex_lat, clamped_view_scale);
+            LOGIx("Contracts chunk key (%1%,%2%,%3%) Sent! (server ts %4%, client ts %5%)",
+                  static_cast<int>(chunk_key.bf.xcc0),
+                  static_cast<int>(chunk_key.bf.ycc0),
+                  static_cast<int>(chunk_key.bf.view_scale_msb),
+                  ts,
+                  p->ts);
+        } else {
+            LOGIx("Contracts chunk key (%1%,%2%,%3%) Not Sent! (server ts %4%, client ts %5%)",
+                  static_cast<int>(chunk_key.bf.xcc0),
+                  static_cast<int>(chunk_key.bf.ycc0),
+                  static_cast<int>(chunk_key.bf.view_scale_msb),
+                  ts,
+                  p->ts);
+        }
+    } else if (p->static_object == LTSOT_SHIPYARD) {
+        const auto ts = shipyard_->query_ts(chunk_key);
+        if (ts > p->ts) {
+            send_shipyard_cell_aligned(xc0_aligned, yc0_aligned, ex_lng, ex_lat, clamped_view_scale);
+            LOGIx("Shipyards chunk key (%1%,%2%,%3%) Sent! (server ts %4%, client ts %5%)",
+                  static_cast<int>(chunk_key.bf.xcc0),
+                  static_cast<int>(chunk_key.bf.ycc0),
+                  static_cast<int>(chunk_key.bf.view_scale_msb),
+                  ts,
+                  p->ts);
+        } else {
+            LOGIx("Shipyards chunk key (%1%,%2%,%3%) Not Sent! (server ts %4%, client ts %5%)",
+                  static_cast<int>(chunk_key.bf.xcc0),
+                  static_cast<int>(chunk_key.bf.ycc0),
+                  static_cast<int>(chunk_key.bf.view_scale_msb),
+                  ts,
+                  p->ts);
+        }
+    } else {
+        LOGE("Unknown static_object value: %1%", p->static_object);
+    }
+}
+
+void udp_server::handle_ping_single_cell() {
+    LOGIx("PINGSINGLECELL received.");
+    auto p = reinterpret_cast<LWPTTLPINGSINGLECELL*>(recv_buffer_.data());
+    send_single_cell(p->xc0, p->yc0);
+}
+
+void udp_server::handle_chat() {
+    LOGIx("CHAT received.");
+    auto p = reinterpret_cast<LWPTTLCHAT*>(recv_buffer_.data());
+    std::shared_ptr<LWPTTLCHAT> reply(new LWPTTLCHAT);
+    memset(reply.get(), 0, sizeof(LWPTTLCHAT));
+    reply->type = LPGP_LWPTTLCHAT;
+    strncpy(reply->line, p->line, boost::size(reply->line) - 1);
+    reply->line[boost::size(reply->line) - 1] = 0;
+    notify_to_all_clients(reply);
+}
+
+void udp_server::transform_single_cell() {
+    LOGIx("TRANSFORMSINGLECELL received.");
+    auto p = reinterpret_cast<LWPTTLTRANSFORMSINGLECELL*>(recv_buffer_.data());
+    if (p->to == 0) {
+        sea_static_->transform_single_cell_water_to_land(p->xc0, p->yc0);
+    } else if (p->to == 1) {
+        sea_static_->transform_single_cell_land_to_water(p->xc0, p->yc0);
+    } else {
+        LOGEP("Invalid message parameter p->to=%||", p);
+    }
+}
+
+void udp_server::handle_json(std::size_t bytes_transferred) {
+    LOGI("JSON received (%zu bytes).", bytes_transferred);
+    // cipher JSON payload
+    const char* bytes_account_id = reinterpret_cast<const char*>(recv_buffer_.data() + 0x04);
+    int bytes_account_id_len = -1;
+    for (int i = 0; i < 64; i++) {
+        if (bytes_account_id[i] == 0) {
+            bytes_account_id_len = i;
+            break;
+        }
+    }
+    if (bytes_account_id_len <= 0) {
+        LOGE("Invalid account ID");
+    } else {
+        const int account_id_block_len = round_up(bytes_account_id_len + 1, 4); // plus 1 for a null-terminated character
+        const char* key = session_->get_key(bytes_account_id);
+        if (key) {
+            LOGI("From Account ID: %1%", bytes_account_id);
+            unsigned char* bytes_key;
+            int len_key;
+            srp_unhexify(key, &bytes_key, &len_key);
+            unsigned char* bytes_iv = reinterpret_cast<unsigned char*>(recv_buffer_.data() + 0x04 + account_id_block_len);
+            unsigned char* bytes_ciphertext = reinterpret_cast<unsigned char*>(recv_buffer_.data() + 0x04 + account_id_block_len + 0x10);
+            std::vector<unsigned char> bytes_plaintext(bytes_transferred - 0x04 - account_id_block_len - 0x10);
+            mbedtls_aes_context aes_context;
+            mbedtls_aes_init(&aes_context);
+            if (mbedtls_aes_setkey_dec(&aes_context, bytes_key, len_key * 8)) {
+                LOGE("mbedtls_aes_setkey_dec failed.");
+            }
+            if (mbedtls_aes_crypt_cbc(&aes_context,
+                                      MBEDTLS_AES_DECRYPT,
+                                      bytes_plaintext.size(),
+                                      bytes_iv,
+                                      bytes_ciphertext,
+                                      bytes_plaintext.data())) {
+                LOGE("mbedtls_aes_crypt_cbc failed.");
+            }
+            mbedtls_aes_free(&aes_context);
+            size_t sentinel_index = 0;
+            for (size_t i = bytes_plaintext.size() - 1; i != static_cast<size_t>(-1); i--) {
+                if (bytes_plaintext[i] == 0x80) {
+                    sentinel_index = i;
+                    break;
+                }
+            }
+            if (sentinel_index == 0) {
+                LOGE("Sentinel at zero index");
+            } else {
+                bytes_plaintext.resize(sentinel_index);
+            }
+            jsmn_parser json_parser;
+            jsmn_init(&json_parser);
+            const int LW_MAX_JSON_TOKEN = 1024;
+            std::vector<jsmntok_t> json_token(LW_MAX_JSON_TOKEN);
+            const char* json_str = reinterpret_cast<const char*>(bytes_plaintext.data());
+            int token_count = jsmn_parse(&json_parser,
+                                         json_str,
+                                         bytes_plaintext.size(),
+                                         json_token.data(),
+                                         LW_MAX_JSON_TOKEN);
+            if (token_count == JSMN_ERROR_NOMEM) {
+                LOGE("JSON parser NOMEM error...");
+            } else if (token_count == JSMN_ERROR_INVAL) {
+                LOGE("JSON parser INVALID CHARACTER error... : check for '\\c' kind of thing in json file");
+            } else if (token_count == JSMN_ERROR_PART) {
+                LOGE("JSON parser NOT COMPLETE error...");
+            } else {
+                if (token_count < 1 || json_token[0].type != JSMN_OBJECT) {
+                    LOGE("JSON data broken...");
+                } else {
+                    // At last, valid JSON message from valid endpoint with valid credential
+                    LOGI("VALID JSON MESSAGE FROM %1%", bytes_account_id);
+                    int message_counter = 0;
+                    char m[32], a1[32], a2[32], a3[32], a4[32], a5[32];
+                    for (int i = 1; i < token_count; i++) {
+                        if (jsoneq(json_str, &json_token[i], "c") == 0) {
+                            message_counter = std::stoi(std::string(json_str + json_token[i + 1].start, json_token[i + 1].end - json_token[i + 1].start));
+                            LOGI("MESSAGE c: %1%", message_counter);
+                        }
+                        if (jsoneq(json_str, &json_token[i], "m") == 0) {
+                            int token_null_pos = std::min(json_token[i + 1].end - json_token[i + 1].start, static_cast<int>(sizeof(m)) - 1);
+                            strncpy(m, json_str + json_token[i + 1].start, token_null_pos);
+                            m[token_null_pos] = 0;
+                            LOGI("MESSAGE m: %1%", m);
+                        }
+                        if (jsoneq(json_str, &json_token[i], "a1") == 0) {
+                            int token_null_pos = std::min(json_token[i + 1].end - json_token[i + 1].start, static_cast<int>(sizeof(a1)) - 1);
+                            strncpy(a1, json_str + json_token[i + 1].start, token_null_pos);
+                            a1[token_null_pos] = 0;
+                            LOGI("MESSAGE a1: %1%", a1);
+                        }
+                        if (jsoneq(json_str, &json_token[i], "a2") == 0) {
+                            int token_null_pos = std::min(json_token[i + 1].end - json_token[i + 1].start, static_cast<int>(sizeof(a2)) - 1);
+                            strncpy(a2, json_str + json_token[i + 1].start, token_null_pos);
+                            a2[token_null_pos] = 0;
+                            LOGI("MESSAGE a2: %1%", a2);
+                        }
+                        if (jsoneq(json_str, &json_token[i], "a3") == 0) {
+                            int token_null_pos = std::min(json_token[i + 1].end - json_token[i + 1].start, static_cast<int>(sizeof(a3)) - 1);
+                            strncpy(a3, json_str + json_token[i + 1].start, token_null_pos);
+                            a3[token_null_pos] = 0;
+                            LOGI("MESSAGE a3: %1%", a3);
+                        }
+                        if (jsoneq(json_str, &json_token[i], "a4") == 0) {
+                            int token_null_pos = std::min(json_token[i + 1].end - json_token[i + 1].start, static_cast<int>(sizeof(a4)) - 1);
+                            strncpy(a4, json_str + json_token[i + 1].start, token_null_pos);
+                            a4[token_null_pos] = 0;
+                            LOGI("MESSAGE a4: %1%", a4);
+                        }
+                        if (jsoneq(json_str, &json_token[i], "a5") == 0) {
+                            int token_null_pos = std::min(json_token[i + 1].end - json_token[i + 1].start, static_cast<int>(sizeof(a5)) - 1);
+                            strncpy(a5, json_str + json_token[i + 1].start, token_null_pos);
+                            a5[token_null_pos] = 0;
+                            LOGI("MESSAGE a5: %1%", a5);
+                        }
+                    }
+                    if (strcmp(m, "sea_spawn_without_id") == 0) {
+                        sea_->spawn(std::stof(a1), std::stof(a2), 1, 1, 0, 1);
+                    } else if (strcmp(m, "buy_seaport_ownership") == 0) {
+                        int buy_ownership_result = seaport_->buy_ownership(std::stoi(a1), std::stoi(a2), bytes_account_id);
+                        std::string reply;
+                        lua_getglobal(L(), "make_udp_reply");
+                        lua_pushinteger(L(), message_counter);
+                        lua_pushinteger(L(), buy_ownership_result);
+                        lua_pushstring(L(), "");
+                        if (lua_pcall(L(), 3/*arguments*/, 1/*result*/, 0)) {
+                            LOGEP("error: %1%", lua_tostring(L(), -1));
+                        } else {
+                            reply = lua_tostring(L(), -1);
+                        }
+                        lua_settop(L(), 0);
+                        LOGI("buy_seaport_ownership reply: %1%", reply);
+                    } else if (strcmp(m, "buy_cargo_from_city") == 0) {
+                        city_->buy_cargo(std::stoi(a1),
+                                         std::stoi(a2),
+                                         std::stoi(a3),
+                                         std::stoi(a4),
+                                         std::stoi(a5),
+                                         bytes_account_id);
+                    }
+                }
+            }
+            free(bytes_key);
+        } else {
+            LOGEP("Key not found");
+        }
+    }
+}
+
 void udp_server::handle_receive(const boost::system::error_code& error, std::size_t bytes_transferred) {
     if (!error || error == boost::asio::error::message_size) {
         unsigned char type = *reinterpret_cast<unsigned char*>(recv_buffer_.data() + 0x00); // type
         if (type == LPGP_LWPTTLPING) {
-            LOGIx("PING received.");
-            auto p = reinterpret_cast<LWPTTLPING*>(recv_buffer_.data());
-            // routed ships
-            send_route_state(p->lng, p->lat, p->ex_lng, p->ex_lat, p->view_scale);
-            // area titles
-            send_seaarea(p->lng, p->lat);
-            // tracking info
-            if (p->track_object_id || p->track_object_ship_id) {
-                send_track_object_coords(p->track_object_id, p->track_object_ship_id);
-            }
-            // stat
-            send_stat();
-            // register(or refresh) endpoint and AOI
-            auto xc = static_cast<int>(sea_->lng_to_xc(p->lng));
-            auto yc = static_cast<int>(sea_->lat_to_yc(p->lat));
-            auto ex_lng_scaled = static_cast<int>(p->ex_lng * p->view_scale);
-            auto ex_lat_scaled = static_cast<int>(p->ex_lat * p->view_scale);
-            endpoint_aoi_object::box aoi_box{
-                {
-                    xc - ex_lng_scaled / 2,
-                    yc - ex_lat_scaled / 2
-                }, {
-                    xc + ex_lng_scaled / 2 - 1,
-                    yc + ex_lat_scaled / 2 - 1
-                }
-            };
-            register_client_endpoint(remote_endpoint_, aoi_box);
+            handle_ping();
         } else if (type == LPGP_LWPTTLREQUESTWAYPOINTS) {
-            LOGIx("REQUESTWAYPOINTS received.");
-            auto p = reinterpret_cast<LWPTTLREQUESTWAYPOINTS*>(recv_buffer_.data());
-            send_waypoints(p->ship_id);
-            LOGIx("REQUESTWAYPOINTS replied with WAYPOINTS.");
+            handle_request_waypoints();
         } else if (type == LPGP_LWPTTLPINGFLUSH) {
-            LOGI("PINGFLUSH received.");
+            handle_ping_flush();
         } else if (type == LPGP_LWPTTLPINGCHUNK) {
-            LOGIx("PINGCHUNK received.");
-            auto p = reinterpret_cast<LWPTTLPINGCHUNK*>(recv_buffer_.data());
-            LWTTLCHUNKKEY chunk_key;
-            chunk_key.v = p->chunk_key;
-            const int clamped_view_scale = boost::algorithm::clamp(1 << chunk_key.bf.view_scale_msb, 1 << 0, 1 << 6);
-            const int xc0_aligned = chunk_key.bf.xcc0 << msb_index(LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS * clamped_view_scale);
-            const int yc0_aligned = chunk_key.bf.ycc0 << msb_index(LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS * clamped_view_scale);
-            const float ex_lng = LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS;
-            const float ex_lat = LNGLAT_SEA_PING_EXTENT_IN_CELL_PIXELS;
-            if (p->static_object == LTSOT_LAND_CELL) {
-                auto ts = sea_static_->query_ts(chunk_key);
-                if (ts == 0) {
-                    // In this case, client requested 'first' query on 'empty' chunk
-                    // since server startup. We should update this chunk timestamp properly
-                    // to invalidate client cache data if needed.
-                    const auto monotonic_uptime = get_monotonic_uptime();
-                    sea_static_->update_single_chunk_key_ts(chunk_key, monotonic_uptime);
-                    ts = monotonic_uptime;
-                }
-                if (ts > p->ts) {
-                    send_land_cell_aligned(xc0_aligned, yc0_aligned, ex_lng, ex_lat, clamped_view_scale);
-                    LOGIx("Land cells chunk key (%1%,%2%,%3%) Sent! (latest ts %4%)",
-                          static_cast<int>(chunk_key.bf.xcc0),
-                          static_cast<int>(chunk_key.bf.ycc0),
-                          static_cast<int>(chunk_key.bf.view_scale_msb),
-                          ts);
-                } else {
-                    LOGIx("Land cells chunk key (%1%,%2%,%3%) Not Sent! (latest ts %4%)",
-                          static_cast<int>(chunk_key.bf.xcc0),
-                          static_cast<int>(chunk_key.bf.ycc0),
-                          static_cast<int>(chunk_key.bf.view_scale_msb),
-                          ts);
-                }
-            } else if (p->static_object == LTSOT_SEAPORT) {
-                auto ts = seaport_->query_ts(chunk_key);
-                if (ts == 0) {
-                    // In this case, client requested 'first' query on 'empty' chunk
-                    // since server startup. We should update this chunk timestamp properly
-                    // to invalidate client cache data if needed.
-                    const auto monotonic_uptime = get_monotonic_uptime();
-                    seaport_->update_single_chunk_key_ts(chunk_key, monotonic_uptime);
-                    ts = monotonic_uptime;
-                }
-                if (ts > p->ts) {
-                    send_seaport_cell_aligned(xc0_aligned, yc0_aligned, ex_lng, ex_lat, clamped_view_scale);
-                    LOGIx("Seaports chunk key (%1%,%2%,%3%) Sent! (latest ts %4%)",
-                          static_cast<int>(chunk_key.bf.xcc0),
-                          static_cast<int>(chunk_key.bf.ycc0),
-                          static_cast<int>(chunk_key.bf.view_scale_msb),
-                          ts);
-                } else {
-                    LOGIx("Seaports chunk key (%1%,%2%,%3%) Not Sent! (latest ts %4%)",
-                          static_cast<int>(chunk_key.bf.xcc0),
-                          static_cast<int>(chunk_key.bf.ycc0),
-                          static_cast<int>(chunk_key.bf.view_scale_msb),
-                          ts);
-                }
-            } else if (p->static_object == LTSOT_CITY) {
-                const auto ts = city_->query_ts(chunk_key);
-                if (ts > p->ts) {
-                    send_city_cell_aligned(xc0_aligned, yc0_aligned, ex_lng, ex_lat, clamped_view_scale);
-                    LOGIx("Cities chunk key (%1%,%2%,%3%) Sent! (latest ts %4%)",
-                          static_cast<int>(chunk_key.bf.xcc0),
-                          static_cast<int>(chunk_key.bf.ycc0),
-                          static_cast<int>(chunk_key.bf.view_scale_msb),
-                          ts);
-                } else {
-                    LOGIx("Cities chunk key (%1%,%2%,%3%) Not Sent! (latest ts %4%)",
-                          static_cast<int>(chunk_key.bf.xcc0),
-                          static_cast<int>(chunk_key.bf.ycc0),
-                          static_cast<int>(chunk_key.bf.view_scale_msb),
-                          ts);
-                }
-            } else if (p->static_object == LTSOT_SALVAGE) {
-                const auto ts = salvage_->query_ts(chunk_key);
-                if (ts > p->ts) {
-                    send_salvage_cell_aligned(xc0_aligned, yc0_aligned, ex_lng, ex_lat, clamped_view_scale);
-                    LOGIx("Salvages chunk key (%1%,%2%,%3%) Sent! (server ts %4%, client ts %5%)",
-                          static_cast<int>(chunk_key.bf.xcc0),
-                          static_cast<int>(chunk_key.bf.ycc0),
-                          static_cast<int>(chunk_key.bf.view_scale_msb),
-                          ts,
-                          p->ts);
-                } else {
-                    LOGIx("Salvages chunk key (%1%,%2%,%3%) Not Sent! (server ts %4%, client ts %5%)",
-                          static_cast<int>(chunk_key.bf.xcc0),
-                          static_cast<int>(chunk_key.bf.ycc0),
-                          static_cast<int>(chunk_key.bf.view_scale_msb),
-                          ts,
-                          p->ts);
-                }
-            } else if (p->static_object == LTSOT_CONTRACT) {
-                const auto ts = contract_->query_ts(chunk_key);
-                if (ts > p->ts) {
-                    send_contract_cell_aligned(xc0_aligned, yc0_aligned, ex_lng, ex_lat, clamped_view_scale);
-                    LOGIx("Contracts chunk key (%1%,%2%,%3%) Sent! (server ts %4%, client ts %5%)",
-                          static_cast<int>(chunk_key.bf.xcc0),
-                          static_cast<int>(chunk_key.bf.ycc0),
-                          static_cast<int>(chunk_key.bf.view_scale_msb),
-                          ts,
-                          p->ts);
-                } else {
-                    LOGIx("Contracts chunk key (%1%,%2%,%3%) Not Sent! (server ts %4%, client ts %5%)",
-                          static_cast<int>(chunk_key.bf.xcc0),
-                          static_cast<int>(chunk_key.bf.ycc0),
-                          static_cast<int>(chunk_key.bf.view_scale_msb),
-                          ts,
-                          p->ts);
-                }
-            } else if (p->static_object == LTSOT_SHIPYARD) {
-                const auto ts = shipyard_->query_ts(chunk_key);
-                if (ts > p->ts) {
-                    send_shipyard_cell_aligned(xc0_aligned, yc0_aligned, ex_lng, ex_lat, clamped_view_scale);
-                    LOGIx("Shipyards chunk key (%1%,%2%,%3%) Sent! (server ts %4%, client ts %5%)",
-                          static_cast<int>(chunk_key.bf.xcc0),
-                          static_cast<int>(chunk_key.bf.ycc0),
-                          static_cast<int>(chunk_key.bf.view_scale_msb),
-                          ts,
-                          p->ts);
-                } else {
-                    LOGIx("Shipyards chunk key (%1%,%2%,%3%) Not Sent! (server ts %4%, client ts %5%)",
-                          static_cast<int>(chunk_key.bf.xcc0),
-                          static_cast<int>(chunk_key.bf.ycc0),
-                          static_cast<int>(chunk_key.bf.view_scale_msb),
-                          ts,
-                          p->ts);
-                }
-            } else {
-                LOGE("Unknown static_object value: %1%", p->static_object);
-            }
+            handle_ping_chunk();
         } else if (type == LPGP_LWPTTLPINGSINGLECELL) {
-            LOGIx("PINGSINGLECELL received.");
-            auto p = reinterpret_cast<LWPTTLPINGSINGLECELL*>(recv_buffer_.data());
-            send_single_cell(p->xc0, p->yc0);
+            handle_ping_single_cell();
         } else if (type == LPGP_LWPTTLCHAT) {
-            LOGIx("CHAT received.");
-            auto p = reinterpret_cast<LWPTTLCHAT*>(recv_buffer_.data());
-            std::shared_ptr<LWPTTLCHAT> reply(new LWPTTLCHAT);
-            memset(reply.get(), 0, sizeof(LWPTTLCHAT));
-            reply->type = LPGP_LWPTTLCHAT;
-            strncpy(reply->line, p->line, boost::size(reply->line) - 1);
-            reply->line[boost::size(reply->line) - 1] = 0;
-            notify_to_all_clients(reply);
+            handle_chat();
         } else if (type == LPGP_LWPTTLTRANSFORMSINGLECELL) {
-            LOGIx("TRANSFORMSINGLECELL received.");
-            auto p = reinterpret_cast<LWPTTLTRANSFORMSINGLECELL*>(recv_buffer_.data());
-            if (p->to == 0) {
-                sea_static_->transform_single_cell_water_to_land(p->xc0, p->yc0);
-            } else if (p->to == 1) {
-                sea_static_->transform_single_cell_land_to_water(p->xc0, p->yc0);
-            } else {
-                LOGEP("Invalid message parameter p->to=%||", p);
-            }
+            transform_single_cell();
         } else if (type == LPGP_LWPTTLJSON) {
-            LOGI("JSON received (%zu bytes).", bytes_transferred);
-            // cipher JSON payload
-            const char* bytes_account_id = reinterpret_cast<const char*>(recv_buffer_.data() + 0x04);
-            int bytes_account_id_len = -1;
-            for (int i = 0; i < 64; i++) {
-                if (bytes_account_id[i] == 0) {
-                    bytes_account_id_len = i;
-                    break;
-                }
-            }
-            if (bytes_account_id_len <= 0) {
-                LOGE("Invalid account ID");
-            } else {
-                const int account_id_block_len = round_up(bytes_account_id_len + 1, 4); // plus 1 for a null-terminated character
-                const char* key = session_->get_key(bytes_account_id);
-                if (key) {
-                    LOGI("From Account ID: %1%", bytes_account_id);
-                    unsigned char* bytes_key;
-                    int len_key;
-                    srp_unhexify(key, &bytes_key, &len_key);
-                    unsigned char* bytes_iv = reinterpret_cast<unsigned char*>(recv_buffer_.data() + 0x04 + account_id_block_len);
-                    unsigned char* bytes_ciphertext = reinterpret_cast<unsigned char*>(recv_buffer_.data() + 0x04 + account_id_block_len + 0x10);
-                    std::vector<unsigned char> bytes_plaintext(bytes_transferred - 0x04 - account_id_block_len - 0x10);
-                    mbedtls_aes_context aes_context;
-                    mbedtls_aes_init(&aes_context);
-                    if (mbedtls_aes_setkey_dec(&aes_context, bytes_key, len_key * 8)) {
-                        LOGE("mbedtls_aes_setkey_dec failed.");
-                    }
-                    if (mbedtls_aes_crypt_cbc(&aes_context,
-                                              MBEDTLS_AES_DECRYPT,
-                                              bytes_plaintext.size(),
-                                              bytes_iv,
-                                              bytes_ciphertext,
-                                              bytes_plaintext.data())) {
-                        LOGE("mbedtls_aes_crypt_cbc failed.");
-                    }
-                    mbedtls_aes_free(&aes_context);
-                    size_t sentinel_index = 0;
-                    for (size_t i = bytes_plaintext.size() - 1; i != static_cast<size_t>(-1); i--) {
-                        if (bytes_plaintext[i] == 0x80) {
-                            sentinel_index = i;
-                            break;
-                        }
-                    }
-                    if (sentinel_index == 0) {
-                        LOGE("Sentinel at zero index");
-                    } else {
-                        bytes_plaintext.resize(sentinel_index);
-                    }
-                    jsmn_parser json_parser;
-                    jsmn_init(&json_parser);
-                    const int LW_MAX_JSON_TOKEN = 1024;
-                    std::vector<jsmntok_t> json_token(LW_MAX_JSON_TOKEN);
-                    const char* json_str = reinterpret_cast<const char*>(bytes_plaintext.data());
-                    int token_count = jsmn_parse(&json_parser,
-                                                 json_str,
-                                                 bytes_plaintext.size(),
-                                                 json_token.data(),
-                                                 LW_MAX_JSON_TOKEN);
-                    if (token_count == JSMN_ERROR_NOMEM) {
-                        LOGE("JSON parser NOMEM error...");
-                    } else if (token_count == JSMN_ERROR_INVAL) {
-                        LOGE("JSON parser INVALID CHARACTER error... : check for '\\c' kind of thing in json file");
-                    } else if (token_count == JSMN_ERROR_PART) {
-                        LOGE("JSON parser NOT COMPLETE error...");
-                    } else {
-                        if (token_count < 1 || json_token[0].type != JSMN_OBJECT) {
-                            LOGE("JSON data broken...");
-                        } else {
-                            // At last, valid JSON message from valid endpoint with valid credential
-                            LOGI("VALID JSON MESSAGE FROM %1%", bytes_account_id);
-                            char m[32], a1[32], a2[32], a3[32], a4[32], a5[32];
-                            for (int i = 1; i < token_count; i++) {
-                                if (jsoneq(json_str, &json_token[i], "c") == 0) {
-                                    // LOGI(boost::format) does not support %.*s?
-                                    printf("MESSAGE c: %.*s\n",
-                                           json_token[i + 1].end - json_token[i + 1].start,
-                                           json_str + json_token[i + 1].start);
-                                }
-                                if (jsoneq(json_str, &json_token[i], "m") == 0) {
-                                    int token_null_pos = std::min(json_token[i + 1].end - json_token[i + 1].start, static_cast<int>(sizeof(m)) - 1);
-                                    strncpy(m, json_str + json_token[i + 1].start, token_null_pos);
-                                    m[token_null_pos] = 0;
-                                    LOGI("MESSAGE m: %1%", m);
-                                }
-                                if (jsoneq(json_str, &json_token[i], "a1") == 0) {
-                                    int token_null_pos = std::min(json_token[i + 1].end - json_token[i + 1].start, static_cast<int>(sizeof(a1)) - 1);
-                                    strncpy(a1, json_str + json_token[i + 1].start, token_null_pos);
-                                    a1[token_null_pos] = 0;
-                                    LOGI("MESSAGE a1: %1%", a1);
-                                }
-                                if (jsoneq(json_str, &json_token[i], "a2") == 0) {
-                                    int token_null_pos = std::min(json_token[i + 1].end - json_token[i + 1].start, static_cast<int>(sizeof(a2)) - 1);
-                                    strncpy(a2, json_str + json_token[i + 1].start, token_null_pos);
-                                    a2[token_null_pos] = 0;
-                                    LOGI("MESSAGE a2: %1%", a2);
-                                }
-                                if (jsoneq(json_str, &json_token[i], "a3") == 0) {
-                                    int token_null_pos = std::min(json_token[i + 1].end - json_token[i + 1].start, static_cast<int>(sizeof(a3)) - 1);
-                                    strncpy(a3, json_str + json_token[i + 1].start, token_null_pos);
-                                    a3[token_null_pos] = 0;
-                                    LOGI("MESSAGE a3: %1%", a3);
-                                }
-                                if (jsoneq(json_str, &json_token[i], "a4") == 0) {
-                                    int token_null_pos = std::min(json_token[i + 1].end - json_token[i + 1].start, static_cast<int>(sizeof(a4)) - 1);
-                                    strncpy(a4, json_str + json_token[i + 1].start, token_null_pos);
-                                    a4[token_null_pos] = 0;
-                                    LOGI("MESSAGE a4: %1%", a4);
-                                }
-                                if (jsoneq(json_str, &json_token[i], "a5") == 0) {
-                                    int token_null_pos = std::min(json_token[i + 1].end - json_token[i + 1].start, static_cast<int>(sizeof(a5)) - 1);
-                                    strncpy(a5, json_str + json_token[i + 1].start, token_null_pos);
-                                    a5[token_null_pos] = 0;
-                                    LOGI("MESSAGE a5: %1%", a5);
-                                }
-                            }
-                            if (strcmp(m, "sea_spawn_without_id") == 0) {
-                                sea_->spawn(std::stof(a1), std::stof(a2), 1, 1, 0, 1);
-                            } else if (strcmp(m, "buy_seaport_ownership") == 0) {
-                                seaport_->buy_ownership(std::stoi(a1), std::stoi(a2), bytes_account_id);
-                            } else if (strcmp(m, "buy_cargo_from_city") == 0) {
-                                city_->buy_cargo(std::stoi(a1),
-                                                 std::stoi(a2),
-                                                 std::stoi(a3),
-                                                 std::stoi(a4),
-                                                 std::stoi(a5),
-                                                 bytes_account_id);
-                            }
-                        }
-                    }
-                    free(bytes_key);
-                } else {
-                    LOGEP("Key not found");
-                }
-            }
+            handle_json(bytes_transferred);
         } else {
             LOGIP("Unknown UDP request of type %1%", static_cast<int>(type));
         }

@@ -27,14 +27,13 @@ seaport::seaport(boost::asio::io_service& io_service, std::shared_ptr<lua_State>
     init();
 }
 
-seaport::~seaport() {
-}
+seaport::~seaport() {}
 
 void seaport::init() {
-	eval_lua_script_file(L(), "assets/l/seaport.lua");
+    eval_lua_script_file(L(), "assets/l/seaport.lua");
 
     time0_ = get_monotonic_uptime();
-    
+
     timer_.async_wait(boost::bind(&seaport::update, this));
 }
 
@@ -159,7 +158,7 @@ int seaport::spawn(int expected_db_id, const char* name, int xc0, int yc0, int o
 
     rtree_ptr->insert(std::make_pair(new_port_point, expected_db_id));
     id_point[expected_db_id] = new_port_point;
-	create_lua_seaport_object(expected_db_id);
+    create_lua_seaport_object(expected_db_id);
     if (name[0] != 0) {
         set_name(expected_db_id, name, owner_id, st);
     } else {
@@ -364,12 +363,12 @@ std::vector<seaport_object::value> seaport::query_nearest(int xc, int yc) const 
 }
 
 void seaport::create_lua_seaport_object(int seaport_id) {
-	// create city instance on lua
-	lua_getglobal(L(), "seaport_new");
-	lua_pushnumber(L(), seaport_id);
-	if (lua_pcall(L(), 1/*arguments*/, 0/*result*/, 0)) {
-		LOGEP("error: %1%", lua_tostring(L(), -1));
-	}
+    // create city instance on lua
+    lua_getglobal(L(), "seaport_new");
+    lua_pushnumber(L(), seaport_id);
+    if (lua_pcall(L(), 1/*arguments*/, 0/*result*/, 0)) {
+        LOGEP("error: %1%", lua_tostring(L(), -1));
+    }
 }
 
 int seaport::dock_ship_no_check(int seaport_id, int ship_id) {
@@ -397,7 +396,7 @@ int seaport::add_resource(int seaport_id, int resource_id, int amount) {
     }
 }
 
-int seaport::buy_ownership(int xc0, int yc0, const char* requester) {
+int seaport::buy_ownership(int xc0, int yc0, const char* requester) const {
     if (requester == 0 || requester[0] == 0) {
         // empty requester
         return -1;

@@ -32,7 +32,8 @@ namespace ss {
                    std::shared_ptr<salvage> salvage,
                    std::shared_ptr<shipyard> shipyard,
                    std::shared_ptr<session> session,
-                   std::shared_ptr<contract> contract);
+                   std::shared_ptr<contract> contract,
+                   std::shared_ptr<lua_State> lua_state_instance);
         bool set_route(int id, int seaport_id1, int seaport_id2, int expect_land, std::shared_ptr<astarrtree::coro_context> coro);
         void gold_earned(int xc, int yc, int amount) {
             if (amount > 0) {
@@ -72,6 +73,14 @@ namespace ss {
         void send_waypoints(int ship_id);
         std::shared_ptr<const route> find_route_map_by_ship_id(int ship_id) const;
         void send_single_cell(int xc0, int yc0);
+        void handle_ping();
+        void handle_request_waypoints();
+        void handle_ping_flush();
+        void handle_ping_chunk();
+        void handle_ping_single_cell();
+        void handle_chat();
+        void transform_single_cell();
+        void handle_json(std::size_t bytes_transferred);
         void handle_receive(const boost::system::error_code& error, std::size_t bytes_transferred);
         void handle_send(const boost::system::error_code& error, std::size_t bytes_transferred);
         std::shared_ptr<route> create_route_id(const std::vector<int>& seaport_id_list, int expect_land, std::shared_ptr<astarrtree::coro_context> coro) const;
@@ -130,6 +139,8 @@ namespace ss {
         endpoint_aoi_object::rtree client_endpoint_aoi_rtree_;
         unsigned long long client_endpoint_aoi_int_key_;
         int gold_;
+        std::shared_ptr<lua_State> lua_state_instance_;
+        lua_State* L() const { return lua_state_instance_.get(); }
     };
     template<> udp::endpoint udp_server::extract_endpoint(std::vector<udp::endpoint>::const_iterator v);
     template<> udp::endpoint udp_server::extract_endpoint(std::vector<endpoint_aoi_object::value>::const_iterator v);

@@ -35,7 +35,7 @@ namespace ss {
         size_t get_count() const { return rtree_ptr->size(); }
         int dock_ship_no_check(int seaport_id, int ship_id);
         int add_resource(int seaport_id, int resource_id, int amount);
-        int buy_ownership(int xc0, int yc0, const char* requester);
+        int buy_ownership(int xc0, int yc0, const char* requester) const;
     private:
         void init();
         std::vector<seaport_object::value> query_tree_ex(int xc, int yc, int half_lng_ex, int half_lat_ex) const;

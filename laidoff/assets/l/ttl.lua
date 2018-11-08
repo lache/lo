@@ -948,7 +948,7 @@ function test_sea_spawn_encrypted()
     lo.udp_send(lo.lwttl_sea_udp(c.ttl), msg)
 end
 
-function test_buy_seaport_ownership()
+function buy_seaport_ownership()
     local username
     local bytes_key
     if auth_context.usr == nil or lo.srp_user_is_authenticated(auth_context.usr) ~= 1 then

@@ -41,6 +41,7 @@ typedef enum _LW_PUCK_GAME_PACKET {
     LPGP_LWPTTLSHIPYARDSTATE = 136, // server -> client
     LPGP_LWPTTLJSON = 137, // client -> server
     LPGP_LWPTTLCONTRACTSTATE = 138, // server -> client
+    LPGP_LWPTTLJSONREPLY = 139, // server -> client
     LPGP_LWPQUEUE2 = 200,
     LPGP_LWPMAYBEMATCHED = 201,
     LPGP_LWPMATCHED2 = 202,

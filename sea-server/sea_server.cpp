@@ -234,6 +234,7 @@ int main(int argc, char* argv[]) {
         eval_lua_script_file(lua_state_instance.get(), "assets/l/contract.lua");
         eval_lua_script_file(lua_state_instance.get(), "assets/l/loadunload.lua");
         eval_lua_script_file(lua_state_instance.get(), "assets/l/collection.lua");
+        eval_lua_script_file(lua_state_instance.get(), "assets/l/sea_server.lua");
         
         sea_static_instance.reset(new sea_static());
         seaport_instance.reset(new seaport(io_service, lua_state_instance));
@@ -262,7 +263,8 @@ int main(int argc, char* argv[]) {
                                                  salvage_instance,
                                                  shipyard_instance,
                                                  session_instance,
-                                                 contract_instance));
+                                                 contract_instance,
+                                                 lua_state_instance));
 
         tcp_server tcp_server_instance(io_service);
         udp_admin_server_instance.reset(new udp_admin_server(io_service,
