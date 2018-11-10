@@ -250,7 +250,7 @@ func handleRequest(req *HandleRequestRequest) {
 			packetSize := binary.LittleEndian.Uint16(buf)
 			log.Printf("%v: Packet size specified from first 16-bit is %v", req.Conn.RemoteAddr(), int(packetSize))
 			if len(buf) < int(packetSize) {
-				log.Printf("%v: len(buf)[%v] is less than int(packetSize)[%v]!", len(buf), int(packetSize))
+				log.Printf("%v: len(buf)[%v] is less than int(packetSize)[%v]!", req.Conn.RemoteAddr(), len(buf), int(packetSize))
 				break
 			}
 			if int(packetSize) < 4 {
