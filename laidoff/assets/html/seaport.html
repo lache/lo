@@ -1,18 +1,72 @@
 <html>
+
+<head>
+    <style>
+        table.center {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .seaport {
+            background: cornflowerblue;
+            text-align: center;
+        }
+
+        .owner {
+            background: thistle;
+            text-align: center;
+        }
+
+        .ownership {
+            background: thistle;
+            text-align: center;
+        }
+
+        .yard {
+            background: gray;
+            text-align: center;
+        }
+
+        a.button {
+            display: block;
+            background: turquoise;
+        }
+    </style>
+</head>
+
 <body>
-<table class="listtable" align="center">
-<tr style="background:cornflowerblue;text-align:center"><td colspan="3">항구 ID<div lw:loop="seaport_id">{{seaport_id}}</div></td></tr>
-<tr style="background:thistle;text-align:center"><td colspan="3">소유자<div lw:loop="owner">{{owner}}</div></td></tr>
-<tr style="background:thistle;text-align:center"><td colspan="3"><a style="display:block;background:turquoise;" href="script:buy_seaport_ownership()">소유권 구매 협상</a></td></tr>
-<tr style="background:gray;text-align:center"><td colspan="3">야적장</td></tr>
-<tr><td>물품명</td><td>수량</td><td>행동</td></tr>
-<tbody lw:loop="list">
-    <tr>
-        <td>{{col1}}</td>
-        <td>{{col2}}</td>
-        <td><a style="display:block;background:turquoise;" href="{{href}}">{{button_text}}</a></td>
-    </tr>
-</tbody>
-</table>
+    <table class="center">
+        <tr class="seaport">
+            <td colspan="3">
+                항구 ID<div lw:loop="seaport_id">{{seaport_id}}</div>
+            </td>
+        </tr>
+        <tr class="owner">
+            <td colspan="3">
+                소유자<div lw:loop="owner">{{owner}}</div>
+            </td>
+        </tr>
+        <tr class="ownership">
+            <td colspan="3">
+                <a class="button" href="script:buy_seaport_ownership()">소유권 구매 협상</a>
+            </td>
+        </tr>
+        <tr class="yard">
+            <td colspan="3">야적장</td>
+        </tr>
+        <tr>
+            <td>물품명</td>
+            <td>수량</td>
+            <td>행동</td>
+        </tr>
+        <tbody lw:loop="list">
+            <tr>
+                <td>{{col1}}</td>
+                <td>{{col2}}</td>
+                <td><a style="display:block;background:turquoise;" href="{{href}}">{{button_text}}</a></td>
+            </tr>
+        </tbody>
+    </table>
 </body>
+
 </html>

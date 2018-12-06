@@ -805,20 +805,23 @@ local function test_encrypt_decrypt(bytes_key, bytes_plaintext)
     lo.mbedtls_aes_init(aes_context)
     local keybits = 256 -- keybits max is 256. bytes_key may be longer then this...see comments on 'mbedtls_aes_setkey_enc()'
     if lo.mbedtls_aes_setkey_enc(aes_context, bytes_key) ~= 0 then
-        lo.show_sys_msg(c.def_sys_msg, 'aes enc key set fail')
-        error('aes enc key set fail')
+        local errmsg = 'aes enc key set fail'
+        lo.show_sys_msg(c.def_sys_msg, errmsg)
+        error(errmsg)
     end
     
     local len_iv = 16 -- fixed to 16-byte
     if #bytes_plaintext % 16 ~= 0 then
-        lo.show_sys_msg(c.def_sys_msg, 'input plaintext length should be multiple of 16-byte')
-        error('input plaintext length should be multiple of 16-byte')
+        local errmsg = 'input plaintext length should be multiple of 16-byte'
+        lo.show_sys_msg(c.def_sys_msg, errmsg)
+        error(errmsg)
     end
     
     local result_iv, bytes_iv = lo.srp_alloc_random_bytes(len_iv)
     if result_iv ~= 0 then
-        lo.show_sys_msg(c.def_sys_msg, 'cannot seed iv')
-        error('cannot seed iv')
+        local errmsg = 'cannot seed iv'
+        lo.show_sys_msg(c.def_sys_msg, errmsg)
+        error(errmsg)
     end
     --print('bytes_iv',bytes_iv,'len_iv',len_iv)
     
@@ -959,7 +962,9 @@ function buy_seaport_ownership()
             username = cached_username
             bytes_key = bytes_cached_key
         else
-            error('cannot load cached last shared key')
+            local errmsg = 'cannot load cached last shared key'
+            lo.show_sys_msg(c.def_sys_msg, errmsg)
+            error(errmsg)
         end
     else
         username = auth_context.username
@@ -975,7 +980,8 @@ function buy_seaport_ownership()
     local bytes_plaintext = { string.byte(json_plaintext, 1, -1) }
     add_padding_bytes_inplace(bytes_plaintext)
     
-    local bytes_iv, bytes_ciphertext, bytes_dec_plaintext = test_encrypt_decrypt(bytes_key, bytes_plaintext)
+    local bytes_iv, bytes_ciphertext, bytes_dec_plaintext
+        = test_encrypt_decrypt(bytes_key, bytes_plaintext)
     
     remove_padding_bytes_inplace(bytes_dec_plaintext)
     local json_dec_plaintext = utf8_from(bytes_dec_plaintext)

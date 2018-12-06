@@ -524,7 +524,7 @@ void nav_update(LWNAV* nav, float move_speed, float delta_time) {
                 nav->path_query_output_location[i], nav->path_query_output_orientation[i]);
             // Jump jump!
             const float nav_jump_height = 0.7f;
-            nav->path_query_output_location[i][2] += nav_jump_height * fabs(sinf(nav->path_query[i].path_t * 11));
+            nav->path_query_output_location[i][2] += nav_jump_height * fabsf(sinf(nav->path_query[i].path_t * 11));
         }
     }
 }

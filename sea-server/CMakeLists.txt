@@ -115,6 +115,8 @@ set(ServerSources
     contract.hpp
     contract_object.cpp
     contract_object.hpp
+	srp.cpp
+	srp.hpp
 )
 
 add_msvc_precompiled_header("precompiled.hpp" "precompiled.cpp" ServerSources)

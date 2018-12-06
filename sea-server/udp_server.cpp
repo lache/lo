@@ -15,6 +15,8 @@
 #include "jsmn.h"
 #include "session.hpp"
 #include "contract.hpp"
+#include "srp.hpp"
+
 using namespace ss;
 
 const auto update_interval = boost::posix_time::milliseconds(75);
@@ -933,6 +935,72 @@ void udp_server::transform_single_cell() {
     }
 }
 
+int udp_server::encode_message(std::vector<unsigned char>& bytes_iv,
+                               std::vector<unsigned char>& bytes_ciphertext,
+                               unsigned char* bytes_plaintext,
+                               unsigned char* bytes_key,
+                               int len_key) {
+    mbedtls_aes_context aes_context;
+    mbedtls_aes_init(&aes_context);
+    if (mbedtls_aes_setkey_enc(&aes_context, bytes_key, len_key * 8)) {
+        LOGE("mbedtls_aes_setkey_enc failed.");
+        return -1;
+    }
+    if (bytes_ciphertext.size() % 16 != 0) {
+        LOGE("mbedtls_aes_setkey_enc failed.");
+        return -2;
+    }
+    const auto len_iv = 0x10;
+    //unsigned char* bytes_iv;
+    //const auto result_iv = srp_alloc_random_bytes(&bytes_iv, len_iv);
+    //if (result_iv != 0) {
+        //LOGE("cannot seed iv");
+        //return -3;
+    //}
+    /*const auto len_ciphertext = bytes_ciphertext.size();
+    const auto len_plaintext = len_ciphertext;
+    const auto block_count = len_plaintext / 16;*/
+
+    return 0;
+}
+
+int udp_server::decode_message(std::vector<unsigned char>& bytes_plaintext,
+                               unsigned char* bytes_iv,
+                               unsigned char* bytes_ciphertext,
+                               unsigned char* bytes_key,
+                               int len_key) {
+    mbedtls_aes_context aes_context;
+    mbedtls_aes_init(&aes_context);
+    if (mbedtls_aes_setkey_dec(&aes_context, bytes_key, len_key * 8)) {
+        LOGE("mbedtls_aes_setkey_dec failed.");
+        return -3;
+    }
+    if (mbedtls_aes_crypt_cbc(&aes_context,
+                              MBEDTLS_AES_DECRYPT,
+                              bytes_plaintext.size(),
+                              bytes_iv,
+                              bytes_ciphertext,
+                              bytes_plaintext.data())) {
+        LOGE("mbedtls_aes_crypt_cbc failed.");
+        return -2;
+    }
+    mbedtls_aes_free(&aes_context);
+    size_t sentinel_index = 0;
+    for (size_t i = bytes_plaintext.size() - 1; i != static_cast<size_t>(-1); i--) {
+        if (bytes_plaintext[i] == 0x80) {
+            sentinel_index = i;
+            break;
+        }
+    }
+    if (sentinel_index == 0) {
+        LOGE("Sentinel at zero index");
+        return -1;
+    } else {
+        bytes_plaintext.resize(sentinel_index);
+        return 0;
+    }
+}
+
 void udp_server::handle_json(std::size_t bytes_transferred) {
     LOGI("JSON received (%zu bytes).", bytes_transferred);
     // cipher JSON payload
@@ -954,35 +1022,16 @@ void udp_server::handle_json(std::size_t bytes_transferred) {
             unsigned char* bytes_key;
             int len_key;
             srp_unhexify(key, &bytes_key, &len_key);
-            unsigned char* bytes_iv = reinterpret_cast<unsigned char*>(recv_buffer_.data() + 0x04 + account_id_block_len);
-            unsigned char* bytes_ciphertext = reinterpret_cast<unsigned char*>(recv_buffer_.data() + 0x04 + account_id_block_len + 0x10);
-            std::vector<unsigned char> bytes_plaintext(bytes_transferred - 0x04 - account_id_block_len - 0x10);
-            mbedtls_aes_context aes_context;
-            mbedtls_aes_init(&aes_context);
-            if (mbedtls_aes_setkey_dec(&aes_context, bytes_key, len_key * 8)) {
-                LOGE("mbedtls_aes_setkey_dec failed.");
-            }
-            if (mbedtls_aes_crypt_cbc(&aes_context,
-                                      MBEDTLS_AES_DECRYPT,
-                                      bytes_plaintext.size(),
-                                      bytes_iv,
-                                      bytes_ciphertext,
-                                      bytes_plaintext.data())) {
-                LOGE("mbedtls_aes_crypt_cbc failed.");
-            }
-            mbedtls_aes_free(&aes_context);
-            size_t sentinel_index = 0;
-            for (size_t i = bytes_plaintext.size() - 1; i != static_cast<size_t>(-1); i--) {
-                if (bytes_plaintext[i] == 0x80) {
-                    sentinel_index = i;
-                    break;
-                }
-            }
-            if (sentinel_index == 0) {
-                LOGE("Sentinel at zero index");
-            } else {
-                bytes_plaintext.resize(sentinel_index);
-            }
+            const auto message_type_len = 0x04;
+            const auto iv_len = 0x10;
+            const auto bytes_iv = reinterpret_cast<unsigned char*>(recv_buffer_.data() + message_type_len + account_id_block_len);
+            const auto bytes_ciphertext = reinterpret_cast<unsigned char*>(recv_buffer_.data() + message_type_len + account_id_block_len + iv_len);
+            const auto ciphertext_len = bytes_transferred - message_type_len - account_id_block_len - iv_len;
+            const auto plaintext_len = ciphertext_len;
+            std::vector<unsigned char> bytes_plaintext(plaintext_len);
+
+            decode_message(bytes_plaintext, bytes_iv, bytes_ciphertext, bytes_key, len_key);
+
             jsmn_parser json_parser;
             jsmn_init(&json_parser);
             const int LW_MAX_JSON_TOKEN = 1024;
@@ -1054,7 +1103,7 @@ void udp_server::handle_json(std::size_t bytes_transferred) {
                     } else if (strcmp(m, "buy_seaport_ownership") == 0) {
                         int buy_ownership_result = seaport_->buy_ownership(std::stoi(a1), std::stoi(a2), bytes_account_id);
                         std::string reply;
-                        lua_getglobal(L(), "make_udp_reply");
+                        lua_getglobal(L(), "make_reply_json");
                         lua_pushinteger(L(), message_counter);
                         lua_pushinteger(L(), buy_ownership_result);
                         lua_pushstring(L(), "");
@@ -1064,7 +1113,7 @@ void udp_server::handle_json(std::size_t bytes_transferred) {
                             reply = lua_tostring(L(), -1);
                         }
                         lua_settop(L(), 0);
-                        LOGI("buy_seaport_ownership reply: %1%", reply);
+                        LOGI("buy_seaport_ownership reply json: %1%", reply);
                     } else if (strcmp(m, "buy_cargo_from_city") == 0) {
                         city_->buy_cargo(std::stoi(a1),
                                          std::stoi(a2),
@@ -1077,7 +1126,7 @@ void udp_server::handle_json(std::size_t bytes_transferred) {
             }
             free(bytes_key);
         } else {
-            LOGEP("Key not found");
+            LOGEP("Key not found on sea-server session cache for account ID %1%", bytes_account_id);
         }
     }
 }
