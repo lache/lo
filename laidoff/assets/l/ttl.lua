@@ -1045,3 +1045,8 @@ function on_chat(line)
     c.focus_chat_input = 0
     on_nickname_change(line)
 end
+
+function handle_encrypted_json(ciphertext_bytes)
+    print('handle_encrypted_json: '..#ciphertext_bytes..' bytes received')
+    return 1985
+end

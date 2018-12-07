@@ -2805,6 +2805,13 @@ void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc) {
                 lwchatringbuffer_add(&pLwc->chat_ring_buffer, p->line);
                 break;
             }
+            case LPGP_LWPTTLJSON:
+            {
+                LOGI("LWPTTLJSON");
+                //script_emit_handle_encrypted_json()
+                logic_emit_handle_encrypted_json_async(pLwc, decompressed, decompressed_bytes);
+                break;
+            }
             default:
             {
                 LOGEP("Unknown UDP packet");

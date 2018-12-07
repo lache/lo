@@ -168,6 +168,7 @@ typedef enum _LW_MSG {
     LM_LWMSGSTOPLOGICLOOP,
     LM_LWMSGINITSCENE,
     LM_LWMSGUIEVENT,
+    LM_LWMSGHANDLEENCRYPTEDJSON,
     LM_LWMSGEVALUATE,
 } LW_MSG;
 
@@ -207,6 +208,10 @@ typedef struct _LWMSGUIEVENT {
     float w_ratio;
     float h_ratio;
 } LWMSGUIEVENT;
+
+typedef struct _LWMSGHANDLEENCRYPTEDJSON {
+    LW_MSG type;
+} LWMSGHANDLEENCRYPTEDJSON;
 
 typedef struct _LWMSGEVALUATE {
     LW_MSG type;
@@ -436,6 +441,19 @@ void logic_emit_ui_event_async(LWCONTEXT* pLwc, const char* id, float w_ratio, f
     m.w_ratio = w_ratio;
     m.h_ratio = h_ratio;
     zmsg_addmem(msg, &m, sizeof(LWMSGUIEVENT));
+    zactor_t* actor = pLwc->logic_actor;
+    if (zactor_send(actor, &msg) < 0) {
+        zmsg_destroy(&msg);
+        LOGE("Send message to logic worker failed!");
+    }
+}
+
+void logic_emit_handle_encrypted_json_async(LWCONTEXT* pLwc, const char* bytes, int bytes_len) {
+    zmsg_t* msg = zmsg_new();
+    LWMSGHANDLEENCRYPTEDJSON m;
+    m.type = LM_LWMSGHANDLEENCRYPTEDJSON;
+    zmsg_addmem(msg, &m, sizeof(LWMSGHANDLEENCRYPTEDJSON));
+    zmsg_addmem(msg, bytes, bytes_len);
     zactor_t* actor = pLwc->logic_actor;
     if (zactor_send(actor, &msg) < 0) {
         zmsg_destroy(&msg);
@@ -1078,6 +1096,12 @@ static int loop_pipe_reader(zloop_t* loop, zsock_t* pipe, void* args) {
             byte* name = zframe_data(f);
             //size_t code_len = zframe_size(f);
             script_evaluate_with_name(pLwc->L, code, code_len, name);
+        } else if (d && s == sizeof(LWMSGHANDLEENCRYPTEDJSON) && *(int*)d == LM_LWMSGHANDLEENCRYPTEDJSON) {
+            // Lua script code in the next frame.
+            f = zmsg_next(msg);
+            byte* bytes = zframe_data(f);
+            size_t bytes_len = zframe_size(f);
+            script_emit_handle_encrypted_json(pLwc->L, bytes, (int)bytes_len);
         } else if (strncmp((const char*)d, "$TERM", 5) == 0) {
             // ZFRAME spec?
             rc = -1;

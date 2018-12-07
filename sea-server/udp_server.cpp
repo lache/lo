@@ -686,33 +686,6 @@ void udp_server::send_seaarea(float lng, float lat) {
     }
 }
 
-// Based on https://stackoverflow.com/a/23898449/266720
-static void srp_unhexify(const char * str, unsigned char ** b, int * len_b) {
-    int  pos;
-    int  idx0;
-    int  idx1;
-
-    // mapping of ASCII characters to hex values
-    const uint8_t hashmap[] =
-    {
-        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, // 01234567
-        0x08, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // 89:;<=>?
-        0x00, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x00, // @ABCDEFG
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // HIJKLMNO
-    };
-
-    int slen = static_cast<int>(strlen(str));
-    int blen = slen / 2;
-    unsigned char* bb = (unsigned char*)malloc(blen);
-    for (pos = 0; ((pos < (blen * 2)) && (pos < slen)); pos += 2) {
-        idx0 = ((uint8_t)str[pos + 0] & 0x1F) ^ 0x10;
-        idx1 = ((uint8_t)str[pos + 1] & 0x1F) ^ 0x10;
-        bb[pos / 2] = (uint8_t)(hashmap[idx0] << 4) | hashmap[idx1];
-    };
-    *b = bb;
-    *len_b = blen;
-}
-
 static int jsoneq(const char *json, jsmntok_t *tok, const char *s) {
     if (tok->type == JSMN_STRING && (int)strlen(s) == tok->end - tok->start &&
         strncmp(json + tok->start, s, tok->end - tok->start) == 0) {
@@ -935,9 +908,19 @@ void udp_server::transform_single_cell() {
     }
 }
 
-int udp_server::encode_message(std::vector<unsigned char>& bytes_iv,
+void udp_server::add_padding_bytes_inplace(std::vector<unsigned char>& bytes_plaintext) {
+    auto CIPHER_BLOCK_PADDING_SENTINEL = 0x80;
+    auto CIPHER_BLOCK_BYTES = 16;
+    bytes_plaintext.push_back(CIPHER_BLOCK_PADDING_SENTINEL);
+    auto remainder = bytes_plaintext.size() % CIPHER_BLOCK_BYTES;
+    if (remainder > 0) {
+        bytes_plaintext.insert(bytes_plaintext.end(), CIPHER_BLOCK_BYTES - remainder, 0);
+    }
+}
+
+int udp_server::encode_message(std::shared_ptr<unsigned char>& bytes_iv_sp,
                                std::vector<unsigned char>& bytes_ciphertext,
-                               unsigned char* bytes_plaintext,
+                               const std::vector<unsigned char>& bytes_plaintext,
                                unsigned char* bytes_key,
                                int len_key) {
     mbedtls_aes_context aes_context;
@@ -946,20 +929,34 @@ int udp_server::encode_message(std::vector<unsigned char>& bytes_iv,
         LOGE("mbedtls_aes_setkey_enc failed.");
         return -1;
     }
-    if (bytes_ciphertext.size() % 16 != 0) {
-        LOGE("mbedtls_aes_setkey_enc failed.");
+
+    const auto len_ciphertext = bytes_ciphertext.size();
+    const auto len_plaintext = len_ciphertext;
+
+    if (len_plaintext % 16 != 0) {
+        LOGE("input plaintext length should be multiple of 16-byte");
         return -2;
     }
     const auto len_iv = 0x10;
-    //unsigned char* bytes_iv;
-    //const auto result_iv = srp_alloc_random_bytes(&bytes_iv, len_iv);
-    //if (result_iv != 0) {
-        //LOGE("cannot seed iv");
-        //return -3;
-    //}
-    /*const auto len_ciphertext = bytes_ciphertext.size();
-    const auto len_plaintext = len_ciphertext;
-    const auto block_count = len_plaintext / 16;*/
+    unsigned char* bytes_iv;
+    const auto result_iv = srp_alloc_random_bytes(&bytes_iv, len_iv);
+    if (result_iv != 0) {
+        LOGE("cannot seed iv");
+        return -3;
+    }
+    //bytes_iv_sp.reset(bytes_iv, [=](unsigned char* p) {free(p); });
+    bytes_iv_sp.reset(bytes_iv, free);
+
+    if (mbedtls_aes_crypt_cbc(&aes_context,
+                              MBEDTLS_AES_ENCRYPT,
+                              len_plaintext,
+                              bytes_iv,
+                              bytes_plaintext.data(),
+                              bytes_ciphertext.data())) {
+        LOGE("mbedtls_aes_crypt_cbc failed.");
+        return -4;
+    }
+    mbedtls_aes_free(&aes_context);
 
     return 0;
 }
@@ -1030,7 +1027,10 @@ void udp_server::handle_json(std::size_t bytes_transferred) {
             const auto plaintext_len = ciphertext_len;
             std::vector<unsigned char> bytes_plaintext(plaintext_len);
 
-            decode_message(bytes_plaintext, bytes_iv, bytes_ciphertext, bytes_key, len_key);
+            auto decode_result = decode_message(bytes_plaintext, bytes_iv, bytes_ciphertext, bytes_key, len_key);
+            if (decode_result) {
+                LOGE("error occured during decode_message: %||", decode_result);
+            }
 
             jsmn_parser json_parser;
             jsmn_init(&json_parser);
@@ -1114,6 +1114,38 @@ void udp_server::handle_json(std::size_t bytes_transferred) {
                         }
                         lua_settop(L(), 0);
                         LOGI("buy_seaport_ownership reply json: %1%", reply);
+
+                        // encrypt plaintext json reply
+                        std::vector<unsigned char> reply_plaintext_bytes(reply.begin(), reply.end());
+                        add_padding_bytes_inplace(reply_plaintext_bytes);
+                        std::vector<unsigned char> reply_ciphertext_bytes(reply_plaintext_bytes.size());
+                        std::shared_ptr<unsigned char> bytes_iv_sp;
+                        auto encode_result = encode_message(bytes_iv_sp, reply_ciphertext_bytes, reply_plaintext_bytes, bytes_key, len_key);
+                        if (encode_result) {
+                            LOGE("error occured during encode_message: %||", encode_result);
+                        }
+
+                        // send encrypted json reply
+
+                        std::vector<unsigned char> json_reply;
+                        json_reply.insert(json_reply.end(), { LPGP_LWPTTLJSON, 0, 0, 0 });
+                        //auto bytes_iv_beg = bytes_iv_sp.;
+                        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        json_reply.insert(json_reply.end(), *bytes_iv_sp, *bytes_iv_sp + iv_len);
+                        json_reply.insert(json_reply.end(), reply_ciphertext_bytes.begin(), reply_ciphertext_bytes.end());
+                        char compressed[1500];
+                        int compressed_size = LZ4_compress_default((char*)&json_reply[0], compressed, static_cast<int>(json_reply.size()), static_cast<int>(boost::size(compressed)));
+                        if (compressed_size > 0) {
+                            socket_.async_send_to(boost::asio::buffer(compressed, compressed_size),
+                                                  remote_endpoint_,
+                                                  boost::bind(&udp_server::handle_send,
+                                                              this,
+                                                              boost::asio::placeholders::error,
+                                                              boost::asio::placeholders::bytes_transferred));
+                        } else {
+                            LOGEP("LZ4_compress_default() error! - %1%", compressed_size);
+                        }
+
                     } else if (strcmp(m, "buy_cargo_from_city") == 0) {
                         city_->buy_cargo(std::stoi(a1),
                                          std::stoi(a2),
