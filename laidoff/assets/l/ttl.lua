@@ -1046,7 +1046,70 @@ function on_chat(line)
     on_nickname_change(line)
 end
 
-function handle_encrypted_json(ciphertext_bytes)
-    print('handle_encrypted_json: '..#ciphertext_bytes..' bytes received')
+function handle_encrypted_json(message)
+    local bytes_message = { string.byte(message, 1, -1) }
+    print('handle_encrypted_json: '..#bytes_message..' bytes received')
+    local hexstr_message = lo.srp_hexify(bytes_message)
+    print('hexstr_message', hexstr_message)
+
+    local bytes_type = {table.unpack(bytes_message,1,1+4-1)}
+    local bytes_iv = {table.unpack(bytes_message,1+4,1+4+16-1)}
+    local bytes_ciphertext = {table.unpack(bytes_message,1+4+16,#bytes_message)}
+    
+    print('bytes_type len = ',#bytes_type)
+    local hexstr_type = lo.srp_hexify(bytes_type)
+    print('hexstr_type', hexstr_type)
+
+    print('bytes_iv len = ',#bytes_iv)
+    local hexstr_iv = lo.srp_hexify(bytes_iv)
+    print('hexstr_iv', hexstr_iv)
+
+    print('bytes_ciphertext len = ',#bytes_ciphertext)
+    local hexstr_ciphertext = lo.srp_hexify(bytes_ciphertext)
+    print('hexstr_ciphertext', hexstr_ciphertext)
+
+    local username
+    local bytes_key
+    if auth_context.usr == nil or lo.srp_user_is_authenticated(auth_context.usr) ~= 1 then
+        -- no auth available; check disk for cached shared key
+        local errcode_username, cached_username = lo.read_user_data_file_string(c, 'account-id')
+        local errcode_last_key, bytes_cached_key, len_cached_key = lo.read_user_data_file_binary(c, 'account-last-key')
+        if errcode_username == 0 and errcode_last_key == 0 then
+            username = cached_username
+            bytes_key = bytes_cached_key
+        else
+            error('cannot load cached last shared key')
+        end
+    else
+        username = auth_context.username
+        bytes_key = lo.srp_user_get_session_key(auth_context.usr)
+    end
+    bytes_key = {table.unpack(bytes_key, 1, 256/8)} -- truncate bytes_key to 256-bit (32-byte)
+
+    local aes_dec_context = lo.mbedtls_aes_context()
+    lo.mbedtls_aes_init(aes_dec_context)
+    if lo.mbedtls_aes_setkey_dec(aes_dec_context, bytes_key) ~= 0 then
+        lo.show_sys_msg(c.def_sys_msg, 'aes dec key set fail')
+        error('aes dec key set fail')
+    end
+    
+    local decrypt_result, bytes_dec_iv_after, bytes_dec_plaintext = lo.mbedtls_aes_crypt_cbc(aes_dec_context,
+                                                                                             lo.MBEDTLS_AES_DECRYPT,
+                                                                                             bytes_iv,
+                                                                                             bytes_ciphertext)
+    if decrypt_result ~= 0 then
+        lo.show_sys_msg(c.def_sys_msg, 'decrypt failed')
+        error('decrypt failed')
+    end
+
+    remove_padding_bytes_inplace(bytes_dec_plaintext)
+    local hexstr_dec_plaintext = lo.srp_hexify(bytes_dec_plaintext)
+    print('hexstr_dec_plaintext', hexstr_dec_plaintext)
+    print('length of bytes_dec_plaintext:'..#bytes_dec_plaintext)
+
+    print(bytes_dec_plaintext[1])
+    local json_dec_plaintext = utf8_from(bytes_dec_plaintext)
+    lo.show_sys_msg(c.def_sys_msg, 'plaintext:' .. json_dec_plaintext)
+    print('decrypted json reply from server: '..json_dec_plaintext)
     return 1985
 end

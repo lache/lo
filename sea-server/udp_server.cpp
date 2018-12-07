@@ -918,7 +918,7 @@ void udp_server::add_padding_bytes_inplace(std::vector<unsigned char>& bytes_pla
     }
 }
 
-int udp_server::encode_message(std::shared_ptr<unsigned char>& bytes_iv_sp,
+int udp_server::encode_message(std::vector<unsigned char>& bytes_iv_first,
                                std::vector<unsigned char>& bytes_ciphertext,
                                const std::vector<unsigned char>& bytes_plaintext,
                                unsigned char* bytes_key,
@@ -944,8 +944,8 @@ int udp_server::encode_message(std::shared_ptr<unsigned char>& bytes_iv_sp,
         LOGE("cannot seed iv");
         return -3;
     }
-    //bytes_iv_sp.reset(bytes_iv, [=](unsigned char* p) {free(p); });
-    bytes_iv_sp.reset(bytes_iv, free);
+    
+    bytes_iv_first.insert(bytes_iv_first.end(), bytes_iv, bytes_iv + 16);
 
     if (mbedtls_aes_crypt_cbc(&aes_context,
                               MBEDTLS_AES_ENCRYPT,
@@ -954,10 +954,11 @@ int udp_server::encode_message(std::shared_ptr<unsigned char>& bytes_iv_sp,
                               bytes_plaintext.data(),
                               bytes_ciphertext.data())) {
         LOGE("mbedtls_aes_crypt_cbc failed.");
+        free(bytes_iv);
         return -4;
     }
     mbedtls_aes_free(&aes_context);
-
+    free(bytes_iv);
     return 0;
 }
 
@@ -1119,11 +1120,13 @@ void udp_server::handle_json(std::size_t bytes_transferred) {
                         std::vector<unsigned char> reply_plaintext_bytes(reply.begin(), reply.end());
                         add_padding_bytes_inplace(reply_plaintext_bytes);
                         std::vector<unsigned char> reply_ciphertext_bytes(reply_plaintext_bytes.size());
-                        std::shared_ptr<unsigned char> bytes_iv_sp;
-                        auto encode_result = encode_message(bytes_iv_sp, reply_ciphertext_bytes, reply_plaintext_bytes, bytes_key, len_key);
+                        std::vector<unsigned char> bytes_iv_first;
+                        auto encode_result = encode_message(bytes_iv_first, reply_ciphertext_bytes, reply_plaintext_bytes, bytes_key, len_key);
                         if (encode_result) {
                             LOGE("error occured during encode_message: %||", encode_result);
                         }
+                        
+                        
 
                         // send encrypted json reply
 
@@ -1131,8 +1134,14 @@ void udp_server::handle_json(std::size_t bytes_transferred) {
                         json_reply.insert(json_reply.end(), { LPGP_LWPTTLJSON, 0, 0, 0 });
                         //auto bytes_iv_beg = bytes_iv_sp.;
                         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                        json_reply.insert(json_reply.end(), *bytes_iv_sp, *bytes_iv_sp + iv_len);
+                        json_reply.insert(json_reply.end(), bytes_iv_first.begin(), bytes_iv_first.end());
                         json_reply.insert(json_reply.end(), reply_ciphertext_bytes.begin(), reply_ciphertext_bytes.end());
+                        LOGI("json reply message size (before compression): %||", json_reply.size());
+                        
+                        for (auto c : json_reply) {
+                            printf("json reply 0x%02x\n", c);
+                        }
+                        
                         char compressed[1500];
                         int compressed_size = LZ4_compress_default((char*)&json_reply[0], compressed, static_cast<int>(json_reply.size()), static_cast<int>(boost::size(compressed)));
                         if (compressed_size > 0) {
@@ -1145,6 +1154,19 @@ void udp_server::handle_json(std::size_t bytes_transferred) {
                         } else {
                             LOGEP("LZ4_compress_default() error! - %1%", compressed_size);
                         }
+                        
+                        // test decode
+                        /*int udp_server::decode_message(std::vector<unsigned char>& bytes_plaintext,
+                         unsigned char* bytes_iv,
+                         unsigned char* bytes_ciphertext,
+                         unsigned char* bytes_key,
+                         int len_key)*/
+                        std::vector<unsigned char> bytes_dec_ciphertext(reply_ciphertext_bytes.size());
+                        decode_message(bytes_dec_ciphertext, &bytes_iv_first[0], &reply_ciphertext_bytes[0], bytes_key, len_key);
+                        for (char c : bytes_dec_ciphertext) {
+                            printf("deciphered '%c' 0x%02x\n", c, c);
+                        }
+                        LOGI("deciphered length: %||", bytes_dec_ciphertext.size());
 
                     } else if (strcmp(m, "buy_cargo_from_city") == 0) {
                         city_->buy_cargo(std::stoi(a1),

@@ -81,8 +81,8 @@ namespace ss {
         void handle_chat();
         void transform_single_cell();
         void handle_json(std::size_t bytes_transferred);
-        static void udp_server::add_padding_bytes_inplace(std::vector<unsigned char>& bytes_plaintext);
-        static int encode_message(std::shared_ptr<unsigned char>& bytes_iv_sp,
+        static void add_padding_bytes_inplace(std::vector<unsigned char>& bytes_plaintext);
+        static int encode_message(std::vector<unsigned char>& bytes_iv_first,
                                   std::vector<unsigned char>& bytes_ciphertext,
                                   const std::vector<unsigned char>& bytes_plaintext,
                                   unsigned char* bytes_key,
