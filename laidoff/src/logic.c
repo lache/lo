@@ -169,6 +169,7 @@ typedef enum _LW_MSG {
     LM_LWMSGINITSCENE,
     LM_LWMSGUIEVENT,
     LM_LWMSGHANDLEENCRYPTEDJSON,
+    LM_LWMSGHANDLEJSON,
     LM_LWMSGEVALUATE,
 } LW_MSG;
 
@@ -212,6 +213,10 @@ typedef struct _LWMSGUIEVENT {
 typedef struct _LWMSGHANDLEENCRYPTEDJSON {
     LW_MSG type;
 } LWMSGHANDLEENCRYPTEDJSON;
+
+typedef struct _LWMSGHANDLEJSON {
+    LW_MSG type;
+} LWMSGHANDLEJSON;
 
 typedef struct _LWMSGEVALUATE {
     LW_MSG type;
@@ -453,6 +458,19 @@ void logic_emit_handle_encrypted_json_async(LWCONTEXT* pLwc, const char* bytes, 
     LWMSGHANDLEENCRYPTEDJSON m;
     m.type = LM_LWMSGHANDLEENCRYPTEDJSON;
     zmsg_addmem(msg, &m, sizeof(LWMSGHANDLEENCRYPTEDJSON));
+    zmsg_addmem(msg, bytes, bytes_len);
+    zactor_t* actor = pLwc->logic_actor;
+    if (zactor_send(actor, &msg) < 0) {
+        zmsg_destroy(&msg);
+        LOGE("Send message to logic worker failed!");
+    }
+}
+
+void logic_emit_handle_json_async(LWCONTEXT* pLwc, const char* bytes, int bytes_len) {
+    zmsg_t* msg = zmsg_new();
+    LWMSGHANDLEJSON m;
+    m.type = LM_LWMSGHANDLEJSON;
+    zmsg_addmem(msg, &m, sizeof(LWMSGHANDLEJSON));
     zmsg_addmem(msg, bytes, bytes_len);
     zactor_t* actor = pLwc->logic_actor;
     if (zactor_send(actor, &msg) < 0) {
@@ -1095,13 +1113,19 @@ static int loop_pipe_reader(zloop_t* loop, zsock_t* pipe, void* args) {
             f = zmsg_next(msg);
             byte* name = zframe_data(f);
             //size_t code_len = zframe_size(f);
-            script_evaluate_with_name(pLwc->L, code, code_len, name);
+            script_evaluate_with_name(pLwc->L, (const char*)code, code_len, (const char*)name);
         } else if (d && s == sizeof(LWMSGHANDLEENCRYPTEDJSON) && *(int*)d == LM_LWMSGHANDLEENCRYPTEDJSON) {
             // Lua script code in the next frame.
             f = zmsg_next(msg);
             byte* bytes = zframe_data(f);
             size_t bytes_len = zframe_size(f);
-            script_emit_handle_encrypted_json(pLwc->L, bytes, (int)bytes_len);
+            script_emit_handle_encrypted_json(pLwc->L, (const char*)bytes, (int)bytes_len);
+        } else if (d && s == sizeof(LWMSGHANDLEJSON) && *(int*)d == LM_LWMSGHANDLEJSON) {
+            // Lua script code in the next frame.
+            f = zmsg_next(msg);
+            byte* bytes = zframe_data(f);
+            size_t bytes_len = zframe_size(f);
+            script_emit_handle_json(pLwc->L, (const char*)bytes, (int)bytes_len);
         } else if (strncmp((const char*)d, "$TERM", 5) == 0) {
             // ZFRAME spec?
             rc = -1;

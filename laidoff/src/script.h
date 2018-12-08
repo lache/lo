@@ -18,6 +18,7 @@ int script_emit_near(void* L, int key1, int key2);
 int script_emit_logic_frame_finish(void* L, float dt);
 int script_emit_ui_event(void* L, const char* id, float w_ratio, float h_ratio);
 int script_emit_handle_encrypted_json(void* L, const char* bytes, int bytes_len);
+int script_emit_handle_json(void* L, const char* bytes, int bytes_len);
 void script_get_string(void* L, const char* id, char* ret, int ret_max_len);
 void script_on_near_puck_player(void* _script, int dashing);
 void script_on_player_attack(LWSCRIPT* script);

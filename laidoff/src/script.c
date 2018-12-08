@@ -846,6 +846,24 @@ int script_emit_handle_encrypted_json(void* L, const char* bytes, int bytes_len)
     return ret;
 }
 
+int script_emit_handle_json(void* L, const char* bytes, int bytes_len) {
+    int ret;
+    // push functions and arguments
+    lua_getglobal(L, "handle_json"); // function to be called
+    lua_pushlstring(L, bytes, bytes_len);
+    // do the call (1 argument, 1 result)
+    if (lua_pcall(L, 1, 1, 0) != 0) {
+        LOGEP("error: %s", lua_tostring(L, -1));
+    }
+    // retrieve result
+    if (!lua_isnumber(L, -1)) {
+        LOGEP("error: %s", lua_tostring(L, -1));
+    }
+    ret = (int)lua_tonumber(L, -1);
+    lua_pop(L, 1); // pop returned value
+    return ret;
+}
+
 void script_get_string(void* L, const char* id, char* ret, int ret_max_len) {
     // push functions and arguments
     lua_getglobal(L, "get_string"); // function to be called

@@ -1113,3 +1113,12 @@ function handle_encrypted_json(message)
     print('decrypted json reply from server: '..json_dec_plaintext)
     return 1985
 end
+
+function handle_json(message)
+    local bytes_message = { string.byte(message, 1, -1) }
+    print('handle_json: '..#bytes_message..' bytes received')
+    local bytes_type = {table.unpack(bytes_message,1,1+4-1)}
+    local bytes_plaintext = {table.unpack(bytes_message,1+4,#bytes_message)}
+    local json_plaintext = utf8_from(bytes_plaintext)
+    lo.show_sys_msg(c.def_sys_msg, 'plaintext:' .. json_plaintext)
+end

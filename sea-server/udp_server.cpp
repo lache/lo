@@ -1181,6 +1181,30 @@ void udp_server::handle_json(std::size_t bytes_transferred) {
             free(bytes_key);
         } else {
             LOGEP("Key not found on sea-server session cache for account ID %1%", bytes_account_id);
+            
+            // encrypt plaintext json reply
+            std::string reply = "{\"rc\":-1,\"note\":\"keynotfound\"}";
+            
+            // send encrypted json reply
+            
+            std::vector<unsigned char> json_reply;
+            json_reply.insert(json_reply.end(), { LPGP_LWPTTLJSONREPLY, 0, 0, 0 });
+            //auto bytes_iv_beg = bytes_iv_sp.;
+            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            json_reply.insert(json_reply.end(), reply.begin(), reply.end());
+            
+            char compressed[1500];
+            int compressed_size = LZ4_compress_default((char*)&json_reply[0], compressed, static_cast<int>(json_reply.size()), static_cast<int>(boost::size(compressed)));
+            if (compressed_size > 0) {
+                socket_.async_send_to(boost::asio::buffer(compressed, compressed_size),
+                                      remote_endpoint_,
+                                      boost::bind(&udp_server::handle_send,
+                                                  this,
+                                                  boost::asio::placeholders::error,
+                                                  boost::asio::placeholders::bytes_transferred));
+            } else {
+                LOGEP("LZ4_compress_default() error! - %1%", compressed_size);
+            }
         }
     }
 }
