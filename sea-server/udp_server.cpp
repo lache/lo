@@ -19,6 +19,8 @@
 
 using namespace ss;
 
+extern int g_production;
+
 const auto update_interval = boost::posix_time::milliseconds(75);
 //const auto update_interval = boost::posix_time::milliseconds(250);
 const auto salvage_update_interval = boost::posix_time::milliseconds(30 * 60 * 1000);
@@ -35,7 +37,7 @@ udp_server::udp_server(boost::asio::io_service& io_service,
                        std::shared_ptr<session> session,
                        std::shared_ptr<contract> contract,
                        std::shared_ptr<lua_State> lua_state_instance)
-    : socket_(io_service, udp::endpoint(udp::v4()/*boost::asio::ip::address::from_string("127.0.0.1")*/, 3100))
+    : socket_(io_service, g_production ? udp::endpoint(udp::v4(), 3100) : udp::endpoint(boost::asio::ip::address::from_string("127.0.0.1"), 3100))
     , timer_(io_service, update_interval)
     , salvage_timer_(io_service, salvage_update_interval)
     , contract_timer_(io_service, contract_update_interval)

@@ -11,7 +11,10 @@
 #include "adminmessage.h"
 #include "session.hpp"
 #include "city.hpp"
+
 using namespace ss;
+
+extern int g_production;
 
 udp_admin_server::udp_admin_server(boost::asio::io_service& io_service,
                                    std::shared_ptr<sea> sea,
@@ -21,7 +24,7 @@ udp_admin_server::udp_admin_server(boost::asio::io_service& io_service,
                                    std::shared_ptr<udp_server> udp_server,
                                    std::shared_ptr<session> session,
                                    std::shared_ptr<city> city)
-    : socket_(io_service, udp::endpoint(udp::v4(), 4000))
+    : socket_(io_service, g_production ? udp::endpoint(udp::v4(), 4000) : udp::endpoint(boost::asio::ip::address::from_string("127.0.0.1"), 4000))
     , sea_(sea)
     , sea_static_(sea_static)
     , seaport_(seaport)

@@ -205,11 +205,16 @@ int endpoints(char*** o, int* n) {
     return 0;
 }
 
+int g_production = 0;
+
 int main(int argc, char* argv[]) {
     try {
         const int major = 0;
         const int minor = 1;
         const int patch = 0;
+        if (argc > 1 && strcmp(argv[1], "production") == 0) {
+            g_production = 1;
+        }
         LOGI("sea-server v%d.%d.%d", major, minor, patch);
         auto cwd = boost::filesystem::current_path();
         do {
