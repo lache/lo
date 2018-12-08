@@ -92,6 +92,12 @@ namespace ss {
                                   unsigned char* bytes_ciphertext,
                                   unsigned char* bytes_key,
                                   int len_key);
+        void send_compressed(const char* bytes, int bytes_len);
+        int encrypt_message(std::vector<unsigned char>& bytes_iv,
+                            std::vector<unsigned char>& bytes_ciphertext,
+                            const std::string& message,
+                            unsigned char* bytes_key,
+                            int len_key);
         void handle_receive(const boost::system::error_code& error, std::size_t bytes_transferred);
         void handle_send(const boost::system::error_code& error, std::size_t bytes_transferred);
         std::shared_ptr<route> create_route_id(const std::vector<int>& seaport_id_list, int expect_land, std::shared_ptr<astarrtree::coro_context> coro) const;

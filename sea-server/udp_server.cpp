@@ -35,7 +35,7 @@ udp_server::udp_server(boost::asio::io_service& io_service,
                        std::shared_ptr<session> session,
                        std::shared_ptr<contract> contract,
                        std::shared_ptr<lua_State> lua_state_instance)
-    : socket_(io_service, udp::endpoint(udp::v4(), 3100))
+    : socket_(io_service, udp::endpoint(udp::v4()/*boost::asio::ip::address::from_string("127.0.0.1")*/, 3100))
     , timer_(io_service, update_interval)
     , salvage_timer_(io_service, salvage_update_interval)
     , contract_timer_(io_service, contract_update_interval)
@@ -930,8 +930,7 @@ int udp_server::encode_message(std::vector<unsigned char>& bytes_iv_first,
         return -1;
     }
 
-    const auto len_ciphertext = bytes_ciphertext.size();
-    const auto len_plaintext = len_ciphertext;
+    const auto len_plaintext = bytes_plaintext.size();
 
     if (len_plaintext % 16 != 0) {
         LOGE("input plaintext length should be multiple of 16-byte");
@@ -946,6 +945,8 @@ int udp_server::encode_message(std::vector<unsigned char>& bytes_iv_first,
     }
     
     bytes_iv_first.insert(bytes_iv_first.end(), bytes_iv, bytes_iv + 16);
+    
+    bytes_ciphertext.resize(len_plaintext);
 
     if (mbedtls_aes_crypt_cbc(&aes_context,
                               MBEDTLS_AES_ENCRYPT,
@@ -1117,56 +1118,21 @@ void udp_server::handle_json(std::size_t bytes_transferred) {
                         LOGI("buy_seaport_ownership reply json: %1%", reply);
 
                         // encrypt plaintext json reply
-                        std::vector<unsigned char> reply_plaintext_bytes(reply.begin(), reply.end());
-                        add_padding_bytes_inplace(reply_plaintext_bytes);
-                        std::vector<unsigned char> reply_ciphertext_bytes(reply_plaintext_bytes.size());
-                        std::vector<unsigned char> bytes_iv_first;
-                        auto encode_result = encode_message(bytes_iv_first, reply_ciphertext_bytes, reply_plaintext_bytes, bytes_key, len_key);
-                        if (encode_result) {
-                            LOGE("error occured during encode_message: %||", encode_result);
+                        std::vector<unsigned char> reply_ciphertext_bytes;
+                        std::vector<unsigned char> bytes_iv;
+                        auto encrypt_result = encrypt_message(bytes_iv, reply_ciphertext_bytes, reply, bytes_key, len_key);
+                        if (encrypt_result) {
+                            LOGE("error occured during encrypt_message: %||", encrypt_result);
                         }
                         
-                        
-
                         // send encrypted json reply
 
                         std::vector<unsigned char> json_reply;
                         json_reply.insert(json_reply.end(), { LPGP_LWPTTLJSON, 0, 0, 0 });
-                        //auto bytes_iv_beg = bytes_iv_sp.;
-                        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                        json_reply.insert(json_reply.end(), bytes_iv_first.begin(), bytes_iv_first.end());
+                        json_reply.insert(json_reply.end(), bytes_iv.begin(), bytes_iv.end());
                         json_reply.insert(json_reply.end(), reply_ciphertext_bytes.begin(), reply_ciphertext_bytes.end());
-                        LOGI("json reply message size (before compression): %||", json_reply.size());
                         
-                        for (auto c : json_reply) {
-                            printf("json reply 0x%02x\n", c);
-                        }
-                        
-                        char compressed[1500];
-                        int compressed_size = LZ4_compress_default((char*)&json_reply[0], compressed, static_cast<int>(json_reply.size()), static_cast<int>(boost::size(compressed)));
-                        if (compressed_size > 0) {
-                            socket_.async_send_to(boost::asio::buffer(compressed, compressed_size),
-                                                  remote_endpoint_,
-                                                  boost::bind(&udp_server::handle_send,
-                                                              this,
-                                                              boost::asio::placeholders::error,
-                                                              boost::asio::placeholders::bytes_transferred));
-                        } else {
-                            LOGEP("LZ4_compress_default() error! - %1%", compressed_size);
-                        }
-                        
-                        // test decode
-                        /*int udp_server::decode_message(std::vector<unsigned char>& bytes_plaintext,
-                         unsigned char* bytes_iv,
-                         unsigned char* bytes_ciphertext,
-                         unsigned char* bytes_key,
-                         int len_key)*/
-                        std::vector<unsigned char> bytes_dec_ciphertext(reply_ciphertext_bytes.size());
-                        decode_message(bytes_dec_ciphertext, &bytes_iv_first[0], &reply_ciphertext_bytes[0], bytes_key, len_key);
-                        for (char c : bytes_dec_ciphertext) {
-                            printf("deciphered '%c' 0x%02x\n", c, c);
-                        }
-                        LOGI("deciphered length: %||", bytes_dec_ciphertext.size());
+                        send_compressed((const char*)&json_reply[0], static_cast<int>(json_reply.size()));
 
                     } else if (strcmp(m, "buy_cargo_from_city") == 0) {
                         city_->buy_cargo(std::stoi(a1),
@@ -1189,23 +1155,39 @@ void udp_server::handle_json(std::size_t bytes_transferred) {
             
             std::vector<unsigned char> json_reply;
             json_reply.insert(json_reply.end(), { LPGP_LWPTTLJSONREPLY, 0, 0, 0 });
-            //auto bytes_iv_beg = bytes_iv_sp.;
-            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             json_reply.insert(json_reply.end(), reply.begin(), reply.end());
-            
-            char compressed[1500];
-            int compressed_size = LZ4_compress_default((char*)&json_reply[0], compressed, static_cast<int>(json_reply.size()), static_cast<int>(boost::size(compressed)));
-            if (compressed_size > 0) {
-                socket_.async_send_to(boost::asio::buffer(compressed, compressed_size),
-                                      remote_endpoint_,
-                                      boost::bind(&udp_server::handle_send,
-                                                  this,
-                                                  boost::asio::placeholders::error,
-                                                  boost::asio::placeholders::bytes_transferred));
-            } else {
-                LOGEP("LZ4_compress_default() error! - %1%", compressed_size);
-            }
+            send_compressed((const char*)&json_reply[0], static_cast<int>(json_reply.size()));
         }
+    }
+}
+
+int udp_server::encrypt_message(std::vector<unsigned char>& bytes_iv,
+                                std::vector<unsigned char>& bytes_ciphertext,
+                                const std::string& message,
+                                unsigned char* bytes_key,
+                                int len_key) {
+    std::vector<unsigned char> bytes_plaintext(message.begin(), message.end());
+    add_padding_bytes_inplace(bytes_plaintext);
+    auto encode_result = encode_message(bytes_iv, bytes_ciphertext, bytes_plaintext, bytes_key, len_key);
+    if (encode_result) {
+        LOGE("error occured during encode_message: %||", encode_result);
+        return encode_result;
+    }
+    return 0;
+}
+
+void udp_server::send_compressed(const char* bytes, int bytes_len) {
+    char compressed[1500];
+    int compressed_size = LZ4_compress_default((char*)bytes, compressed, bytes_len, static_cast<int>(boost::size(compressed)));
+    if (compressed_size > 0) {
+        socket_.async_send_to(boost::asio::buffer(compressed, compressed_size),
+                              remote_endpoint_,
+                              boost::bind(&udp_server::handle_send,
+                                          this,
+                                          boost::asio::placeholders::error,
+                                          boost::asio::placeholders::bytes_transferred));
+    } else {
+        LOGEP("send_compressed: LZ4_compress_default() error! - %1%", compressed_size);
     }
 }
 
