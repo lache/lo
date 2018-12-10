@@ -1106,32 +1106,19 @@ void udp_server::handle_json(std::size_t bytes_transferred) {
                         sea_->spawn(std::stof(a1), std::stof(a2), 1, 1, 0, 1);
                     } else if (strcmp(m, "buy_seaport_ownership") == 0) {
                         int buy_ownership_result = seaport_->buy_ownership(std::stoi(a1), std::stoi(a2), bytes_account_id);
-                        std::string reply;
-                        lua_getglobal(L(), "make_reply_json");
-                        lua_pushinteger(L(), message_counter);
-                        lua_pushinteger(L(), buy_ownership_result);
-                        lua_pushstring(L(), "");
-                        if (lua_pcall(L(), 3/*arguments*/, 1/*result*/, 0)) {
-                            LOGEP("error: %1%", lua_tostring(L(), -1));
-                        } else {
-                            reply = lua_tostring(L(), -1);
-                        }
-                        lua_settop(L(), 0);
-                        LOGI("buy_seaport_ownership reply json: %1%", reply);
+                        auto json_reply = make_reply_json(message_counter, buy_ownership_result, "");
 
                         // encrypt plaintext json reply
                         uchar_vec bytes_reply_ciphertext;
                         uchar_vec bytes_iv;
-                        auto encrypt_result = encrypt_message(bytes_iv, bytes_reply_ciphertext, reply, bytes_key, len_key);
+                        auto encrypt_result = encrypt_message(bytes_iv, bytes_reply_ciphertext, json_reply, bytes_key, len_key);
                         if (encrypt_result) {
                             LOGE("error occured during encrypt_message: %||", encrypt_result);
                         }
                         
                         // send encrypted json reply
-
-                        uchar_vec json_reply = create_encrypted_json_message(bytes_iv, bytes_reply_ciphertext);
-                        
-                        send_compressed((const char*)&json_reply[0], static_cast<int>(json_reply.size()));
+                        auto json_reply_message = create_encrypted_json_message(bytes_iv, bytes_reply_ciphertext);
+                        send_compressed((const char*)&json_reply_message[0], static_cast<int>(json_reply_message.size()));
 
                     } else if (strcmp(m, "buy_cargo_from_city") == 0) {
                         city_->buy_cargo(std::stoi(a1),
@@ -1158,6 +1145,22 @@ void udp_server::handle_json(std::size_t bytes_transferred) {
             send_compressed((const char*)&json_reply[0], static_cast<int>(json_reply.size()));
         }
     }
+}
+
+std::string ss::udp_server::make_reply_json(int message_counter, int result_code, const std::string& note) {
+    std::string reply;
+    lua_getglobal(L(), "make_reply_json");
+    lua_pushinteger(L(), message_counter);
+    lua_pushinteger(L(), result_code);
+    lua_pushstring(L(), note.c_str());
+    if (lua_pcall(L(), 3/*arguments*/, 1/*result*/, 0)) {
+        LOGEP("error: %1%", lua_tostring(L(), -1));
+    } else {
+        reply = lua_tostring(L(), -1);
+    }
+    lua_settop(L(), 0);
+    LOGI("buy_seaport_ownership reply json: %1%", reply);
+    return reply;
 }
 
 uchar_vec ss::udp_server::create_encrypted_json_message(const uchar_vec& bytes_iv, const uchar_vec& bytes_reply_ciphertext) {
