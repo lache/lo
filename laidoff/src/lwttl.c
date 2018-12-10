@@ -2812,13 +2812,13 @@ void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc) {
                 logic_emit_handle_encrypted_json_async(pLwc, decompressed, decompressed_bytes);
                 break;
             }
-                case LPGP_LWPTTLJSONREPLY:
-                {
-                    LOGI("LWPTTLJSONREPLY");
-                    //script_emit_handle_encrypted_json()
-                    logic_emit_handle_json_async(pLwc, decompressed, decompressed_bytes);
-                    break;
-                }
+            case LPGP_LWPTTLJSONREPLY:
+            {
+                LOGI("LWPTTLJSONREPLY");
+                //script_emit_handle_encrypted_json()
+                logic_emit_handle_json_async(pLwc, decompressed, decompressed_bytes);
+                break;
+            }
             default:
             {
                 LOGEP("Unknown UDP packet");

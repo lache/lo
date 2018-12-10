@@ -910,7 +910,7 @@ void udp_server::transform_single_cell() {
     }
 }
 
-void udp_server::add_padding_bytes_inplace(std::vector<unsigned char>& bytes_plaintext) {
+void udp_server::add_padding_bytes_inplace(uchar_vec& bytes_plaintext) {
     auto CIPHER_BLOCK_PADDING_SENTINEL = 0x80;
     auto CIPHER_BLOCK_BYTES = 16;
     bytes_plaintext.push_back(CIPHER_BLOCK_PADDING_SENTINEL);
@@ -920,9 +920,9 @@ void udp_server::add_padding_bytes_inplace(std::vector<unsigned char>& bytes_pla
     }
 }
 
-int udp_server::encode_message(std::vector<unsigned char>& bytes_iv_first,
-                               std::vector<unsigned char>& bytes_ciphertext,
-                               const std::vector<unsigned char>& bytes_plaintext,
+int udp_server::encode_message(uchar_vec& bytes_iv_first,
+                               uchar_vec& bytes_ciphertext,
+                               const uchar_vec& bytes_plaintext,
                                unsigned char* bytes_key,
                                int len_key) {
     mbedtls_aes_context aes_context;
@@ -965,7 +965,7 @@ int udp_server::encode_message(std::vector<unsigned char>& bytes_iv_first,
     return 0;
 }
 
-int udp_server::decode_message(std::vector<unsigned char>& bytes_plaintext,
+int udp_server::decode_message(uchar_vec& bytes_plaintext,
                                unsigned char* bytes_iv,
                                unsigned char* bytes_ciphertext,
                                unsigned char* bytes_key,
@@ -1029,7 +1029,7 @@ void udp_server::handle_json(std::size_t bytes_transferred) {
             const auto bytes_ciphertext = reinterpret_cast<unsigned char*>(recv_buffer_.data() + message_type_len + account_id_block_len + iv_len);
             const auto ciphertext_len = bytes_transferred - message_type_len - account_id_block_len - iv_len;
             const auto plaintext_len = ciphertext_len;
-            std::vector<unsigned char> bytes_plaintext(plaintext_len);
+            uchar_vec bytes_plaintext(plaintext_len);
 
             auto decode_result = decode_message(bytes_plaintext, bytes_iv, bytes_ciphertext, bytes_key, len_key);
             if (decode_result) {
@@ -1120,19 +1120,16 @@ void udp_server::handle_json(std::size_t bytes_transferred) {
                         LOGI("buy_seaport_ownership reply json: %1%", reply);
 
                         // encrypt plaintext json reply
-                        std::vector<unsigned char> reply_ciphertext_bytes;
-                        std::vector<unsigned char> bytes_iv;
-                        auto encrypt_result = encrypt_message(bytes_iv, reply_ciphertext_bytes, reply, bytes_key, len_key);
+                        uchar_vec bytes_reply_ciphertext;
+                        uchar_vec bytes_iv;
+                        auto encrypt_result = encrypt_message(bytes_iv, bytes_reply_ciphertext, reply, bytes_key, len_key);
                         if (encrypt_result) {
                             LOGE("error occured during encrypt_message: %||", encrypt_result);
                         }
                         
                         // send encrypted json reply
 
-                        std::vector<unsigned char> json_reply;
-                        json_reply.insert(json_reply.end(), { LPGP_LWPTTLJSON, 0, 0, 0 });
-                        json_reply.insert(json_reply.end(), bytes_iv.begin(), bytes_iv.end());
-                        json_reply.insert(json_reply.end(), reply_ciphertext_bytes.begin(), reply_ciphertext_bytes.end());
+                        uchar_vec json_reply = create_encrypted_json_message(bytes_iv, bytes_reply_ciphertext);
                         
                         send_compressed((const char*)&json_reply[0], static_cast<int>(json_reply.size()));
 
@@ -1155,7 +1152,7 @@ void udp_server::handle_json(std::size_t bytes_transferred) {
             
             // send encrypted json reply
             
-            std::vector<unsigned char> json_reply;
+            uchar_vec json_reply;
             json_reply.insert(json_reply.end(), { LPGP_LWPTTLJSONREPLY, 0, 0, 0 });
             json_reply.insert(json_reply.end(), reply.begin(), reply.end());
             send_compressed((const char*)&json_reply[0], static_cast<int>(json_reply.size()));
@@ -1163,12 +1160,20 @@ void udp_server::handle_json(std::size_t bytes_transferred) {
     }
 }
 
-int udp_server::encrypt_message(std::vector<unsigned char>& bytes_iv,
-                                std::vector<unsigned char>& bytes_ciphertext,
+uchar_vec ss::udp_server::create_encrypted_json_message(const uchar_vec& bytes_iv, const uchar_vec& bytes_reply_ciphertext) {
+    uchar_vec json_reply;
+    json_reply.insert(json_reply.end(), { LPGP_LWPTTLJSON, 0, 0, 0 });
+    json_reply.insert(json_reply.end(), bytes_iv.begin(), bytes_iv.end());
+    json_reply.insert(json_reply.end(), bytes_reply_ciphertext.begin(), bytes_reply_ciphertext.end());
+    return json_reply;
+}
+
+int udp_server::encrypt_message(uchar_vec& bytes_iv,
+                                uchar_vec& bytes_ciphertext,
                                 const std::string& message,
                                 unsigned char* bytes_key,
                                 int len_key) {
-    std::vector<unsigned char> bytes_plaintext(message.begin(), message.end());
+    uchar_vec bytes_plaintext(message.begin(), message.end());
     add_padding_bytes_inplace(bytes_plaintext);
     auto encode_result = encode_message(bytes_iv, bytes_ciphertext, bytes_plaintext, bytes_key, len_key);
     if (encode_result) {
