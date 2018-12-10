@@ -12,7 +12,6 @@
 #include "salvage.hpp"
 #include "shipyard.hpp"
 #include "mbedtls/aes.h"
-#include "jsmn.h"
 #include "session.hpp"
 #include "contract.hpp"
 #include "srp.hpp"
@@ -945,9 +944,9 @@ int udp_server::encode_message(uchar_vec& bytes_iv_first,
         LOGE("cannot seed iv");
         return -3;
     }
-    
+
     bytes_iv_first.insert(bytes_iv_first.end(), bytes_iv, bytes_iv + 16);
-    
+
     bytes_ciphertext.resize(len_plaintext);
 
     if (mbedtls_aes_crypt_cbc(&aes_context,
@@ -1002,7 +1001,7 @@ int udp_server::decode_message(uchar_vec& bytes_plaintext,
     }
 }
 
-void udp_server::handle_json(std::size_t bytes_transferred) {
+void udp_server::handle_encrypted_json(std::size_t bytes_transferred) {
     LOGI("JSON received (%zu bytes).", bytes_transferred);
     // cipher JSON payload
     const char* bytes_account_id = reinterpret_cast<const char*>(recv_buffer_.data() + 0x04);
@@ -1059,52 +1058,11 @@ void udp_server::handle_json(std::size_t bytes_transferred) {
                     // At last, valid JSON message from valid endpoint with valid credential
                     LOGI("VALID JSON MESSAGE FROM %1%", bytes_account_id);
                     int message_counter = 0;
-                    char m[32], a1[32], a2[32], a3[32], a4[32], a5[32];
-                    for (int i = 1; i < token_count; i++) {
-                        if (jsoneq(json_str, &json_token[i], "c") == 0) {
-                            message_counter = std::stoi(std::string(json_str + json_token[i + 1].start, json_token[i + 1].end - json_token[i + 1].start));
-                            LOGI("MESSAGE c: %1%", message_counter);
-                        }
-                        if (jsoneq(json_str, &json_token[i], "m") == 0) {
-                            int token_null_pos = std::min(json_token[i + 1].end - json_token[i + 1].start, static_cast<int>(sizeof(m)) - 1);
-                            strncpy(m, json_str + json_token[i + 1].start, token_null_pos);
-                            m[token_null_pos] = 0;
-                            LOGI("MESSAGE m: %1%", m);
-                        }
-                        if (jsoneq(json_str, &json_token[i], "a1") == 0) {
-                            int token_null_pos = std::min(json_token[i + 1].end - json_token[i + 1].start, static_cast<int>(sizeof(a1)) - 1);
-                            strncpy(a1, json_str + json_token[i + 1].start, token_null_pos);
-                            a1[token_null_pos] = 0;
-                            LOGI("MESSAGE a1: %1%", a1);
-                        }
-                        if (jsoneq(json_str, &json_token[i], "a2") == 0) {
-                            int token_null_pos = std::min(json_token[i + 1].end - json_token[i + 1].start, static_cast<int>(sizeof(a2)) - 1);
-                            strncpy(a2, json_str + json_token[i + 1].start, token_null_pos);
-                            a2[token_null_pos] = 0;
-                            LOGI("MESSAGE a2: %1%", a2);
-                        }
-                        if (jsoneq(json_str, &json_token[i], "a3") == 0) {
-                            int token_null_pos = std::min(json_token[i + 1].end - json_token[i + 1].start, static_cast<int>(sizeof(a3)) - 1);
-                            strncpy(a3, json_str + json_token[i + 1].start, token_null_pos);
-                            a3[token_null_pos] = 0;
-                            LOGI("MESSAGE a3: %1%", a3);
-                        }
-                        if (jsoneq(json_str, &json_token[i], "a4") == 0) {
-                            int token_null_pos = std::min(json_token[i + 1].end - json_token[i + 1].start, static_cast<int>(sizeof(a4)) - 1);
-                            strncpy(a4, json_str + json_token[i + 1].start, token_null_pos);
-                            a4[token_null_pos] = 0;
-                            LOGI("MESSAGE a4: %1%", a4);
-                        }
-                        if (jsoneq(json_str, &json_token[i], "a5") == 0) {
-                            int token_null_pos = std::min(json_token[i + 1].end - json_token[i + 1].start, static_cast<int>(sizeof(a5)) - 1);
-                            strncpy(a5, json_str + json_token[i + 1].start, token_null_pos);
-                            a5[token_null_pos] = 0;
-                            LOGI("MESSAGE a5: %1%", a5);
-                        }
-                    }
-                    if (strcmp(m, "sea_spawn_without_id") == 0) {
+                    std::string m, a1, a2, a3, a4, a5;
+                    parse_json_message(token_count, json_str, json_token, message_counter, m, a1, a2, a3, a4, a5);
+                    if (m == "sea_spawn_without_id") {
                         sea_->spawn(std::stof(a1), std::stof(a2), 1, 1, 0, 1);
-                    } else if (strcmp(m, "buy_seaport_ownership") == 0) {
+                    } else if (m == "buy_seaport_ownership") {
                         int buy_ownership_result = seaport_->buy_ownership(std::stoi(a1), std::stoi(a2), bytes_account_id);
                         auto json_reply = make_reply_json(message_counter, buy_ownership_result, "");
 
@@ -1115,12 +1073,12 @@ void udp_server::handle_json(std::size_t bytes_transferred) {
                         if (encrypt_result) {
                             LOGE("error occured during encrypt_message: %||", encrypt_result);
                         }
-                        
+
                         // send encrypted json reply
                         auto json_reply_message = create_encrypted_json_message(bytes_iv, bytes_reply_ciphertext);
                         send_compressed((const char*)&json_reply_message[0], static_cast<int>(json_reply_message.size()));
 
-                    } else if (strcmp(m, "buy_cargo_from_city") == 0) {
+                    } else if (m == "buy_cargo_from_city") {
                         city_->buy_cargo(std::stoi(a1),
                                          std::stoi(a2),
                                          std::stoi(a3),
@@ -1133,16 +1091,64 @@ void udp_server::handle_json(std::size_t bytes_transferred) {
             free(bytes_key);
         } else {
             LOGEP("Key not found on sea-server session cache for account ID %1%", bytes_account_id);
-            
+
             // encrypt plaintext json reply
             std::string reply = "{\"rc\":-1,\"note\":\"keynotfound\"}";
-            
+
             // send encrypted json reply
-            
+
             uchar_vec json_reply;
             json_reply.insert(json_reply.end(), { LPGP_LWPTTLJSONREPLY, 0, 0, 0 });
             json_reply.insert(json_reply.end(), reply.begin(), reply.end());
             send_compressed((const char*)&json_reply[0], static_cast<int>(json_reply.size()));
+        }
+    }
+}
+
+void udp_server::parse_json_message(int token_count,
+                                    const char* json_str,
+                                    std::vector<jsmntok_t>& json_token,
+                                    int& message_counter,
+                                    std::string& m,
+                                    std::string& a1,
+                                    std::string& a2,
+                                    std::string& a3,
+                                    std::string& a4,
+                                    std::string& a5) {
+    for (int i = 1; i < token_count; i++) {
+        if (jsoneq(json_str, &json_token[i], "c") == 0) {
+            message_counter = std::stoi(std::string(json_str + json_token[i + 1].start, json_token[i + 1].end - json_token[i + 1].start));
+            LOGI("MESSAGE c: %1%", message_counter);
+        }
+        if (jsoneq(json_str, &json_token[i], "m") == 0) {
+            int token_null_pos = std::min(json_token[i + 1].end - json_token[i + 1].start, static_cast<int>(sizeof(m)) - 1);
+            m.assign(json_str + json_token[i + 1].start, token_null_pos);
+            LOGI("MESSAGE m: %1%", m);
+        }
+        if (jsoneq(json_str, &json_token[i], "a1") == 0) {
+            int token_null_pos = std::min(json_token[i + 1].end - json_token[i + 1].start, static_cast<int>(sizeof(a1)) - 1);
+            a1.assign(json_str + json_token[i + 1].start, token_null_pos);
+            LOGI("MESSAGE a1: %1%", a1);
+        }
+        if (jsoneq(json_str, &json_token[i], "a2") == 0) {
+            int token_null_pos = std::min(json_token[i + 1].end - json_token[i + 1].start, static_cast<int>(sizeof(a2)) - 1);
+            a2.assign(json_str + json_token[i + 1].start, token_null_pos);
+            LOGI("MESSAGE a2: %1%", a2);
+        }
+        if (jsoneq(json_str, &json_token[i], "a3") == 0) {
+            int token_null_pos = std::min(json_token[i + 1].end - json_token[i + 1].start, static_cast<int>(sizeof(a3)) - 1);
+            a3.assign(json_str + json_token[i + 1].start, token_null_pos);
+            LOGI("MESSAGE a3: %1%", a3);
+        }
+        if (jsoneq(json_str, &json_token[i], "a4") == 0) {
+            int token_null_pos = std::min(json_token[i + 1].end - json_token[i + 1].start, static_cast<int>(sizeof(a4)) - 1);
+            a4.assign(json_str + json_token[i + 1].start, token_null_pos);
+            LOGI("MESSAGE a4: %1%", a4);
+        }
+        if (jsoneq(json_str, &json_token[i], "a5") == 0) {
+            int token_null_pos = std::min(json_token[i + 1].end - json_token[i + 1].start, static_cast<int>(sizeof(a5)) - 1);
+            a5.assign(json_str + json_token[i + 1].start, token_null_pos);
+            LOGI("MESSAGE a5: %1%", a5);
         }
     }
 }
@@ -1219,7 +1225,7 @@ void udp_server::handle_receive(const boost::system::error_code& error, std::siz
         } else if (type == LPGP_LWPTTLTRANSFORMSINGLECELL) {
             transform_single_cell();
         } else if (type == LPGP_LWPTTLJSON) {
-            handle_json(bytes_transferred);
+            handle_encrypted_json(bytes_transferred);
         } else {
             LOGIP("Unknown UDP request of type %1%", static_cast<int>(type));
         }

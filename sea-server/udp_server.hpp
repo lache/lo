@@ -81,7 +81,17 @@ namespace ss {
         void handle_ping_single_cell();
         void handle_chat();
         void transform_single_cell();
-        void handle_json(std::size_t bytes_transferred);
+        void handle_encrypted_json(std::size_t bytes_transferred);
+        void parse_json_message(int token_count,
+                                const char* json_str,
+                                std::vector<jsmntok_t>& json_token,
+                                int& message_counter,
+                                std::string& m,
+                                std::string& a1,
+                                std::string& a2,
+                                std::string& a3,
+                                std::string& a4,
+                                std::string& a5);
         std::string make_reply_json(int message_counter, int result_code, const std::string& note);
         uchar_vec create_encrypted_json_message(const uchar_vec &bytes_iv, const uchar_vec &bytes_reply_ciphertext);
         static void add_padding_bytes_inplace(uchar_vec& bytes_plaintext);
