@@ -9,6 +9,7 @@ namespace astarrtree {
 namespace ss {
     namespace bg = boost::geometry;
     namespace bgi = boost::geometry::index;
+    using uchar_vec = std::vector<unsigned char>;
     using boost::asio::ip::udp;
     class sea;
     class sea_static;
@@ -80,21 +81,33 @@ namespace ss {
         void handle_ping_single_cell();
         void handle_chat();
         void transform_single_cell();
-        void handle_json(std::size_t bytes_transferred);
-        static void add_padding_bytes_inplace(std::vector<unsigned char>& bytes_plaintext);
-        static int encode_message(std::vector<unsigned char>& bytes_iv_first,
-                                  std::vector<unsigned char>& bytes_ciphertext,
-                                  const std::vector<unsigned char>& bytes_plaintext,
+        void handle_encrypted_json(std::size_t bytes_transferred);
+        void parse_json_message(int token_count,
+                                const char* json_str,
+                                std::vector<jsmntok_t>& json_token,
+                                int& message_counter,
+                                std::string& m,
+                                std::string& a1,
+                                std::string& a2,
+                                std::string& a3,
+                                std::string& a4,
+                                std::string& a5);
+        std::string make_reply_json(int message_counter, int result_code, const std::string& note);
+        uchar_vec create_encrypted_json_message(const uchar_vec &bytes_iv, const uchar_vec &bytes_reply_ciphertext);
+        static void add_padding_bytes_inplace(uchar_vec& bytes_plaintext);
+        static int encode_message(uchar_vec& bytes_iv_first,
+                                  uchar_vec& bytes_ciphertext,
+                                  const uchar_vec& bytes_plaintext,
                                   unsigned char* bytes_key,
                                   int len_key);
-        static int decode_message(std::vector<unsigned char>& bytes_plaintext,
+        static int decode_message(uchar_vec& bytes_plaintext,
                                   unsigned char* bytes_iv,
                                   unsigned char* bytes_ciphertext,
                                   unsigned char* bytes_key,
                                   int len_key);
         void send_compressed(const char* bytes, int bytes_len);
-        int encrypt_message(std::vector<unsigned char>& bytes_iv,
-                            std::vector<unsigned char>& bytes_ciphertext,
+        int encrypt_message(uchar_vec& bytes_iv,
+                            uchar_vec& bytes_ciphertext,
                             const std::string& message,
                             unsigned char* bytes_key,
                             int len_key);

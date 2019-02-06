@@ -34,6 +34,7 @@
 #include <Wincrypt.h>
 #endif
 #include "lua.hpp"
+#include "jsmn.h"
 
 #define WORLD_MAP_PIXEL_RESOLUTION_WIDTH (172824)
 #define WORLD_MAP_PIXEL_RESOLUTION_HEIGHT (86412)
