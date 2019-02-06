@@ -43,6 +43,12 @@ void mouse_pos_callback(GLFWwindow* window, double x, double y);
 void char_callback(GLFWwindow* window, unsigned int c);
 void destroy_ext_sound_lib();
 
+#if LW_PLATFORM_WIN32 || LW_PLATFORM_OSX
+void lwimgui_init(GLFWwindow* window);
+void lwimgui_render(GLFWwindow* window);
+void lwimgui_shutdown();
+#endif
+
 #if LW_PLATFORM_OSX
 void glfwMacOsMojaveWorkaround(GLFWwindow* handle);
 #endif
@@ -209,7 +215,7 @@ int main(int argc, char* argv[]) {
 
     glfwSetWindowPos(window, work_area.left + window_rect_to_client_rect_dx, work_area.top + window_rect_to_client_rect_dy);
 #elif LW_PLATFORM_OSX
-    glfwSetWindowPos(window, 0, 0);
+    glfwSetWindowPos(window, 60, 0);
 #endif
     // Register glfw event callbacks
     glfwSetKeyCallback(window, key_callback);
