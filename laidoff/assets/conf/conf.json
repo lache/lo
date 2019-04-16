@@ -1,10 +1,10 @@
 {
-  "ClientTcpHost": "p.popsongremix.com",
+  "ClientTcpHost": "plusalpha.dev",
   "ConnPort": "19856",
-  "ClientTcpTtlHost": "p.popsongremix.com",
+  "ClientTcpTtlHost": "plusalpha.dev",
   "TtlConnPort": "3000",
-  "SeaUdpHost": "p.popsongremix.com",
+  "SeaUdpHost": "plusalpha.dev",
   "SeaUdpPort": "3100",
-  "SeaTcpHost": "p.popsongremix.com",
+  "SeaTcpHost": "plusalpha.dev",
   "SeaTcpPort": "3200"
 }
