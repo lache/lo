@@ -108,7 +108,7 @@ extern "C" {
 
 /* If TIME_UTC is missing, provide it and provide a wrapper for
    timespec_get. */
-#ifndef TIME_UTC
+#if !defined(TIME_UTC) || defined(__ANDROID__)
 #define TIME_UTC 1
 #define _TTHREAD_EMULATE_TIMESPEC_GET_
 
@@ -343,7 +343,7 @@ typedef int (*thrd_start_t)(void *arg);
 * @return @ref thrd_success on success, or @ref thrd_nomem if no memory could
 * be allocated for the thread requested, or @ref thrd_error if the request
 * could not be honored.
-* @note A thread¡¯s identifier may be reused for a different thread once the
+* @note A threadï¿½ï¿½s identifier may be reused for a different thread once the
 * original thread has exited and either been detached or joined to another
 * thread.
 */
