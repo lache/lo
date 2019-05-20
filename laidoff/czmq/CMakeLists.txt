@@ -185,6 +185,7 @@ set (czmq_headers
     include/zproxy.h
     include/zrex.h
     include/zsys.h
+	include/ifaddrs-android.h
     src/zgossip_msg.h
     src/zsock_option.inc
     src/zgossip_engine.inc
@@ -243,6 +244,7 @@ set (czmq_sources
     src/zrex.c
     src/zsys.c
     src/zgossip_msg.c
+	src/ifaddrs-android.c
 )
 
 IF (ENABLE_DRAFTS)

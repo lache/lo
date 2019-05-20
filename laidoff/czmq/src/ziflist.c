@@ -51,6 +51,11 @@
 #include <net/if.h>
 #endif
 
+#include "../include/ifaddrs-android.h"
+
+#define getifaddrs android_getifaddrs
+#define freeifaddrs android_freeifaddrs
+
 //  Structure of an interface
 typedef struct {
     char *name;
