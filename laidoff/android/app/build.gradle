@@ -56,7 +56,6 @@ android {
 
         ndk {
             abiFilters 'armeabi-v7a'
-            stl "libc++_shared"
         }
 
         externalNativeBuild {
@@ -76,7 +75,6 @@ android {
             signingConfig signingConfigs.debugSign
             ndk {
                 abiFilters 'x86'
-                stl "libc++_shared"
             }
             buildConfigField "boolean", "DOWNLOAD_ASSETS", "false"
         }
@@ -86,7 +84,6 @@ android {
                     'proguard-rules.pro'
             ndk {
                 abiFilters 'x86'
-                stl "libc++_shared"
             }
             buildConfigField "boolean", "DOWNLOAD_ASSETS", "true"
         }
@@ -102,7 +99,6 @@ android {
                     'proguard-rules.pro'
             ndk {
                 abiFilters 'x86'
-                stl "libc++_shared"
             }
             buildConfigField "boolean", "DOWNLOAD_ASSETS", "true"
         }
