@@ -6,7 +6,8 @@ typedef struct _LWASFBONE {
     LWASFBONE* sibling;
     LWASFBONE* child;
     int idx;
-    double dir[3]; // bond direction in local coordinate system
+    // bone direction in local coordinate system, unit vector 
+    double dir[3];
     double length;
     // bone orientation in world coordinate system;
     // 'RzRyRx' == 'coordinate transfrom from inertia frame to local coordinate system'
@@ -24,3 +25,6 @@ typedef struct _LWASFBONE {
     double tl;
     int dofo[8];
 } LWASFBONE;
+
+double lwasfbone_rot_parent_current(const LWASFBONE* bone, int r, int c);
+double lwasfbone_dir(const LWASFBONE* bone, int axis);

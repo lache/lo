@@ -3,8 +3,10 @@
 
 using namespace ss;
 
+extern int g_production;
+
 tcp_server::tcp_server(boost::asio::io_service& io_service)
-    : acceptor_(io_service, tcp::endpoint(tcp::v4(), 53200)) {
+    : acceptor_(io_service, g_production ? tcp::endpoint(tcp::v4(), 53200) : tcp::endpoint(boost::asio::ip::address::from_string("127.0.0.1"), 53200)) {
     start_accept();
 }
 

@@ -292,7 +292,7 @@ function ttl_go_back(qs)
 end
 
 function reset_cell_menu()
-    print('reset_cell_menu')
+    --print('reset_cell_menu')
     lo.lwttl_clear_cell_menu(c.ttl)
     local sc = lo.lwttl_single_cell(c.ttl)
     local is_land = sc.attr & 1
@@ -379,8 +379,8 @@ function on_set_refresh_html_body()
     lo.lwttl_send_ttlpingsinglecell_on_selected(c.ttl)
 end
 
-function on_ttl_single_cell()
-    print('on_ttl_single_cell')
+function on_ttl_single_cell(city_lua_data, ship_lua_data, seaport_lua_data)
+    --print('on_ttl_single_cell')
     if cell_menu_mode == CELL_MENU_MODE_NORMAL then
         reset_cell_menu()
     elseif cell_menu_mode == CELL_MENU_MODE_SELECT_SEAPORT then
@@ -388,6 +388,51 @@ function on_ttl_single_cell()
         if sc.port_id > 0 then
             cell_menu_mode = CELL_MENU_MODE_SELECT_NORMAL
             reexecute_anchor_click_append_qs(select_var_name, math.floor(sc.port_id))
+        end
+    end
+    if #city_lua_data > 0 then
+        local city_lua_table = load('return '..city_lua_data)()
+        if city_lua_table ~= nil then
+            --print('city id',city_lua_table.city_id)
+            lo.htmlui_clear_all_loops(c.htmlui)
+            lo.htmlui_set_loop_key_value(c.htmlui, "city_id", "city_id", city_lua_table.city_id)
+            for k, v in pairs(city_lua_table.produced_items) do
+                --print('item id',k,'amount',v.amount)
+                lo.htmlui_set_loop_key_value(c.htmlui, "list", "col1", k)
+                lo.htmlui_set_loop_key_value(c.htmlui, "list", "col2", tostring(v.amount))
+                lo.htmlui_set_loop_key_value(c.htmlui, "list", "href", string.format([==[script:buy_cargo_from_city(%d,%d,%d)]==], city_lua_table.city_id, k, v.amount))
+                lo.htmlui_set_loop_key_value(c.htmlui, "list", "button_text", string.format('%d골드', 1000))
+            end
+            if lo.htmlui_is_online(c.htmlui) == 0 then
+                lo.htmlui_execute_anchor_click(c.htmlui,'city.html')
+            end
+        end
+    end
+    if #ship_lua_data > 0 then
+        local ship_lua_table = load('return '..ship_lua_data)()
+        if ship_lua_table ~= nil then
+            print('ship id',ship_lua_table.ship_id)
+        end
+    end
+    if #seaport_lua_data > 0 then
+        local seaport_lua_table = load('return '..seaport_lua_data)()
+        if seaport_lua_table ~= nil then
+            print('seaport id',seaport_lua_table.seaport_id)
+            lo.htmlui_clear_all_loops(c.htmlui)
+            lo.htmlui_set_loop_key_value(c.htmlui, "seaport_id", "seaport_id", math.floor(seaport_lua_table.seaport_id))
+            local owner_name = '없음'
+            if seaport_lua_table.owner ~= nil then owner_name = seaport_lua_table.owner.name end
+            lo.htmlui_set_loop_key_value(c.htmlui, "owner", "owner", owner_name)
+            for k, v in pairs(seaport_lua_table.resources) do
+                --print('item id',k,'amount',v.amount)
+                lo.htmlui_set_loop_key_value(c.htmlui, "list", "col1", k)
+                lo.htmlui_set_loop_key_value(c.htmlui, "list", "col2", tostring(v.amount))
+                lo.htmlui_set_loop_key_value(c.htmlui, "list", "href", string.format([==[script:buy_item_from_city(%d, %d)]==], k, v.amount))
+                lo.htmlui_set_loop_key_value(c.htmlui, "list", "button_text", string.format('%d골드', 1000))
+            end
+            if lo.htmlui_is_online(c.htmlui) == 0 then
+                lo.htmlui_execute_anchor_click(c.htmlui,'seaport.html')
+            end
         end
     end
 end
@@ -711,6 +756,9 @@ function on_json_body(json_body)
         auth_context.username = lo.srp_user_get_username(auth_context.usr)
         lo.show_sys_msg(c.def_sys_msg, '계정 \''..auth_context.username..'\' 인증 성공 :)')
         
+        local bytes_key = lo.srp_user_get_session_key(auth_context.usr)
+        lo.write_user_data_file_binary(c, 'account-last-key', bytes_key)
+        
     else
         error('Unknown JSON body')
     end
@@ -757,20 +805,23 @@ local function test_encrypt_decrypt(bytes_key, bytes_plaintext)
     lo.mbedtls_aes_init(aes_context)
     local keybits = 256 -- keybits max is 256. bytes_key may be longer then this...see comments on 'mbedtls_aes_setkey_enc()'
     if lo.mbedtls_aes_setkey_enc(aes_context, bytes_key) ~= 0 then
-        lo.show_sys_msg(c.def_sys_msg, 'aes enc key set fail')
-        error('aes enc key set fail')
+        local errmsg = 'aes enc key set fail'
+        lo.show_sys_msg(c.def_sys_msg, errmsg)
+        error(errmsg)
     end
     
     local len_iv = 16 -- fixed to 16-byte
     if #bytes_plaintext % 16 ~= 0 then
-        lo.show_sys_msg(c.def_sys_msg, 'input plaintext length should be multiple of 16-byte')
-        error('input plaintext length should be multiple of 16-byte')
+        local errmsg = 'input plaintext length should be multiple of 16-byte'
+        lo.show_sys_msg(c.def_sys_msg, errmsg)
+        error(errmsg)
     end
     
     local result_iv, bytes_iv = lo.srp_alloc_random_bytes(len_iv)
     if result_iv ~= 0 then
-        lo.show_sys_msg(c.def_sys_msg, 'cannot seed iv')
-        error('cannot seed iv')
+        local errmsg = 'cannot seed iv'
+        lo.show_sys_msg(c.def_sys_msg, errmsg)
+        error(errmsg)
     end
     --print('bytes_iv',bytes_iv,'len_iv',len_iv)
     
@@ -842,7 +893,7 @@ function test_aes()
     --local hexstr_key = lo.srp_hexify(bytes_key)
     --print('Session key (truncated):', hexstr_key)
     
-    local json_plaintext = json.stringify({c=secure_message_counter,hello=10,world=20,dict={1,2,3},str='hello my friend',kor=[==[한국루아의 표준 함수 나 제공된 문자열 기능은 utf-8을 인식하지 못한다.]==]})
+    local json_plaintext = json.stringify({c=secure_message_counter,hello=10,world=20,dict={1,2,3},str='hello my friend',kor='한국루아의 표준 함수 나 제공된 문자열 기능은 utf-8을 인식하지 못한다.'})
     secure_message_counter = secure_message_counter + 1
     --print('json_plaintext', json_plaintext)
     local bytes_plaintext = { string.byte(json_plaintext, 1, -1) }
@@ -869,10 +920,205 @@ function test_aes()
     lo.udp_send(lo.lwttl_sea_udp(c.ttl), msg)
 end
 
+function test_sea_spawn_encrypted()
+    if auth_context.usr == nil or lo.srp_user_is_authenticated(auth_context.usr) ~= 1 then
+        lo.show_sys_msg(c.def_sys_msg, 'Invalid auth.')
+        error('Invalid auth.')
+    end
+    local bytes_key = lo.srp_user_get_session_key(auth_context.usr)
+    bytes_key = {table.unpack(bytes_key, 1, 256/8)} -- truncate bytes_key to 256-bit (32-byte)
+
+    local xc0 = lo.lwttl_selected_int_x(c.ttl)
+    local yc0 = lo.lwttl_selected_int_y(c.ttl)
+    local m = 'sea_spawn_without_id'
+    local json_plaintext = json.stringify({c=secure_message_counter,m=m,a1=xc0,a2=yc0})
+    secure_message_counter = secure_message_counter + 1
+    local bytes_plaintext = { string.byte(json_plaintext, 1, -1) }
+    add_padding_bytes_inplace(bytes_plaintext)
+    
+    local bytes_iv, bytes_ciphertext, bytes_dec_plaintext = test_encrypt_decrypt(bytes_key, bytes_plaintext)
+    
+    remove_padding_bytes_inplace(bytes_dec_plaintext)
+    local json_dec_plaintext = utf8_from(bytes_dec_plaintext)
+    --[[lo.show_sys_msg(c.def_sys_msg,
+                    'plaintext:' .. json_plaintext .. '\n'
+                    ..'plaintext:' .. json_dec_plaintext)
+                    ]]
+    local bytes_account_id = { string.byte(auth_context.username, 1, -1) }
+    table.insert(bytes_account_id, 0) -- null terminate
+    add_padding_bytes_inplace_custom(bytes_account_id, 4, 0)
+    local msg = table.copy({lo.LPGP_LWPTTLJSON, 0, 0, 0}, bytes_account_id, bytes_iv, bytes_ciphertext)
+    lo.udp_send(lo.lwttl_sea_udp(c.ttl), msg)
+end
+
+function buy_seaport_ownership()
+    local username
+    local bytes_key
+    if auth_context.usr == nil or lo.srp_user_is_authenticated(auth_context.usr) ~= 1 then
+        -- no auth available; check disk for cached shared key
+        local errcode_username, cached_username = lo.read_user_data_file_string(c, 'account-id')
+        local errcode_last_key, bytes_cached_key, len_cached_key = lo.read_user_data_file_binary(c, 'account-last-key')
+        if errcode_username == 0 and errcode_last_key == 0 then
+            username = cached_username
+            bytes_key = bytes_cached_key
+        else
+            local errmsg = 'cannot load cached last shared key'
+            lo.show_sys_msg(c.def_sys_msg, errmsg)
+            error(errmsg)
+        end
+    else
+        username = auth_context.username
+        bytes_key = lo.srp_user_get_session_key(auth_context.usr)
+    end
+    bytes_key = {table.unpack(bytes_key, 1, 256/8)} -- truncate bytes_key to 256-bit (32-byte)
+
+    local xc0 = lo.lwttl_selected_int_x(c.ttl)
+    local yc0 = lo.lwttl_selected_int_y(c.ttl)
+    local m = 'buy_seaport_ownership'
+    local json_plaintext = json.stringify({c=secure_message_counter,m=m,a1=xc0,a2=yc0})
+    secure_message_counter = secure_message_counter + 1
+    local bytes_plaintext = { string.byte(json_plaintext, 1, -1) }
+    add_padding_bytes_inplace(bytes_plaintext)
+    
+    local bytes_iv, bytes_ciphertext, bytes_dec_plaintext
+        = test_encrypt_decrypt(bytes_key, bytes_plaintext)
+    
+    remove_padding_bytes_inplace(bytes_dec_plaintext)
+    local json_dec_plaintext = utf8_from(bytes_dec_plaintext)
+    --[[lo.show_sys_msg(c.def_sys_msg,
+                    'plaintext:' .. json_plaintext .. '\n'
+                    ..'plaintext:' .. json_dec_plaintext)
+                    ]]
+    local bytes_account_id = { string.byte(username, 1, -1) }
+    table.insert(bytes_account_id, 0) -- null terminate
+    add_padding_bytes_inplace_custom(bytes_account_id, 4, 0)
+    local msg = table.copy({lo.LPGP_LWPTTLJSON, 0, 0, 0}, bytes_account_id, bytes_iv, bytes_ciphertext)
+    lo.udp_send(lo.lwttl_sea_udp(c.ttl), msg)
+end
+
+function buy_cargo_from_city(city_id, item_id, amount)
+    local username
+    local bytes_key
+    if auth_context.usr == nil or lo.srp_user_is_authenticated(auth_context.usr) ~= 1 then
+        -- no auth available; check disk for cached shared key
+        local errcode_username, cached_username = lo.read_user_data_file_string(c, 'account-id')
+        local errcode_last_key, bytes_cached_key, len_cached_key = lo.read_user_data_file_binary(c, 'account-last-key')
+        if errcode_username == 0 and errcode_last_key == 0 then
+            username = cached_username
+            bytes_key = bytes_cached_key
+        else
+            error('cannot load cached last shared key')
+        end
+    else
+        username = auth_context.username
+        bytes_key = lo.srp_user_get_session_key(auth_context.usr)
+    end
+    bytes_key = {table.unpack(bytes_key, 1, 256/8)} -- truncate bytes_key to 256-bit (32-byte)
+
+    local xc0 = lo.lwttl_selected_int_x(c.ttl)
+    local yc0 = lo.lwttl_selected_int_y(c.ttl)
+    local m = 'buy_cargo_from_city'
+    local json_plaintext = json.stringify({c=secure_message_counter,m=m,a1=xc0,a2=yc0,a3=city_id,a4=item_id,a5=amount})
+    secure_message_counter = secure_message_counter + 1
+    local bytes_plaintext = { string.byte(json_plaintext, 1, -1) }
+    add_padding_bytes_inplace(bytes_plaintext)
+    
+    local bytes_iv, bytes_ciphertext, bytes_dec_plaintext = test_encrypt_decrypt(bytes_key, bytes_plaintext)
+    
+    remove_padding_bytes_inplace(bytes_dec_plaintext)
+    local json_dec_plaintext = utf8_from(bytes_dec_plaintext)
+    --[[lo.show_sys_msg(c.def_sys_msg,
+                    'plaintext:' .. json_plaintext .. '\n'
+                    ..'plaintext:' .. json_dec_plaintext)
+                    ]]
+    local bytes_account_id = { string.byte(username, 1, -1) }
+    table.insert(bytes_account_id, 0) -- null terminate
+    add_padding_bytes_inplace_custom(bytes_account_id, 4, 0)
+    local msg = table.copy({lo.LPGP_LWPTTLJSON, 0, 0, 0}, bytes_account_id, bytes_iv, bytes_ciphertext)
+    lo.udp_send(lo.lwttl_sea_udp(c.ttl), msg)
+end
+
 function on_chat(line)
     print('on_chat:'..line)
     lo.lwttl_udp_send_ttlchat(c.ttl, lo.lwttl_sea_udp(c.ttl), line)
     c.show_chat_window = 0
     c.focus_chat_input = 0
     on_nickname_change(line)
+end
+
+function handle_encrypted_json(message)
+    local bytes_message = { string.byte(message, 1, -1) }
+    print('handle_encrypted_json: '..#bytes_message..' bytes received')
+    local hexstr_message = lo.srp_hexify(bytes_message)
+    print('hexstr_message', hexstr_message)
+
+    local bytes_type = {table.unpack(bytes_message,1,1+4-1)}
+    local bytes_iv = {table.unpack(bytes_message,1+4,1+4+16-1)}
+    local bytes_ciphertext = {table.unpack(bytes_message,1+4+16,#bytes_message)}
+    
+    print('bytes_type len = ',#bytes_type)
+    local hexstr_type = lo.srp_hexify(bytes_type)
+    print('hexstr_type', hexstr_type)
+
+    print('bytes_iv len = ',#bytes_iv)
+    local hexstr_iv = lo.srp_hexify(bytes_iv)
+    print('hexstr_iv', hexstr_iv)
+
+    print('bytes_ciphertext len = ',#bytes_ciphertext)
+    local hexstr_ciphertext = lo.srp_hexify(bytes_ciphertext)
+    print('hexstr_ciphertext', hexstr_ciphertext)
+
+    local username
+    local bytes_key
+    if auth_context.usr == nil or lo.srp_user_is_authenticated(auth_context.usr) ~= 1 then
+        -- no auth available; check disk for cached shared key
+        local errcode_username, cached_username = lo.read_user_data_file_string(c, 'account-id')
+        local errcode_last_key, bytes_cached_key, len_cached_key = lo.read_user_data_file_binary(c, 'account-last-key')
+        if errcode_username == 0 and errcode_last_key == 0 then
+            username = cached_username
+            bytes_key = bytes_cached_key
+        else
+            error('cannot load cached last shared key')
+        end
+    else
+        username = auth_context.username
+        bytes_key = lo.srp_user_get_session_key(auth_context.usr)
+    end
+    bytes_key = {table.unpack(bytes_key, 1, 256/8)} -- truncate bytes_key to 256-bit (32-byte)
+
+    local aes_dec_context = lo.mbedtls_aes_context()
+    lo.mbedtls_aes_init(aes_dec_context)
+    if lo.mbedtls_aes_setkey_dec(aes_dec_context, bytes_key) ~= 0 then
+        lo.show_sys_msg(c.def_sys_msg, 'aes dec key set fail')
+        error('aes dec key set fail')
+    end
+    
+    local decrypt_result, bytes_dec_iv_after, bytes_dec_plaintext = lo.mbedtls_aes_crypt_cbc(aes_dec_context,
+                                                                                             lo.MBEDTLS_AES_DECRYPT,
+                                                                                             bytes_iv,
+                                                                                             bytes_ciphertext)
+    if decrypt_result ~= 0 then
+        lo.show_sys_msg(c.def_sys_msg, 'decrypt failed')
+        error('decrypt failed')
+    end
+
+    remove_padding_bytes_inplace(bytes_dec_plaintext)
+    local hexstr_dec_plaintext = lo.srp_hexify(bytes_dec_plaintext)
+    print('hexstr_dec_plaintext', hexstr_dec_plaintext)
+    print('length of bytes_dec_plaintext:'..#bytes_dec_plaintext)
+
+    print(bytes_dec_plaintext[1])
+    local json_dec_plaintext = utf8_from(bytes_dec_plaintext)
+    lo.show_sys_msg(c.def_sys_msg, 'plaintext:' .. json_dec_plaintext)
+    print('decrypted json reply from server: '..json_dec_plaintext)
+    return 1985
+end
+
+function handle_json(message)
+    local bytes_message = { string.byte(message, 1, -1) }
+    print('handle_json: '..#bytes_message..' bytes received')
+    local bytes_type = {table.unpack(bytes_message,1,1+4-1)}
+    local bytes_plaintext = {table.unpack(bytes_message,1+4,#bytes_message)}
+    local json_plaintext = utf8_from(bytes_plaintext)
+    lo.show_sys_msg(c.def_sys_msg, 'plaintext:' .. json_plaintext)
 end

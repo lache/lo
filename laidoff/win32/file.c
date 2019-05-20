@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <string.h>
 #include "file.h"
 #include "lwlog.h"
 #include "platform_detection.h"

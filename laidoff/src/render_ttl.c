@@ -1114,19 +1114,23 @@ int std_lower_bound_double(const double* a,
     return first;
 }
 
-static void pos_from_waypoints(const LWPTTLWAYPOINTS* wp,
-                               const double param,
-                               const int reversed,
-                               double* px,
-                               double* py,
-                               double* dx,
-                               double* dy) {
+static int pos_from_waypoints(const LWPTTLWAYPOINTS* wp,
+                              const double param,
+                              const int reversed,
+                              double* px,
+                              double* py,
+                              double* dx,
+                              double* dy) {
     *px = 0;
     *py = 0;
     *dx = 0;
     *dy = 0;
-    if (wp->count < 2) {
-        LOGEP("wp count less than 2");
+    if (wp->count < 1) {
+        //LOGEP("wp count less than 1");
+        return -1;
+    } else if (wp->count == 1) {
+        *px = wp->waypoints[0].x;
+        *py = wp->waypoints[0].y;
     } else {
         double* accum_distance = alloca(sizeof(double) * wp->count);
         size_t accum_distance_cursor = 0;
@@ -1140,12 +1144,14 @@ static void pos_from_waypoints(const LWPTTLWAYPOINTS* wp,
             accum_distance[accum_distance_cursor++] = dist;
         }
         if (accum_distance_cursor == 0) {
-            return;
+            // ???
+            LOGEP("accum_distance_cursor corrupt");
+            return -2;
         }
         if (reversed) {
             //param = accum_distance[accum_distance_cursor - 1] - param;
         }
-        int it_idx = std_lower_bound_double(accum_distance, 0, accum_distance_cursor, param);
+        int it_idx = std_lower_bound_double(accum_distance, 0, (int)accum_distance_cursor, param);
         if (it_idx == 0) {
             *px = wp->waypoints[0].x;
             *py = wp->waypoints[0].y;
@@ -1170,6 +1176,7 @@ static void pos_from_waypoints(const LWPTTLWAYPOINTS* wp,
             *py = wp1->y + *dy * r;
         }
     }
+    return 0;
 }
 
 static void render_sea_objects_nameplate(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* vp) {
@@ -1181,19 +1188,29 @@ static void render_sea_objects_nameplate(const LWCONTEXT* pLwc, const LWTTLFIELD
     const LWPTTLROUTESTATE* ttl_dynamic_state = lwttl_full_state(pLwc->ttl);
     const int view_scale = lwttl_viewport_view_scale(vp);
     for (int i = 0; i < ttl_dynamic_state->count; i++) {
+        const LWPTTLROUTEOBJECT* obj = &ttl_dynamic_state->obj[i];
         const LWPTTLWAYPOINTS* wp = lwttl_get_waypoints_by_ship_id(pLwc->ttl,
-                                                                   ttl_dynamic_state->obj[i].db_id);
+                                                                   obj->db_id);
         if (wp == 0) {
             continue;
         }
         double px, py, dx, dy;
-        pos_from_waypoints(wp,
-            (double)ttl_dynamic_state->obj[i].route_param,
-                           ttl_dynamic_state->obj[i].route_flags.reversed,
-                           &px,
-                           &py,
-                           &dx,
-                           &dy);
+        const double route_param = (double)obj->route_param;
+        if (pos_from_waypoints(wp,
+                               route_param,
+                               obj->route_flags.reversed,
+                               &px,
+                               &py,
+                               &dx,
+                               &dy) == 0) {
+            // waypoints exist
+        } else {
+            // no waypoints exist
+            px = obj->x;
+            py = obj->y;
+            dx = 0;
+            dy = 0;
+        }
         const float rx = (float)cell_fx_to_render_coords_vp(px + 0.5, vp);
         const float ry = (float)cell_fy_to_render_coords_vp(py + 0.5, vp);
         vec4 obj_pos_vec4 = {
@@ -1210,27 +1227,31 @@ static void render_sea_objects_nameplate(const LWCONTEXT* pLwc, const LWTTLFIELD
         test_text_block.size = DEFAULT_TEXT_BLOCK_SIZE_F;
         char obj_nameplate[256];
         obj_nameplate[0] = 0;
-        const char* route_state = lwttl_route_state(&ttl_dynamic_state->obj[i]);
+        const char* route_state = lwttl_route_state(obj);
         if (view_scale == 1) {
-            if (ttl_dynamic_state->obj[i].route_flags.breakdown) {
+            if (obj->route_flags.breakdown) {
                 sprintf(obj_nameplate, "%s%s", LW_UTF8_TTL_CHAR_ICON_BREAKDOWN, route_state);
-            } else if (ttl_dynamic_state->obj[i].route_flags.sailing) {
-                sprintf(obj_nameplate, "%s%.1f", LW_UTF8_TTL_CHAR_ICON_SHIP, ttl_dynamic_state->obj[i].route_param);
+            } else if (obj->route_flags.sailing) {
+                if (obj->route_flags.no_route) {
+                    sprintf(obj_nameplate, "%sNO ROUTE", LW_UTF8_TTL_CHAR_ICON_SHIP);
+                } else {
+                    sprintf(obj_nameplate, "%s%.1f", LW_UTF8_TTL_CHAR_ICON_SHIP, obj->route_param);
+                }
             } else {
                 sprintf(obj_nameplate, "%s", route_state);
             }
         } else if (view_scale <= 4) {
-            if (ttl_dynamic_state->obj[i].route_flags.breakdown) {
+            if (obj->route_flags.breakdown) {
                 sprintf(obj_nameplate, "%s%s", LW_UTF8_TTL_CHAR_ICON_BREAKDOWN, route_state);
-            } else if (ttl_dynamic_state->obj[i].route_flags.sailing) {
-                sprintf(obj_nameplate, "%s%.0f", LW_UTF8_TTL_CHAR_ICON_SHIP, ttl_dynamic_state->obj[i].route_param);
+            } else if (obj->route_flags.sailing) {
+                sprintf(obj_nameplate, "%s%.0f", LW_UTF8_TTL_CHAR_ICON_SHIP, obj->route_param);
             } else {
                 sprintf(obj_nameplate, "%s", route_state);
             }
         } else if (view_scale <= 32) {
-            if (ttl_dynamic_state->obj[i].route_flags.breakdown) {
+            if (obj->route_flags.breakdown) {
                 sprintf(obj_nameplate, "%s", LW_UTF8_TTL_CHAR_ICON_BREAKDOWN);
-            } else if (ttl_dynamic_state->obj[i].route_flags.sailing) {
+            } else if (obj->route_flags.sailing) {
                 sprintf(obj_nameplate, "%s", LW_UTF8_TTL_CHAR_ICON_SHIP);
             } else {
                 sprintf(obj_nameplate, "%s", route_state);
@@ -1290,13 +1311,21 @@ static void render_sea_objects(const LWCONTEXT* pLwc, const LWTTLFIELDVIEWPORT* 
             continue;
         }
         double px, py, dx, dy;
-        pos_from_waypoints(wp,
-                           obj->route_param,
-                           obj->route_flags.reversed,
-                           &px,
-                           &py,
-                           &dx,
-                           &dy);
+        if (pos_from_waypoints(wp,
+                               obj->route_param,
+                               obj->route_flags.reversed,
+                               &px,
+                               &py,
+                               &dx,
+                               &dy) == 0) {
+            // waypoints exist
+        } else {
+            // no waypoints exist
+            px = obj->x;
+            py = obj->y;
+            dx = 0;
+            dy = 0;
+        }
         const float rx = (float)cell_fx_to_render_coords_vp(px + 0.5, vp);
         const float ry = (float)cell_fy_to_render_coords_vp(py + 0.5, vp);
         const float rot_z = (float)(atan2(-dy, dx) + (obj->route_flags.reversed ? (-1) : (+1)) * (-(M_PI / 2)));
@@ -2529,6 +2558,7 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
 
     //render_coords_dms(pLwc, &view_center);
     {
+        // change blend mode to correctly render FBO texture
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         render_solid_box_ui_lvt_flip_y_uv(pLwc,
                                           -pLwc->viewport_rt_x,
@@ -2540,6 +2570,8 @@ void lwc_render_ttl(const LWCONTEXT* pLwc) {
                                           1);
     }
     {
+        // revert to default blend mode
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         // overwrite ui projection matrix
         logic_update_default_ui_proj_for_htmlui(pLwc->shared_fbo.width, pLwc->shared_fbo.height, ((LWCONTEXT*)pLwc)->proj);
 

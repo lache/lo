@@ -114,6 +114,7 @@ typedef struct _LWPSCONTEXT LWPSCONTEXT;
 typedef struct _LWTTL LWTTL;
 typedef struct _LWCHAT LWCHAT;
 typedef struct _LWSG LWSG;
+typedef struct _LWSCRIPT LWSCRIPT;
 
 typedef enum _LW_CONTROL_FLAGS {
     LCF_PUCK_GAME_RIGHT_DIR_PAD = 1 << 0,
@@ -321,7 +322,7 @@ typedef struct _LWCONTEXT {
 	LWBUTTONCOMMAND admin_button_command[6 * 6];
 	// lua VM instance
 	void* L;
-	void* script;
+	LWSCRIPT* script;
 	// Skin: Armature data
 	LWARMATURE armature[LWAR_COUNT];
 	// Skin: Anim action data

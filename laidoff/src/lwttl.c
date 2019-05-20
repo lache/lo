@@ -223,6 +223,7 @@ typedef struct _LWTTL {
     int ports;
     int ships;
     LWTTLFIELDVIEWPORT viewports[4];
+    // cell box: show cell boundaries - only used in debugging
     int cell_box_count;
     LWTTLCELLBOX cell_box[512];
     int cell_menu_count;
@@ -818,7 +819,7 @@ static int add_to_object_cache_land(LWTTLOBJECTCACHE* c,
                                land_count,
                                land_array,
                                sizeof(LWPTTLSTATICOBJECT2),
-                               land_array_size,
+                               (int)land_array_size,
                                s2->ts,
                                s2->xc0,
                                s2->yc0,
@@ -836,7 +837,7 @@ static int add_to_object_cache_seaport(LWTTLOBJECTCACHE* c,
                                seaport_count,
                                seaport_array,
                                sizeof(LWPTTLSEAPORTOBJECT),
-                               seaport_array_size,
+                               (int)seaport_array_size,
                                s2->ts,
                                s2->xc0,
                                s2->yc0,
@@ -854,7 +855,7 @@ static int add_to_object_cache_city(LWTTLOBJECTCACHE* c,
                                city_count,
                                city_array,
                                sizeof(LWPTTLCITYOBJECT),
-                               city_array_size,
+                               (int)city_array_size,
                                s2->ts,
                                s2->xc0,
                                s2->yc0,
@@ -872,7 +873,7 @@ static int add_to_object_cache_salvage(LWTTLOBJECTCACHE* c,
                                salvage_count,
                                salvage_array,
                                sizeof(LWPTTLSALVAGEOBJECT),
-                               salvage_array_size,
+                               (int)salvage_array_size,
                                s2->ts,
                                s2->xc0,
                                s2->yc0,
@@ -890,7 +891,7 @@ static int add_to_object_cache_contract(LWTTLOBJECTCACHE* c,
                                contract_count,
                                contract_array,
                                sizeof(LWPTTLCONTRACTOBJECT),
-                               contract_array_size,
+                               (int)contract_array_size,
                                s2->ts,
                                s2->xc0,
                                s2->yc0,
@@ -908,7 +909,7 @@ static int add_to_object_cache_shipyard(LWTTLOBJECTCACHE* c,
                                shipyard_count,
                                shipyard_array,
                                sizeof(LWPTTLSHIPYARDOBJECT),
-                               shipyard_array_size,
+                               (int)shipyard_array_size,
                                s2->ts,
                                s2->xc0,
                                s2->yc0,
@@ -981,7 +982,7 @@ void lwttl_send_ttlpingsinglecell_on_selected(const LWTTL* ttl) {
     if (lwttl_selected_int(ttl, &xc0, &yc0)) {
         send_ttlpingsinglecell(ttl, ttl->sea_udp, xc0, yc0);
     } else {
-        LOGI("%s: No selected cell.", __func__);
+        LOGIx("%s: No selected cell.", __func__);
     }
 }
 
@@ -1194,7 +1195,7 @@ static LWTTLWORLDTEXT* empty_world_text(LWTTL* ttl) {
 }
 
 static const LWTTLWORLDTEXT* valid_world_text_start(const LWTTL* ttl, const LWTTLWORLDTEXT* start_it) {
-    const int i0 = ((const char*)start_it - (const char*)ttl->world_text) / sizeof(LWTTLWORLDTEXT);
+    const int i0 = (int)((const char*)start_it - (const char*)ttl->world_text) / sizeof(LWTTLWORLDTEXT);
     for (int i = i0; i < ARRAY_SIZE(ttl->world_text); i++) {
         if (ttl->world_text[i].valid) {
             return &ttl->world_text[i];
@@ -2042,7 +2043,7 @@ void lwttl_change_selected_cell_to(LWTTL* ttl,
                     } else if (slen < 0) {
                         LOGEP("script formatting invalid! slen == %d!", slen);
                     } else if (slen >= ARRAY_SIZE(s)) {
-                        LOGEP("script formatting too long! slen == %d, ssize == %d!", slen, ARRAY_SIZE(s));
+                        LOGEP("script formatting too long! slen == %d, ssize == %zu!", slen, ARRAY_SIZE(s));
                     } else {
                         script_evaluate_async(pLwc, s, slen);
                     }
@@ -2441,7 +2442,7 @@ void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc) {
     FD_ZERO(&udp->readfds);
     FD_SET(udp->s, &udp->readfds);
     int rv = 0;
-    while ((rv = select(udp->s + 1, &udp->readfds, NULL, NULL, &udp->tv)) == 1) {
+    while ((rv = select((int)(udp->s + 1), &udp->readfds, NULL, NULL, &udp->tv)) == 1) {
         if ((udp->recv_len = recvfrom(udp->s, udp->buf, LW_UDP_BUFLEN, 0, (struct sockaddr*)&udp->si_other, (socklen_t*)&udp->slen)) == SOCKET_ERROR) {
 #if LW_PLATFORM_WIN32
             int wsa_error_code = WSAGetLastError();
@@ -2665,17 +2666,20 @@ void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc) {
                 if (decompressed_bytes != sizeof(LWPTTLSINGLECELL)) {
                     LOGE("LWPTTLSINGLECELL: Size error %d (%zu expected)",
                          decompressed_bytes,
-                         sizeof(LWPTTLWAYPOINTS));
+                         sizeof(LWPTTLSINGLECELL));
                 }
                 LWPTTLSINGLECELL* p = (LWPTTLSINGLECELL*)decompressed;
-                LOGIx("LWPTTLSINGLECELL: %d,%d L[%d], W[%d], SW[%d], PID[%d], PNAME[%s]",
-                      p->xc0,
-                      p->yc0,
-                      (p->attr >> 0) & 1,
-                      (p->attr >> 1) & 1,
-                      (p->attr >> 2) & 1,
-                      p->port_id,
-                      p->port_name);
+                LOGI("LWPTTLSINGLECELL: %d,%d L[%d], W[%d], SW[%d], PID[%d], PNAME[%s], CITY_LUA[%s], SHIP_LUA[%s], SEAPORT_LUA[%s]",
+                     p->xc0,
+                     p->yc0,
+                     (p->attr >> 0) & 1,
+                     (p->attr >> 1) & 1,
+                     (p->attr >> 2) & 1,
+                     p->port_id,
+                     p->port_name,
+                     p->city_lua_data,
+                     p->ship_lua_data,
+                     p->seaport_lua_data);
                 memcpy(&ttl->ttl_single_cell, p, sizeof(LWPTTLSINGLECELL));
                 assert((p->land_box_valid && p->water_box_valid) == 0);
                 if (ttl->cell_box_count < ARRAY_SIZE(ttl->cell_box)) {
@@ -2692,7 +2696,9 @@ void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc) {
                         ttl->cell_box[ttl->cell_box_count].yc1 = p->water_box[3];
                         ttl->cell_box_count++;
                     }
-                    script_evaluate_async(pLwc, "on_ttl_single_cell()", strlen("on_ttl_single_cell()"));
+                    char single_cell_call[256 + 1024 + 1024 + 1024];
+                    sprintf(single_cell_call, "on_ttl_single_cell([==[%s]==],[==[%s]==],[==[%s]==])", p->city_lua_data, p->ship_lua_data, p->seaport_lua_data);
+                    script_evaluate_async(pLwc, single_cell_call, strlen(single_cell_call));
                 } else {
                     LOGE("Cell box count exceeded!");
                 }
@@ -2797,6 +2803,20 @@ void lwttl_udp_update(LWTTL* ttl, LWCONTEXT* pLwc) {
                 LWPTTLCHAT* p = (LWPTTLCHAT*)decompressed;
                 LOGIx("LWPTTLCHAT");
                 lwchatringbuffer_add(&pLwc->chat_ring_buffer, p->line);
+                break;
+            }
+            case LPGP_LWPTTLJSON:
+            {
+                LOGI("LWPTTLJSON");
+                //script_emit_handle_encrypted_json()
+                logic_emit_handle_encrypted_json_async(pLwc, decompressed, decompressed_bytes);
+                break;
+            }
+            case LPGP_LWPTTLJSONREPLY:
+            {
+                LOGI("LWPTTLJSONREPLY");
+                //script_emit_handle_encrypted_json()
+                logic_emit_handle_json_async(pLwc, decompressed, decompressed_bytes);
                 break;
             }
             default:

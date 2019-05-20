@@ -27,6 +27,8 @@ void logic_stop_logic_update_job(LWCONTEXT* pLwc);
 void logic_start_logic_update_job_async(LWCONTEXT* pLwc);
 void logic_stop_logic_update_job_async(LWCONTEXT* pLwc);
 void logic_emit_ui_event_async(LWCONTEXT* pLwc, const char* id, float w_ratio, float h_ratio);
+void logic_emit_handle_encrypted_json_async(LWCONTEXT* pLwc, const char* bytes, int bytes_len);
+void logic_emit_handle_json_async(LWCONTEXT* pLwc, const char* bytes, int bytes_len);
 void logic_emit_evalute_with_name_async(LWCONTEXT* pLwc, const char* code, size_t code_len, const char* name);
 void logic_emit_evalute_async(LWCONTEXT* pLwc, const char* code, size_t code_len);
 void load_field_1_init_runtime_data(LWCONTEXT* pLwc);
@@ -61,6 +63,7 @@ void lw_next_page(LWCONTEXT* pLwc);
 void lw_last_page(LWCONTEXT* pLwc);
 void lw_new_tcp_ttl(LWCONTEXT* pLwc);
 void lw_new_tcp_ttl_custom(LWCONTEXT* pLwc, const char* host, const char* port_str, int port);
+void lw_htmlui_redraw_ui_fbo_async(LWCONTEXT* pLwc);
 #ifdef __cplusplus
 };
 #endif

@@ -50,7 +50,6 @@ sea_static::sea_static()
     , water_rtree_ptr(water_file.find_or_construct<sea_static_object::rtree>("rtree")(sea_static_object::params(), sea_static_object::indexable(), sea_static_object::equal_to(), water_alloc))
     , res_width(WORLD_MAP_PIXEL_RESOLUTION_WIDTH)
     , res_height(WORLD_MAP_PIXEL_RESOLUTION_HEIGHT)
-    , km_per_cell(WORLD_CIRCUMFERENCE_IN_KM / res_width)
     //, sea_water_set_file(bi::open_or_create, DATA_ROOT SEA_WATER_SET_FILENAME, SEA_WATER_SET_MMAP_MAX_SIZE)
     //, sea_water_set_alloc(sea_water_set_file.get_segment_manager())
     //, sea_water_set(sea_water_set_file.find_or_construct<sea_water_set_t>("set")(int(), std::hash<int>(), std::equal_to<int>(), sea_water_set_alloc))
@@ -185,6 +184,10 @@ void sea_static::mark_sea_water(sea_static_object::rtree* rtree) {
         }
         LOGI("Sea water vector count: %1%", sea_water_vector.size());
     }
+}
+
+std::vector<xy32> sea_static::calculate_waypoints(int from_x, int from_y, int to_x, int to_y, int expect_land, std::shared_ptr<astarrtree::coro_context> coro) const {
+    return calculate_waypoints(xy32{ from_x,from_y }, xy32{ to_x,to_y }, expect_land, coro);
 }
 
 std::vector<xy32> sea_static::calculate_waypoints(const xy32 & from, const xy32 & to, int expect_land, std::shared_ptr<astarrtree::coro_context> coro) const {

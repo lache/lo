@@ -1,5 +1,10 @@
--- Script for testing runtime script errors are properly shown in the console
+local c = lo.script_context()
 
+local before_coro_count = lo.script_running_coro_count(c.script)
+print('before_coro_count:'..before_coro_count)
+
+-- Script for testing runtime script errors are properly shown in the console
+local error_test_count = 0
 -- 1. Error within coroutine
 start_coro(function ()
     error_test_1()
@@ -38,6 +43,21 @@ end
 function testfunc3()
   testfunc2()
 end
-testfunc3()
+
+function reload_require(modname)
+	package.loaded[modname] = nil
+	return require(modname)
+end
+
+start_coro(function()
+    -- should also counting this coroutine; thus '+ 1'
+    while lo.script_running_coro_count(c.script) ~= before_coro_count + 1 do
+        yield_wait_ms(0)
+        print('Waiting error_test.lua to be finished...')
+    end
+    print('Waiting error_test.lua to be finished...FINISHED!')
+    reload_require('post_init')
+    lo.lwcontext_set_safe_to_start_render(c, 1);
+end)
 
 return 1

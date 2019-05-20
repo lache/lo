@@ -10,7 +10,6 @@ const auto update_interval = boost::posix_time::milliseconds(1000);
 contract::contract(boost::asio::io_service& io_service, std::shared_ptr<sea_static> sea_static)
     : res_width(WORLD_MAP_PIXEL_RESOLUTION_WIDTH)
     , res_height(WORLD_MAP_PIXEL_RESOLUTION_HEIGHT)
-    , km_per_cell(WORLD_CIRCUMFERENCE_IN_KM / res_width)
     , timer_(io_service, update_interval)
     , sea_static_(sea_static)
     , contract_id_seq_(0) {
@@ -184,7 +183,7 @@ const char* contract::query_single_cell(int xc0, int yc0, int& id, int& gold_amo
 }
 
 void contract::update() {
-    float delta_time = update_interval.total_milliseconds() / 1000.0f;
+    //float delta_time = update_interval.total_milliseconds() / 1000.0f;
 
     timer_.expires_at(timer_.expires_at() + update_interval);
     timer_.async_wait(boost::bind(&contract::update, this));

@@ -216,7 +216,7 @@ int tcp_send_httpget(LWTCP* tcp, const char* url, const char* headers) {
             url,
             tcp->host_addr.host,
             headers);
-    return tcp_send_sendbuf(tcp, strlen(tcp->send_buf));
+    return tcp_send_sendbuf(tcp, (int)strlen(tcp->send_buf));
 }
 
 static void debug_print_leaderboard(const LWPLEADERBOARD* p) {
@@ -255,7 +255,7 @@ int parse_body_length(const char* html_response) {
     const char* body_str = strstr(html_response, "\r\n\r\n");
     if (body_str) {
         const char* body = strstr(html_response, "\r\n\r\n") + strlen("\r\n\r\n");
-        return strlen(body);
+        return (int)strlen(body);
     } else {
         return -1;
     }
@@ -311,7 +311,7 @@ int append_and_refresh_body(LWTCP* tcp, void* htmlui, char* cursor) {
     int prev_body_len = -1;
     if (prev_body_str) {
         char* prev_body = prev_body_str + strlen("\r\n\r\n");
-        prev_body_len = strlen(prev_body);
+        prev_body_len = (int)strlen(prev_body);
     }
     strncat(tcp->html_response, cursor, tcp->recv_buf_not_parsed);
     tcp->html_response[prev_len + tcp->recv_buf_not_parsed] = 0; // null terminate

@@ -67,6 +67,8 @@ typedef enum _LW_VBO_TYPE
     LVT_TILE_SEL_0_1,
     LVT_TILE_SEL_1_1,
     LVT_SUZANNE,
+    LVT_YBONE,
+    LVT_ZBONE,
 
 	LVT_COUNT,
     LVT_DONTCARE,
@@ -145,6 +147,8 @@ static const LWVBOFILENAME vbo_filename[] = {
     { LVT_TILE_SEL_0_1, ASSETS_BASE_PATH "vbo" PATH_SEPARATOR "tile-sel-0-1.vbo", LWST_DEFAULT, },
     { LVT_TILE_SEL_1_1, ASSETS_BASE_PATH "vbo" PATH_SEPARATOR "tile-sel-1-1.vbo", LWST_DEFAULT, },
     { LVT_SUZANNE, ASSETS_BASE_PATH "vbo" PATH_SEPARATOR "suzanne.vbo", LWST_DEFAULT, },
+    { LVT_YBONE, ASSETS_BASE_PATH "vbo" PATH_SEPARATOR "ybone.vbo", LWST_DEFAULT, },
+    { LVT_ZBONE, ASSETS_BASE_PATH "vbo" PATH_SEPARATOR "zbone.vbo", LWST_DEFAULT, },
 };
 LwStaticAssert(ARRAY_SIZE(vbo_filename) == LVT_COUNT, "LVT_COUNT error");
 

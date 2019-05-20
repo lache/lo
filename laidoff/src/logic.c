@@ -168,6 +168,8 @@ typedef enum _LW_MSG {
     LM_LWMSGSTOPLOGICLOOP,
     LM_LWMSGINITSCENE,
     LM_LWMSGUIEVENT,
+    LM_LWMSGHANDLEENCRYPTEDJSON,
+    LM_LWMSGHANDLEJSON,
     LM_LWMSGEVALUATE,
 } LW_MSG;
 
@@ -207,6 +209,14 @@ typedef struct _LWMSGUIEVENT {
     float w_ratio;
     float h_ratio;
 } LWMSGUIEVENT;
+
+typedef struct _LWMSGHANDLEENCRYPTEDJSON {
+    LW_MSG type;
+} LWMSGHANDLEENCRYPTEDJSON;
+
+typedef struct _LWMSGHANDLEJSON {
+    LW_MSG type;
+} LWMSGHANDLEJSON;
 
 typedef struct _LWMSGEVALUATE {
     LW_MSG type;
@@ -436,6 +446,32 @@ void logic_emit_ui_event_async(LWCONTEXT* pLwc, const char* id, float w_ratio, f
     m.w_ratio = w_ratio;
     m.h_ratio = h_ratio;
     zmsg_addmem(msg, &m, sizeof(LWMSGUIEVENT));
+    zactor_t* actor = pLwc->logic_actor;
+    if (zactor_send(actor, &msg) < 0) {
+        zmsg_destroy(&msg);
+        LOGE("Send message to logic worker failed!");
+    }
+}
+
+void logic_emit_handle_encrypted_json_async(LWCONTEXT* pLwc, const char* bytes, int bytes_len) {
+    zmsg_t* msg = zmsg_new();
+    LWMSGHANDLEENCRYPTEDJSON m;
+    m.type = LM_LWMSGHANDLEENCRYPTEDJSON;
+    zmsg_addmem(msg, &m, sizeof(LWMSGHANDLEENCRYPTEDJSON));
+    zmsg_addmem(msg, bytes, bytes_len);
+    zactor_t* actor = pLwc->logic_actor;
+    if (zactor_send(actor, &msg) < 0) {
+        zmsg_destroy(&msg);
+        LOGE("Send message to logic worker failed!");
+    }
+}
+
+void logic_emit_handle_json_async(LWCONTEXT* pLwc, const char* bytes, int bytes_len) {
+    zmsg_t* msg = zmsg_new();
+    LWMSGHANDLEJSON m;
+    m.type = LM_LWMSGHANDLEJSON;
+    zmsg_addmem(msg, &m, sizeof(LWMSGHANDLEJSON));
+    zmsg_addmem(msg, bytes, bytes_len);
     zactor_t* actor = pLwc->logic_actor;
     if (zactor_send(actor, &msg) < 0) {
         zmsg_destroy(&msg);
@@ -782,10 +818,11 @@ void reset_runtime_context(LWCONTEXT* pLwc) {
     puck_game_remote_state_reset(pLwc->puck_game, &pLwc->puck_game_state);
     // Run script for testing script error logging function (no effects on system)
     script_run_file(pLwc, ASSETS_BASE_PATH "l" PATH_SEPARATOR "error_test.lua");
+    // *** running 'post_init.lua' and initiating rendering is started at 'error_test.lua' ***
     // Run post init script
-    script_run_file(pLwc, ASSETS_BASE_PATH "l" PATH_SEPARATOR "post_init.lua");
+    //script_run_file(pLwc, ASSETS_BASE_PATH "l" PATH_SEPARATOR "post_init.lua");
     // Start rendering
-    lwcontext_set_safe_to_start_render(pLwc, 1);
+    //lwcontext_set_safe_to_start_render(pLwc, 1);
 }
 
 static void update_battle_wall(LWCONTEXT* pLwc) {
@@ -939,7 +976,8 @@ void lwc_update(LWCONTEXT* pLwc, double delta_time) {
     if (pLwc->game_scene == LGS_FIELD
         || pLwc->game_scene == LGS_PUCK_GAME
         || pLwc->game_scene == LGS_TTL
-        || pLwc->game_scene == LGS_GAZZA) {
+        || pLwc->game_scene == LGS_GAZZA
+        || pLwc->game_scene == LGS_MOCAP) {
         script_update(pLwc);
     }
 
@@ -1075,7 +1113,19 @@ static int loop_pipe_reader(zloop_t* loop, zsock_t* pipe, void* args) {
             f = zmsg_next(msg);
             byte* name = zframe_data(f);
             //size_t code_len = zframe_size(f);
-            script_evaluate_with_name(pLwc->L, code, code_len, name);
+            script_evaluate_with_name(pLwc->L, (const char*)code, code_len, (const char*)name);
+        } else if (d && s == sizeof(LWMSGHANDLEENCRYPTEDJSON) && *(int*)d == LM_LWMSGHANDLEENCRYPTEDJSON) {
+            // Lua script code in the next frame.
+            f = zmsg_next(msg);
+            byte* bytes = zframe_data(f);
+            size_t bytes_len = zframe_size(f);
+            script_emit_handle_encrypted_json(pLwc->L, (const char*)bytes, (int)bytes_len);
+        } else if (d && s == sizeof(LWMSGHANDLEJSON) && *(int*)d == LM_LWMSGHANDLEJSON) {
+            // Lua script code in the next frame.
+            f = zmsg_next(msg);
+            byte* bytes = zframe_data(f);
+            size_t bytes_len = zframe_size(f);
+            script_emit_handle_json(pLwc->L, (const char*)bytes, (int)bytes_len);
         } else if (strncmp((const char*)d, "$TERM", 5) == 0) {
             // ZFRAME spec?
             rc = -1;
@@ -1472,8 +1522,8 @@ void lwc_start_logic_thread(LWCONTEXT* pLwc) {
     // [2] Ball Rumble Scene
     // [3] TTL Scene
     /*[1]*///load_field_2_init_runtime_data_async(pLwc, pLwc->logic_actor);
-    /*[2]*///load_scene_async(pLwc, pLwc->logic_actor, change_to_puck_game);
-    /*[3]*/load_scene_async(pLwc, pLwc->logic_actor, change_to_ttl);
+    /*[2]*/load_scene_async(pLwc, pLwc->logic_actor, change_to_puck_game);
+    /*[3]*///load_scene_async(pLwc, pLwc->logic_actor, change_to_ttl);
 }
 
 const char* logic_server_addr(int idx) {
@@ -1484,7 +1534,7 @@ void toggle_font_texture_test_mode(LWCONTEXT* pLwc) {
     pLwc->font_texture_texture_mode = !pLwc->font_texture_texture_mode;
 }
 
-static void lw_htmlui_redraw_ui_fbo_async(LWCONTEXT* pLwc) {
+void lw_htmlui_redraw_ui_fbo_async(LWCONTEXT* pLwc) {
     rmsg_redraw_ui_fbo(pLwc);
 }
 

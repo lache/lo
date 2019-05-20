@@ -10,6 +10,7 @@ namespace ss {
     class shipyard;
     class udp_server;
     class session;
+    class city;
     class udp_admin_server {
 
     public:
@@ -19,7 +20,8 @@ namespace ss {
                          std::shared_ptr<seaport> seaport,
                          std::shared_ptr<shipyard> shipyard,
                          std::shared_ptr<udp_server> udp_server,
-                         std::shared_ptr<session> session);
+                         std::shared_ptr<session> session,
+                         std::shared_ptr<city> city);
         void send_recover_all_ships();
         void send_arrival(int ship_id);
         int process_command(const unsigned char* command, bool send_reply);
@@ -42,6 +44,7 @@ namespace ss {
         std::shared_ptr<sea_static> sea_static_;
         std::shared_ptr<seaport> seaport_;
         std::shared_ptr<shipyard> shipyard_;
+        std::shared_ptr<city> city_;
         std::shared_ptr<udp_server> udp_server_;
         std::shared_ptr<session> session_;
         // sea-server -> web-server requests
@@ -49,6 +52,6 @@ namespace ss {
         udp::resolver::query web_server_query_;
         udp::endpoint web_server_endpoint_;
         udp::socket web_server_socket_;
-        boost::asio::io_service& io_service_;
+        //boost::asio::io_service& io_service_;
     };
 }

@@ -416,7 +416,7 @@ void render_query_text_block_alpha(const LWCONTEXT* pLwc, const LWTEXTBLOCK* tex
         // render glyph
         render_font_glyph(pLwc,
                           text_block,
-                          unicode_strlen,
+                          (int)unicode_strlen,
                           unicode_str,
                           width_sum,
                           height_sum,

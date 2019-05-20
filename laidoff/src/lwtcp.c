@@ -10,7 +10,7 @@ int WSAGetLastError() {
 #define SD_BOTH SHUT_RDWR
 #endif
 
-static int make_socket_nonblocking(int sock) {
+static int make_socket_nonblocking(SOCKET sock) {
 #if defined(WIN32) || defined(_WIN32) || defined(IMN_PIM)
     unsigned long arg = 1;
     return ioctlsocket(sock, FIONBIO, &arg) == 0;
@@ -62,7 +62,7 @@ int tcp_connect(LWTCP* tcp) {
                 struct timeval connect_timeout;
                 connect_timeout.tv_sec = 3;
                 connect_timeout.tv_usec = 0;
-                int select_ret = select(tcp->connect_socket + 1, NULL, &fdset, NULL, &connect_timeout);
+                int select_ret = select((int)(tcp->connect_socket + 1), NULL, &fdset, NULL, &connect_timeout);
                 if (select_ret == 0) {
                     LOGE("TCP connect timeout - %s:%s",
                          tcp->host_addr.host,

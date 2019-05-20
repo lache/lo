@@ -24,7 +24,8 @@ typedef struct _LWUDP {
 	WSADATA wsa;
 #endif
 	struct sockaddr_in si_other;
-	int s, slen;
+	SOCKET s;
+	int slen;
 	char buf[LW_UDP_BUFLEN];
 	char message[LW_UDP_BUFLEN];
 	fd_set readfds;

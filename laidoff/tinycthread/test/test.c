@@ -46,6 +46,15 @@ freely, subject to the following restrictions:
 _Thread_local int gLocalVar;
 #endif
 
+// timespec_get not found on Android SDK 28 WINDOWS only...
+static int custom_timespec_get(struct timespec* ts, int base) {
+#ifdef WIN32
+	return timespec_get(ts, base);
+#else
+	return (base == TIME_UTC && clock_gettime(CLOCK_REALTIME, ts) != -1) ? base : 0;
+#endif
+}
+
 static void test_sleep(void);
 
 /* Mutex + global count variable */
@@ -63,7 +72,6 @@ typedef struct {
   const char* name;
   TestFunc func;
 } Test;
-
 
 static int thread_test_args (void * aArg)
 {
@@ -277,7 +285,7 @@ static int test_mutex_timed_thread_func(void* arg)
   ret = mtx_timedlock(&(data->mutex), &(data->timeout));
   assert (ret == thrd_timedout);
 
-  timespec_get(&ts, TIME_UTC);
+    custom_timespec_get(&ts, TIME_UTC);
   ret = timespec_compare(&ts, &(data->start));
   assert (ret >= 0);
   ret = timespec_compare(&ts, &(data->timeout));
@@ -288,7 +296,7 @@ static int test_mutex_timed_thread_func(void* arg)
   ret = mtx_lock(&(data->mutex));
   assert (ret == thrd_success);
 
-  timespec_get(&ts, TIME_UTC);
+    custom_timespec_get(&ts, TIME_UTC);
   ret = timespec_compare(&ts, &(data->end));
   assert (ret >= 0);
 
@@ -314,7 +322,7 @@ static void test_mutex_timed(void)
   mtx_init(&(data.mutex), mtx_timed);
   mtx_lock(&(data.mutex));
 
-  timespec_get(&(data.start), TIME_UTC);
+    custom_timespec_get(&(data.start), TIME_UTC);
   data.timeout = data.start;
   timespec_add_nsec(&(data.timeout), NSECS_PER_SECOND / 10);
   data.end = data.timeout;
@@ -324,9 +332,9 @@ static void test_mutex_timed(void)
 
   thrd_create(&thread, test_mutex_timed_thread_func, &data);
 
-  timespec_get(&start, TIME_UTC);
+    custom_timespec_get(&start, TIME_UTC);
   assert (thrd_sleep(&interval, &interval) == 0);
-  timespec_get(&end, TIME_UTC);
+    custom_timespec_get(&end, TIME_UTC);
   mtx_unlock(&(data.mutex));
 
   thrd_join(thread, NULL);
@@ -446,13 +454,13 @@ static void test_sleep(void)
   interval.tv_nsec = NSECS_PER_SECOND / 10;
 
   /* Calculate current time + 100ms */
-  timespec_get(&ts, TIME_UTC);
+  custom_timespec_get(&ts, TIME_UTC);
   timespec_add_nsec(&ts, NSECS_PER_SECOND / 10);
 
   /* Sleep... */
   thrd_sleep(&interval, NULL);
 
-  timespec_get(&end_ts, TIME_UTC);
+    custom_timespec_get(&end_ts, TIME_UTC);
 
   assert(timespec_compare(&ts, &end_ts) <= 0);
 }
@@ -460,7 +468,7 @@ static void test_sleep(void)
 static void test_time(void)
 {
   struct timespec ts;
-  timespec_get(&ts, TIME_UTC);
+    custom_timespec_get(&ts, TIME_UTC);
 }
 
 /* Once function */
@@ -638,7 +646,7 @@ static void test_run(const Test* test, unsigned int seed)
   int i;
   fputs("  ", stdout);
   fputs(test->name, stdout);
-  for (i = strlen(test->name); i < 48; i++)
+  for (i = (int)strlen(test->name); i < 48; i++)
   {
     fputc(' ', stdout);
   }
@@ -662,7 +670,7 @@ static int tests_run(const Test* tests, int argc, char** argv)
 #if !defined(_TTHREAD_WIN32_)
   int found;
 #endif
-  timespec_get(&tv, TIME_UTC);
+    custom_timespec_get(&tv, TIME_UTC);
   srand(tv.tv_nsec);
   seed = rand();
 

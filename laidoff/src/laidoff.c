@@ -1216,10 +1216,10 @@ void lwc_render(const LWCONTEXT* pLwc) {
     } else if (pLwc->game_scene == LGS_TILEMAP) {
         lwc_render_tilemap(pLwc);
     }
-    // Rendering a system message
-    render_sys_msg(pLwc, pLwc->def_sys_msg);
     // Rendering stats
     glDisable(GL_DEPTH_TEST);
+    // Rendering a system message
+    render_sys_msg(pLwc, pLwc->def_sys_msg);
     render_stat(pLwc);
     render_addr(pLwc);
     glEnable(GL_DEPTH_TEST);
@@ -1860,72 +1860,72 @@ int read_user_data_file_binary(const LWCONTEXT* pLwc, const char* filename, cons
     return ret_code;
 }
 
-void srpwrap_user_delete(lua_State* L) {
+int srpwrap_user_delete(lua_State* L) {
     struct SRPUser *usr = (struct SRPUser *) 0;
     if (!SWIG_isptrtype(L, 1)) {
         LOGE("Not a swig pointer type!");
-        return;
+        return -1;
     }
     if (!SWIG_IsOK(SWIG_ConvertPtr(L, 1, (void**)&usr, SWIGTYPE_p_SRPUser, 0))) {
         LOGE("Not a SRPUser type!");
-        return;
+        return -2;
     }
-
     if (SWIG_Lua_class_is_own(L)) {
         SWIG_Lua_class_disown(L);
         srp_user_delete(usr);
     }
+    return 0;
 }
 
-void srpwrap_verifier_delete(lua_State* L) {
+int srpwrap_verifier_delete(lua_State* L) {
     struct SRPVerifier *ver = (struct SRPVerifier *) 0;
     if (!SWIG_isptrtype(L, 1)) {
         LOGE("Not a swig pointer type!");
-        return;
+        return -1;
     }
     if (!SWIG_IsOK(SWIG_ConvertPtr(L, 1, (void**)&ver, SWIGTYPE_p_SRPVerifier, 0))) {
         LOGE("Not a SRPVerifier type!");
-        return;
+        return -2;
     }
-
     if (SWIG_Lua_class_is_own(L)) {
         SWIG_Lua_class_disown(L);
         srp_verifier_delete(ver);
     }
+    return 0;
 }
 
-void lwasfwrap_delete(lua_State* L) {
+int lwasfwrap_delete(lua_State* L) {
     LWASF* asf = 0;
     if (!SWIG_isptrtype(L, 1)) {
         LOGE("Not a swig pointer type!");
-        return;
+        return -1;
     }
     if (!SWIG_IsOK(SWIG_ConvertPtr(L, 1, (void**)&asf, SWIGTYPE_p__LWASF, 0))) {
         LOGE("Not a LWASF type!");
-        return;
+        return -2;
     }
-
     if (SWIG_Lua_class_is_own(L)) {
         SWIG_Lua_class_disown(L);
         lwasf_delete(asf);
     }
+    return 0;
 }
 
-void lwamcwrap_delete(lua_State* L) {
+int lwamcwrap_delete(lua_State* L) {
     LWAMC* amc = 0;
     if (!SWIG_isptrtype(L, 1)) {
         LOGE("Not a swig pointer type!");
-        return;
+        return -1;
     }
     if (!SWIG_IsOK(SWIG_ConvertPtr(L, 1, (void**)&amc, SWIGTYPE_p__LWAMC, 0))) {
         LOGE("Not a LWAMC type!");
-        return;
+        return -2;
     }
-
     if (SWIG_Lua_class_is_own(L)) {
         SWIG_Lua_class_disown(L);
         lwamc_delete(amc);
     }
+    return 0;
 }
 
 int lwsgwrap_delete(lua_State* L) {
@@ -1936,13 +1936,27 @@ int lwsgwrap_delete(lua_State* L) {
     }
     if (!SWIG_IsOK(SWIG_ConvertPtr(L, 1, (void**)&sg, SWIGTYPE_p__LWSG, 0))) {
         LOGE("Not a LWSG type!");
-        return -1;
+        return -2;
     }
-
+    // delete reference to this 'sg' from pLwc.
+    lua_getglobal(L, "pLwc");
+    if (lua_islightuserdata(L, -1)) {
+        LWCONTEXT* pLwc = lua_touserdata(L, -1);
+        // Stop new frame of rendering
+        lwcontext_set_safe_to_start_render(pLwc, 0);
+        // Busy wait for current frame of rendering to be completed
+        while (lwcontext_rendering(pLwc)) {}
+        if (pLwc->sg == sg) {
+            pLwc->sg = 0;
+        }
+        // Start rendering
+        lwcontext_set_safe_to_start_render(pLwc, 1);
+    }
+    lua_pop(L, 1);
+    // delete it
     if (SWIG_Lua_class_is_own(L)) {
         SWIG_Lua_class_disown(L);
         lwsg_delete(sg);
     }
-
     return 0;
 }

@@ -45,6 +45,7 @@ namespace litehtml {
 		virtual void				get_language(litehtml::tstring& language, litehtml::tstring & culture) const;
 
         void set_online(bool b) { online = b; }
+        bool is_online() const { return online; }
         void clear_remtex_name_hash_set() { remtex_name_hash_set.clear(); }
         bool need_update_on_remtex_change(unsigned long name_hash) const {
             return remtex_name_hash_set.find(name_hash) != remtex_name_hash_set.end();

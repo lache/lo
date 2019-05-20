@@ -204,7 +204,7 @@ static void process_receive(LWREMTEX* remtex) {
     FD_ZERO(&udp->readfds);
     FD_SET(udp->s, &udp->readfds);
     int rv = 0;
-    while ((rv = select(udp->s + 1, &udp->readfds, NULL, NULL, &udp->tv)) == 1) {
+    while ((rv = select((int)(udp->s + 1), &udp->readfds, NULL, NULL, &udp->tv)) == 1) {
         if ((udp->recv_len = recvfrom(udp->s, udp->buf, LW_UDP_BUFLEN, 0, (struct sockaddr*)&udp->si_other, (socklen_t*)&udp->slen)) == SOCKET_ERROR) {
 #if LW_PLATFORM_WIN32
             int wsa_error_code = WSAGetLastError();
@@ -244,7 +244,7 @@ static void send_request(LWREMTEX* remtex, double delta_time) {
         if (remtex->tex[i].state == LRTS_DOWNLOADING) {
             LWREMTEXREQUEST req;
             req.name_hash = remtex->tex[i].name_hash;
-            req.offset = remtex->tex[i].data_size;
+            req.offset = (unsigned int)remtex->tex[i].data_size;
             udp_send(remtex->udp, (const char*)&req, sizeof(LWREMTEXREQUEST));
         }
     }
@@ -279,8 +279,8 @@ void remtex_loading_str(void* r, char* str, size_t max_len) {
     }
     LWREMTEX* remtex = (LWREMTEX*)r;
     int downloading_count = 0;
-    int downloaded_bytes = 0;
-    int total_bytes = 0;
+    size_t downloaded_bytes = 0;
+    size_t total_bytes = 0;
     for (int i = 0; i < MAX_TEX_COUNT; i++) {
         if (remtex->tex[i].state == LRTS_DOWNLOADING) {
             downloading_count++;
@@ -292,7 +292,7 @@ void remtex_loading_str(void* r, char* str, size_t max_len) {
         if (total_bytes) {
             snprintf(str,
                      max_len,
-                     "Queue Count: %d, Current: %d bytes, Total:%d bytes (%.1f %%)",
+                     "Queue Count: %d, Current: %zu bytes, Total:%zu bytes (%.1f %%)",
                      downloading_count,
                      downloaded_bytes,
                      total_bytes,
@@ -300,7 +300,7 @@ void remtex_loading_str(void* r, char* str, size_t max_len) {
         } else {
             snprintf(str,
                      max_len,
-                     "Queue Count: %d, Current: %d bytes, Total: --unknown--",
+                     "Queue Count: %d, Current: %zu bytes, Total: --unknown--",
                      downloading_count,
                      downloaded_bytes);
         }

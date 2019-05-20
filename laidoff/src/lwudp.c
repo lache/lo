@@ -12,7 +12,7 @@
 #include "remtex.h"
 #include "lwcontext.h"
 
-static int make_socket_nonblocking(int sock) {
+static int make_socket_nonblocking(SOCKET sock) {
 #if defined(WIN32) || defined(_WIN32) || defined(IMN_PIM)
     unsigned long arg = 1;
     return ioctlsocket(sock, FIONBIO, &arg) == 0;
@@ -138,7 +138,7 @@ void udp_update(LWCONTEXT* pLwc, LWUDP* udp) {
     FD_ZERO(&udp->readfds);
     FD_SET(udp->s, &udp->readfds);
     int rv = 0;
-    while ((rv = select(udp->s + 1, &udp->readfds, NULL, NULL, &udp->tv)) == 1) {
+    while ((rv = select((int)(udp->s + 1), &udp->readfds, NULL, NULL, &udp->tv)) == 1) {
         if ((udp->recv_len = recvfrom(udp->s, udp->buf, LW_UDP_BUFLEN, 0, (struct sockaddr*)&udp->si_other, (socklen_t*)&udp->slen)) == SOCKET_ERROR) {
 #if LW_PLATFORM_WIN32
             int wsa_error_code = WSAGetLastError();

@@ -1284,7 +1284,7 @@ void puck_game_on_new_record_frame(const LWPUCKGAME* puck_game, LWPUCKGAMERECORD
 void puck_game_on_finalize_record(const LWPUCKGAME* puck_game, const LWPUCKGAMERECORD* record) {
     const size_t compressed_bound_size = LZ4_COMPRESSBOUND(sizeof(LWPUCKGAMERECORD));
     char* compressed = malloc(compressed_bound_size);
-    int compressed_size = LZ4_compress_default((char*)record, compressed, sizeof(LWPUCKGAMERECORD), compressed_bound_size);
+    int compressed_size = LZ4_compress_default((char*)record, compressed, sizeof(LWPUCKGAMERECORD), (int)compressed_bound_size);
     if (compressed_size > 0) {
         char dt[128];
         time_t now = time(NULL);

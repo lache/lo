@@ -41,6 +41,7 @@ typedef enum _LW_PUCK_GAME_PACKET {
     LPGP_LWPTTLSHIPYARDSTATE = 136, // server -> client
     LPGP_LWPTTLJSON = 137, // client -> server
     LPGP_LWPTTLCONTRACTSTATE = 138, // server -> client
+    LPGP_LWPTTLJSONREPLY = 139, // server -> client
     LPGP_LWPQUEUE2 = 200,
     LPGP_LWPMAYBEMATCHED = 201,
     LPGP_LWPMATCHED2 = 202,
@@ -277,6 +278,7 @@ typedef struct _LWPTTLROUTEBITFIELD {
     int unloading : 1;
     int sailing : 1;
     int breakdown : 1;
+    int no_route : 1;
 } LWPTTLROUTEBITFIELD;
 
 typedef struct _LWPTTLROUTEOBJECT {
@@ -285,6 +287,8 @@ typedef struct _LWPTTLROUTEOBJECT {
     float route_param;
     float route_speed;
     LWPTTLROUTEBITFIELD route_flags;
+    float x; // only used if this object is not routed
+    float y; // only used if this object is not routed
 } LWPTTLROUTEOBJECT;
 
 // UDP
@@ -501,6 +505,9 @@ typedef struct _LWPTTLSINGLECELL {
     int water_box_valid;
     int water_box[4];
     int contract_id;
+    char city_lua_data[1024];
+    char ship_lua_data[1024];
+    char seaport_lua_data[1024];
 } LWPTTLSINGLECELL;
 
 // UDP

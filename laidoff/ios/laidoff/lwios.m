@@ -83,6 +83,11 @@ void lw_start_sign_in(LWCONTEXT* pLwc, int tag) {
 void lw_start_sign_out(LWCONTEXT* pLwc, int tag) {
 }
 
+char * resolve_path(const char * filename) {
+    NSString *pathname = [[NSBundle mainBundle] pathForResource:[NSString stringWithFormat:@"assets/%s", filename] ofType:@""];
+    return strdup((char *)[pathname UTF8String]);
+}
+
 char * create_string_from_file(const char * filename) {
     
     NSString *pathname = [[NSBundle mainBundle] pathForResource:[NSString stringWithFormat:@"assets/%s", filename] ofType:@""];

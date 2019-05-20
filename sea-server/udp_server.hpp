@@ -9,6 +9,7 @@ namespace astarrtree {
 namespace ss {
     namespace bg = boost::geometry;
     namespace bgi = boost::geometry::index;
+    using uchar_vec = std::vector<unsigned char>;
     using boost::asio::ip::udp;
     class sea;
     class sea_static;
@@ -32,7 +33,8 @@ namespace ss {
                    std::shared_ptr<salvage> salvage,
                    std::shared_ptr<shipyard> shipyard,
                    std::shared_ptr<session> session,
-                   std::shared_ptr<contract> contract);
+                   std::shared_ptr<contract> contract,
+                   std::shared_ptr<lua_State> lua_state_instance);
         bool set_route(int id, int seaport_id1, int seaport_id2, int expect_land, std::shared_ptr<astarrtree::coro_context> coro);
         void gold_earned(int xc, int yc, int amount) {
             if (amount > 0) {
@@ -72,6 +74,43 @@ namespace ss {
         void send_waypoints(int ship_id);
         std::shared_ptr<const route> find_route_map_by_ship_id(int ship_id) const;
         void send_single_cell(int xc0, int yc0);
+        void handle_ping();
+        void handle_request_waypoints();
+        void handle_ping_flush();
+        void handle_ping_chunk();
+        void handle_ping_single_cell();
+        void handle_chat();
+        void transform_single_cell();
+        void handle_encrypted_json(std::size_t bytes_transferred);
+        void parse_json_message(int token_count,
+                                const char* json_str,
+                                std::vector<jsmntok_t>& json_token,
+                                int& message_counter,
+                                std::string& m,
+                                std::string& a1,
+                                std::string& a2,
+                                std::string& a3,
+                                std::string& a4,
+                                std::string& a5);
+        std::string make_reply_json(int message_counter, int result_code, const std::string& note);
+        uchar_vec create_encrypted_json_message(const uchar_vec &bytes_iv, const uchar_vec &bytes_reply_ciphertext);
+        static void add_padding_bytes_inplace(uchar_vec& bytes_plaintext);
+        static int encode_message(uchar_vec& bytes_iv_first,
+                                  uchar_vec& bytes_ciphertext,
+                                  const uchar_vec& bytes_plaintext,
+                                  unsigned char* bytes_key,
+                                  int len_key);
+        static int decode_message(uchar_vec& bytes_plaintext,
+                                  unsigned char* bytes_iv,
+                                  unsigned char* bytes_ciphertext,
+                                  unsigned char* bytes_key,
+                                  int len_key);
+        void send_compressed(const char* bytes, int bytes_len);
+        int encrypt_message(uchar_vec& bytes_iv,
+                            uchar_vec& bytes_ciphertext,
+                            const std::string& message,
+                            unsigned char* bytes_key,
+                            int len_key);
         void handle_receive(const boost::system::error_code& error, std::size_t bytes_transferred);
         void handle_send(const boost::system::error_code& error, std::size_t bytes_transferred);
         std::shared_ptr<route> create_route_id(const std::vector<int>& seaport_id_list, int expect_land, std::shared_ptr<astarrtree::coro_context> coro) const;
@@ -130,6 +169,8 @@ namespace ss {
         endpoint_aoi_object::rtree client_endpoint_aoi_rtree_;
         unsigned long long client_endpoint_aoi_int_key_;
         int gold_;
+        std::shared_ptr<lua_State> lua_state_instance_;
+        lua_State* L() const { return lua_state_instance_.get(); }
     };
     template<> udp::endpoint udp_server::extract_endpoint(std::vector<udp::endpoint>::const_iterator v);
     template<> udp::endpoint udp_server::extract_endpoint(std::vector<endpoint_aoi_object::value>::const_iterator v);

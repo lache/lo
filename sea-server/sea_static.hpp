@@ -32,6 +32,7 @@ namespace ss {
         void update_single_chunk_key_ts(const LWTTLCHUNKKEY& chunk_key, long long monotonic_uptime);
         void transform_single_cell_water_to_land(int xc0, int yc0);
         void transform_single_cell_land_to_water(int xc0, int yc0);
+        std::vector<xy32> calculate_waypoints(int from_x, int from_y, int to_x, int to_y, int expect_land, std::shared_ptr<astarrtree::coro_context> coro) const;
     private:
         std::vector<sea_static_object::value> query_tree_ex(int xc, int yc, int half_lng_ex, int half_lat_ex) const;
         std::vector<sea_static_object::value> query_tree(int xc0, int yc0, int xc1, int yc1) const;
@@ -51,7 +52,7 @@ namespace ss {
 
         const int res_width;
         const int res_height;
-        const float km_per_cell;
+        //const float km_per_cell;
         //typedef std::unordered_set<int, std::hash<int>, std::equal_to<int>, sea_static_object::allocator> sea_water_set_t;
         //sea_water_set_t* sea_water_set;
         std::vector<int> sea_water_vector;

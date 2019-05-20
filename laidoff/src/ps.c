@@ -195,7 +195,7 @@ LWEMITTER2OBJECT* ps_emit_object_begin(LWPS* ps) {
 }
 
 LWEMITTER2OBJECT* ps_emit_object_next(LWPS* ps, LWEMITTER2OBJECT* cursor) {
-    int start_index = ((char*)cursor - (char*)&ps->inst[0].emit_object) / sizeof(LWPSINST);
+    int start_index = (int)((char*)cursor - (char*)&ps->inst[0].emit_object) / sizeof(LWPSINST);
     return s_ps_emit_object_find_first_valid(ps, start_index + 1);
 }
 

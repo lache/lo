@@ -117,7 +117,8 @@ android {
     sourceSets {
         debug.assets.srcDirs += '../../assets'
         releaseSingapore.assets.srcDirs += '../../selected-assets/assets'
-        releaseBallRumbleGooglePlay.assets.srcDirs += '../../selected-assets-br/assets'
+        //releaseBallRumbleGooglePlay.assets.srcDirs += '../../selected-assets-br/assets'
+        releaseBallRumbleGooglePlay.assets.srcDirs += '../../assets'
     }
 
     externalNativeBuild {
@@ -147,7 +148,9 @@ android {
                 'vbo',
                 'css',
                 'html',
-                'mvbo'
+                'mvbo',
+                'asf',
+                'amc'
     }
 }
 
@@ -170,6 +173,8 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     implementation 'com.android.support:design:28.0.0'
+    implementation 'com.android.support:support-media-compat:28.0.0'
+    implementation 'com.android.support:support-v4:28.0.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

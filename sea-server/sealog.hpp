@@ -21,12 +21,12 @@ static void finish_error_log(error_log_context& elc) {
 }
 #else
 struct error_log_context {};
-static error_log_context prepare_error_log() {}
-static void finish_error_log(error_log_context& elc) {}
+static inline error_log_context prepare_error_log() { return error_log_context(); }
+static inline void finish_error_log(error_log_context& elc) {}
 #endif
 
 namespace ss {
-    static std::string awesome_printf_helper(boost::format& f) {
+    static inline std::string awesome_printf_helper(boost::format& f) {
         return boost::str(f);
     }
 
@@ -95,7 +95,7 @@ namespace ss {
     }
 }
 
-#if WIN32
+#ifdef WIN32
 #define __FILENAME__ (strrchr("\\" __FILE__, '\\') + 1)
 #else
 #define __FILENAME__ (strrchr("/" __FILE__, '/') + 1)

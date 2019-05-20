@@ -16,14 +16,17 @@ void lwc_render_mocap(const LWCONTEXT* pLwc) {
     LW_GL_VIEWPORT();
     lw_clear_color();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    lwc_render_sg(pLwc, pLwc->sg);
+    glDisable(GL_DEPTH_TEST);
     // overwrite ui projection matrix
-    logic_update_default_ui_proj_for_htmlui(pLwc->shared_fbo.width, pLwc->shared_fbo.height, ((LWCONTEXT*)pLwc)->proj);
+    logic_update_default_ui_proj_for_htmlui(pLwc->shared_fbo.width,
+                                            pLwc->shared_fbo.height,
+                                            ((LWCONTEXT*)pLwc)->proj);
     // render HTML UI queued at render command queue
     htmlui_render_render_commands(pLwc->htmlui);
+    glEnable(GL_DEPTH_TEST);
     // revert viewport size
     lw_set_viewport_size((LWCONTEXT*)pLwc,
                          pLwc->window_width,
                          pLwc->window_height);
-
-    lwc_render_sg(pLwc, pLwc->sg);
 }

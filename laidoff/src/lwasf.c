@@ -4,7 +4,9 @@
 #include "lwlog.h"
 #include "lwstrtok_r.h"
 #include <math.h>
-
+#include <string.h> // ios strlen()
+#include "file.h"
+#include "lwcharptrstream.h"
 #ifndef M_PI
 #define M_PI 3.14159265
 #endif
@@ -52,6 +54,7 @@ static int set_children_and_sibling(LWASF* asf, int parent_idx, LWASFBONE* child
     }
 }
 
+// r is row-major matarix
 static void rotation_z(double r[][4], double a) {
     a = a * M_PI / 180.;
     r[0][0] = cos(a); r[0][1] = -sin(a); r[0][2] = 0; r[0][3] = 0;
@@ -60,6 +63,7 @@ static void rotation_z(double r[][4], double a) {
     r[3][0] = 0;      r[3][1] = 0;       r[3][2] = 0; r[3][3] = 1;
 }
 
+// r is row-major matarix
 static void rotation_y(double r[][4], double a) {
     a = a * M_PI / 180.;
     r[0][0] = cos(a);  r[0][1] = 0;       r[0][2] = sin(a); r[0][3] = 0;
@@ -68,6 +72,7 @@ static void rotation_y(double r[][4], double a) {
     r[3][0] = 0;       r[3][1] = 0;       r[3][2] = 0;      r[3][3] = 1;
 }
 
+// r is row-major matarix
 static void rotation_x(double r[][4], double a) {
     a = a * M_PI / 180.;
     r[0][0] = 1;       r[0][1] = 0;       r[0][2] = 0;       r[0][3] = 0;
@@ -121,7 +126,7 @@ static void matrix_transpose(double a[4][4], double b[4][4]) {
     int i, j;
     for (i = 0; i < 4; i++) {
         for (j = 0; j < 4; j++) {
-            b[i][j] = a[i][j];
+            b[i][j] = a[j][i]; // switch i-j
         }
     }
 }
@@ -188,25 +193,25 @@ static LWASF* load_asf(const char* filename) {
     LWASF* asf;
     char line[2048];
     char keyword[256];
-    FILE* file;
     char* token;
     char* token_last;
     int i, x;
     int done = 0;
-    double length;
+    double length = 1;
     int parent = 0;
+    LWCHARPTRSTREAM char_ptr_stream;
 
-    file = fopen(filename, "r");
-    if (file == 0) {
+    lwcharptrstream_init(&char_ptr_stream, create_string_from_file(filename));
+    if (char_ptr_stream.length == 0) {
         LOGE("lwasf: file '%s' cannot be read.", filename);
         return 0;
     }
 
     // skip to ':bonedata' line
-    while (fgets(line, sizeof(line), file)) {
+    while (lwcharptrstream_fgets(&char_ptr_stream, line, sizeof(line))) {
         remove_rn(line);
         sscanf(line, "%s", keyword);
-        LOGI("Line: %s", line);
+        //LOGI("Line: %s", line);
         if (strcmp(keyword, ":bonedata") == 0)
             break;
     }
@@ -241,7 +246,7 @@ static LWASF* load_asf(const char* filename) {
         asf->moving_bone_count++;
         // for each bone
         while (1) {
-            if (fgets(line, sizeof(line), file) == 0) {
+            if (lwcharptrstream_fgets(&char_ptr_stream, line, sizeof(line)) == 0) {
                 LOGE("Unexpectedly terminated ASF file.");
                 goto FAIL;
             }
@@ -286,19 +291,26 @@ static LWASF* load_asf(const char* filename) {
                 for (token = lwstrtok_r(line, " ", &token_last); token; token = lwstrtok_r(0, " ", &token_last)) {
                     int tdof = asf->bones[i].dof;
                     /****/ if (strcmp(token, "rx") == 0) {
-                        asf->bones[i].dofrx = 1, asf->bones[i].dofo[tdof] = 1;
+                        asf->bones[i].dofrx = 1;
+                        asf->bones[i].dofo[tdof] = 1;
                     } else if (strcmp(token, "ry") == 0) {
-                        asf->bones[i].dofry = 1, asf->bones[i].dofo[tdof] = 2;
+                        asf->bones[i].dofry = 1;
+                        asf->bones[i].dofo[tdof] = 2;
                     } else if (strcmp(token, "rz") == 0) {
-                        asf->bones[i].dofrz = 1, asf->bones[i].dofo[tdof] = 3;
+                        asf->bones[i].dofrz = 1;
+                        asf->bones[i].dofo[tdof] = 3;
                     } else if (strcmp(token, "tx") == 0) {
-                        asf->bones[i].doftx = 1, asf->bones[i].dofo[tdof] = 4;
+                        asf->bones[i].doftx = 1;
+                        asf->bones[i].dofo[tdof] = 4;
                     } else if (strcmp(token, "ty") == 0) {
-                        asf->bones[i].dofty = 1, asf->bones[i].dofo[tdof] = 5;
+                        asf->bones[i].dofty = 1;
+                        asf->bones[i].dofo[tdof] = 5;
                     } else if (strcmp(token, "tz") == 0) {
-                        asf->bones[i].doftz = 1, asf->bones[i].dofo[tdof] = 6;
+                        asf->bones[i].doftz = 1;
+                        asf->bones[i].dofo[tdof] = 6;
                     } else if (strcmp(token, "l") == 0) {
-                        asf->bones[i].doftl = 1, asf->bones[i].dofo[tdof] = 7;
+                        asf->bones[i].doftl = 1;
+                        asf->bones[i].dofo[tdof] = 7;
                     } else if (strcmp(token, "dof") == 0) {
                         continue;
                     } else {
@@ -307,28 +319,28 @@ static LWASF* load_asf(const char* filename) {
                     asf->bones[i].dof++;
                     asf->bones[i].dofo[asf->bones[i].dof] = 0; // sentinel
                 }
-                LOGI("Bone %d DOF", i);
+                //LOGI("Bone %d DOF", i);
                 for (x = 0; x < 7 && asf->bones[i].dofo[x] != 0; x++) {
-                    LOGI("%d", asf->bones[i].dofo[x]);
+                    //LOGI("%d", asf->bones[i].dofo[x]);
                 }
             }
         }
         if (asf->bones[i].dofrx == 0 && asf->bones[i].dofry && asf->bones[i].dofrz) {
             asf->moving_bone_count--;
         }
-        asf->bones[i].length = length;
+        asf->bones[i].length = length * MOCAP_SCALE;
     }
     LOGI("%d bones loaded", asf->bone_count);
 
     // hierarchy
     // skip begin line
-    if (fgets(line, sizeof(line), file) == 0) {
+    if (lwcharptrstream_fgets(&char_ptr_stream, line, sizeof(line)) == 0) {
         LOGE("Unexpectedly terminated ASF file. (expecting hierarchy data)");
         goto FAIL;
     }
     remove_rn(line);
     while (1) {
-        if (fgets(line, sizeof(line), file) == 0) {
+        if (lwcharptrstream_fgets(&char_ptr_stream, line, sizeof(line)) == 0) {
             LOGE("Unexpectedly terminated ASF file. (expecting hierarchy data)");
             goto FAIL;
         }
@@ -348,10 +360,11 @@ static LWASF* load_asf(const char* filename) {
             }
         }
     }
-    fclose(file), file = 0;
+    lwcharptrstream_deinit(&char_ptr_stream);
     return asf;
 FAIL:
-    free(asf), asf = 0;
+    lwcharptrstream_deinit(&char_ptr_stream);
+    free(asf); asf = 0;
     return 0;
 }
 
@@ -397,4 +410,8 @@ void lwasf_enable_all_rotational_dofs(LWASF* asf) {
             asf->bones[i].dofo[asf->bones[i].dof] = 0;
         }
     }
+}
+
+LWASFBONE* lwasf_bone(LWASF* asf, int index) {
+    return &asf->bones[index];
 }

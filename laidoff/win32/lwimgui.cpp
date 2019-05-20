@@ -163,6 +163,7 @@ extern "C" void lwimgui_render(GLFWwindow* window) {
                 lwttl_selected_int(pLwc->ttl, &xc0, &yc0);
                 const LWPTTLSINGLECELL* p = lwttl_single_cell(pLwc->ttl);
                 ImGui::Text("XC %d YC %d [attr 0x%08X]", xc0, yc0, p->attr);
+                ImGui::Text("City %d / Pop %d", p->city_id, p->population);
             } else {
                 ImGui::Text("Not selected");
             }

@@ -69,6 +69,11 @@ public:
         browser_context.clear_loop(loop_name);
         unlock();
     }
+    void clear_all_loops() {
+        lock();
+        browser_context.clear_all_loops();
+        unlock();
+    }
     bool load_page(const char* html_path) {
         std::shared_ptr<char> html_str(create_string_from_file(html_path), free);
         if (html_str) {
@@ -220,6 +225,9 @@ public:
     void set_online(bool b) {
         text_cont.set_online(b);
         render_command_cont.set_online(b);
+    }
+    bool is_online() const {
+        return text_cont.is_online();
     }
     void on_remtex_gpu_loaded(unsigned long name_hash) {
         if (text_cont.need_update_on_remtex_change(name_hash)
@@ -435,6 +443,11 @@ void htmlui_clear_loop(void* c, const char* loop_name) {
     htmlui->clear_loop(loop_name);
 }
 
+void htmlui_clear_all_loops(void* c) {
+    LWHTMLUI* htmlui = (LWHTMLUI*)c;
+    htmlui->clear_all_loops();
+}
+
 void htmlui_set_loop_key_value(void* c, const char* loop_name, const char* key, const char* value) {
     LWHTMLUI* htmlui = (LWHTMLUI*)c;
     if (c == 0 || loop_name == 0 || key == 0 || value == 0) {
@@ -447,6 +460,11 @@ void htmlui_set_loop_key_value(void* c, const char* loop_name, const char* key, 
 void htmlui_set_online(void* c, int b) {
     LWHTMLUI* htmlui = (LWHTMLUI*)c;
     htmlui->set_online(b ? true : false);
+}
+
+int htmlui_is_online(void* c) {
+    LWHTMLUI* htmlui = (LWHTMLUI*)c;
+    return htmlui->is_online() ? 1 : 0;
 }
 
 void htmlui_update_country_data(const LWCONTEXT* pLwc, void* c) {

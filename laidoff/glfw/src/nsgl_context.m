@@ -310,7 +310,7 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
     window->context.extensionSupported = extensionSupportedNSGL;
     window->context.getProcAddress = getProcAddressNSGL;
     window->context.destroy = destroyContextNSGL;
-
+    
     return GLFW_TRUE;
 }
 
@@ -333,3 +333,13 @@ GLFWAPI id glfwGetNSGLContext(GLFWwindow* handle)
     return window->context.nsgl.object;
 }
 
+// https://github.com/faiface/pixel/issues/140
+GLFWAPI void glfwMacOsMojaveWorkaround(GLFWwindow* handle)
+{
+    static int run_once = 0;
+    if (run_once == 0)
+    {
+        [glfwGetNSGLContext(handle) update];
+        run_once = 1;
+    }
+}

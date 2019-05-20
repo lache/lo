@@ -4,6 +4,7 @@
 #include <errno.h>
 #include "file.h"
 #include "laidoff.h"
+#include <string.h>
 
 #define  LOG_TAG    "And9"
 

@@ -76,10 +76,10 @@ void write_user_data_file_binary(const LWCONTEXT* pLwc, const char* filename, co
 int read_user_data_file_string(const LWCONTEXT* pLwc, const char* filename, const char** str);
 int read_user_data_file_binary(const LWCONTEXT* pLwc, const char* filename, const unsigned char** dat, int* dat_len);
 
-void srpwrap_user_delete(lua_State* L);
-void srpwrap_verifier_delete(lua_State* L);
-void lwasfwrap_delete(lua_State* L);
-void lwamcwrap_delete(lua_State* L);
+int srpwrap_user_delete(lua_State* L);
+int srpwrap_verifier_delete(lua_State* L);
+int lwasfwrap_delete(lua_State* L);
+int lwamcwrap_delete(lua_State* L);
 int lwsgwrap_delete(lua_State* L);
 
 extern const float default_uv_offset[2];

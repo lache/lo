@@ -60,7 +60,8 @@ void htmlui_render_command_queue::render(const LWCONTEXT* pLwc, float scroll_y) 
             text_block_copy.text_block_y += static_cast<float>(scroll_y);
             text_block_copy.text = text_block_strings[text_block_index].c_str();
             //render_text_block_two_pass_color(pLwc, &text_block_copy);
-            render_text_block(pLwc, &text_block_copy);
+            render_text_block_two_pass(pLwc, &text_block_copy);
+            //render_text_block(pLwc, &text_block_copy);
             text_block_index++;
         }
     }

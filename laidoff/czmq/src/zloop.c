@@ -713,7 +713,7 @@ zloop_start_noalloc (zloop_t *self) {
 			rc = s_rebuild_pollset(self);
 			if (rc)
 				break;
-			zmq_poll_noalloc_prep(self->poll_size, &events, &poller);
+			zmq_poll_noalloc_prep((int)self->poll_size, &events, &poller);
 			zmq_poller_prep(self->pollset, (int)self->poll_size, poller);
 		}
 		rc = zmq_poll_noalloc(self->pollset, (int)self->poll_size, s_tickless(self), events, poller);
