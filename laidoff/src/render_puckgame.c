@@ -444,6 +444,10 @@ static void render_timer(const LWCONTEXT* pLwc, float remain_sec, float total_se
     }
     float x = 0.0f;
     float y = pLwc->viewport_rt_y - 0.075f;
+    // iPhone NOTCH!!!
+    if (pLwc->viewport_aspect_ratio < 9.0f/17.0f) {
+        y -= 0.25f;
+    }
     text_block.text = str;
     text_block.text_bytelen = (int)strlen(text_block.text);
     text_block.begin_index = 0;
@@ -1490,6 +1494,10 @@ static void render_main_menu_ui_layer(const LWCONTEXT* pLwc,
     // leaderboard
     float leaderboard_x = -pLwc->viewport_rt_x + 0.1f;
     float leaderboard_y = pLwc->viewport_rt_y - 0.15f;
+    // iPhone NOTCH!!!
+    if (pLwc->viewport_aspect_ratio < 9.0f/17.0f) {
+        leaderboard_y -= 0.25f;
+    }
     render_leaderboard_table(pLwc, leaderboard_x, leaderboard_y, puck_game->main_menu_ui_alpha);
     // render buttons appended so far while temporary viewport configuration valid
     render_lwbutton(pLwc, &pLwc->button_list);

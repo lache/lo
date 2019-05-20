@@ -428,7 +428,12 @@ void puck_game_reset_view_proj(LWCONTEXT* pLwc, LWPUCKGAME* puck_game) {
         mat4x4_perspective(pLwc->puck_game_proj, (float)(LWDEG2RAD(49.1343) / pLwc->viewport_aspect_ratio), pLwc->viewport_aspect_ratio, 1.0f, 500.0f);
     } else {
         // portrait
-        mat4x4_perspective(pLwc->puck_game_proj, (float)(2.0 * LWDEG2RAD(49.1343) / (1.0 / pLwc->viewport_aspect_ratio)), pLwc->viewport_aspect_ratio, 1.0f, 500.0f);
+        // iPhone NOTCH!!!
+        double fov_deg =49.1343;
+        if (pLwc->viewport_aspect_ratio < 9.0f/17.0f) {
+            fov_deg = 62;
+        }
+        mat4x4_perspective(pLwc->puck_game_proj, (float)(2.0 * LWDEG2RAD(fov_deg) / (1.0 / pLwc->viewport_aspect_ratio)), pLwc->viewport_aspect_ratio, 1.0f, 500.0f);
     }
     vec3 eye = { 0.0f, 0.0f, 10.0f /*12.0f*/ };
     vec3 center = { 0, 0, 0 };

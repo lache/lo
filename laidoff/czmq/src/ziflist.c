@@ -42,6 +42,11 @@
 #    define LW_PLATFORM_RPI 1
 #elif __ANDROID__
 #    define LW_PLATFORM_ANDROID 1
+#include "../include/ifaddrs-android.h"
+
+#define getifaddrs android_getifaddrs
+#define freeifaddrs android_freeifaddrs
+
 #elif __linux__
 #    define LW_PLATFORM_LINUX 1
 #else
@@ -51,10 +56,6 @@
 #include <net/if.h>
 #endif
 
-#include "../include/ifaddrs-android.h"
-
-#define getifaddrs android_getifaddrs
-#define freeifaddrs android_freeifaddrs
 
 //  Structure of an interface
 typedef struct {
