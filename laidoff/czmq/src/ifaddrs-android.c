@@ -30,6 +30,8 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#if __ANDROID__
+
 #include "../include/ifaddrs-android.h"
 #include <stdlib.h>
 #include <string.h>
@@ -239,4 +241,4 @@ void android_freeifaddrs(struct ifaddrs* addrs) {
   }
 }
 
-
+#endif
