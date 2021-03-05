@@ -192,7 +192,7 @@ extern "C" HRESULT init_ext_sound_lib() {
     //BOOL r = PlaySound(sound_buffer, NULL, SND_MEMORY | SND_ASYNC);
 
     return S_OK;
-#elif LW_PLATFORM_OSX
+#elif LW_PLATFORM_OSX && _XCODE_
     preload_all_sound_osx();
     return 0;
 #else

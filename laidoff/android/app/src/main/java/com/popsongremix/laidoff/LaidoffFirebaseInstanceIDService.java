@@ -1,7 +1,17 @@
 package com.popsongremix.laidoff;
 
-public class LaidoffFirebaseInstanceIDService {
+import android.content.Intent;
+import android.os.IBinder;
+import androidx.annotation.Nullable;
+
+public class LaidoffFirebaseInstanceIDService extends android.app.Service {
     public static native void setPushToken(String text);
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
 //
 //    @Override
 //    public void onTokenRefresh() {

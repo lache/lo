@@ -18,6 +18,8 @@
 #include "imgui_internal.h"
 
 #include <stdio.h>      // vsnprintf, sscanf, printf
+#include <zconf.h>
+
 #if !defined(alloca)
 #ifdef _WIN32
 #include <malloc.h>     // alloca
@@ -1215,6 +1217,7 @@ ImFont* ImFontAtlas::AddFontDefault(const ImFontConfig* font_cfg_template)
 ImFont* ImFontAtlas::AddFontFromFileTTF(const char* filename, float size_pixels, const ImFontConfig* font_cfg_template, const ImWchar* glyph_ranges)
 {
     int data_size = 0;
+
     void* data = ImFileLoadToMemory(filename, "rb", &data_size, 0);
     if (!data)
     {

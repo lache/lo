@@ -7,12 +7,13 @@ def keystorePropertiesFile = rootProject.file("keystore.properties")
 // Initialize a new Properties() object called keystoreProperties.
 def keystoreProperties = new Properties()
 
+
 // Load your keystore.properties file into the keystoreProperties object.
 keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 def versionProperties = new Properties()
 
-versionProperties['versionCode'] = "1134"
+versionProperties['versionCode'] = "1456"
 versionProperties['versionName'] = "0.1.0"
 
 if (keystoreProperties.containsKey('versionCode')) {
@@ -28,7 +29,7 @@ if (project.hasProperty('versionCode')) {
 }
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 30
     publishNonDefault true
 
     signingConfigs {
@@ -46,16 +47,18 @@ android {
         }
     }
 
+    ndkVersion "23.0.7123448-rc1"
+
     defaultConfig {
         applicationId "com.popsongremix.laidoff"
         minSdkVersion 16
-        targetSdkVersion 28
+        targetSdkVersion 30
 
         versionCode versionProperties['versionCode'] as int
         versionName versionProperties['versionName']
 
         ndk {
-            abiFilters 'armeabi-v7a','arm64-v8a','x86','x86_64'
+            abiFilters 'armeabi-v7a','arm64-v8a'
         }
 
         externalNativeBuild {
@@ -166,12 +169,9 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.google.firebase:firebase-messaging:18.0.0'
-    implementation 'com.android.support:appcompat-v7:28.0.0'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
-    implementation 'com.android.support:design:28.0.0'
-    implementation 'com.android.support:support-media-compat:28.0.0'
-    implementation 'com.android.support:support-v4:28.0.0'
+    implementation 'com.google.firebase:firebase-messaging:21.0.1'
+    implementation 'com.android.support.constraint:constraint-layout:2.0.4'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

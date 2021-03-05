@@ -167,8 +167,14 @@ elseif (APPLE)
     set(ICON osx/laidoff.icns)
     set_source_files_properties(osx/laidoff.icns PROPERTIES
             MACOSX_PACKAGE_LOCATION "Resources")
+
     set_source_files_properties(assets PROPERTIES
             MACOSX_PACKAGE_LOCATION "Resources")
+
+    file(GLOB_RECURSE RES_SOURCES "assets/*")
+    SET_SOURCE_FILES_PROPERTIES(${RES_SOURCES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+
+
 
     set(OSX_DEPS
             win32/etc1.cpp
