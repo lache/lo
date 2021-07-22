@@ -37,7 +37,7 @@
     "source-map-support": "^0.5.8",
     "struct": "0.0.12",
     "uuid": "^3.2.1",
-    "xlsx": "^0.13.1",
+    "xlsx": "^0.17.0",
     "yargs": "^11.0.0"
   },
   "devDependencies": {
