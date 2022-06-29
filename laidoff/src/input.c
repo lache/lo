@@ -63,9 +63,13 @@ void lw_trigger_mouse_press(LWCONTEXT* pLwc, float nx, float ny, int pointer_id)
     // Touch right top corner of the screen
     if (pLwc->game_scene != LGS_ADMIN
         && x > pLwc->viewport_rt_x - admin_button_size
-        && y > pLwc->viewport_rt_y - admin_button_size
-        && is_file_exist(pLwc->user_data_path, "admin")) {
-        admin_pressed = 1;
+        && y > pLwc->viewport_rt_y - admin_button_size) {
+
+        if (is_file_exist(pLwc->user_data_path, "admin")) {
+            admin_pressed = 1;
+        } else {
+            LOGE("admin area touched, but no admin file exists on user data path '%s' (touch many times to create one)", pLwc->user_data_path);
+        }
     } else {
         admin_pressed = 0;
     }
@@ -356,7 +360,6 @@ void lw_trigger_mouse_release(LWCONTEXT* pLwc, float nx, float ny, int pointer_i
     const float top_button_h = 0.75f;
 
     // Touch right top corner of the screen
-    /*
     if (pLwc->game_scene != LGS_ADMIN
         && x > +pLwc->viewport_rt_x - admin_button_size
         && y > +pLwc->viewport_rt_y - admin_button_size) {
@@ -371,8 +374,7 @@ void lw_trigger_mouse_release(LWCONTEXT* pLwc, float nx, float ny, int pointer_i
         }
     }
     admin_pressed = 0;
-    */
-
+    
     if (pLwc->game_scene == LGS_PUCK_GAME
         && fabs(top_button_x_center - x) < top_button_w
         && fabs(top_button_y_center - y) < top_button_h) {
