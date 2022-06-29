@@ -32,7 +32,7 @@
     "net": "^1.0.2",
     "npm": "^6.4.0",
     "numeral": "^2.0.6",
-    "pug": "^2.0.1",
+    "pug": "^3.0.1",
     "random-name": "^0.1.2",
     "source-map-support": "^0.5.8",
     "struct": "0.0.12",
