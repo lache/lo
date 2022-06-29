@@ -37,9 +37,13 @@ void WatchDirectory(LWCONTEXT* pLwc, LPTSTR lpDir) {
 		OPEN_EXISTING,
 		FILE_FLAG_BACKUP_SEMANTICS,
 		NULL);
+	if (hDir == INVALID_HANDLE_VALUE) {
+		LOGE(TEXT("Error watching directory '%s'"), lpDir);
+		return;
+	}
 
 	int nCounter = 0;
-	FILE_NOTIFY_INFORMATION strFileNotifyInfo[1024];
+	FILE_NOTIFY_INFORMATION strFileNotifyInfo[16];
 	DWORD dwBytesReturned = 0;
 
 	while (TRUE) {
