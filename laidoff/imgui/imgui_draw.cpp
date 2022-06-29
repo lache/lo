@@ -18,7 +18,7 @@
 #include "imgui_internal.h"
 
 #include <stdio.h>      // vsnprintf, sscanf, printf
-#include <zconf.h>
+//#include <zconf.h>
 
 #if !defined(alloca)
 #ifdef _WIN32
