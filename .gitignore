@@ -10,3 +10,4 @@ laidoff/user*/
 /laidoff/account-last-key
 /laidoff/android/app/.cxx
 /laidoff/android/app/releaseBallRumbleGooglePlay
+.DS_Store
