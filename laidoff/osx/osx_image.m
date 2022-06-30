@@ -1,4 +1,6 @@
 #import <Foundation/Foundation.h>
+#import <CoreGraphics/CGImage.h>
+#import <ImageIO/CGImageSource.h>
 #import "lwbitmapcontext.h"
 
 void test_main_bundle_path(const char* filename) {
@@ -11,7 +13,7 @@ void test_main_bundle_path(const char* filename) {
 char* get_assets_path(const char* filename) {
     // DEV PATH: @"/Users/gb/laidoff/assets/"
     NSString *path = [NSString stringWithFormat:@"%@/%s",
-                      @"/Users/gb/w/src/github.com/lache/lo/laidoff",//[[NSBundle mainBundle] resourcePath],
+                      @"/Users/gb/repos/lo/laidoff",//[[NSBundle mainBundle] resourcePath],
                       filename];
     return strdup([path UTF8String]);
 }
