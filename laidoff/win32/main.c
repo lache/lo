@@ -59,7 +59,7 @@ static void error_callback(int error, const char* description) {
 
 static BOOL directory_exists(const char* szPath) {
 #if LW_PLATFORM_WIN32
-    DWORD dwAttrib = GetFileAttributesA(szPath);
+	const DWORD dwAttrib = GetFileAttributesA(szPath);
 
     return (dwAttrib != INVALID_FILE_ATTRIBUTES && (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
 #else
@@ -86,8 +86,8 @@ static GLFWwindow* create_glfw_window() {
                                           NULL,
                                           NULL);
 #if LW_PLATFORM_WIN32
-    HWND hwnd = glfwGetWin32Window(window);
-    int scaling_factor = GetDpiForWindow(hwnd) / 96;
+    const HWND hwnd = glfwGetWin32Window(window);
+    const int scaling_factor = GetDpiForWindow(hwnd) / 96;
     glfwSetWindowSize(window,
                       INITIAL_SCREEN_RESOLUTION_X * scaling_factor,
                       INITIAL_SCREEN_RESOLUTION_Y * scaling_factor);
@@ -97,16 +97,16 @@ static GLFWwindow* create_glfw_window() {
 
 #if LW_PLATFORM_WIN32
 static int make_multiple_instances_nonoverlapping(GLFWwindow* window, const RECT* work_area, int window_rect_to_client_rect_dx, int window_rect_to_client_rect_dy, int width, int height) {
-    HANDLE first_mutex = CreateMutexA(NULL, TRUE, "laidoff-win32-client-mutex-1");
-    int first_window_exists = GetLastError() == ERROR_ALREADY_EXISTS;
+	const HANDLE first_mutex = CreateMutexA(NULL, TRUE, "laidoff-win32-client-mutex-1");
+    const int first_window_exists = GetLastError() == ERROR_ALREADY_EXISTS;
     if (first_window_exists) {
         CloseHandle(first_mutex);
-        HANDLE second_mutex = CreateMutexA(NULL, TRUE, "laidoff-win32-client-mutex-2");
-        int second_window_exists = GetLastError() == ERROR_ALREADY_EXISTS;
+        const HANDLE second_mutex = CreateMutexA(NULL, TRUE, "laidoff-win32-client-mutex-2");
+        const int second_window_exists = GetLastError() == ERROR_ALREADY_EXISTS;
         if (second_window_exists) {
             CloseHandle(second_mutex);
-            HANDLE third_mutex = CreateMutexA(NULL, TRUE, "laidoff-win32-client-mutex-3");
-            int third_window_exists = GetLastError() == ERROR_ALREADY_EXISTS;
+            const HANDLE third_mutex = CreateMutexA(NULL, TRUE, "laidoff-win32-client-mutex-3");
+            const int third_window_exists = GetLastError() == ERROR_ALREADY_EXISTS;
             if (third_window_exists) {
                 CloseHandle(third_mutex);
                 // fourth position
@@ -132,7 +132,7 @@ void test_main_bundle_path(const char* filename);
 #endif
 
 int main(int argc, char* argv[]) {
-	lwlog_init();
+    lwlog_init();
     LOGI("LAIDOFF: Greetings.");
 
     while (!directory_exists("assets") && LwChangeDirectory("..")) {
@@ -198,20 +198,20 @@ int main(int argc, char* argv[]) {
         }
     }
 #if LW_PLATFORM_WIN32
-    HWND hwnd = glfwGetWin32Window(window);
+    const HWND hwnd = glfwGetWin32Window(window);
     int scaling_factor = GetDpiForWindow(hwnd) / 96;
     RECT work_area;
     SystemParametersInfo(SPI_GETWORKAREA, 0, &work_area, 0);
     RECT window_rect;
     GetWindowRect(hwnd, &window_rect);
-    int window_rect_width = window_rect.right - window_rect.left;
-    int window_rect_height = window_rect.bottom - window_rect.top;
+    const int window_rect_width = window_rect.right - window_rect.left;
+    const int window_rect_height = window_rect.bottom - window_rect.top;
     RECT client_rect;
     GetClientRect(hwnd, &client_rect);
-    int client_rect_width = client_rect.right - client_rect.left;
-    int client_rect_height = client_rect.bottom - client_rect.top;
-    int window_rect_to_client_rect_dx = window_rect_width - client_rect_width;
-    int window_rect_to_client_rect_dy = window_rect_height - client_rect_height;
+    const int client_rect_width = client_rect.right - client_rect.left;
+    const int client_rect_height = client_rect.bottom - client_rect.top;
+    const int window_rect_to_client_rect_dx = window_rect_width - client_rect_width;
+    const int window_rect_to_client_rect_dy = window_rect_height - client_rect_height;
 
     glfwSetWindowPos(window, work_area.left + window_rect_to_client_rect_dx, work_area.top + window_rect_to_client_rect_dy);
 #elif LW_PLATFORM_OSX
@@ -318,7 +318,7 @@ int main(int argc, char* argv[]) {
 
     LOGI("LAIDOFF: Goodbye.");
 
-	lwlog_destroy();
+    lwlog_destroy();
 
     exit(EXIT_SUCCESS);
 }
@@ -445,8 +445,8 @@ INT_PTR CALLBACK TextInputProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
 }
 
 void lw_start_text_input_activity(LWCONTEXT* pLwc, int tag) {
-    HWND hWnd = glfwGetWin32Window(pLwc->window);
-    HINSTANCE hInst = GetModuleHandle(NULL);
+	const HWND hWnd = glfwGetWin32Window(pLwc->window);
+	const HINSTANCE hInst = GetModuleHandle(NULL);
     lw_set_text_input_tag(tag);
     DialogBox(hInst,							// application instance
               MAKEINTRESOURCE(IDD_DIALOG2),		// dialog box resource
