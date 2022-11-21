@@ -308,13 +308,13 @@ int main(int argc, char* argv[]) {
     lwimgui_shutdown();
 #endif
 
-    glfwDestroyWindow(window);
-
-    glfwTerminate();
-
     destroy_ext_sound_lib();
 
     lw_on_destroy(pLwc);
+
+    glfwDestroyWindow(window);
+
+    glfwTerminate();
 
     LOGI("LAIDOFF: Goodbye.");
 
