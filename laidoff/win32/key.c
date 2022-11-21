@@ -10,7 +10,7 @@
 #include "script.h"
 #include "logic.h"
 #include "puckgameupdate.h"
-#if LW_PLATFORM_WIN32 || LW_PLATFORM_OSX
+#if LW_PLATFORM_WIN32 || LW_PLATFORM_OSX || LW_PLATFORM_LINUX
 #include "lwimgui.h"
 #endif
 
@@ -110,7 +110,7 @@ static void run_additional_client(const char* name, int idx) {
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-#if LW_PLATFORM_WIN32 || LW_PLATFORM_OSX
+#if LW_PLATFORM_WIN32 || LW_PLATFORM_OSX || LW_PLATFORM_LINUX
 	lwimgui_key_callback(window, key, scancode, action, mods);
 	if (lwimgui_want_capture_keyboard() || lwimgui_want_text_input()) {
 		return;
@@ -264,7 +264,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 }
 
 void char_callback(GLFWwindow* window, unsigned int c) {
-#if LW_PLATFORM_WIN32 || LW_PLATFORM_OSX
+#if LW_PLATFORM_WIN32 || LW_PLATFORM_OSX || LW_PLATFORM_LINUX
 	lwimgui_char_callback(window, c);
 	if (lwimgui_want_capture_keyboard() || lwimgui_want_text_input()) {
 		return;
