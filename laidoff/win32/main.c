@@ -33,8 +33,8 @@
 #define LwChangeDirectory(x) chdir(x)
 #endif
 
-#define INITIAL_SCREEN_RESOLUTION_X 450//2100 //450 //(360*2) //(1080)
-#define INITIAL_SCREEN_RESOLUTION_Y 800//1200 //800 //(640*2) //(1920)
+#define INITIAL_SCREEN_RESOLUTION_X 450*2//2100 //450 //(360*2) //(1080)
+#define INITIAL_SCREEN_RESOLUTION_Y 800*2//1200 //800 //(640*2) //(1920)
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
@@ -43,7 +43,7 @@ void mouse_pos_callback(GLFWwindow* window, double x, double y);
 void char_callback(GLFWwindow* window, unsigned int c);
 void destroy_ext_sound_lib();
 
-#if LW_PLATFORM_WIN32 || LW_PLATFORM_OSX
+#if LW_PLATFORM_WIN32 || LW_PLATFORM_OSX || LW_PLATFORM_LINUX
 void lwimgui_init(GLFWwindow* window);
 void lwimgui_render(GLFWwindow* window);
 void lwimgui_shutdown();
@@ -282,7 +282,7 @@ int main(int argc, char* argv[]) {
 #if LW_PLATFORM_WIN32
     lwc_start_scriptwatch_thread(pLwc);
 #endif
-#if LW_PLATFORM_WIN32 || LW_PLATFORM_OSX
+#if LW_PLATFORM_WIN32 || LW_PLATFORM_OSX || LW_PLATFORM_LINUX
     lwimgui_init(window);
 #endif
 
@@ -290,7 +290,7 @@ int main(int argc, char* argv[]) {
         glfwPollEvents();
         lwc_prerender_mutable_context(pLwc);
         lwc_render(pLwc);
-#if LW_PLATFORM_WIN32 || LW_PLATFORM_OSX
+#if LW_PLATFORM_WIN32 || LW_PLATFORM_OSX || LW_PLATFORM_LINUX
         lwimgui_render(window);
 #endif
         glfwSwapBuffers(window);
@@ -308,13 +308,13 @@ int main(int argc, char* argv[]) {
     lwimgui_shutdown();
 #endif
 
-    glfwDestroyWindow(window);
-
-    glfwTerminate();
-
     destroy_ext_sound_lib();
 
     lw_on_destroy(pLwc);
+
+    glfwDestroyWindow(window);
+
+    glfwTerminate();
 
     LOGI("LAIDOFF: Goodbye.");
 
