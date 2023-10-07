@@ -65,6 +65,7 @@ static BOOL directory_exists(const char* szPath) {
 #else
     DIR* dir = opendir(szPath);
     if (dir) {
+        closedir(dir);
         return 1;
     } else {
         return 0;
@@ -128,7 +129,7 @@ static int make_multiple_instances_nonoverlapping(GLFWwindow* window, const RECT
 #endif
 
 #if LW_PLATFORM_OSX
-void test_main_bundle_path(const char* filename);
+void test_print_main_bundle_path(const char* filename);
 #endif
 
 int main(int argc, char* argv[]) {
@@ -139,10 +140,15 @@ int main(int argc, char* argv[]) {
     }
 
 #if LW_PLATFORM_OSX
+    //
+    // macos의 경우 실행 파일로 만들어지는지, laidoff.app으로 패키지 형태로 만들어지는지에 따라 다르게 작동한다.
+    // 패키지 형태로 만들어지는 경우 LwChangeDirectory() 호출이 어차피 실패하기 때문에
+    // cwd 값은 항상 laidoff.app/Contents로 고정인 것 같다.
+    //
     char cwd[2048];
     getcwd(cwd, 2048);
     LOGI("CWD: %s", cwd);
-    test_main_bundle_path("test.resource");
+    test_print_main_bundle_path("test.resource");
 #endif
 
     glfwSetErrorCallback(error_callback);

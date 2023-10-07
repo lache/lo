@@ -22,7 +22,7 @@ endif (NOT SERVER_ONLY)
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g")
-endif()
+endif ()
 
 include_directories(${glfw_INCLUDE_DIRS})
 include_directories("glfw/deps")
@@ -33,8 +33,8 @@ if (MSVC)
     # disable warning C4996: 'The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name'.
     #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /wd4996")
     #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4996")
-	# disable warning C4819: 'The file contains a character that cannot be represented in the current code page (949).'
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /wd4819")
+    # disable warning C4819: 'The file contains a character that cannot be represented in the current code page (949).'
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /wd4819")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4819")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /D_CRT_NONSTDC_NO_WARNINGS /D_CRT_SECURE_NO_WARNINGS /WX")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_CRT_NONSTDC_NO_WARNINGS /D_CRT_SECURE_NO_WARNINGS /WX")
@@ -168,14 +168,6 @@ elseif (APPLE)
     set_source_files_properties(osx/laidoff.icns PROPERTIES
             MACOSX_PACKAGE_LOCATION "Resources")
 
-    set_source_files_properties(assets PROPERTIES
-            MACOSX_PACKAGE_LOCATION "Resources")
-
-    file(GLOB_RECURSE RES_SOURCES "assets/*")
-    SET_SOURCE_FILES_PROPERTIES(${RES_SOURCES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
-
-
-
     set(OSX_DEPS
             win32/etc1.cpp
             win32/file.c
@@ -297,17 +289,27 @@ if (NOT SERVER_ONLY)
             glfw
             libzmq
             czmq
-			litehtml
+            litehtml
             ${WINCODEC}
             ${WINDSHOW}
             ${WINOPENGL32}
             ${WINMM}
             ${WINXAUDIO2}
             ${WINSOCK2}
-		lz4_static
-        tinycthread
-        mbedtls
+            lz4_static
+            tinycthread
+            mbedtls
             )
+
+    if (APPLE)
+        # https://stackoverflow.com/questions/68308732/how-i-can-copy-a-assets-folder-into-the-resources-folder-of-a-macos-bundle-app-u
+        add_custom_command(TARGET laidoff POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_directory
+                "${CMAKE_SOURCE_DIR}/assets"
+                "$<TARGET_FILE_DIR:laidoff>/../Resources/assets"
+                )
+    endif (APPLE)
+
 endif (NOT SERVER_ONLY)
 
 add_executable(laidoff-server
