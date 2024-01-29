@@ -29,7 +29,8 @@ if (project.hasProperty('versionCode')) {
 }
 
 android {
-    compileSdkVersion 30
+    namespace "com.popsongremix.laidoff"
+    compileSdkVersion 34
     publishNonDefault true
 
     signingConfigs {
@@ -47,12 +48,12 @@ android {
         }
     }
 
-    ndkVersion "23.0.7123448-rc1"
+    ndkVersion "25.1.8937393"
 
     defaultConfig {
         applicationId "com.popsongremix.laidoff"
         minSdkVersion 16
-        targetSdkVersion 30
+        targetSdkVersion 34
 
         versionCode versionProperties['versionCode'] as int
         versionName versionProperties['versionName']

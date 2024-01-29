@@ -1,5 +1,5 @@
 {
-  "ClientTcpHost": "localhost",
+  "ClientTcpHost": "p.plusalpha.top",
   "ConnPort": "19856",
   "ClientTcpTtlHost": "localhost",
   "TtlConnPort": "3000",
