@@ -437,10 +437,10 @@ static void recreate_surface(engine* engine) {
     EGLint w, h;
     eglQuerySurface(engine->display, engine->surface, EGL_WIDTH, &w);
     eglQuerySurface(engine->display, engine->surface, EGL_HEIGHT, &h);
-    if (engine->pLwc && w == engine->pLwc->window_width && h == engine->pLwc->window_height) {
-        LOGI("recreate_surface: skipped since there is no size change...");
-        return;
-    }
+//    if (engine->pLwc && w == engine->pLwc->window_width && h == engine->pLwc->window_height) {
+//        LOGI("recreate_surface: skipped since there is no size change...");
+//        return;
+//    }
 
     if (engine->pLwc == nullptr) {
         LOGEP("Recreating surface failed since pLwc is null.");
