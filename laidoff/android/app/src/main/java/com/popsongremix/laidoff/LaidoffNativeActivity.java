@@ -3,7 +3,6 @@ package com.popsongremix.laidoff;
 import android.app.AlertDialog;
 import android.app.NativeActivity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -21,8 +20,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-
-import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -42,16 +39,16 @@ public class LaidoffNativeActivity extends NativeActivity {
     public static native int pushTextureData(int width, int height, int[] data, int texAtlasIndex);
 
     public static native void initRegisterAsset();
+
     public static native void registerAsset(String assetPath, int startOffset, int length);
 
     private static native void sendApkPath(String apkPath, String filesPath, String packageVersion);
-
-    public static native void setPushTokenAndSend(String text, long pLwcLong);
 
     @SuppressWarnings("SameParameterValue")
     public static native void setWindowSize(int width, int height, long pLwcLong);
 
     public static native void sendInputText(String text);
+
     public static native void sendChatInputText(String text);
 
     private static LaidoffNativeActivity INSTANCE;
@@ -105,21 +102,16 @@ public class LaidoffNativeActivity extends NativeActivity {
         assetsLoader.registerAllAssetsOfType("html");
         assetsLoader.registerAllAssetsOfType("cvbo");
         assetsLoader.registerAllAssetsOfType("ttldata");
-		assetsLoader.registerAllAssetsOfType("mvbo");
+        assetsLoader.registerAllAssetsOfType("mvbo");
         assetsLoader.registerAllAssetsOfType("asf");
         assetsLoader.registerAllAssetsOfType("amc");
         sendApkPath(assetsLoader.GetAPKPath(), getApplicationContext().getFilesDir().getAbsolutePath(), getPackageVersion());
 
-        //noinspection deprecation
         mSoundPool = new SoundPool(15, AudioManager.STREAM_MUSIC, 0);
-        mSoundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
-            @Override
-            public void onLoadComplete(SoundPool soundPool, int sampleId,
-                                       int status) {
-                //loaded = true;
+        mSoundPool.setOnLoadCompleteListener((soundPool, sampleId, status) -> {
+            //loaded = true;
 
-                //mSoundPool.play(sampleId, 1, 1, 0, 0, 1);
-            }
+            //mSoundPool.play(sampleId, 1, 1, 0, 0, 1);
         });
         mSoundCollapse = mSoundPool.load(getApplicationContext(), R.raw.collapse, 1);
         mSoundCollision = mSoundPool.load(getApplicationContext(), R.raw.collision, 1);
@@ -152,20 +144,16 @@ public class LaidoffNativeActivity extends NativeActivity {
         getWindow().addFlags(
                 //WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
                 //WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
-                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON|
-                WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
                 //WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON
         );
         final View decorView = getWindow().getDecorView();
-        decorView.setOnSystemUiVisibilityChangeListener
-                (new View.OnSystemUiVisibilityChangeListener() {
-                    @Override
-                    public void onSystemUiVisibilityChange(int visibility) {
-                        Log.i(LOG_TAG, "onSystemUiVisibilityChange - decorView window size width: " + decorView.getWidth());
-                        Log.i(LOG_TAG, "onSystemUiVisibilityChange - decorView window size height: " + decorView.getHeight());
-                        setWindowSize(decorView.getWidth(), decorView.getHeight(), 0);
-                        // Note that system bars will only be "visible" if none of the
-                        // LOW_PROFILE, HIDE_NAVIGATION, or FULLSCREEN flags are set.
+        decorView.setOnSystemUiVisibilityChangeListener(visibility -> {
+            Log.i(LOG_TAG, "onSystemUiVisibilityChange - decorView window size width: " + decorView.getWidth());
+            Log.i(LOG_TAG, "onSystemUiVisibilityChange - decorView window size height: " + decorView.getHeight());
+            setWindowSize(decorView.getWidth(), decorView.getHeight(), 0);
+            // Note that system bars will only be "visible" if none of the
+            // LOW_PROFILE, HIDE_NAVIGATION, or FULLSCREEN flags are set.
 //                        if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
 //                            // TODO: The system bars are visible. Make any desired
 //                            // adjustments to your UI, such as showing the action bar or
@@ -175,8 +163,7 @@ public class LaidoffNativeActivity extends NativeActivity {
 //                            // adjustments to your UI, such as hiding the action bar or
 //                            // other navigational controls.
 //                        }
-                    }
-                });
+        });
     }
 
     public void playCollapse() {
@@ -237,11 +224,13 @@ public class LaidoffNativeActivity extends NativeActivity {
 
         File[] fileList = files.listFiles();
 
-        Log.i(LOG_TAG, String.format("Download cache dir: %s (%d files)", files.getAbsolutePath(), fileList.length));
+        if (fileList != null) {
+            Log.i(LOG_TAG, String.format("Download cache dir: %s (%d files)", files.getAbsolutePath(), fileList.length));
 
-        for (File aFileList : fileList) {
-            //Date d = new Date(fileList[i].lastModified());
-            Log.i(LOG_TAG, String.format(" - file: %s", aFileList.getAbsolutePath()));
+            for (File aFileList : fileList) {
+                //Date d = new Date(fileList[i].lastModified());
+                Log.i(LOG_TAG, String.format(" - file: %s", aFileList.getAbsolutePath()));
+            }
         }
 
         UpdateResTaskParam updateResTaskParam = new UpdateResTaskParam();
@@ -387,7 +376,7 @@ public class LaidoffNativeActivity extends NativeActivity {
 
     @SuppressWarnings("unused")
     public static void requestPushToken(long pLwc) {
-        setPushTokenAndSend(FirebaseInstanceId.getInstance().getToken(), pLwc);
+        //setPushTokenAndSend(FirebaseInstanceId.getInstance().getToken(), pLwc);
     }
 
     @SuppressWarnings("unused")
@@ -479,21 +468,13 @@ public class LaidoffNativeActivity extends NativeActivity {
 
     private void enableImmersiveModeOnWindowFocusChanged(boolean hasFocus) {
         if (hasFocus) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                final View decorView = getWindow().getDecorView();
-                decorView.setSystemUiVisibility(
-                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                                | View.SYSTEM_UI_FLAG_LOW_PROFILE
-                                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
-                                | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
-                                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                );
-                Log.i(LOG_TAG, "onWindowFocusChanged - decorView window width: " + decorView.getWidth());
-                Log.i(LOG_TAG, "onWindowFocusChanged - decorView window height: " + decorView.getHeight());
-                setWindowSize(decorView.getWidth(), decorView.getHeight(), 0);
-            }
+            final View decorView = getWindow().getDecorView();
+            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LOW_PROFILE | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+            Log.i(LOG_TAG, "onWindowFocusChanged - decorView window width: " + decorView.getWidth());
+            Log.i(LOG_TAG, "onWindowFocusChanged - decorView window height: " + decorView.getHeight());
+            setWindowSize(decorView.getWidth(), decorView.getHeight(), 0);
         }
     }
 
@@ -514,12 +495,7 @@ public class LaidoffNativeActivity extends NativeActivity {
         input.clearFocus();
         builder.setView(input);
         // Set up the buttons
-        builder.setPositiveButton(getString(R.string.change_nickname), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                sendInputText(input.getText().toString());
-            }
-        });
+        builder.setPositiveButton(getString(R.string.change_nickname), (dialog, which) -> sendInputText(input.getText().toString()));
         builder.show();
     }
 }

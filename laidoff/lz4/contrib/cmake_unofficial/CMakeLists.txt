@@ -31,7 +31,7 @@ else()
     LANGUAGES C)
 endif()
 
-cmake_minimum_required (VERSION 2.8.6)
+cmake_minimum_required(VERSION 3.4.1)
 
 # If LZ4 is being bundled in another project, we don't want to
 # install anything.  However, we want to let people override this, so

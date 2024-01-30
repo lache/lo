@@ -1,5 +1,7 @@
 apply plugin: 'com.android.application'
 
+android.buildFeatures.buildConfig true
+
 // Create a variable called keystorePropertiesFile, and initialize it to your
 // keystore.properties file, in the rootProject folder.
 def keystorePropertiesFile = rootProject.file("keystore.properties")
@@ -30,7 +32,7 @@ if (project.hasProperty('versionCode')) {
 
 android {
     namespace "com.popsongremix.laidoff"
-    compileSdkVersion 34
+    compileSdk 34
     publishNonDefault true
 
     signingConfigs {
@@ -52,14 +54,14 @@ android {
 
     defaultConfig {
         applicationId "com.popsongremix.laidoff"
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 34
 
         versionCode versionProperties['versionCode'] as int
         versionName versionProperties['versionName']
 
         ndk {
-            abiFilters 'armeabi-v7a','arm64-v8a'
+            abiFilters 'armeabi-v7a','arm64-v8a', 'x86', 'x86_64'
         }
 
         externalNativeBuild {
@@ -78,18 +80,12 @@ android {
             debuggable true
             jniDebuggable true
             signingConfig signingConfigs.debugSign
-            ndk {
-                abiFilters 'x86'
-            }
             buildConfigField "boolean", "DOWNLOAD_ASSETS", "false"
         }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
                     'proguard-rules.pro'
-            ndk {
-                abiFilters 'x86'
-            }
             buildConfigField "boolean", "DOWNLOAD_ASSETS", "true"
         }
         releaseSingapore {
@@ -103,7 +99,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
                     'proguard-rules.pro'
             ndk {
-                abiFilters 'x86'
+                abiFilters 'x86', 'x86_64'
             }
             buildConfigField "boolean", "DOWNLOAD_ASSETS", "true"
         }
@@ -170,9 +166,9 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.google.firebase:firebase-messaging:21.0.1'
+    implementation 'com.google.firebase:firebase-messaging:23.4.0'
     implementation 'com.android.support.constraint:constraint-layout:2.0.4'
-    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
 }
 
 apply plugin: 'com.google.gms.google-services'

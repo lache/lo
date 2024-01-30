@@ -1,7 +1,7 @@
 # pthread requires special checks and flags to be added
 find_package(Threads)
 if(THREADS_HAVE_PTHREAD_ARG)
-  target_compile_options(PUBLIC czmq "-pthread")
+  target_compile_options(czmq PUBLIC "-pthread")
 endif()
 if(CMAKE_THREAD_LIBS_INIT)
   target_link_libraries(czmq "${CMAKE_THREAD_LIBS_INIT}")
