@@ -39,8 +39,6 @@ local c = lo.script_context()
 local Data = reload_require('data')
 print('Data loaded!')
 
-reload_require('ttl')
-
 local data = Data:new()
 
 local Field = reload_require('field')
@@ -221,5 +219,8 @@ function on_puck_game_enter()
 		on_ui_event('tutorial_button', 0, 0)
 	end
 end
+
+reload_require('ttl')
+reload_require('mocap')
 
 return 1

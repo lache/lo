@@ -112,10 +112,11 @@ android {
     }
 
     sourceSets {
-        debug.assets.srcDirs += '../../assets'
-        releaseSingapore.assets.srcDirs += '../../selected-assets/assets'
-        //releaseBallRumbleGooglePlay.assets.srcDirs += '../../selected-assets-br/assets'
-        releaseBallRumbleGooglePlay.assets.srcDirs += '../../assets'
+        //debug.assets.srcDirs += '../../assets'
+        debug.assets.srcDirs += '../../selected-assets-br/assets'
+        releaseSingapore.assets.srcDirs += '../../selected-assets-br/assets'
+        releaseBallRumbleGooglePlay.assets.srcDirs += '../../selected-assets-br/assets'
+        //releaseBallRumbleGooglePlay.assets.srcDirs += '../../assets'
     }
 
     externalNativeBuild {
