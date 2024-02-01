@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -3285,7 +3285,7 @@
 				};
 			};
 			buildConfigurationList = 6CA16CCE1EA20B5600DB7AF0 /* Build configuration list for PBXProject "laidoff" */;
-			compatibilityVersion = "Xcode 9.3";
+			compatibilityVersion = "Xcode 15.0";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -3975,6 +3975,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = TG9MHV97AH;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = TG9MHV97AH;
 				GCC_C_LANGUAGE_STANDARD = c11;
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = laidoff/Info.plist;
@@ -4004,6 +4005,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "6c7ce2c3-d0cf-4a0f-9662-772ebd883d9c";
 				PROVISIONING_PROFILE_SPECIFIER = "Laidoff Development";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Laidoff Dev";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -4018,6 +4020,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = TG9MHV97AH;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = TG9MHV97AH;
 				GCC_C_LANGUAGE_STANDARD = c11;
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = laidoff/Info.plist;
@@ -4047,6 +4050,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "73257faf-fdb7-4f91-a403-1065689dcaec";
 				PROVISIONING_PROFILE_SPECIFIER = "Laidoff Adhoc";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Laidoff App Store";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
