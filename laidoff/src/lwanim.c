@@ -26,7 +26,7 @@ const char* action_filename[] = {
 void load_action(const char* filename, LWANIMACTION* action) {
     size_t s;
     char* p = create_binary_from_file(filename, &s);
-    if (p) {
+    if (p && strlen(p) > 0) {
         action->d = p;
         
         action->fps = *(float*)p;
