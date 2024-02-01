@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		25087D2260A972920DA26DF1 /* tilemap.c in Sources */ = {isa = PBXBuildFile; fileRef = 668B67331C003FBE0EB731F1 /* tilemap.c */; };
+		26133D082B6BFCEE006794CA /* assets in Resources */ = {isa = PBXBuildFile; fileRef = 26133D072B6BFCEE006794CA /* assets */; };
 		5633AC321EADDF98003F1549 /* net.c in Sources */ = {isa = PBXBuildFile; fileRef = 5633AC311EADDF98003F1549 /* net.c */; };
 		5663732C1EBA52D3001DA3F4 /* array.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 566372811EBA52D3001DA3F4 /* array.cpp */; };
 		5663732D1EBA52D3001DA3F4 /* box.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 566372831EBA52D3001DA3F4 /* box.cpp */; };
@@ -92,7 +93,6 @@
 		5663737E1EBA52D4001DA3F4 /* customization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 566373291EBA52D3001DA3F4 /* customization.cpp */; };
 		5663737F1EBA52D4001DA3F4 /* malloc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5663732A1EBA52D3001DA3F4 /* malloc.cpp */; };
 		566373801EBA52D4001DA3F4 /* threadlocalstorage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5663732B1EBA52D3001DA3F4 /* threadlocalstorage.cpp */; };
-		567F39BE1EA29BC90081EB67 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = 567F39BD1EA29BC90081EB67 /* assets */; };
 		567F39C01EA2A2F70081EB67 /* image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 567F39BF1EA2A2F70081EB67 /* image.cpp */; };
 		567F39C21EA2A4600081EB67 /* etc1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 567F39C11EA2A4600081EB67 /* etc1.cpp */; };
 		567F39C51EA2A7500081EB67 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 567F39C41EA2A7500081EB67 /* UIKit.framework */; };
@@ -535,6 +535,7 @@
 		0E38E11C6E337B7525B05C1D /* lwfbo.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = lwfbo.c; sourceTree = "<group>"; };
 		153809DC50A3E01320158089 /* render_ttl.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = render_ttl.c; sourceTree = "<group>"; };
 		2601AFFC1EE1549700989AA6 /* platform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = platform.h; path = ../build/include/platform.h; sourceTree = "<group>"; };
+		26133D072B6BFCEE006794CA /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = assets; path = "../selected-assets-br/assets"; sourceTree = "<group>"; };
 		3EF18865C9E87623A8107AC5 /* render_morph.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = render_morph.c; sourceTree = "<group>"; };
 		5633AC311EADDF98003F1549 /* net.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = net.c; sourceTree = "<group>"; };
 		566372651EBA52D3001DA3F4 /* collision.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = collision.h; sourceTree = "<group>"; };
@@ -728,7 +729,6 @@
 		566373291EBA52D3001DA3F4 /* customization.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = customization.cpp; sourceTree = "<group>"; };
 		5663732A1EBA52D3001DA3F4 /* malloc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = malloc.cpp; sourceTree = "<group>"; };
 		5663732B1EBA52D3001DA3F4 /* threadlocalstorage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = threadlocalstorage.cpp; sourceTree = "<group>"; };
-		567F39BD1EA29BC90081EB67 /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = assets; path = ../assets; sourceTree = "<group>"; };
 		567F39BF1EA2A2F70081EB67 /* image.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = image.cpp; path = ../../win32/image.cpp; sourceTree = "<group>"; };
 		567F39C11EA2A4600081EB67 /* etc1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = etc1.cpp; path = ../../win32/etc1.cpp; sourceTree = "<group>"; };
 		567F39C41EA2A7500081EB67 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -2629,7 +2629,7 @@
 		6CA16CCA1EA20B5600DB7AF0 = {
 			isa = PBXGroup;
 			children = (
-				567F39BD1EA29BC90081EB67 /* assets */,
+				26133D072B6BFCEE006794CA /* assets */,
 				567F39C31EA2A7500081EB67 /* Frameworks */,
 				6CA16CD51EA20B5600DB7AF0 /* laidoff */,
 				6CA16CD41EA20B5600DB7AF0 /* Products */,
@@ -3308,8 +3308,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				567F39BE1EA29BC90081EB67 /* assets in Resources */,
 				6CA16CE51EA20B5600DB7AF0 /* Main.storyboard in Resources */,
+				26133D082B6BFCEE006794CA /* assets in Resources */,
 				6CA16CE71EA20B5600DB7AF0 /* Assets.xcassets in Resources */,
 				6CA16CEA1EA20B5600DB7AF0 /* LaunchScreen.storyboard in Resources */,
 			);
