@@ -33,8 +33,8 @@
 #define LwChangeDirectory(x) chdir(x)
 #endif
 
-#define INITIAL_SCREEN_RESOLUTION_X 450*2//2100 //450 //(360*2) //(1080)
-#define INITIAL_SCREEN_RESOLUTION_Y 800*2//1200 //800 //(640*2) //(1920)
+#define INITIAL_SCREEN_RESOLUTION_X 450//2100 //450 //(360*2) //(1080)
+#define INITIAL_SCREEN_RESOLUTION_Y 800//1200 //800 //(640*2) //(1920)
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
@@ -52,6 +52,9 @@ void lwimgui_shutdown();
 #if LW_PLATFORM_OSX
 void glfwMacOsMojaveWorkaround(GLFWwindow* handle);
 #endif
+
+static float monitorScaleX = 1;
+static float monitorScaleY = 1;
 
 static void error_callback(int error, const char* description) {
     fprintf(stderr, "Error: %s\n", description);
@@ -76,8 +79,8 @@ static BOOL directory_exists(const char* szPath) {
 void window_size_callback(GLFWwindow* window, int width, int height) {
     LWCONTEXT* pLwc = (LWCONTEXT*)glfwGetWindowUserPointer(window);
 
-    lw_set_viewport_size(pLwc, width, height);
-    lw_set_window_size(pLwc, width, height);
+    lw_set_viewport_size(pLwc, width * monitorScaleX, height * monitorScaleY);
+    lw_set_window_size(pLwc, width * monitorScaleX, height * monitorScaleY);
 }
 
 static GLFWwindow* create_glfw_window() {
@@ -175,6 +178,9 @@ int main(int argc, char* argv[]) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
+    glfwGetMonitorContentScale(primaryMonitor, &monitorScaleX, &monitorScaleY);
     //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
 #endif
 
