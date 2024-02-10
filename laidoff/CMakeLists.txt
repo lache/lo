@@ -83,6 +83,9 @@ add_subdirectory(lz4/contrib/cmake_unofficial)
 
 include_directories(czmq/include)
 
+# yoga layout engine
+
+add_subdirectory(yoga)
 
 include_directories("src")
 
@@ -299,6 +302,7 @@ if (NOT SERVER_ONLY)
             lz4_static
             tinycthread
             mbedtls
+            yogacore
             )
 
     if (APPLE)

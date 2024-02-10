@@ -67,6 +67,7 @@
 #include "test_srp.h"
 // SWIG output file
 #include "lo_wrap.inl"
+#include <yoga/yoga.h>
 
 const float default_uv_offset[2] = { 0, 0 };
 const float default_uv_scale[2] = { 1, 1 };
