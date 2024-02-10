@@ -298,6 +298,8 @@ int main(int argc, char* argv[]) {
     lwimgui_init(window);
 #endif
 
+    lwc_init_render(pLwc);
+
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
         lwc_prerender_mutable_context(pLwc);
@@ -310,6 +312,9 @@ int main(int argc, char* argv[]) {
         glfwMacOsMojaveWorkaround(window);
 #endif
     }
+
+    lwc_destroy_render();
+
     // If glfw loop is terminated without a proper exit procedure ('rmsg_quitapp()')
     // (i.e., by clicking 'X' button on the window)
     // since glfw loop is finished, we just need to close logic loop.

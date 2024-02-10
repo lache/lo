@@ -23,6 +23,8 @@ void lw_set_viewport_size(LWCONTEXT* pLwc, int w, int h);
 void lw_set_window(LWCONTEXT* pLwc, struct GLFWwindow* window);
 GLFWwindow* lw_get_window(const LWCONTEXT* pLwc);
 void lwc_prerender_mutable_context(LWCONTEXT* pLwc);
+void lwc_init_render(const LWCONTEXT* pLwc);
+void lwc_destroy_render();
 void lwc_render(const LWCONTEXT* pLwc);
 int lw_get_update_count(LWCONTEXT* pLwc);
 int lw_get_render_count(LWCONTEXT* pLwc);

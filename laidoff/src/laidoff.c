@@ -1166,6 +1166,14 @@ void lwc_prerender_mutable_context(LWCONTEXT* pLwc) {
     dequeue_from_state2_queue(pLwc);
 }
 
+void lwc_init_render(const LWCONTEXT* pLwc) {
+    init_render_puckgame(pLwc);
+}
+
+void lwc_destroy_render() {
+    destroy_render_puckgame();
+}
+
 void lwc_render(const LWCONTEXT* pLwc) {
     // Busy wait for rendering okay sign
     while (!lwcontext_safe_to_start_render(pLwc)) {}
@@ -1622,6 +1630,8 @@ void lw_set_window_size(LWCONTEXT* pLwc, int w, int h) {
         // Reset dir pad input state
         reset_dir_pad_position(&pLwc->left_dir_pad);
         reset_dir_pad_position(&pLwc->right_dir_pad);
+
+        lwpuckgame_set_window_size(pLwc);
 
         lwttl_set_window_size(pLwc->ttl,
                               pLwc->window_width,

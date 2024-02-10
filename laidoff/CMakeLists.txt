@@ -285,7 +285,7 @@ if (NOT SERVER_ONLY)
             ${RPI_DEPS}
             ${UNIX_DEPS}
             ${ICON}
-            ${GLAD})
+            ${GLAD} src/layout_puckgame.c src/layout_puckgame.h src/node_render.c src/node_render.h)
     target_compile_definitions(laidoff PRIVATE _WINSOCK_DEPRECATED_NO_WARNINGS)
 
     target_link_libraries(laidoff
