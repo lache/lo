@@ -23,3 +23,5 @@ Private toy project
 12. Execute: `cd rank-server && ../br rank`
 13. [OPTIONAL] Open new command prompt
 14. [OPTIONAL] Execute: `cd push-server && ../br push`
+
+CAUTION: Also, you need to build & run `battle-server`. `battle-server` can be built on `../laidoff`. See `../laidoff/README.md`
