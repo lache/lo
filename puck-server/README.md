@@ -24,4 +24,4 @@ Private toy project
 13. [OPTIONAL] Open new command prompt
 14. [OPTIONAL] Execute: `cd push-server && ../br push`
 
-CAUTION: Also, you need to build & run `battle-server`. `battle-server` can be built on `../laidoff`. See `../laidoff/README.md`
+CAUTION: Also, you need to build & run `battle-server`. See `../laidoff/README.md` - `Linux` - `laidoff-server` section for details.
